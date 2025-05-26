@@ -16,7 +16,7 @@ const Planning = () => {
       content: 'Thread sur les innovations IA en 2024',
       status: 'scheduled',
       engagement: '~180 interactions',
-      color: 'border-blue-500'
+      color: 'border-korev-blue'
     },
     {
       id: 2,
@@ -34,7 +34,7 @@ const Planning = () => {
       content: 'Quick insight sur GPT-4o',
       status: 'published',
       engagement: '47 retweets',
-      color: 'border-gray-500'
+      color: 'border-green-500'
     }
   ];
 
@@ -47,10 +47,10 @@ const Planning = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'scheduled': return 'bg-korev-blue/20 text-korev-blue border-korev-blue/30';
-      case 'draft': return 'bg-korev-gold/20 text-korev-gold border-korev-gold/30';
-      case 'published': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'scheduled': return 'bg-korev-blue/10 text-korev-blue border-korev-blue/30';
+      case 'draft': return 'bg-korev-gold/10 text-korev-gold border-korev-gold/30';
+      case 'published': return 'bg-green-500/10 text-green-600 border-green-500/30';
+      default: return 'bg-gray-500/10 text-gray-600 border-gray-500/30';
     }
   };
 
@@ -67,40 +67,42 @@ const Planning = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-white mb-2 flex items-center space-x-2">
-            <span>📅</span>
+          <h2 className="text-3xl font-bold text-korev-dark mb-2 flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gradient-blue rounded-xl flex items-center justify-center">
+              <span className="text-white text-xl">📅</span>
+            </div>
             <span>Planning éditorial</span>
           </h2>
-          <p className="text-korev-gray-400">
+          <p className="text-korev-gray-600">
             Organisez et planifiez vos publications sur tous les réseaux
           </p>
         </div>
         
-        <div className="flex items-center space-x-3">
-          <div className="flex border border-white/20 rounded-lg overflow-hidden">
+        <div className="flex items-center space-x-4">
+          <div className="flex bg-white border border-korev-azure rounded-xl overflow-hidden shadow-sm">
             <button
               onClick={() => setViewMode('week')}
-              className={`px-4 py-2 text-sm transition-colors ${
+              className={`px-6 py-3 text-sm font-medium transition-all duration-300 ${
                 viewMode === 'week' 
-                  ? 'bg-korev-blue text-white' 
-                  : 'text-korev-gray-400 hover:text-white'
+                  ? 'bg-korev-blue text-white shadow-sm' 
+                  : 'text-korev-gray-600 hover:text-korev-blue hover:bg-korev-azure'
               }`}
             >
               Semaine
             </button>
             <button
               onClick={() => setViewMode('month')}
-              className={`px-4 py-2 text-sm transition-colors ${
+              className={`px-6 py-3 text-sm font-medium transition-all duration-300 ${
                 viewMode === 'month' 
-                  ? 'bg-korev-blue text-white' 
-                  : 'text-korev-gray-400 hover:text-white'
+                  ? 'bg-korev-blue text-white shadow-sm' 
+                  : 'text-korev-gray-600 hover:text-korev-blue hover:bg-korev-azure'
               }`}
             >
               Mois
             </button>
           </div>
           
-          <Button className="korev-gradient hover-glow">
+          <Button className="bg-gradient-blue text-white hover:shadow-lg hover:shadow-korev-blue/30 transition-all duration-300">
             ✨ Planifier avec Kora
           </Button>
         </div>
@@ -110,67 +112,67 @@ const Planning = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Calendrier principal */}
         <div className="lg:col-span-3">
-          <Card className="glass-effect border-white/10">
-            <CardHeader>
+          <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardHeader className="border-b border-korev-azure">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-white">
+                <CardTitle className="text-korev-dark">
                   Semaine du {currentWeek[0].getDate()}-{currentWeek[6].getDate()} 
                   {' '}
                   {currentWeek[0].toLocaleDateString('fr-FR', { month: 'long' })}
                 </CardTitle>
                 <div className="flex space-x-2">
-                  <Button size="sm" variant="ghost" className="text-korev-gray-400">
+                  <Button size="sm" variant="ghost" className="text-korev-gray-600 hover:text-korev-blue hover:bg-korev-azure">
                     ← Précédent
                   </Button>
-                  <Button size="sm" variant="ghost" className="text-korev-gray-400">
+                  <Button size="sm" variant="ghost" className="text-korev-gray-600 hover:text-korev-blue hover:bg-korev-azure">
                     Suivant →
                   </Button>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="grid grid-cols-7 gap-4">
                 {weekDays.map((day, index) => (
-                  <div key={day} className="space-y-3">
-                    <div className="text-center">
-                      <p className="text-korev-gray-400 text-sm font-medium">{day}</p>
-                      <p className="text-white text-lg font-semibold">
+                  <div key={day} className="space-y-4">
+                    <div className="text-center p-3 bg-gradient-azure rounded-xl">
+                      <p className="text-korev-gray-600 text-sm font-semibold">{day}</p>
+                      <p className="text-korev-dark text-xl font-bold">
                         {currentWeek[index].getDate()}
                       </p>
                     </div>
                     
-                    <div className="space-y-2 min-h-[200px]">
+                    <div className="space-y-3 min-h-[200px]">
                       {index === 1 && (
-                        <div className="p-2 rounded-lg bg-korev-blue/10 border border-korev-blue/30 cursor-pointer hover:bg-korev-blue/20 transition-colors">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <span className="text-xs">💼</span>
-                            <span className="text-korev-blue text-xs font-medium">09:00</span>
+                        <div className="p-3 rounded-xl bg-korev-blue/10 border border-korev-blue/30 cursor-pointer hover:bg-korev-blue/20 hover:shadow-md transition-all duration-300">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <span className="text-sm">💼</span>
+                            <span className="text-korev-blue text-xs font-semibold">09:00</span>
                           </div>
-                          <p className="text-white text-xs">Thread innovations IA</p>
+                          <p className="text-korev-dark text-xs font-medium">Thread innovations IA</p>
                         </div>
                       )}
                       
                       {index === 2 && (
                         <>
-                          <div className="p-2 rounded-lg bg-pink-500/10 border border-pink-500/30 cursor-pointer hover:bg-pink-500/20 transition-colors">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <span className="text-xs">📸</span>
-                              <span className="text-pink-400 text-xs font-medium">14:30</span>
+                          <div className="p-3 rounded-xl bg-pink-500/10 border border-pink-500/30 cursor-pointer hover:bg-pink-500/20 hover:shadow-md transition-all duration-300">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <span className="text-sm">📸</span>
+                              <span className="text-pink-500 text-xs font-semibold">14:30</span>
                             </div>
-                            <p className="text-white text-xs">Carrousel productivité</p>
+                            <p className="text-korev-dark text-xs font-medium">Carrousel productivité</p>
                           </div>
-                          <div className="p-2 rounded-lg bg-gray-500/10 border border-gray-500/30 cursor-pointer hover:bg-gray-500/20 transition-colors">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <span className="text-xs">𝕏</span>
-                              <span className="text-gray-400 text-xs font-medium">17:15</span>
+                          <div className="p-3 rounded-xl bg-gray-500/10 border border-gray-500/30 cursor-pointer hover:bg-gray-500/20 hover:shadow-md transition-all duration-300">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <span className="text-sm">𝕏</span>
+                              <span className="text-gray-600 text-xs font-semibold">17:15</span>
                             </div>
-                            <p className="text-white text-xs">Insight GPT-4o</p>
+                            <p className="text-korev-dark text-xs font-medium">Insight GPT-4o</p>
                           </div>
                         </>
                       )}
                       
-                      <button className="w-full p-2 border-2 border-dashed border-white/20 rounded-lg text-korev-gray-400 hover:border-korev-blue/50 hover:text-korev-blue transition-colors">
-                        <span className="text-xs">+ Ajouter</span>
+                      <button className="w-full p-4 border-2 border-dashed border-korev-azure rounded-xl text-korev-gray-500 hover:border-korev-blue hover:text-korev-blue hover:bg-korev-azure transition-all duration-300">
+                        <span className="text-sm font-medium">+ Ajouter</span>
                       </button>
                     </div>
                   </div>
@@ -181,64 +183,66 @@ const Planning = () => {
         </div>
 
         {/* Panel latéral */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {/* Publications programmées */}
-          <Card className="glass-effect border-white/10">
-            <CardHeader>
-              <CardTitle className="text-white text-lg">Publications du jour</CardTitle>
+          <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardHeader className="border-b border-korev-azure">
+              <CardTitle className="text-korev-dark text-lg">Publications du jour</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="p-6 space-y-4">
               {scheduledPosts.map((post) => (
-                <div key={post.id} className={`p-3 rounded-lg border ${post.color} bg-white/5`}>
-                  <div className="flex items-center justify-between mb-2">
+                <div key={post.id} className={`p-4 rounded-xl border ${post.color} bg-white hover:shadow-md transition-all duration-300`}>
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs">
+                      <span className="text-sm">
                         {post.platform === 'LinkedIn' && '💼'}
                         {post.platform === 'Instagram' && '📸'}
                         {post.platform === 'X (Twitter)' && '𝕏'}
                       </span>
-                      <span className="text-white text-sm font-medium">{post.time}</span>
+                      <span className="text-korev-dark text-sm font-semibold">{post.time}</span>
                     </div>
                     <Badge className={getStatusColor(post.status)}>
                       {getStatusText(post.status)}
                     </Badge>
                   </div>
-                  <p className="text-white text-sm mb-2">{post.content}</p>
-                  <p className="text-korev-gray-400 text-xs">{post.engagement}</p>
+                  <p className="text-korev-dark text-sm mb-3 font-medium">{post.content}</p>
+                  <p className="text-korev-gray-500 text-xs">{post.engagement}</p>
                 </div>
               ))}
             </CardContent>
           </Card>
 
           {/* Suggestions Kora */}
-          <Card className="glass-effect border-korev-gold/20 bg-gradient-to-r from-korev-gold/5 to-korev-gold/10">
-            <CardHeader>
-              <CardTitle className="text-korev-gold flex items-center space-x-2">
-                <span>🤖</span>
+          <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardHeader className="border-b border-korev-azure">
+              <CardTitle className="text-korev-dark flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-blue rounded-lg flex items-center justify-center">
+                  <span className="text-white text-sm">🤖</span>
+                </div>
                 <span>Suggestions Kora</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-                <h4 className="text-white font-medium text-sm mb-2">
+            <CardContent className="p-6 space-y-4">
+              <div className="p-4 rounded-xl bg-korev-blue/5 border border-korev-blue/20 hover:border-korev-blue/40 transition-all duration-300">
+                <h4 className="text-korev-blue font-semibold text-sm mb-2">
                   Optimisation planning
                 </h4>
-                <p className="text-korev-gray-300 text-xs mb-2">
+                <p className="text-korev-dark text-xs mb-3">
                   Décaler le post Instagram à 15h pour +12% d'engagement
                 </p>
-                <Button size="sm" variant="ghost" className="text-korev-gold hover:bg-korev-gold/10 h-6 px-2 text-xs">
+                <Button size="sm" className="bg-korev-blue/10 text-korev-blue hover:bg-korev-blue hover:text-white border-0 text-xs px-3 py-1">
                   Appliquer
                 </Button>
               </div>
               
-              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-                <h4 className="text-white font-medium text-sm mb-2">
+              <div className="p-4 rounded-xl bg-korev-gold/5 border border-korev-gold/20 hover:border-korev-gold/40 transition-all duration-300">
+                <h4 className="text-korev-gold font-semibold text-sm mb-2">
                   Contenu manquant
                 </h4>
-                <p className="text-korev-gray-300 text-xs mb-2">
+                <p className="text-korev-dark text-xs mb-3">
                   Vendredi semble vide. Ajouter un post de fin de semaine ?
                 </p>
-                <Button size="sm" variant="ghost" className="text-korev-gold hover:bg-korev-gold/10 h-6 px-2 text-xs">
+                <Button size="sm" className="bg-korev-gold/10 text-korev-gold hover:bg-korev-gold hover:text-white border-0 text-xs px-3 py-1">
                   Générer
                 </Button>
               </div>
@@ -246,22 +250,22 @@ const Planning = () => {
           </Card>
 
           {/* Statistiques rapides */}
-          <Card className="glass-effect border-white/10">
-            <CardHeader>
-              <CardTitle className="text-white text-lg">Cette semaine</CardTitle>
+          <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardHeader className="border-b border-korev-azure">
+              <CardTitle className="text-korev-dark text-lg">Cette semaine</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-korev-gray-400 text-sm">Posts programmés</span>
-                <span className="text-white font-semibold">8</span>
+                <span className="text-korev-gray-600 text-sm">Posts programmés</span>
+                <span className="text-korev-dark font-bold text-lg">8</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-korev-gray-400 text-sm">Brouillons</span>
-                <span className="text-korev-gold font-semibold">3</span>
+                <span className="text-korev-gray-600 text-sm">Brouillons</span>
+                <span className="text-korev-gold font-bold text-lg">3</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-korev-gray-400 text-sm">Engagement prévu</span>
-                <span className="text-korev-blue font-semibold">~1.2K</span>
+                <span className="text-korev-gray-600 text-sm">Engagement prévu</span>
+                <span className="text-korev-blue font-bold text-lg">~1.2K</span>
               </div>
             </CardContent>
           </Card>

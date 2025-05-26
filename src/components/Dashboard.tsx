@@ -7,8 +7,8 @@ const Dashboard = () => {
   const stats = [
     { label: 'Posts cette semaine', value: '12', trend: '+8%', color: 'text-korev-blue' },
     { label: 'Engagement moyen', value: '4.8%', trend: '+0.3%', color: 'text-korev-gold' },
-    { label: 'Portée totale', value: '89.2K', trend: '+12%', color: 'text-emerald-400' },
-    { label: 'Clics générés', value: '2.1K', trend: '+5%', color: 'text-violet-400' }
+    { label: 'Portée totale', value: '89.2K', trend: '+12%', color: 'text-emerald-500' },
+    { label: 'Clics générés', value: '2.1K', trend: '+5%', color: 'text-violet-500' }
   ];
 
   const recentPosts = [
@@ -36,31 +36,37 @@ const Dashboard = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-white mb-2">
+          <h2 className="text-3xl font-bold text-korev-dark mb-2">
             Bonjour Franck 👋
           </h2>
-          <p className="text-korev-gray-400">
+          <p className="text-korev-gray-600">
             Voici un aperçu de vos performances cette semaine
           </p>
         </div>
-        <Button className="korev-gradient hover-glow">
+        <Button className="bg-gradient-blue text-white hover:shadow-lg hover:shadow-korev-blue/30 transition-all duration-300">
           ✨ Nouveau post avec Kora
         </Button>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <Card key={index} className="glass-effect border-white/20 hover:border-korev-blue/30 hover-glow bg-gradient-to-br from-slate-800/50 to-slate-900/50">
-            <CardContent className="p-6">
+          <Card key={index} className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden relative">
+            <div className="absolute inset-0 bg-digital-wave opacity-5 bg-[length:20px_20px]"></div>
+            <CardContent className="p-6 relative z-10">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-korev-gray-400 text-sm">{stat.label}</p>
-                  <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
+                  <p className="text-korev-gray-500 text-sm font-medium">{stat.label}</p>
+                  <p className="text-3xl font-bold text-korev-dark mt-2">{stat.value}</p>
                 </div>
-                <span className={`text-sm font-medium ${stat.color}`}>
-                  {stat.trend}
-                </span>
+                <div className="flex flex-col items-end">
+                  <div className="w-12 h-12 bg-gradient-to-br from-korev-azure to-korev-blue/20 rounded-xl flex items-center justify-center mb-2">
+                    <div className="w-6 h-6 bg-korev-blue rounded-md animate-wave"></div>
+                  </div>
+                  <span className={`text-sm font-semibold ${stat.color}`}>
+                    {stat.trend}
+                  </span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -70,70 +76,74 @@ const Dashboard = () => {
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Posts */}
-        <Card className="glass-effect border-white/20 bg-gradient-to-br from-slate-800/30 to-slate-900/30">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center space-x-2">
-              <span>📝</span>
+        <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardHeader className="border-b border-korev-azure">
+            <CardTitle className="text-korev-dark flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-blue rounded-xl flex items-center justify-center">
+                <span className="text-white text-lg">📝</span>
+              </div>
               <span>Publications récentes</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-6 space-y-4">
             {recentPosts.map((post, index) => (
-              <div key={index} className="p-4 rounded-lg bg-gradient-to-r from-slate-700/30 to-slate-800/30 border border-slate-600/30 hover:border-korev-blue/30 transition-all duration-200">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-korev-blue text-sm font-medium">
+              <div key={index} className="p-4 rounded-xl border border-korev-azure bg-gradient-azure hover:border-korev-blue/30 transition-all duration-300">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-korev-blue text-sm font-semibold px-3 py-1 bg-korev-blue/10 rounded-full">
                     {post.platform}
                   </span>
-                  <span className="text-korev-gray-400 text-xs">{post.time}</span>
+                  <span className="text-korev-gray-500 text-xs">{post.time}</span>
                 </div>
-                <p className="text-white text-sm mb-2">{post.content}</p>
-                <p className="text-korev-gray-400 text-xs">{post.engagement}</p>
+                <p className="text-korev-dark text-sm mb-3 font-medium">{post.content}</p>
+                <p className="text-korev-gray-500 text-xs">{post.engagement}</p>
               </div>
             ))}
           </CardContent>
         </Card>
 
         {/* AI Suggestions */}
-        <Card className="glass-effect border-white/20 bg-gradient-to-br from-slate-800/30 to-slate-900/30">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center space-x-2">
-              <span>🤖</span>
+        <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardHeader className="border-b border-korev-azure">
+            <CardTitle className="text-korev-dark flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-blue rounded-xl flex items-center justify-center">
+                <span className="text-white text-lg">🤖</span>
+              </div>
               <span>Suggestions de Kora</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 rounded-lg bg-gradient-to-r from-korev-blue/15 to-korev-blue/5 border border-korev-blue/30 hover:border-korev-blue/50 transition-all duration-200">
-              <h4 className="text-korev-blue font-medium text-sm mb-2">
+          <CardContent className="p-6 space-y-4">
+            <div className="p-4 rounded-xl border border-korev-blue/20 bg-korev-blue/5 hover:border-korev-blue/40 transition-all duration-300">
+              <h4 className="text-korev-blue font-semibold text-sm mb-2">
                 Moment optimal de publication
               </h4>
-              <p className="text-white text-sm mb-2">
+              <p className="text-korev-dark text-sm mb-3">
                 Publiez sur LinkedIn entre 9h-11h pour +23% d'engagement
               </p>
-              <Button size="sm" variant="ghost" className="text-korev-blue hover:bg-korev-blue/10">
+              <Button size="sm" className="bg-korev-blue/10 text-korev-blue hover:bg-korev-blue hover:text-white border-0">
                 Planifier maintenant
               </Button>
             </div>
 
-            <div className="p-4 rounded-lg bg-gradient-to-r from-korev-gold/15 to-korev-gold/5 border border-korev-gold/30 hover:border-korev-gold/50 transition-all duration-200">
-              <h4 className="text-korev-gold font-medium text-sm mb-2">
+            <div className="p-4 rounded-xl border border-korev-gold/20 bg-korev-gold/5 hover:border-korev-gold/40 transition-all duration-300">
+              <h4 className="text-korev-gold font-semibold text-sm mb-2">
                 Contenu tendance
               </h4>
-              <p className="text-white text-sm mb-2">
+              <p className="text-korev-dark text-sm mb-3">
                 Les sujets "IA et productivité" génèrent +40% d'engagement
               </p>
-              <Button size="sm" variant="ghost" className="text-korev-gold hover:bg-korev-gold/10">
+              <Button size="sm" className="bg-korev-gold/10 text-korev-gold hover:bg-korev-gold hover:text-white border-0">
                 Créer du contenu
               </Button>
             </div>
 
-            <div className="p-4 rounded-lg bg-gradient-to-r from-violet-500/15 to-violet-500/5 border border-violet-500/30 hover:border-violet-500/50 transition-all duration-200">
-              <h4 className="text-violet-400 font-medium text-sm mb-2">
+            <div className="p-4 rounded-xl border border-violet-500/20 bg-violet-500/5 hover:border-violet-500/40 transition-all duration-300">
+              <h4 className="text-violet-600 font-semibold text-sm mb-2">
                 Amélioration suggérée
               </h4>
-              <p className="text-white text-sm mb-2">
+              <p className="text-korev-dark text-sm mb-3">
                 Ajoutez plus de visuels pour +30% d'engagement Instagram
               </p>
-              <Button size="sm" variant="ghost" className="text-violet-400 hover:bg-violet-500/10">
+              <Button size="sm" className="bg-violet-500/10 text-violet-600 hover:bg-violet-500 hover:text-white border-0">
                 Générer des visuels
               </Button>
             </div>
@@ -142,26 +152,28 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <Card className="glass-effect border-white/20 bg-gradient-to-br from-slate-800/30 to-slate-900/30">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center space-x-2">
-            <span>⚡</span>
+      <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardHeader className="border-b border-korev-azure">
+          <CardTitle className="text-korev-dark flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-blue rounded-xl flex items-center justify-center">
+              <span className="text-white text-lg">⚡</span>
+            </div>
             <span>Actions rapides</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-korev-blue/40 hover:bg-korev-blue/10 bg-gradient-to-br from-korev-blue/5 to-transparent">
-              <span className="text-2xl">✨</span>
-              <span className="text-sm">Générer avec Kora</span>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Button className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-azure border border-korev-blue/20 hover:border-korev-blue hover:shadow-lg hover:shadow-korev-blue/20 text-korev-dark hover:text-korev-blue transition-all duration-300">
+              <span className="text-3xl">✨</span>
+              <span className="font-semibold">Générer avec Kora</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-korev-gold/40 hover:bg-korev-gold/10 bg-gradient-to-br from-korev-gold/5 to-transparent">
-              <span className="text-2xl">📅</span>
-              <span className="text-sm">Planifier la semaine</span>
+            <Button className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-azure border border-korev-gold/20 hover:border-korev-gold hover:shadow-lg hover:shadow-korev-gold/20 text-korev-dark hover:text-korev-gold transition-all duration-300">
+              <span className="text-3xl">📅</span>
+              <span className="font-semibold">Planifier la semaine</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-violet-500/40 hover:bg-violet-500/10 bg-gradient-to-br from-violet-500/5 to-transparent">
-              <span className="text-2xl">📊</span>
-              <span className="text-sm">Analyser les performances</span>
+            <Button className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-azure border border-violet-500/20 hover:border-violet-500 hover:shadow-lg hover:shadow-violet-500/20 text-korev-dark hover:text-violet-600 transition-all duration-300">
+              <span className="text-3xl">📊</span>
+              <span className="font-semibold">Analyser les performances</span>
             </Button>
           </div>
         </CardContent>

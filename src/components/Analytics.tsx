@@ -9,9 +9,9 @@ const Analytics = () => {
     {
       name: 'LinkedIn',
       icon: '💼',
-      color: 'border-blue-500',
-      bgColor: 'bg-blue-500/10',
-      textColor: 'text-blue-400',
+      color: 'border-korev-blue',
+      bgColor: 'bg-korev-blue/5',
+      textColor: 'text-korev-blue',
       stats: {
         posts: 12,
         reach: '45.2K',
@@ -24,8 +24,8 @@ const Analytics = () => {
       name: 'Instagram',
       icon: '📸',
       color: 'border-pink-500',
-      bgColor: 'bg-pink-500/10',
-      textColor: 'text-pink-400',
+      bgColor: 'bg-pink-500/5',
+      textColor: 'text-pink-500',
       stats: {
         posts: 8,
         reach: '28.7K',
@@ -38,8 +38,8 @@ const Analytics = () => {
       name: 'X (Twitter)',
       icon: '𝕏',
       color: 'border-gray-500',
-      bgColor: 'bg-gray-500/10',
-      textColor: 'text-gray-400',
+      bgColor: 'bg-gray-500/5',
+      textColor: 'text-gray-600',
       stats: {
         posts: 15,
         reach: '15.3K',
@@ -61,7 +61,7 @@ const Analytics = () => {
         clicks: 89
       },
       performance: 'Excellent',
-      color: 'text-green-400'
+      color: 'text-green-600'
     },
     {
       platform: 'Instagram',
@@ -73,7 +73,7 @@ const Analytics = () => {
         clicks: 34
       },
       performance: 'Bon',
-      color: 'text-blue-400'
+      color: 'text-korev-blue'
     },
     {
       platform: 'X (Twitter)',
@@ -85,7 +85,7 @@ const Analytics = () => {
         clicks: 45
       },
       performance: 'Moyen',
-      color: 'text-yellow-400'
+      color: 'text-yellow-500'
     }
   ];
 
@@ -117,73 +117,99 @@ const Analytics = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-white mb-2 flex items-center space-x-2">
-            <span>📈</span>
+          <h2 className="text-3xl font-bold text-korev-dark mb-2 flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gradient-blue rounded-xl flex items-center justify-center">
+              <span className="text-white text-xl">📈</span>
+            </div>
             <span>Analyse de performance</span>
           </h2>
-          <p className="text-korev-gray-400">
+          <p className="text-korev-gray-600">
             Suivez vos KPIs et optimisez votre stratégie avec les insights de Kora
           </p>
         </div>
         
-        <div className="flex items-center space-x-3">
-          <select className="bg-white/5 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+        <div className="flex items-center space-x-4">
+          <select className="bg-white border border-korev-azure rounded-xl px-4 py-3 text-korev-dark text-sm font-medium shadow-sm hover:shadow-md transition-all duration-300">
             <option value="7d">7 derniers jours</option>
             <option value="30d">30 derniers jours</option>
             <option value="90d">90 derniers jours</option>
           </select>
-          <Button variant="outline" className="border-white/20 text-white hover:bg-white/5">
+          <Button className="bg-white border border-korev-azure text-korev-dark hover:bg-korev-azure hover:border-korev-blue transition-all duration-300">
             📊 Rapport complet
           </Button>
         </div>
       </div>
 
       {/* Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="glass-effect border-white/10 hover-glow">
-          <CardContent className="p-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+          <div className="absolute inset-0 bg-digital-wave opacity-5 bg-[length:20px_20px]"></div>
+          <CardContent className="p-6 relative z-10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-korev-gray-400 text-sm">Portée totale</p>
-                <p className="text-2xl font-bold text-white mt-1">89.2K</p>
+                <p className="text-korev-gray-500 text-sm font-medium">Portée totale</p>
+                <p className="text-3xl font-bold text-korev-dark mt-2">89.2K</p>
               </div>
-              <span className="text-green-400 text-sm font-medium">+12%</span>
+              <div className="flex flex-col items-end">
+                <div className="w-12 h-12 bg-gradient-to-br from-korev-azure to-green-100 rounded-xl flex items-center justify-center mb-2">
+                  <div className="w-6 h-6 bg-green-500 rounded-md animate-wave"></div>
+                </div>
+                <span className="text-green-500 text-sm font-semibold">+12%</span>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="glass-effect border-white/10 hover-glow">
-          <CardContent className="p-6">
+        <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+          <div className="absolute inset-0 bg-digital-wave opacity-5 bg-[length:20px_20px]"></div>
+          <CardContent className="p-6 relative z-10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-korev-gray-400 text-sm">Engagement</p>
-                <p className="text-2xl font-bold text-white mt-1">4.8%</p>
+                <p className="text-korev-gray-500 text-sm font-medium">Engagement</p>
+                <p className="text-3xl font-bold text-korev-dark mt-2">4.8%</p>
               </div>
-              <span className="text-green-400 text-sm font-medium">+0.3%</span>
+              <div className="flex flex-col items-end">
+                <div className="w-12 h-12 bg-gradient-to-br from-korev-azure to-korev-blue/20 rounded-xl flex items-center justify-center mb-2">
+                  <div className="w-6 h-6 bg-korev-blue rounded-md animate-wave"></div>
+                </div>
+                <span className="text-korev-blue text-sm font-semibold">+0.3%</span>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="glass-effect border-white/10 hover-glow">
-          <CardContent className="p-6">
+        <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+          <div className="absolute inset-0 bg-digital-wave opacity-5 bg-[length:20px_20px]"></div>
+          <CardContent className="p-6 relative z-10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-korev-gray-400 text-sm">Clics total</p>
-                <p className="text-2xl font-bold text-white mt-1">1.6K</p>
+                <p className="text-korev-gray-500 text-sm font-medium">Clics total</p>
+                <p className="text-3xl font-bold text-korev-dark mt-2">1.6K</p>
               </div>
-              <span className="text-green-400 text-sm font-medium">+8%</span>
+              <div className="flex flex-col items-end">
+                <div className="w-12 h-12 bg-gradient-to-br from-korev-azure to-purple-100 rounded-xl flex items-center justify-center mb-2">
+                  <div className="w-6 h-6 bg-purple-500 rounded-md animate-wave"></div>
+                </div>
+                <span className="text-purple-500 text-sm font-semibold">+8%</span>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="glass-effect border-white/10 hover-glow">
-          <CardContent className="p-6">
+        <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+          <div className="absolute inset-0 bg-digital-wave opacity-5 bg-[length:20px_20px]"></div>
+          <CardContent className="p-6 relative z-10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-korev-gray-400 text-sm">CTR moyen</p>
-                <p className="text-2xl font-bold text-white mt-1">1.8%</p>
+                <p className="text-korev-gray-500 text-sm font-medium">CTR moyen</p>
+                <p className="text-3xl font-bold text-korev-dark mt-2">1.8%</p>
               </div>
-              <span className="text-yellow-400 text-sm font-medium">-0.1%</span>
+              <div className="flex flex-col items-end">
+                <div className="w-12 h-12 bg-gradient-to-br from-korev-azure to-yellow-100 rounded-xl flex items-center justify-center mb-2">
+                  <div className="w-6 h-6 bg-yellow-500 rounded-md animate-wave"></div>
+                </div>
+                <span className="text-yellow-500 text-sm font-semibold">-0.1%</span>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -191,38 +217,40 @@ const Analytics = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Performance par plateforme */}
-        <Card className="glass-effect border-white/10">
-          <CardHeader>
-            <CardTitle className="text-white">Performance par plateforme</CardTitle>
+        <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardHeader className="border-b border-korev-azure">
+            <CardTitle className="text-korev-dark">Performance par plateforme</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-6 space-y-4">
             {platformsData.map((platform) => (
-              <div key={platform.name} className={`p-4 rounded-lg border ${platform.color} ${platform.bgColor}`}>
-                <div className="flex items-center justify-between mb-3">
+              <div key={platform.name} className={`p-5 rounded-xl border ${platform.color} ${platform.bgColor} hover:shadow-md transition-all duration-300`}>
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <span className="text-xl">{platform.icon}</span>
+                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                      <span className="text-xl">{platform.icon}</span>
+                    </div>
                     <div>
-                      <h4 className="text-white font-medium">{platform.name}</h4>
-                      <p className="text-korev-gray-400 text-xs">{platform.stats.posts} posts</p>
+                      <h4 className="text-korev-dark font-semibold">{platform.name}</h4>
+                      <p className="text-korev-gray-500 text-sm">{platform.stats.posts} posts</p>
                     </div>
                   </div>
-                  <Badge className={`${platform.textColor} bg-transparent border-current`}>
+                  <Badge className={`${platform.textColor} bg-white border-current shadow-sm`}>
                     {platform.stats.trend}
                   </Badge>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <p className="text-white font-semibold">{platform.stats.reach}</p>
-                    <p className="text-korev-gray-400 text-xs">Portée</p>
+                  <div className="bg-white/50 rounded-lg p-3">
+                    <p className="text-korev-dark font-bold text-lg">{platform.stats.reach}</p>
+                    <p className="text-korev-gray-500 text-xs">Portée</p>
                   </div>
-                  <div>
-                    <p className="text-white font-semibold">{platform.stats.engagement}</p>
-                    <p className="text-korev-gray-400 text-xs">Engagement</p>
+                  <div className="bg-white/50 rounded-lg p-3">
+                    <p className="text-korev-dark font-bold text-lg">{platform.stats.engagement}</p>
+                    <p className="text-korev-gray-500 text-xs">Engagement</p>
                   </div>
-                  <div>
-                    <p className="text-white font-semibold">{platform.stats.clicks}</p>
-                    <p className="text-korev-gray-400 text-xs">Clics</p>
+                  <div className="bg-white/50 rounded-lg p-3">
+                    <p className="text-korev-dark font-bold text-lg">{platform.stats.clicks}</p>
+                    <p className="text-korev-gray-500 text-xs">Clics</p>
                   </div>
                 </div>
               </div>
@@ -231,45 +259,45 @@ const Analytics = () => {
         </Card>
 
         {/* Top posts */}
-        <Card className="glass-effect border-white/10">
-          <CardHeader>
-            <CardTitle className="text-white">Publications les plus performantes</CardTitle>
+        <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardHeader className="border-b border-korev-azure">
+            <CardTitle className="text-korev-dark">Publications les plus performantes</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-6 space-y-4">
             {topPosts.map((post, index) => (
-              <div key={index} className="p-4 rounded-lg bg-white/5 border border-white/10">
-                <div className="flex items-center justify-between mb-2">
+              <div key={index} className="p-5 rounded-xl bg-gradient-azure border border-korev-azure hover:border-korev-blue/30 hover:shadow-md transition-all duration-300">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm">
+                    <span className="text-lg">
                       {post.platform === 'LinkedIn' && '💼'}
                       {post.platform === 'Instagram' && '📸'}
                       {post.platform === 'X (Twitter)' && '𝕏'}
                     </span>
-                    <span className="text-white text-sm font-medium">{post.platform}</span>
+                    <span className="text-korev-dark font-semibold">{post.platform}</span>
                   </div>
-                  <Badge className={`${post.color} bg-transparent border-current`}>
+                  <Badge className={`${post.color} bg-white border-current shadow-sm`}>
                     {post.performance}
                   </Badge>
                 </div>
                 
-                <p className="text-white text-sm mb-3">{post.content}</p>
+                <p className="text-korev-dark font-medium mb-4">{post.content}</p>
                 
-                <div className="grid grid-cols-4 gap-2 text-center">
-                  <div>
-                    <p className="text-white text-sm font-semibold">{post.metrics.likes}</p>
-                    <p className="text-korev-gray-400 text-xs">Likes</p>
+                <div className="grid grid-cols-4 gap-3 text-center">
+                  <div className="bg-white/70 rounded-lg p-2">
+                    <p className="text-korev-dark font-bold">{post.metrics.likes}</p>
+                    <p className="text-korev-gray-500 text-xs">Likes</p>
                   </div>
-                  <div>
-                    <p className="text-white text-sm font-semibold">{post.metrics.comments}</p>
-                    <p className="text-korev-gray-400 text-xs">Com.</p>
+                  <div className="bg-white/70 rounded-lg p-2">
+                    <p className="text-korev-dark font-bold">{post.metrics.comments}</p>
+                    <p className="text-korev-gray-500 text-xs">Com.</p>
                   </div>
-                  <div>
-                    <p className="text-white text-sm font-semibold">{post.metrics.shares}</p>
-                    <p className="text-korev-gray-400 text-xs">Part.</p>
+                  <div className="bg-white/70 rounded-lg p-2">
+                    <p className="text-korev-dark font-bold">{post.metrics.shares}</p>
+                    <p className="text-korev-gray-500 text-xs">Part.</p>
                   </div>
-                  <div>
-                    <p className="text-white text-sm font-semibold">{post.metrics.clicks}</p>
-                    <p className="text-korev-gray-400 text-xs">Clics</p>
+                  <div className="bg-white/70 rounded-lg p-2">
+                    <p className="text-korev-dark font-bold">{post.metrics.clicks}</p>
+                    <p className="text-korev-gray-500 text-xs">Clics</p>
                   </div>
                 </div>
               </div>
@@ -279,24 +307,24 @@ const Analytics = () => {
       </div>
 
       {/* Insights Kora */}
-      <Card className="glass-effect border-korev-gold/20 bg-gradient-to-r from-korev-gold/5 to-korev-gold/10">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center space-x-2">
-            <div className="w-6 h-6 gold-gradient rounded-full flex items-center justify-center">
-              <span className="text-korev-dark font-bold text-xs">K</span>
+      <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardHeader className="border-b border-korev-azure">
+          <CardTitle className="text-korev-dark flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-blue rounded-xl flex items-center justify-center">
+              <span className="text-white font-bold">K</span>
             </div>
             <span>Insights IA de Kora</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {insights.map((insight, index) => (
-              <div key={index} className={`p-4 rounded-lg border ${insight.color}`}>
-                <h4 className="text-white font-medium text-sm mb-2">{insight.title}</h4>
-                <p className="text-korev-gray-300 text-sm mb-2">{insight.description}</p>
+              <div key={index} className={`p-5 rounded-xl border ${insight.color} hover:shadow-md transition-all duration-300`}>
+                <h4 className="text-korev-dark font-semibold mb-3">{insight.title}</h4>
+                <p className="text-korev-gray-600 text-sm mb-4">{insight.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-korev-gold text-xs font-medium">{insight.impact}</span>
-                  <Button size="sm" variant="ghost" className="text-korev-gold hover:bg-korev-gold/10 h-6 px-2 text-xs">
+                  <span className="text-korev-blue text-sm font-semibold bg-korev-blue/10 px-2 py-1 rounded-full">{insight.impact}</span>
+                  <Button size="sm" className="bg-korev-blue/10 text-korev-blue hover:bg-korev-blue hover:text-white border-0 text-xs px-3 py-1">
                     Appliquer
                   </Button>
                 </div>
@@ -306,19 +334,19 @@ const Analytics = () => {
         </CardContent>
       </Card>
 
-      {/* Graphique de performance (placeholder) */}
-      <Card className="glass-effect border-white/10">
-        <CardHeader>
-          <CardTitle className="text-white">Évolution de l'engagement</CardTitle>
+      {/* Graphique de performance */}
+      <Card className="bg-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardHeader className="border-b border-korev-azure">
+          <CardTitle className="text-korev-dark">Évolution de l'engagement</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="h-64 flex items-center justify-center border border-white/10 rounded-lg bg-white/5">
+        <CardContent className="p-6">
+          <div className="h-64 flex items-center justify-center border border-korev-azure rounded-xl bg-gradient-azure">
             <div className="text-center">
-              <div className="w-16 h-16 bg-korev-blue/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-korev-blue text-2xl">📊</span>
+              <div className="w-20 h-20 bg-korev-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-korev-blue text-3xl">📊</span>
               </div>
-              <p className="text-white font-medium mb-1">Graphique d'engagement</p>
-              <p className="text-korev-gray-400 text-sm">Intégration Recharts à venir</p>
+              <p className="text-korev-dark font-bold text-lg mb-2">Graphique d'engagement</p>
+              <p className="text-korev-gray-600">Intégration Recharts à venir</p>
             </div>
           </div>
         </CardContent>

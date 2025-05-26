@@ -6,44 +6,44 @@
 
 @layer base {
   :root {
-    --background: 10 10 11;
-    --foreground: 248 250 252;
+    --background: 248 250 252;
+    --foreground: 10 10 11;
 
-    --card: 15 23 42;
-    --card-foreground: 248 250 252;
+    --card: 255 255 255;
+    --card-foreground: 10 10 11;
 
-    --popover: 15 23 42;
-    --popover-foreground: 248 250 252;
+    --popover: 255 255 255;
+    --popover-foreground: 10 10 11;
 
-    --primary: 0 102 255;
-    --primary-foreground: 248 250 252;
+    --primary: 0 162 232;
+    --primary-foreground: 255 255 255;
 
-    --secondary: 30 41 59;
-    --secondary-foreground: 248 250 252;
+    --secondary: 230 247 255;
+    --secondary-foreground: 10 10 11;
 
-    --muted: 30 41 59;
-    --muted-foreground: 148 163 184;
+    --muted: 230 247 255;
+    --muted-foreground: 100 116 139;
 
-    --accent: 30 41 59;
-    --accent-foreground: 248 250 252;
+    --accent: 230 247 255;
+    --accent-foreground: 10 10 11;
 
     --destructive: 239 68 68;
-    --destructive-foreground: 248 250 252;
+    --destructive-foreground: 255 255 255;
 
-    --border: 30 41 59;
-    --input: 30 41 59;
-    --ring: 0 102 255;
+    --border: 226 232 240;
+    --input: 226 232 240;
+    --ring: 0 162 232;
 
     --radius: 0.75rem;
 
     --sidebar-background: 10 10 11;
     --sidebar-foreground: 203 213 225;
-    --sidebar-primary: 0 102 255;
-    --sidebar-primary-foreground: 248 250 252;
+    --sidebar-primary: 0 162 232;
+    --sidebar-primary-foreground: 255 255 255;
     --sidebar-accent: 30 41 59;
-    --sidebar-accent-foreground: 248 250 252;
+    --sidebar-accent-foreground: 255 255 255;
     --sidebar-border: 30 41 59;
-    --sidebar-ring: 0 102 255;
+    --sidebar-ring: 0 162 232;
   }
 }
 
@@ -53,15 +53,15 @@
   }
 
   body {
-    @apply bg-korev-dark text-foreground font-sans;
-    background: linear-gradient(135deg, #0a0a0b 0%, #1e293b 100%);
+    @apply bg-gradient-to-br from-korev-azure-light via-white to-korev-azure text-foreground font-sans;
+    background-attachment: fixed;
     min-height: 100vh;
   }
 }
 
 @layer components {
   .glass-effect {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+    @apply bg-white/90 backdrop-blur-xl border border-white/20 shadow-lg;
   }
   
   .korev-gradient {
@@ -73,6 +73,14 @@
   }
   
   .hover-glow {
-    @apply transition-all duration-300 hover:shadow-lg hover:shadow-korev-blue/20;
+    @apply transition-all duration-300 hover:shadow-xl hover:shadow-korev-blue/25;
+  }
+  
+  .gradient-blue {
+    @apply bg-gradient-to-r from-korev-blue to-korev-blue-light;
+  }
+  
+  .gradient-azure {
+    @apply bg-gradient-to-br from-korev-azure to-korev-azure-light;
   }
 }
