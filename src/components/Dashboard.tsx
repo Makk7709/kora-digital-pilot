@@ -7,8 +7,8 @@ const Dashboard = () => {
   const stats = [
     { label: 'Posts cette semaine', value: '12', trend: '+8%', color: 'text-korev-blue' },
     { label: 'Engagement moyen', value: '4.8%', trend: '+0.3%', color: 'text-korev-gold' },
-    { label: 'Portée totale', value: '89.2K', trend: '+12%', color: 'text-green-400' },
-    { label: 'Clics générés', value: '2.1K', trend: '+5%', color: 'text-purple-400' }
+    { label: 'Portée totale', value: '89.2K', trend: '+12%', color: 'text-emerald-400' },
+    { label: 'Clics générés', value: '2.1K', trend: '+5%', color: 'text-violet-400' }
   ];
 
   const recentPosts = [
@@ -51,7 +51,7 @@ const Dashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
-          <Card key={index} className="glass-effect border-white/10 hover-glow">
+          <Card key={index} className="glass-effect border-white/20 hover:border-korev-blue/30 hover-glow bg-gradient-to-br from-slate-800/50 to-slate-900/50">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -70,7 +70,7 @@ const Dashboard = () => {
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Posts */}
-        <Card className="glass-effect border-white/10">
+        <Card className="glass-effect border-white/20 bg-gradient-to-br from-slate-800/30 to-slate-900/30">
           <CardHeader>
             <CardTitle className="text-white flex items-center space-x-2">
               <span>📝</span>
@@ -79,7 +79,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             {recentPosts.map((post, index) => (
-              <div key={index} className="p-4 rounded-lg bg-white/5 border border-white/10">
+              <div key={index} className="p-4 rounded-lg bg-gradient-to-r from-slate-700/30 to-slate-800/30 border border-slate-600/30 hover:border-korev-blue/30 transition-all duration-200">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-korev-blue text-sm font-medium">
                     {post.platform}
@@ -94,7 +94,7 @@ const Dashboard = () => {
         </Card>
 
         {/* AI Suggestions */}
-        <Card className="glass-effect border-white/10">
+        <Card className="glass-effect border-white/20 bg-gradient-to-br from-slate-800/30 to-slate-900/30">
           <CardHeader>
             <CardTitle className="text-white flex items-center space-x-2">
               <span>🤖</span>
@@ -102,7 +102,7 @@ const Dashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-4 rounded-lg bg-gradient-to-r from-korev-blue/10 to-korev-blue/5 border border-korev-blue/20">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-korev-blue/15 to-korev-blue/5 border border-korev-blue/30 hover:border-korev-blue/50 transition-all duration-200">
               <h4 className="text-korev-blue font-medium text-sm mb-2">
                 Moment optimal de publication
               </h4>
@@ -114,7 +114,7 @@ const Dashboard = () => {
               </Button>
             </div>
 
-            <div className="p-4 rounded-lg bg-gradient-to-r from-korev-gold/10 to-korev-gold/5 border border-korev-gold/20">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-korev-gold/15 to-korev-gold/5 border border-korev-gold/30 hover:border-korev-gold/50 transition-all duration-200">
               <h4 className="text-korev-gold font-medium text-sm mb-2">
                 Contenu tendance
               </h4>
@@ -126,14 +126,14 @@ const Dashboard = () => {
               </Button>
             </div>
 
-            <div className="p-4 rounded-lg bg-gradient-to-r from-purple-500/10 to-purple-500/5 border border-purple-500/20">
-              <h4 className="text-purple-400 font-medium text-sm mb-2">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-violet-500/15 to-violet-500/5 border border-violet-500/30 hover:border-violet-500/50 transition-all duration-200">
+              <h4 className="text-violet-400 font-medium text-sm mb-2">
                 Amélioration suggérée
               </h4>
               <p className="text-white text-sm mb-2">
                 Ajoutez plus de visuels pour +30% d'engagement Instagram
               </p>
-              <Button size="sm" variant="ghost" className="text-purple-400 hover:bg-purple-500/10">
+              <Button size="sm" variant="ghost" className="text-violet-400 hover:bg-violet-500/10">
                 Générer des visuels
               </Button>
             </div>
@@ -142,7 +142,7 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <Card className="glass-effect border-white/10">
+      <Card className="glass-effect border-white/20 bg-gradient-to-br from-slate-800/30 to-slate-900/30">
         <CardHeader>
           <CardTitle className="text-white flex items-center space-x-2">
             <span>⚡</span>
@@ -151,15 +151,15 @@ const Dashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-korev-blue/30 hover:bg-korev-blue/10">
+            <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-korev-blue/40 hover:bg-korev-blue/10 bg-gradient-to-br from-korev-blue/5 to-transparent">
               <span className="text-2xl">✨</span>
               <span className="text-sm">Générer avec Kora</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-korev-gold/30 hover:bg-korev-gold/10">
+            <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-korev-gold/40 hover:bg-korev-gold/10 bg-gradient-to-br from-korev-gold/5 to-transparent">
               <span className="text-2xl">📅</span>
               <span className="text-sm">Planifier la semaine</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-purple-500/30 hover:bg-purple-500/10">
+            <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-violet-500/40 hover:bg-violet-500/10 bg-gradient-to-br from-violet-500/5 to-transparent">
               <span className="text-2xl">📊</span>
               <span className="text-sm">Analyser les performances</span>
             </Button>
