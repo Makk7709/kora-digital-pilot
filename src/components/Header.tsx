@@ -2,12 +2,18 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
+  const navigate = useNavigate();
+
   return (
     <header className="flex items-center justify-between p-6 glass-effect border-b border-white/10">
       <div className="flex items-center space-x-6">
-        <div className="flex items-center space-x-3">
+        <button 
+          onClick={() => navigate('/')}
+          className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+        >
           <div className="w-8 h-8 korev-gradient rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">K</span>
           </div>
@@ -15,7 +21,7 @@ const Header = () => {
             <h1 className="text-xl font-semibold text-white">Korev AI</h1>
             <p className="text-xs text-korev-gray-400">Social Intelligence</p>
           </div>
-        </div>
+        </button>
       </div>
       
       <div className="flex items-center space-x-4">
