@@ -87,11 +87,11 @@ const Library = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'published': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'draft': return 'bg-korev-gold/20 text-korev-gold border-korev-gold/30';
-      case 'scheduled': return 'bg-korev-blue/20 text-korev-blue border-korev-blue/30';
-      case 'template': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'published': return 'bg-green-500/20 text-green-600 border-green-500/30';
+      case 'draft': return 'bg-blue-500/20 text-blue-600 border-blue-500/30';
+      case 'scheduled': return 'bg-sky-500/20 text-sky-600 border-sky-500/30';
+      case 'template': return 'bg-purple-500/20 text-purple-600 border-purple-500/30';
+      default: return 'bg-gray-500/20 text-gray-600 border-gray-500/30';
     }
   };
 
@@ -123,23 +123,23 @@ const Library = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-white mb-2 flex items-center space-x-2">
+          <h2 className="text-2xl font-semibold text-slate-800 mb-2 flex items-center space-x-2">
             <span>📚</span>
             <span>Bibliothèque de contenu</span>
           </h2>
-          <p className="text-korev-gray-400">
+          <p className="text-slate-600">
             Retrouvez et réutilisez tous vos contenus sauvegardés
           </p>
         </div>
         
         <div className="flex items-center space-x-3">
-          <div className="flex border border-white/20 rounded-lg overflow-hidden">
+          <div className="flex border border-slate-200 rounded-lg overflow-hidden">
             <button
               onClick={() => setViewMode('grid')}
               className={`px-3 py-2 text-sm transition-colors ${
                 viewMode === 'grid' 
-                  ? 'bg-korev-blue text-white' 
-                  : 'text-korev-gray-400 hover:text-white'
+                  ? 'bg-blue-500 text-white' 
+                  : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
               🔲 Grille
@@ -148,15 +148,15 @@ const Library = () => {
               onClick={() => setViewMode('list')}
               className={`px-3 py-2 text-sm transition-colors ${
                 viewMode === 'list' 
-                  ? 'bg-korev-blue text-white' 
-                  : 'text-korev-gray-400 hover:text-white'
+                  ? 'bg-blue-500 text-white' 
+                  : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
               📋 Liste
             </button>
           </div>
           
-          <Button className="korev-gradient hover-glow">
+          <Button className="bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 text-white shadow-lg hover:shadow-xl transition-all duration-300">
             + Nouveau contenu
           </Button>
         </div>
@@ -166,24 +166,24 @@ const Library = () => {
         {/* Sidebar avec filtres */}
         <div className="space-y-4">
           {/* Recherche */}
-          <Card className="glass-effect border-white/10">
+          <Card className="premium-card">
             <CardHeader>
-              <CardTitle className="text-white text-lg">Rechercher</CardTitle>
+              <CardTitle className="text-slate-800 text-lg">Rechercher</CardTitle>
             </CardHeader>
             <CardContent>
               <Input
                 placeholder="Rechercher dans la bibliothèque..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white/5 border-white/20 text-white placeholder:text-korev-gray-400"
+                className="bg-white border-slate-200 text-slate-700 placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
             </CardContent>
           </Card>
 
           {/* Catégories */}
-          <Card className="glass-effect border-white/10">
+          <Card className="premium-card">
             <CardHeader>
-              <CardTitle className="text-white text-lg">Catégories</CardTitle>
+              <CardTitle className="text-slate-800 text-lg">Catégories</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {categories.map((category) => (
@@ -192,8 +192,8 @@ const Library = () => {
                   onClick={() => setSelectedCategory(category.id)}
                   className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
                     selectedCategory === category.id
-                      ? 'border-korev-blue bg-korev-blue/10 text-korev-blue'
-                      : 'border-white/20 text-korev-gray-300 hover:border-white/30 hover:text-white'
+                      ? 'border-blue-500 bg-blue-50/50 text-blue-600'
+                      : 'border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50/30'
                   }`}
                 >
                   <span className="text-sm">{category.name}</span>
@@ -206,26 +206,26 @@ const Library = () => {
           </Card>
 
           {/* Stats rapides */}
-          <Card className="glass-effect border-white/10">
+          <Card className="premium-card">
             <CardHeader>
-              <CardTitle className="text-white text-lg">Statistiques</CardTitle>
+              <CardTitle className="text-slate-800 text-lg">Statistiques</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-korev-gray-400 text-sm">Total contenus</span>
-                <span className="text-white font-semibold">24</span>
+                <span className="text-slate-500 text-sm">Total contenus</span>
+                <span className="text-slate-800 font-semibold">24</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-korev-gray-400 text-sm">Publiés</span>
-                <span className="text-green-400 font-semibold">18</span>
+                <span className="text-slate-500 text-sm">Publiés</span>
+                <span className="text-green-600 font-semibold">18</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-korev-gray-400 text-sm">Brouillons</span>
-                <span className="text-korev-gold font-semibold">4</span>
+                <span className="text-slate-500 text-sm">Brouillons</span>
+                <span className="text-blue-600 font-semibold">4</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-korev-gray-400 text-sm">Templates</span>
-                <span className="text-purple-400 font-semibold">2</span>
+                <span className="text-slate-500 text-sm">Templates</span>
+                <span className="text-purple-600 font-semibold">2</span>
               </div>
             </CardContent>
           </Card>
@@ -236,7 +236,7 @@ const Library = () => {
           {viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredContent.map((item) => (
-                <Card key={item.id} className="glass-effect border-white/10 hover-glow cursor-pointer">
+                <Card key={item.id} className="premium-card hover:shadow-lg transition-all duration-300 cursor-pointer">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
@@ -247,40 +247,40 @@ const Library = () => {
                         {getStatusText(item.status)}
                       </Badge>
                     </div>
-                    <CardTitle className="text-white text-sm">{item.title}</CardTitle>
+                    <CardTitle className="text-slate-800 text-sm">{item.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <p className="text-korev-gray-300 text-sm line-clamp-2">
+                    <p className="text-slate-600 text-sm line-clamp-2">
                       {item.content}
                     </p>
                     
                     <div className="flex flex-wrap gap-1">
                       {item.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="border-korev-gray-400/30 text-korev-gray-400 text-xs">
+                        <Badge key={tag} variant="outline" className="border-slate-300 text-slate-500 text-xs">
                           #{tag}
                         </Badge>
                       ))}
                     </div>
                     
                     {item.performance && (
-                      <div className="flex items-center space-x-4 text-xs text-korev-gray-400">
+                      <div className="flex items-center space-x-4 text-xs text-slate-500">
                         <span>👍 {item.performance.likes}</span>
                         <span>🔄 {item.performance.shares}</span>
                       </div>
                     )}
                     
                     <div className="flex items-center justify-between">
-                      <span className="text-korev-gray-400 text-xs">
+                      <span className="text-slate-400 text-xs">
                         {new Date(item.createdAt).toLocaleDateString('fr-FR')}
                       </span>
                       <div className="flex space-x-1">
-                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-korev-blue hover:bg-korev-blue/10">
+                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-blue-600 hover:bg-blue-50">
                           ✏️
                         </Button>
-                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-korev-gray-400 hover:bg-white/5">
+                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-slate-500 hover:bg-slate-50">
                           📋
                         </Button>
-                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-korev-gold hover:bg-korev-gold/10">
+                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-blue-600 hover:bg-blue-50">
                           🔄
                         </Button>
                       </div>
@@ -290,11 +290,11 @@ const Library = () => {
               ))}
             </div>
           ) : (
-            <Card className="glass-effect border-white/10">
+            <Card className="premium-card">
               <CardContent className="p-0">
                 <div className="space-y-0">
                   {filteredContent.map((item, index) => (
-                    <div key={item.id} className={`p-4 border-white/10 hover:bg-white/5 cursor-pointer transition-colors ${
+                    <div key={item.id} className={`p-4 border-slate-200 hover:bg-slate-50 cursor-pointer transition-colors ${
                       index !== filteredContent.length - 1 ? 'border-b' : ''
                     }`}>
                       <div className="flex items-center justify-between">
@@ -305,20 +305,20 @@ const Library = () => {
                           </div>
                           
                           <div className="flex-1">
-                            <h4 className="text-white font-medium text-sm">{item.title}</h4>
-                            <p className="text-korev-gray-400 text-xs mt-1">{item.content.substring(0, 100)}...</p>
+                            <h4 className="text-slate-800 font-medium text-sm">{item.title}</h4>
+                            <p className="text-slate-500 text-xs mt-1">{item.content.substring(0, 100)}...</p>
                           </div>
                           
                           <div className="flex flex-wrap gap-1">
                             {item.tags.slice(0, 2).map((tag) => (
-                              <Badge key={tag} variant="outline" className="border-korev-gray-400/30 text-korev-gray-400 text-xs">
+                              <Badge key={tag} variant="outline" className="border-slate-300 text-slate-500 text-xs">
                                 #{tag}
                               </Badge>
                             ))}
                           </div>
                           
                           {item.performance && (
-                            <div className="flex items-center space-x-3 text-xs text-korev-gray-400">
+                            <div className="flex items-center space-x-3 text-xs text-slate-500">
                               <span>👍 {item.performance.likes}</span>
                               <span>🔄 {item.performance.shares}</span>
                             </div>
@@ -328,19 +328,19 @@ const Library = () => {
                             {getStatusText(item.status)}
                           </Badge>
                           
-                          <span className="text-korev-gray-400 text-xs">
+                          <span className="text-slate-400 text-xs">
                             {new Date(item.createdAt).toLocaleDateString('fr-FR')}
                           </span>
                         </div>
                         
                         <div className="flex space-x-1 ml-4">
-                          <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-korev-blue hover:bg-korev-blue/10">
+                          <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-blue-600 hover:bg-blue-50">
                             ✏️ Éditer
                           </Button>
-                          <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-korev-gray-400 hover:bg-white/5">
+                          <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-slate-500 hover:bg-slate-50">
                             📋 Copier
                           </Button>
-                          <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-korev-gold hover:bg-korev-gold/10">
+                          <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-blue-600 hover:bg-blue-50">
                             🔄 Réutiliser
                           </Button>
                         </div>
@@ -353,17 +353,17 @@ const Library = () => {
           )}
           
           {filteredContent.length === 0 && (
-            <Card className="glass-effect border-white/10">
+            <Card className="premium-card">
               <CardContent className="py-12">
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-korev-gray-400/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-korev-gray-400 text-2xl">📭</span>
+                  <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-slate-400 text-2xl">📭</span>
                   </div>
-                  <h3 className="text-white font-medium mb-2">Aucun contenu trouvé</h3>
-                  <p className="text-korev-gray-400 text-sm mb-4">
+                  <h3 className="text-slate-800 font-medium mb-2">Aucun contenu trouvé</h3>
+                  <p className="text-slate-500 text-sm mb-4">
                     Essayez de modifier vos critères de recherche
                   </p>
-                  <Button className="korev-gradient">
+                  <Button className="bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 text-white">
                     ✨ Créer du nouveau contenu
                   </Button>
                 </div>
