@@ -8,35 +8,35 @@ const Header = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="flex items-center justify-between p-6 glass-effect border-b border-white/10">
+    <header className="flex items-center justify-between p-6 bg-white/95 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
       <div className="flex items-center space-x-6">
         <button 
           onClick={() => navigate('/')}
           className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
         >
-          <div className="w-8 h-8 korev-gradient rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">K</span>
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-white">Korev AI</h1>
-            <p className="text-xs text-korev-gray-400">Social Intelligence</p>
+            <h1 className="text-xl font-semibold text-slate-900">Korev AI</h1>
+            <p className="text-xs text-slate-500">Social Intelligence</p>
           </div>
         </button>
       </div>
       
       <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-korev-blue/10 border border-korev-blue/20">
-          <div className="w-2 h-2 bg-korev-blue rounded-full animate-pulse"></div>
-          <span className="text-korev-blue text-sm font-medium">Kora en ligne</span>
+        <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200">
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+          <span className="text-blue-600 text-sm font-medium">Kora en ligne</span>
         </div>
         
-        <Button variant="ghost" size="sm" className="text-korev-gray-300 hover:text-white">
+        <Button variant="ghost" size="sm" className="text-slate-600 hover:text-slate-900">
           Paramètres
         </Button>
         
         <Avatar className="w-8 h-8">
           <AvatarImage src="" alt="Franck" />
-          <AvatarFallback className="bg-korev-gold text-korev-dark text-sm font-semibold">
+          <AvatarFallback className="bg-blue-500 text-white text-sm font-semibold">
             F
           </AvatarFallback>
         </Avatar>

@@ -45,15 +45,15 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
 
   return (
     <aside className={cn(
-      "h-full glass-effect border-r border-white/10 transition-all duration-300",
+      "h-full bg-white/95 backdrop-blur-xl border-r border-slate-200/50 shadow-lg transition-all duration-300",
       isCollapsed ? "w-16" : "w-64"
     )}>
       <div className="p-4">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-white/5 transition-colors"
+          className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-slate-100 transition-colors"
         >
-          <span className="text-korev-gray-400">
+          <span className="text-slate-600">
             {isCollapsed ? '→' : '←'}
           </span>
         </button>
@@ -67,8 +67,8 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
             className={cn(
               "w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 group",
               activeSection === item.id
-                ? "korev-gradient text-white shadow-lg shadow-korev-blue/20"
-                : "text-korev-gray-300 hover:bg-white/5 hover:text-white"
+                ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             )}
           >
             <span className="text-lg">{item.icon}</span>
@@ -84,14 +84,14 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
 
       {!isCollapsed && (
         <div className="absolute bottom-6 left-3 right-3">
-          <div className="p-4 rounded-xl bg-gradient-to-r from-korev-gold/10 to-korev-gold/5 border border-korev-gold/20">
+          <div className="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100/50 border border-blue-200">
             <div className="flex items-center space-x-2 mb-2">
-              <div className="w-6 h-6 gold-gradient rounded-full flex items-center justify-center">
-                <span className="text-xs font-bold text-korev-dark">K</span>
+              <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-xs font-bold text-white">K</span>
               </div>
-              <span className="text-korev-gold font-medium text-sm">Kora</span>
+              <span className="text-blue-600 font-medium text-sm">Kora</span>
             </div>
-            <p className="text-xs text-korev-gray-400 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed">
               Votre assistante IA pour une communication digitale d'excellence
             </p>
           </div>

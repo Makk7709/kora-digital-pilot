@@ -53,16 +53,14 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				// Korev AI Brand Colors - OM Inspired
+				// Korev AI Brand Colors - Premium Azur
 				korev: {
-					dark: '#0a0a0b',
-					blue: '#00A2E8',
-					'blue-light': '#33B5EA',
-					'blue-dark': '#0088CC',
-					azure: '#E6F7FF',
-					'azure-light': '#F0FAFF',
-					gold: '#FFD700',
-					'gold-light': '#FFED4A',
+					dark: '#0f172a',
+					blue: '#0ea5e9',
+					'blue-light': '#38bdf8',
+					'blue-dark': '#0284c7',
+					azure: '#f0f9ff',
+					'azure-light': '#f8fafc',
 					gray: {
 						50: '#f8fafc',
 						100: '#f1f5f9',
@@ -122,8 +120,8 @@ export default {
 					'100%': { transform: 'translateX(0)', opacity: '1' }
 				},
 				'glow': {
-					'0%, 100%': { boxShadow: '0 0 20px rgba(0, 162, 232, 0.3)' },
-					'50%': { boxShadow: '0 0 30px rgba(0, 162, 232, 0.6)' }
+					'0%, 100%': { boxShadow: '0 0 20px rgba(14, 165, 233, 0.3)' },
+					'50%': { boxShadow: '0 0 30px rgba(14, 165, 233, 0.6)' }
 				},
 				'wave': {
 					'0%, 100%': { transform: 'translateY(0)' },
@@ -139,10 +137,10 @@ export default {
 				'wave': 'wave 3s ease-in-out infinite'
 			},
 			backgroundImage: {
-				'gradient-korev': 'linear-gradient(135deg, #0a0a0b 0%, #1e293b 100%)',
-				'gradient-blue': 'linear-gradient(135deg, #00A2E8 0%, #33B5EA 100%)',
-				'gradient-azure': 'linear-gradient(135deg, #E6F7FF 0%, #F0FAFF 100%)',
-				'digital-wave': 'linear-gradient(45deg, #00A2E8 25%, transparent 25%), linear-gradient(-45deg, #00A2E8 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #00A2E8 75%), linear-gradient(-45deg, transparent 75%, #00A2E8 75%)'
+				'gradient-korev': 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+				'gradient-blue': 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
+				'gradient-azure': 'linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%)',
+				'digital-wave': 'linear-gradient(45deg, #0ea5e9 25%, transparent 25%), linear-gradient(-45deg, #0ea5e9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #0ea5e9 75%), linear-gradient(-45deg, transparent 75%, #0ea5e9 75%)'
 			}
 		}
 	},
