@@ -97,4 +97,24 @@
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
   }
+
+  .animate-wave {
+    animation: wave 8s ease-in-out infinite;
+    transform-origin: center;
+  }
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+  }
+  25% {
+    transform: translateY(-10px) scaleY(1.05);
+  }
+  50% {
+    transform: translateY(5px) scaleY(0.95);
+  }
+  75% {
+    transform: translateY(-5px) scaleY(1.02);
+  }
 }
