@@ -30,7 +30,12 @@ const Header = () => {
           <span className="text-blue-600 text-sm font-medium">Kora en ligne</span>
         </div>
         
-        <Button variant="ghost" size="sm" className="text-slate-600 hover:text-slate-900">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-slate-600 hover:text-slate-900"
+          onClick={() => navigate('/settings')}
+        >
           Paramètres
         </Button>
         
