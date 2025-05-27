@@ -1,45 +1,26 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import DigitalWave from '@/components/DigitalWave';
 
 const Landing = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Animated Azure Wave */}
-      <div className="absolute right-0 top-0 h-full w-1/3 opacity-10">
-        <svg 
-          className="h-full w-full" 
-          viewBox="0 0 400 800" 
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M400,0 Q300,100 400,200 T400,400 Q300,500 400,600 T400,800 L400,0 Z"
-            fill="url(#waveGradient)"
-            className="animate-wave"
-          />
-          <defs>
-            <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#0ea5e9" />
-              <stop offset="50%" stopColor="#38bdf8" />
-              <stop offset="100%" stopColor="#0284c7" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
+      {/* Nouvelle animation de vague numérique qui traverse l'écran */}
+      <DigitalWave />
 
       {/* Header */}
       <header className="relative z-10 flex items-center justify-between p-8">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-gradient-to-r from-sky-500 to-sky-600 rounded-xl flex items-center justify-center shadow-lg">
+        <div className="flex items-start space-x-4">
+          <div className="w-12 h-12 bg-gradient-to-r from-sky-500 to-sky-600 rounded-xl flex items-center justify-center shadow-lg mt-1">
             <span className="text-white font-bold text-xl">K</span>
           </div>
-          <div>
+          <div className="py-1">
             <h1 className="text-2xl font-bold text-slate-900">Korev AI</h1>
-            <p className="text-sm text-slate-600">Intelligence Sociale Digitale</p>
+            <p className="text-xs text-slate-500 leading-normal py-0.5">powered by P.R.I.S.M</p>
           </div>
         </div>
         
@@ -60,7 +41,7 @@ const Landing = () => {
             <span className="text-sky-700 text-sm font-medium">Plateforme interne Korev AI</span>
           </div>
           
-          <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-8 leading-tight">
+          <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-8 leading-normal">
             Votre hub de
             <span className="block bg-gradient-to-r from-sky-500 to-sky-700 bg-clip-text text-transparent">
               communication digitale

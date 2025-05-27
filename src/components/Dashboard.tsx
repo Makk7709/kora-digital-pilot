@@ -1,9 +1,13 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import LinkedInDashboardWidget from '@/components/LinkedInDashboardWidget';
 
-const Dashboard = () => {
+interface DashboardProps {
+  onSectionChange?: (section: string) => void;
+}
+
+const Dashboard = ({ onSectionChange }: DashboardProps) => {
   const stats = [
     { label: 'Posts cette semaine', value: '12', trend: '+8%', color: 'text-blue-600' },
     { label: 'Engagement moyen', value: '4.8%', trend: '+0.3%', color: 'text-emerald-600' },
@@ -32,6 +36,25 @@ const Dashboard = () => {
     }
   ];
 
+  // Fonctions de navigation
+  const handleGenerateWithKora = () => {
+    if (onSectionChange) {
+      onSectionChange('inspiration');
+    }
+  };
+
+  const handlePlanWeek = () => {
+    if (onSectionChange) {
+      onSectionChange('planning');
+    }
+  };
+
+  const handleAnalyzePerformance = () => {
+    if (onSectionChange) {
+      onSectionChange('analytics');
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -43,7 +66,10 @@ const Dashboard = () => {
             Voici un aperçu de vos performances cette semaine
           </p>
         </div>
-        <Button className="bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300">
+        <Button 
+          onClick={handleGenerateWithKora}
+          className="bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300"
+        >
           ✨ Nouveau post avec Kora
         </Button>
       </div>
@@ -74,7 +100,7 @@ const Dashboard = () => {
       </div>
 
       {/* Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Posts */}
         <Card className="premium-card">
           <CardHeader className="border-b border-slate-100">
@@ -101,6 +127,9 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
+        {/* LinkedIn Analytics Widget */}
+        <LinkedInDashboardWidget />
+
         {/* AI Suggestions */}
         <Card className="premium-card">
           <CardHeader className="border-b border-slate-100">
@@ -119,7 +148,11 @@ const Dashboard = () => {
               <p className="text-slate-900 text-sm mb-3">
                 Publiez sur LinkedIn entre 9h-11h pour +23% d'engagement
               </p>
-              <Button size="sm" className="bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white border-0">
+              <Button 
+                size="sm" 
+                onClick={handlePlanWeek}
+                className="bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white border-0"
+              >
                 Planifier maintenant
               </Button>
             </div>
@@ -131,7 +164,11 @@ const Dashboard = () => {
               <p className="text-slate-900 text-sm mb-3">
                 Les sujets "IA et productivité" génèrent +40% d'engagement
               </p>
-              <Button size="sm" className="bg-emerald-100 text-emerald-600 hover:bg-emerald-600 hover:text-white border-0">
+              <Button 
+                size="sm" 
+                onClick={handleGenerateWithKora}
+                className="bg-emerald-100 text-emerald-600 hover:bg-emerald-600 hover:text-white border-0"
+              >
                 Créer du contenu
               </Button>
             </div>
@@ -143,7 +180,11 @@ const Dashboard = () => {
               <p className="text-slate-900 text-sm mb-3">
                 Ajoutez plus de visuels pour +30% d'engagement Instagram
               </p>
-              <Button size="sm" className="bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white border-0">
+              <Button 
+                size="sm" 
+                onClick={handleGenerateWithKora}
+                className="bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white border-0"
+              >
                 Générer des visuels
               </Button>
             </div>
@@ -163,15 +204,24 @@ const Dashboard = () => {
         </CardHeader>
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Button className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-blue-50 to-white border border-blue-200 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/20 text-slate-900 hover:text-blue-600 transition-all duration-300">
+            <Button 
+              onClick={handleGenerateWithKora}
+              className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-blue-50 to-white border border-blue-200 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/20 text-slate-900 hover:text-blue-600 transition-all duration-300"
+            >
               <span className="text-3xl">✨</span>
               <span className="font-semibold">Générer avec Kora</span>
             </Button>
-            <Button className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-emerald-50 to-white border border-emerald-200 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-500/20 text-slate-900 hover:text-emerald-600 transition-all duration-300">
+            <Button 
+              onClick={handlePlanWeek}
+              className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-emerald-50 to-white border border-emerald-200 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-500/20 text-slate-900 hover:text-emerald-600 transition-all duration-300"
+            >
               <span className="text-3xl">📅</span>
               <span className="font-semibold">Planifier la semaine</span>
             </Button>
-            <Button className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-purple-50 to-white border border-purple-200 hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/20 text-slate-900 hover:text-purple-600 transition-all duration-300">
+            <Button 
+              onClick={handleAnalyzePerformance}
+              className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-purple-50 to-white border border-purple-200 hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/20 text-slate-900 hover:text-purple-600 transition-all duration-300"
+            >
               <span className="text-3xl">📊</span>
               <span className="font-semibold">Analyser les performances</span>
             </Button>

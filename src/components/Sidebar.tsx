@@ -1,6 +1,7 @@
-
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
+import LinkedInDashboardWidget from '@/components/LinkedInDashboardWidget';
 
 interface SidebarProps {
   activeSection: string;
@@ -9,6 +10,7 @@ interface SidebarProps {
 
 const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   const menuItems = [
     {
@@ -22,6 +24,12 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
       icon: '✨',
       label: 'Inspiration IA',
       description: 'Générer du contenu'
+    },
+    {
+      id: 'images',
+      icon: '🎨',
+      label: 'Générateur d\'Images',
+      description: 'Créer avec DALL-E 3'
     },
     {
       id: 'planning',
@@ -42,6 +50,10 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
       description: 'Contenu sauvegardé'
     }
   ];
+
+  const handleLinkedInTest = () => {
+    navigate('/linkedin-test');
+  };
 
   return (
     <aside className={cn(
@@ -80,7 +92,29 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
             )}
           </button>
         ))}
+        
+        {/* LinkedIn Test Link */}
+        <div className="border-t border-slate-200 pt-2 mt-4">
+          <button
+            onClick={handleLinkedInTest}
+            className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 group text-slate-600 hover:bg-blue-50 hover:text-blue-600"
+          >
+            <span className="text-lg">🔗</span>
+            {!isCollapsed && (
+              <div className="flex-1 text-left">
+                <p className="font-medium text-sm">Test LinkedIn</p>
+                <p className="text-xs opacity-60">Intégration avancée</p>
+              </div>
+            )}
+          </button>
+        </div>
       </nav>
+
+      {!isCollapsed && (
+        <div className="px-3 mt-4">
+          <LinkedInDashboardWidget compact={true} />
+        </div>
+      )}
 
       {!isCollapsed && (
         <div className="absolute bottom-6 left-3 right-3">

@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Dashboard from '../components/Dashboard';
 import InspirationAI from '../components/InspirationAI';
+import ImageGenerator from '../components/ImageGenerator';
 import Planning from '../components/Planning';
 import Analytics from '../components/Analytics';
 import Library from '../components/Library';
@@ -14,9 +14,11 @@ const Index = () => {
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onSectionChange={setActiveSection} />;
       case 'inspiration':
         return <InspirationAI />;
+      case 'images':
+        return <ImageGenerator />;
       case 'planning':
         return <Planning />;
       case 'analytics':
@@ -24,7 +26,7 @@ const Index = () => {
       case 'library':
         return <Library />;
       default:
-        return <Dashboard />;
+        return <Dashboard onSectionChange={setActiveSection} />;
     }
   };
 

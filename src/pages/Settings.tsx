@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, Bell, Shield, Palette, Globe } from 'lucide-react';
 import Header from '../components/Header';
+import AIConnectionTest from '../components/AIConnectionTest';
+import LinkedInAuth from '../components/LinkedInAuth';
 
 const Settings = () => {
   const [notifications, setNotifications] = useState(true);
@@ -24,6 +25,12 @@ const Settings = () => {
         </div>
 
         <div className="space-y-6">
+          {/* Test de connectivité IA */}
+          <AIConnectionTest />
+
+          {/* Connexion LinkedIn */}
+          <LinkedInAuth />
+
           {/* Profil utilisateur */}
           <Card className="bg-white border border-slate-200/60 shadow-lg">
             <CardHeader>
