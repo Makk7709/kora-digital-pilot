@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  TrendingUp, 
+  Users, 
+  MousePointer, 
+  Calendar, 
+  Sparkles,
+  Tv,
+  Monitor
+} from 'lucide-react';
 import LinkedInWidget from '@/components/LinkedInWidget';
 
 interface DashboardProps {
@@ -8,6 +18,8 @@ interface DashboardProps {
 }
 
 const Dashboard = ({ onSectionChange }: DashboardProps) => {
+  const [isTvMode, setIsTvMode] = useState(false);
+
   const stats = [
     { label: 'Posts cette semaine', value: '12', trend: '+8%', color: 'text-blue-600' },
     { label: 'Engagement moyen', value: '4.8%', trend: '+0.3%', color: 'text-emerald-600' },
@@ -52,6 +64,15 @@ const Dashboard = ({ onSectionChange }: DashboardProps) => {
   const handleAnalyzePerformance = () => {
     if (onSectionChange) {
       onSectionChange('analytics');
+    }
+  };
+
+  const toggleTvMode = () => {
+    setIsTvMode(!isTvMode);
+    if (!isTvMode) {
+      document.body.classList.add('tv-presentation-mode');
+    } else {
+      document.body.classList.remove('tv-presentation-mode');
     }
   };
 
@@ -203,7 +224,7 @@ const Dashboard = ({ onSectionChange }: DashboardProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Button 
               onClick={handleGenerateWithKora}
               className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-blue-50 to-white border border-blue-200 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/20 text-slate-900 hover:text-blue-600 transition-all duration-300"
@@ -224,6 +245,19 @@ const Dashboard = ({ onSectionChange }: DashboardProps) => {
             >
               <span className="text-3xl">📊</span>
               <span className="font-semibold">Analyser les performances</span>
+            </Button>
+            <Button 
+              onClick={toggleTvMode}
+              className={`h-24 flex flex-col items-center justify-center space-y-3 transition-all duration-300 ${
+                isTvMode 
+                  ? 'bg-gradient-to-br from-orange-50 to-white border border-orange-200 hover:border-orange-400 hover:shadow-lg hover:shadow-orange-500/20 text-orange-600' 
+                  : 'bg-gradient-to-br from-slate-50 to-white border border-slate-200 hover:border-slate-400 hover:shadow-lg hover:shadow-slate-500/20 text-slate-900 hover:text-slate-600'
+              }`}
+            >
+              {isTvMode ? <Tv className="w-8 h-8" /> : <Monitor className="w-8 h-8" />}
+              <span className="font-semibold text-sm text-center">
+                {isTvMode ? 'Mode TV Activé' : 'Mode TV'}
+              </span>
             </Button>
           </div>
         </CardContent>

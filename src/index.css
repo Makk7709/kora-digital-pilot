@@ -85,6 +85,54 @@
   
   .premium-card {
     @apply bg-white border border-slate-200/60 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl;
+    background-color: white !important;
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Force white background for all cards with TV display optimization */
+  .premium-card,
+  [class*="premium-card"],
+  .card,
+  [class*="card"] {
+    background-color: white !important;
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+  }
+
+  /* Optimisation spécifique pour partage d'écran */
+  @media screen and (min-width: 1920px) {
+    .premium-card,
+    [class*="premium-card"],
+    .card,
+    [class*="card"] {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+    }
+  }
+  
+  /* Mode présentation TV - à activer manuellement */
+  .tv-presentation-mode .premium-card,
+  .tv-presentation-mode [class*="premium-card"],
+  .tv-presentation-mode .card,
+  .tv-presentation-mode [class*="card"] {
+    background-color: #ffffff !important;
+    border: 2px solid #cbd5e1 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    filter: contrast(1.1) brightness(1.05) !important;
+  }
+
+  /* Amélioration du contraste pour TV */
+  .tv-presentation-mode {
+    filter: contrast(1.1) brightness(1.02);
   }
   
   .digital-wave-pattern {

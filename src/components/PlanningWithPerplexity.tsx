@@ -253,28 +253,41 @@ export const PlanningWithPerplexity: React.FC = () => {
         <CardTitle className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-blue-500" />
           Actions IA Rapides
+          {perplexity.isSimulationMode && (
+            <Badge variant="outline" className="text-xs bg-green-50 text-green-600 border-green-200">
+              Actif
+            </Badge>
+          )}
         </CardTitle>
+        {perplexity.isSimulationMode && (
+          <p className="text-xs text-muted-foreground">
+            Mode simulation - Contenu généré par Kora IA
+          </p>
+        )}
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Button
             variant="outline"
-            className="h-auto p-4 flex flex-col items-start"
+            className="h-auto p-4 flex flex-col items-start hover:bg-blue-50 hover:border-blue-300"
             onClick={() => generateSmartContent('Tendances IA 2025')}
-            disabled={!perplexity.isInitialized}
+            disabled={!perplexity.isInitialized || perplexity.isLoading}
           >
             <div className="flex items-center gap-2 mb-1">
               <TrendingUp className="h-4 w-4" />
               <span className="font-medium">Contenu Tendance</span>
             </div>
             <span className="text-xs text-muted-foreground">
-              Générer du contenu sur les dernières tendances
+              {perplexity.isSimulationMode 
+                ? 'Générer du contenu sur les dernières tendances (démo)'
+                : 'Générer du contenu sur les dernières tendances'
+              }
             </span>
           </Button>
 
           <Button
             variant="outline"
-            className="h-auto p-4 flex flex-col items-start"
+            className="h-auto p-4 flex flex-col items-start hover:bg-green-50 hover:border-green-300"
             onClick={() => planning.optimizeSchedule()}
             disabled={planning.isLoading}
           >
@@ -289,22 +302,25 @@ export const PlanningWithPerplexity: React.FC = () => {
 
           <Button
             variant="outline"
-            className="h-auto p-4 flex flex-col items-start"
+            className="h-auto p-4 flex flex-col items-start hover:bg-purple-50 hover:border-purple-300"
             onClick={() => perplexity.getMarketingTrends('marketing digital', '7d')}
-            disabled={!perplexity.isInitialized}
+            disabled={!perplexity.isInitialized || perplexity.isLoading}
           >
             <div className="flex items-center gap-2 mb-1">
               <Eye className="h-4 w-4" />
               <span className="font-medium">Veille Concurrence</span>
             </div>
             <span className="text-xs text-muted-foreground">
-              Analyser la concurrence en temps réel
+              {perplexity.isSimulationMode 
+                ? 'Analyser la concurrence (simulation)'
+                : 'Analyser la concurrence en temps réel'
+              }
             </span>
           </Button>
 
           <Button
             variant="outline"
-            className="h-auto p-4 flex flex-col items-start"
+            className="h-auto p-4 flex flex-col items-start hover:bg-orange-50 hover:border-orange-300"
             onClick={() => planning.generateWeeklyPlan()}
             disabled={planning.isGenerating}
           >
@@ -317,6 +333,17 @@ export const PlanningWithPerplexity: React.FC = () => {
             </span>
           </Button>
         </div>
+        
+        {perplexity.isLoading && (
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center gap-2 text-blue-600">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              <span className="text-sm">
+                {perplexity.isSimulationMode ? 'Génération en cours...' : 'Analyse Perplexity en cours...'}
+              </span>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -395,8 +422,16 @@ export const PlanningWithPerplexity: React.FC = () => {
               <div className="flex items-center gap-2">
                 <div className={`h-2 w-2 rounded-full ${perplexity.isInitialized ? 'bg-green-500' : 'bg-red-500'}`} />
                 <span className="text-sm">
-                  Perplexity {perplexity.isInitialized ? 'Connecté' : 'Déconnecté'}
+                  {perplexity.isInitialized 
+                    ? (perplexity.isSimulationMode ? 'Mode Simulation' : 'Perplexity Connecté')
+                    : 'Déconnecté'
+                  }
                 </span>
+                {perplexity.isSimulationMode && (
+                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600 border-blue-200">
+                    Démo
+                  </Badge>
+                )}
               </div>
               <Badge variant="outline">
                 {planning.posts.length} posts

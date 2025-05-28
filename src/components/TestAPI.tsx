@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { aiService } from '../lib/ai-service';
+import { PerplexityDebug } from './PerplexityDebug';
 
 export const TestAPI: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -80,6 +81,11 @@ export const TestAPI: React.FC = () => {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">🧪 Test des APIs IA</h2>
+      
+      {/* Debug Perplexity */}
+      <div className="mb-8">
+        <PerplexityDebug />
+      </div>
       
       <div className="space-y-4 mb-6">
         <button

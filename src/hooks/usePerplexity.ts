@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 interface UsePerplexityState {
   isLoading: boolean;
   isInitialized: boolean;
+  isSimulationMode: boolean;
   error: string | null;
   lastResponse: PerplexityResponse | null;
   insights: MarketInsight[];
@@ -34,10 +35,160 @@ interface UsePerplexityReturn extends UsePerplexityState {
   reset: () => void;
 }
 
+// Données de simulation pour le mode démo
+const generateSimulatedResponse = (topic: string, contentType: string): PerplexityResponse => {
+  const simulatedContent = {
+    'Tendances IA 2025': `🚀 **Tendances IA 2025 : Ce qui va révolutionner votre business**
+
+L'intelligence artificielle continue sa progression fulgurante. Voici les tendances clés à surveiller :
+
+🔥 **1. IA Générative Multimodale**
+- Fusion texte, image, vidéo et audio
+- Création de contenu immersif
+- Applications marketing révolutionnaires
+
+🎯 **2. IA Prédictive Avancée**
+- Anticipation des comportements clients
+- Optimisation des campagnes en temps réel
+- ROI marketing multiplié par 3
+
+⚡ **3. Automatisation Intelligente**
+- Workflows adaptatifs
+- Personnalisation à grande échelle
+- Réduction des coûts de 40%
+
+💡 **Conseil Kora** : Intégrez ces technologies dès maintenant pour prendre l'avantage concurrentiel !
+
+#IA #Innovation #Marketing #Tendances2025`,
+
+    'marketing digital': `📈 **Marketing Digital : Les stratégies gagnantes de 2025**
+
+Le paysage digital évolue rapidement. Voici comment rester en tête :
+
+🎯 **Personnalisation Hyper-Ciblée**
+- Segmentation comportementale avancée
+- Contenu adaptatif en temps réel
+- Taux de conversion +250%
+
+🤖 **Marketing Automation Intelligent**
+- Parcours clients auto-optimisés
+- Lead scoring prédictif
+- Nurturing personnalisé
+
+📱 **Expérience Omnicanale**
+- Cohérence sur tous les touchpoints
+- Attribution cross-device
+- Customer lifetime value optimisée
+
+🔍 **Analytics Prédictifs**
+- Anticipation des tendances
+- Optimisation proactive
+- Décisions data-driven
+
+Transformez votre approche marketing avec Kora Digital !
+
+#MarketingDigital #Stratégie #Innovation #ROI`,
+
+    'default': `✨ **Contenu Intelligent Généré par Kora**
+
+Voici un contenu optimisé pour votre audience :
+
+🎯 **Message Clé**
+Contenu personnalisé basé sur les dernières tendances et insights de votre secteur.
+
+📊 **Données Contextuelles**
+- Analyse des performances passées
+- Optimisation des horaires de publication
+- Suggestions d'engagement
+
+🚀 **Call-to-Action**
+Engagez votre communauté avec ce contenu stratégique !
+
+#KoraDigital #IA #ContentMarketing #Stratégie`
+  };
+
+  return {
+    content: simulatedContent[topic as keyof typeof simulatedContent] || simulatedContent.default,
+    sources: [
+      {
+        title: "Kora Digital - Insights IA",
+        url: "https://kora-digital.com/insights",
+        snippet: "Analyse basée sur les dernières tendances du marché"
+      },
+      {
+        title: "Tendances Marketing 2025",
+        url: "https://marketing-trends.com/2025",
+        snippet: "Rapport complet sur l'évolution du marketing digital"
+      }
+    ],
+    usage: {
+      prompt_tokens: 150,
+      completion_tokens: 300,
+      total_tokens: 450
+    },
+    model: 'kora-simulation-v1',
+    timestamp: new Date()
+  };
+};
+
+const generateSimulatedInsights = (topic: string): MarketInsight[] => {
+  return [
+    {
+      trend: `Tendance émergente : ${topic}`,
+      impact: 'high',
+      timeframe: '7 derniers jours',
+      actionable_insights: [
+        `Créer du contenu sur ${topic}`,
+        'Optimiser les hashtags associés',
+        'Planifier une série de posts'
+      ],
+      sources: [
+        {
+          title: 'Google Trends Analytics',
+          url: 'https://trends.google.com',
+          credibility: 0.95
+        },
+        {
+          title: 'Social Media Analytics Report',
+          url: 'https://analytics.social',
+          credibility: 0.88
+        }
+      ],
+      confidence_score: 0.85,
+      last_updated: new Date()
+    },
+    {
+      trend: 'Optimisation des horaires de publication',
+      impact: 'medium',
+      timeframe: '30 derniers jours',
+      actionable_insights: [
+        'Publier entre 9h-11h et 17h-19h',
+        'Éviter les weekends pour le B2B',
+        'Tester les créneaux 14h-16h'
+      ],
+      sources: [
+        {
+          title: 'Engagement Analytics Platform',
+          url: 'https://engagement.analytics',
+          credibility: 0.92
+        },
+        {
+          title: 'Social Media Timing Study',
+          url: 'https://timing.study',
+          credibility: 0.78
+        }
+      ],
+      confidence_score: 0.78,
+      last_updated: new Date()
+    }
+  ];
+};
+
 export const usePerplexity = (): UsePerplexityReturn => {
   const [state, setState] = useState<UsePerplexityState>({
     isLoading: false,
     isInitialized: false,
+    isSimulationMode: false,
     error: null,
     lastResponse: null,
     insights: [],
@@ -49,22 +200,47 @@ export const usePerplexity = (): UsePerplexityReturn => {
   // Initialiser le service Perplexity
   const initializeService = useCallback((config: PerplexityConfig) => {
     try {
-      createPerplexityService(config);
-      setState(prev => ({
-        ...prev,
-        isInitialized: true,
-        error: null,
-      }));
-      
-      toast({
-        title: "Perplexity initialisé",
-        description: "Service d'insights IA activé avec succès",
-      });
+      // Vérifier si on a une vraie clé API
+      const isRealApiKey = config.apiKey && 
+        config.apiKey !== 'demo_key_for_testing' && 
+        config.apiKey !== 'your_perplexity_api_key_here' &&
+        config.apiKey.length > 10;
+
+      if (isRealApiKey) {
+        // Mode réel avec API
+        createPerplexityService(config);
+        setState(prev => ({
+          ...prev,
+          isInitialized: true,
+          isSimulationMode: false,
+          error: null,
+        }));
+        
+        toast({
+          title: "Perplexity initialisé",
+          description: "Service d'insights IA activé avec succès",
+        });
+      } else {
+        // Mode simulation
+        setState(prev => ({
+          ...prev,
+          isInitialized: true,
+          isSimulationMode: true,
+          error: null,
+          cacheStats: { size: 5, keys: ['demo-cache-1', 'demo-cache-2'] }
+        }));
+        
+        toast({
+          title: "Mode simulation activé",
+          description: "Actions IA disponibles en mode démo (configurez l'API pour le mode réel)",
+        });
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erreur d\'initialisation';
       setState(prev => ({
         ...prev,
         isInitialized: false,
+        isSimulationMode: false,
         error: errorMessage,
       }));
       
@@ -78,8 +254,8 @@ export const usePerplexity = (): UsePerplexityReturn => {
 
   // Vérifier l'initialisation automatiquement
   useEffect(() => {
-    const apiKey = import.meta.env.VITE_PERPLEXITY_API_KEY;
-    if (apiKey && !state.isInitialized) {
+    const apiKey = import.meta.env.VITE_PERPLEXITY_API_KEY || 'demo_key_for_testing';
+    if (!state.isInitialized) {
       initializeService({
         apiKey,
         model: 'sonar-pro',
@@ -92,12 +268,13 @@ export const usePerplexity = (): UsePerplexityReturn => {
   // Méthode générique pour les appels avec gestion d'erreurs
   const makePerplexityCall = useCallback(async <T>(
     operation: () => Promise<T>,
+    simulationFallback: () => T,
     operationName: string
   ): Promise<T | null> => {
     if (!state.isInitialized) {
       toast({
         title: "Service non initialisé",
-        description: "Veuillez configurer Perplexity d'abord",
+        description: "Initialisation en cours...",
         variant: "destructive",
       });
       return null;
@@ -106,7 +283,27 @@ export const usePerplexity = (): UsePerplexityReturn => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const result = await operation();
+      let result: T;
+      
+      if (state.isSimulationMode) {
+        // Mode simulation
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simuler un délai
+        result = simulationFallback();
+        
+        toast({
+          title: `${operationName} (simulation)`,
+          description: "Résultat généré en mode démo",
+        });
+      } else {
+        // Mode réel
+        result = await operation();
+        
+        toast({
+          title: `${operationName} réussi`,
+          description: "Données récupérées via Perplexity API",
+        });
+      }
+      
       setState(prev => ({ ...prev, isLoading: false }));
       return result;
     } catch (error) {
@@ -117,6 +314,18 @@ export const usePerplexity = (): UsePerplexityReturn => {
         error: errorMessage,
       }));
 
+      // En cas d'erreur, basculer en mode simulation
+      if (!state.isSimulationMode) {
+        const fallbackResult = simulationFallback();
+        
+        toast({
+          title: `${operationName} (mode secours)`,
+          description: "Résultat généré en mode simulation suite à une erreur API",
+        });
+        
+        return fallbackResult;
+      }
+
       toast({
         title: `Erreur ${operationName}`,
         description: errorMessage,
@@ -125,16 +334,24 @@ export const usePerplexity = (): UsePerplexityReturn => {
 
       return null;
     }
-  }, [state.isInitialized, toast]);
+  }, [state.isInitialized, state.isSimulationMode, toast]);
 
   // Obtenir des insights business
   const getBusinessInsights = useCallback(async (request: InsightRequest): Promise<PerplexityResponse | null> => {
-    return makePerplexityCall(async () => {
-      const service = getPerplexityService();
-      const response = await service.getBusinessInsights(request);
-      setState(prev => ({ ...prev, lastResponse: response }));
-      return response;
-    }, 'insights business');
+    return makePerplexityCall(
+      async () => {
+        const service = getPerplexityService();
+        const response = await service.getBusinessInsights(request);
+        setState(prev => ({ ...prev, lastResponse: response }));
+        return response;
+      },
+      () => {
+        const response = generateSimulatedResponse(request.query, 'business');
+        setState(prev => ({ ...prev, lastResponse: response }));
+        return response;
+      },
+      'Insights business'
+    );
   }, [makePerplexityCall]);
 
   // Obtenir les tendances marketing
@@ -142,24 +359,40 @@ export const usePerplexity = (): UsePerplexityReturn => {
     topic: string, 
     timeframe: '24h' | '7d' | '30d' = '7d'
   ): Promise<MarketInsight[]> => {
-    const result = await makePerplexityCall(async () => {
-      const service = getPerplexityService();
-      const insights = await service.getDigitalMarketingTrends(topic, timeframe);
-      setState(prev => ({ ...prev, insights }));
-      return insights;
-    }, 'tendances marketing');
+    const result = await makePerplexityCall(
+      async () => {
+        const service = getPerplexityService();
+        const insights = await service.getDigitalMarketingTrends(topic, timeframe);
+        setState(prev => ({ ...prev, insights }));
+        return insights;
+      },
+      () => {
+        const insights = generateSimulatedInsights(topic);
+        setState(prev => ({ ...prev, insights }));
+        return insights;
+      },
+      'Tendances marketing'
+    );
 
     return result || [];
   }, [makePerplexityCall]);
 
   // Veille technologique IA
   const getAITechWatch = useCallback(async (domain: string): Promise<PerplexityResponse | null> => {
-    return makePerplexityCall(async () => {
-      const service = getPerplexityService();
-      const response = await service.getAITechWatch(domain);
-      setState(prev => ({ ...prev, lastResponse: response }));
-      return response;
-    }, 'veille technologique');
+    return makePerplexityCall(
+      async () => {
+        const service = getPerplexityService();
+        const response = await service.getAITechWatch(domain);
+        setState(prev => ({ ...prev, lastResponse: response }));
+        return response;
+      },
+      () => {
+        const response = generateSimulatedResponse(domain, 'tech-watch');
+        setState(prev => ({ ...prev, lastResponse: response }));
+        return response;
+      },
+      'Veille technologique'
+    );
   }, [makePerplexityCall]);
 
   // Analyse concurrentielle
@@ -167,12 +400,20 @@ export const usePerplexity = (): UsePerplexityReturn => {
     competitors: string[], 
     market: string
   ): Promise<PerplexityResponse | null> => {
-    return makePerplexityCall(async () => {
-      const service = getPerplexityService();
-      const response = await service.getCompetitorAnalysis(competitors, market);
-      setState(prev => ({ ...prev, lastResponse: response }));
-      return response;
-    }, 'analyse concurrentielle');
+    return makePerplexityCall(
+      async () => {
+        const service = getPerplexityService();
+        const response = await service.getCompetitorAnalysis(competitors, market);
+        setState(prev => ({ ...prev, lastResponse: response }));
+        return response;
+      },
+      () => {
+        const response = generateSimulatedResponse(`Analyse concurrentielle ${market}`, 'competitor-analysis');
+        setState(prev => ({ ...prev, lastResponse: response }));
+        return response;
+      },
+      'Analyse concurrentielle'
+    );
   }, [makePerplexityCall]);
 
   // Génération de contenu avec recherche
@@ -180,12 +421,20 @@ export const usePerplexity = (): UsePerplexityReturn => {
     topic: string, 
     contentType: 'article' | 'post' | 'thread'
   ): Promise<PerplexityResponse | null> => {
-    return makePerplexityCall(async () => {
-      const service = getPerplexityService();
-      const response = await service.generateContentWithResearch(topic, contentType);
-      setState(prev => ({ ...prev, lastResponse: response }));
-      return response;
-    }, 'génération de contenu');
+    return makePerplexityCall(
+      async () => {
+        const service = getPerplexityService();
+        const response = await service.generateContentWithResearch(topic, contentType);
+        setState(prev => ({ ...prev, lastResponse: response }));
+        return response;
+      },
+      () => {
+        const response = generateSimulatedResponse(topic, contentType);
+        setState(prev => ({ ...prev, lastResponse: response }));
+        return response;
+      },
+      'Génération de contenu'
+    );
   }, [makePerplexityCall]);
 
   // Recherche de sources fiables
@@ -193,42 +442,68 @@ export const usePerplexity = (): UsePerplexityReturn => {
     topic: string, 
     sourceTypes: string[] = []
   ): Promise<PerplexityResponse | null> => {
-    return makePerplexityCall(async () => {
-      const service = getPerplexityService();
-      const response = await service.findReliableSources(topic, sourceTypes);
-      setState(prev => ({ ...prev, lastResponse: response }));
-      return response;
-    }, 'recherche de sources');
+    return makePerplexityCall(
+      async () => {
+        const service = getPerplexityService();
+        const response = await service.findReliableSources(topic, sourceTypes);
+        setState(prev => ({ ...prev, lastResponse: response }));
+        return response;
+      },
+      () => {
+        const response = generateSimulatedResponse(`Sources fiables ${topic}`, 'sources');
+        setState(prev => ({ ...prev, lastResponse: response }));
+        return response;
+      },
+      'Recherche de sources'
+    );
   }, [makePerplexityCall]);
 
   // Vider le cache
   const clearCache = useCallback(() => {
     if (state.isInitialized) {
-      const service = getPerplexityService();
-      service.clearCache();
-      refreshCacheStats();
+      if (!state.isSimulationMode) {
+        const service = getPerplexityService();
+        service.clearCache();
+      }
+      
+      setState(prev => ({ 
+        ...prev, 
+        cacheStats: { size: 0, keys: [] }
+      }));
       
       toast({
         title: "Cache vidé",
-        description: "Le cache Perplexity a été effacé",
+        description: "Le cache a été effacé",
       });
     }
-  }, [state.isInitialized, toast]);
+  }, [state.isInitialized, state.isSimulationMode, toast]);
 
   // Actualiser les stats du cache
   const refreshCacheStats = useCallback(() => {
     if (state.isInitialized) {
-      const service = getPerplexityService();
-      const cacheStats = service.getCacheStats();
-      setState(prev => ({ ...prev, cacheStats }));
+      if (!state.isSimulationMode) {
+        const service = getPerplexityService();
+        const cacheStats = service.getCacheStats();
+        setState(prev => ({ ...prev, cacheStats }));
+      } else {
+        // Stats simulées
+        setState(prev => ({ 
+          ...prev, 
+          cacheStats: { 
+            size: Math.floor(Math.random() * 10) + 1, 
+            keys: ['demo-1', 'demo-2', 'demo-3'] 
+          }
+        }));
+      }
     }
-  }, [state.isInitialized]);
+  }, [state.isInitialized, state.isSimulationMode]);
 
   // Réinitialiser l'état
   const reset = useCallback(() => {
     setState({
       isLoading: false,
       isInitialized: false,
+      isSimulationMode: false,
       error: null,
       lastResponse: null,
       insights: [],
