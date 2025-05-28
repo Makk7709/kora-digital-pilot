@@ -119,10 +119,10 @@ class AIService {
       request.tone = 'Professionnel & stratégique';
     }
 
-    // NOUVELLE LOGIQUE : Claude pour la rédaction, OpenAI pour les images et fallback
+    // LOGIQUE CORRIGÉE : GPT en priorité, Claude en fallback
     const attempts = [
-      { provider: 'anthropic', model: 'claude-3-5-sonnet-20241022', priority: 'primary' }, // Claude en priorité pour la rédaction
-      { provider: 'openai', model: 'gpt-4o', priority: 'fallback' }, // OpenAI en fallback
+      { provider: 'openai', model: 'gpt-4o', priority: 'primary' }, // GPT en priorité
+      { provider: 'anthropic', model: 'claude-3-5-sonnet-20241022', priority: 'fallback' }, // Claude en fallback
       { provider: 'openai', model: 'gpt-3.5-turbo', priority: 'emergency' }, // Fallback économique
     ];
 

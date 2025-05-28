@@ -1,7 +1,15 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { planningService, ScheduledPost, WeeklyPlan, PlanningFilters } from '@/lib/planning-service';
-import { useAI } from '@/hooks/useAI';
 import { useToast } from '@/hooks/use-toast';
+
+// Import conditionnel de useAI
+let useAI: any = null;
+try {
+  const aiModule = require('@/hooks/useAI');
+  useAI = aiModule.useAI;
+} catch (error) {
+  console.warn('Hook useAI non disponible, mode dégradé activé');
+}
 
 interface UsePlanningState {
   posts: ScheduledPost[];
@@ -61,28 +69,69 @@ export const usePlanning = (): UsePlanningReturn => {
     isGenerating: false,
     error: null,
     filters: {},
-    weeklyStats: null,
+    weeklyStats: { totalPosts: 0, drafts: 0, published: 0, scheduled: 0 },
     suggestions: [],
   });
 
-  const { generateContent } = useAI();
-  const { toast } = useToast();
+  // Hook IA avec gestion d'erreur
+  let generateContent: any = null;
+  let toast: any = null;
+
+  try {
+    if (useAI) {
+      const aiHook = useAI();
+      generateContent = aiHook.generateContent;
+    }
+    const toastHook = useToast();
+    toast = toastHook.toast;
+  } catch (error) {
+    console.warn('Services IA non disponibles:', error);
+    // Fonction toast de fallback
+    toast = (options: any) => {
+      console.log('Toast:', options.title, options.description);
+    };
+  }
 
   // Charger les données initiales
+  const refreshData = useCallback(() => {
+    try {
+      setState(prev => ({ ...prev, isLoading: true, error: null }));
+      
+      const allPosts = planningService.loadPosts();
+      
+      setState(prev => ({
+        ...prev,
+        posts: allPosts,
+        isLoading: false,
+      }));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur de chargement';
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: errorMessage,
+      }));
+    }
+  }, []);
+
   useEffect(() => {
     refreshData();
-  }, []);
+  }, [refreshData]);
 
   // Recalculer les stats quand la semaine change
   useEffect(() => {
-    const stats = planningService.getWeeklyStats(state.currentWeekStart);
-    const suggestions = planningService.getOptimizationSuggestions(state.currentWeekStart);
-    
-    setState(prev => ({
-      ...prev,
-      weeklyStats: stats,
-      suggestions,
-    }));
+    try {
+      const stats = planningService.getWeeklyStats(state.currentWeekStart);
+      const suggestions = planningService.getOptimizationSuggestions(state.currentWeekStart);
+      
+      setState(prev => ({
+        ...prev,
+        weeklyStats: stats,
+        suggestions,
+      }));
+    } catch (error) {
+      console.warn('Erreur calcul stats:', error);
+    }
   }, [state.currentWeekStart, state.posts]);
 
   // Navigation
@@ -241,8 +290,66 @@ export const usePlanning = (): UsePlanningReturn => {
     return await addPost(postData);
   }, [state.posts, addPost]);
 
-  // Génération IA
+  // Génération IA avec fallback
   const generateWeeklyPlan = useCallback(async (prompt?: string) => {
+    if (!generateContent) {
+      // Mode fallback sans IA
+      setState(prev => ({ ...prev, isGenerating: true, error: null }));
+      
+      try {
+        // Créer des posts d'exemple
+        const samplePosts = [
+          {
+            title: "L'IA transforme le marketing digital",
+            content: "Découvrez comment l'intelligence artificielle révolutionne les stratégies marketing...",
+            platform: 'LinkedIn' as const,
+            scheduledDate: new Date(state.currentWeekStart.getTime() + 1 * 24 * 60 * 60 * 1000),
+            scheduledTime: '09:00',
+            status: 'draft' as const,
+            contentType: 'post' as const,
+            tone: 'Professionnel & stratégique',
+            tags: ['IA', 'Marketing', 'Innovation'],
+            aiGenerated: false,
+          },
+          {
+            title: "Productivité : 5 outils IA incontournables",
+            content: "Boostez votre productivité avec ces 5 outils d'IA révolutionnaires...",
+            platform: 'Instagram' as const,
+            scheduledDate: new Date(state.currentWeekStart.getTime() + 3 * 24 * 60 * 60 * 1000),
+            scheduledTime: '14:00',
+            status: 'draft' as const,
+            contentType: 'post' as const,
+            tone: 'Inspirant & visionnaire',
+            tags: ['Productivité', 'Outils', 'IA'],
+            aiGenerated: false,
+          }
+        ];
+
+        for (const postData of samplePosts) {
+          await addPost(postData);
+        }
+
+        toast({
+          title: "Planning d'exemple créé !",
+          description: `${samplePosts.length} posts d'exemple ont été ajoutés (IA non configurée)`,
+        });
+
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+        setState(prev => ({ ...prev, error: errorMessage }));
+        
+        toast({
+          title: "Erreur de génération",
+          description: "Impossible de créer le planning d'exemple",
+          variant: "destructive",
+        });
+      } finally {
+        setState(prev => ({ ...prev, isGenerating: false }));
+      }
+      return;
+    }
+
+    // Mode normal avec IA
     try {
       setState(prev => ({ ...prev, isGenerating: true, error: null }));
 
@@ -291,6 +398,25 @@ export const usePlanning = (): UsePlanningReturn => {
     time: string, 
     platform: string
   ): Promise<ScheduledPost> => {
+    if (!generateContent) {
+      // Mode fallback
+      const postData = {
+        title: "Post généré (mode dégradé)",
+        content: `Contenu basé sur: ${prompt}`,
+        platform: platform as any,
+        scheduledDate: date,
+        scheduledTime: time,
+        status: 'draft' as const,
+        contentType: 'post' as const,
+        tone: 'Professionnel & engageant',
+        tags: ['Exemple'],
+        aiGenerated: false,
+        originalPrompt: prompt,
+      };
+
+      return await addPost(postData);
+    }
+
     try {
       setState(prev => ({ ...prev, isGenerating: true, error: null }));
 
@@ -330,6 +456,17 @@ export const usePlanning = (): UsePlanningReturn => {
   const optimizeSchedule = useCallback(async () => {
     try {
       setState(prev => ({ ...prev, isGenerating: true, error: null }));
+
+      if (!generateContent) {
+        // Mode fallback
+        toast({
+          title: "Optimisation simulée",
+          description: "Service IA non configuré - suggestions basiques disponibles",
+        });
+        
+        setState(prev => ({ ...prev, isGenerating: false }));
+        return;
+      }
 
       const weekPosts = getPostsByWeek(state.currentWeekStart);
       const optimizationPrompt = `Analyser ce planning éditorial et proposer des optimisations d'horaires pour maximiser l'engagement :
@@ -380,34 +517,23 @@ export const usePlanning = (): UsePlanningReturn => {
   }, []);
 
   const getFilteredPosts = useCallback(() => {
-    return planningService.filterPosts(state.filters);
-  }, [state.filters]);
-
-  // Utilitaires
-  const refreshData = useCallback(() => {
     try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
-      
-      const posts = planningService.loadPosts();
-      const stats = planningService.getWeeklyStats(state.currentWeekStart);
-      const suggestions = planningService.getOptimizationSuggestions(state.currentWeekStart);
-      
-      setState(prev => ({
-        ...prev,
-        posts,
-        weeklyStats: stats,
-        suggestions,
-        isLoading: false,
-      }));
+      return planningService.filterPosts(state.filters);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
-      setState(prev => ({ ...prev, isLoading: false, error: errorMessage }));
+      console.warn('Erreur filtrage:', error);
+      return state.posts;
     }
-  }, [state.currentWeekStart]);
+  }, [state.filters, state.posts]);
 
+  // Export/Import
   const exportPlanning = useCallback(() => {
-    return planningService.exportData();
-  }, []);
+    try {
+      return planningService.exportData();
+    } catch (error) {
+      console.error('Erreur export:', error);
+      return JSON.stringify({ posts: state.posts, version: '1.0' });
+    }
+  }, [state.posts]);
 
   const importPlanning = useCallback(async (data: string): Promise<boolean> => {
     try {
@@ -419,27 +545,33 @@ export const usePlanning = (): UsePlanningReturn => {
         refreshData();
         toast({
           title: "Import réussi !",
-          description: result.message,
-        });
-      } else {
-        toast({
-          title: "Erreur d'import",
-          description: result.message,
-          variant: "destructive",
+          description: "Le planning a été importé avec succès",
         });
       }
       
-      setState(prev => ({ ...prev, isLoading: false }));
       return result.success;
     } catch (error) {
-      setState(prev => ({ ...prev, isLoading: false }));
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      setState(prev => ({ ...prev, isLoading: false, error: errorMessage }));
+      
+      toast({
+        title: "Erreur d'import",
+        description: "Impossible d'importer le planning",
+        variant: "destructive",
+      });
+      
       return false;
     }
   }, [refreshData, toast]);
 
   // Statistiques
   const getWeeklyStats = useCallback(() => {
-    return planningService.getWeeklyStats(state.currentWeekStart);
+    try {
+      return planningService.getWeeklyStats(state.currentWeekStart);
+    } catch (error) {
+      console.warn('Erreur stats:', error);
+      return { totalPosts: 0, drafts: 0, published: 0, scheduled: 0 };
+    }
   }, [state.currentWeekStart]);
 
   const getPostsByDay = useCallback((date: Date) => {
@@ -450,7 +582,12 @@ export const usePlanning = (): UsePlanningReturn => {
   }, [state.posts]);
 
   const getPostsByWeek = useCallback((weekStart: Date) => {
-    return planningService.getPostsByWeek(weekStart);
+    try {
+      return planningService.getPostsByWeek(weekStart);
+    } catch (error) {
+      console.warn('Erreur posts semaine:', error);
+      return [];
+    }
   }, []);
 
   return {
@@ -479,7 +616,7 @@ export const usePlanning = (): UsePlanningReturn => {
   };
 };
 
-// Utilitaires
+// Fonctions utilitaires
 function getWeekStart(date: Date): Date {
   const d = new Date(date);
   const day = d.getDay();
@@ -488,52 +625,38 @@ function getWeekStart(date: Date): Date {
 }
 
 async function parseAIResponseToPosts(content: string, weekStart: Date): Promise<Array<Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>>> {
-  // Parser intelligent du contenu IA pour extraire des posts structurés
-  const posts = [];
+  const posts: Array<Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>> = [];
+  
+  // Parser simple pour extraire des posts du contenu IA
   const lines = content.split('\n').filter(line => line.trim());
   
-  let currentPost = null;
-  
-  for (const line of lines) {
-    // Détecter les nouveaux posts (patterns courants)
-    if (line.match(/^\d+\.|^-|^•|^Post|^LinkedIn|^Instagram|^Twitter/i)) {
-      if (currentPost) {
-        posts.push(currentPost);
-      }
-      
-      currentPost = {
-        title: line.replace(/^\d+\.|^-|^•/, '').trim(),
+  for (let i = 0; i < Math.min(5, lines.length); i++) {
+    const line = lines[i];
+    if (line.length > 20) { // Ligne suffisamment longue pour être un post
+      posts.push({
+        title: extractTitleFromContent(line),
         content: line,
         platform: detectPlatform(line),
         scheduledDate: getRandomDateInWeek(weekStart),
         scheduledTime: getOptimalTime(detectPlatform(line)),
-        status: 'draft' as const,
+        status: 'draft',
         contentType: detectContentType(line),
-        tone: 'Professionnel & engageant',
+        tone: 'Professionnel & stratégique',
         tags: extractTagsFromContent(line),
         aiGenerated: true,
-      };
-    } else if (currentPost && line.trim()) {
-      // Ajouter du contenu au post actuel
-      currentPost.content += '\n' + line;
+      });
     }
   }
   
-  if (currentPost) {
-    posts.push(currentPost);
-  }
-  
-  return posts.slice(0, 7); // Maximum 7 posts par semaine
+  return posts;
 }
 
 function detectPlatform(content: string): 'LinkedIn' | 'Instagram' | 'X (Twitter)' {
   const lower = content.toLowerCase();
   if (lower.includes('linkedin') || lower.includes('professionnel')) return 'LinkedIn';
-  if (lower.includes('instagram') || lower.includes('carrousel') || lower.includes('visuel')) return 'Instagram';
-  if (lower.includes('twitter') || lower.includes('thread') || lower.includes('quick')) return 'X (Twitter)';
-  
-  // Par défaut, alterner
-  return ['LinkedIn', 'Instagram', 'X (Twitter)'][Math.floor(Math.random() * 3)] as any;
+  if (lower.includes('instagram') || lower.includes('photo') || lower.includes('visuel')) return 'Instagram';
+  if (lower.includes('twitter') || lower.includes('thread')) return 'X (Twitter)';
+  return 'LinkedIn'; // Par défaut
 }
 
 function detectContentType(content: string): 'post' | 'thread' | 'article' | 'carousel' {
@@ -546,20 +669,13 @@ function detectContentType(content: string): 'post' | 'thread' | 'article' | 'ca
 
 function extractTitleFromContent(content: string): string {
   const firstLine = content.split('\n')[0];
-  return firstLine.length > 60 ? firstLine.substring(0, 60) + '...' : firstLine;
+  return firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine;
 }
 
 function extractTagsFromContent(content: string): string[] {
-  const tags = [];
-  const lower = content.toLowerCase();
-  
-  if (lower.includes('ia') || lower.includes('ai')) tags.push('IA');
-  if (lower.includes('productivité')) tags.push('Productivité');
-  if (lower.includes('innovation')) tags.push('Innovation');
-  if (lower.includes('tech')) tags.push('Tech');
-  if (lower.includes('business')) tags.push('Business');
-  
-  return tags;
+  const words = content.toLowerCase().split(/\s+/);
+  const commonTags = ['ia', 'ai', 'marketing', 'digital', 'innovation', 'productivité', 'technologie'];
+  return commonTags.filter(tag => words.some(word => word.includes(tag))).slice(0, 3);
 }
 
 function getRandomDateInWeek(weekStart: Date): Date {
@@ -571,11 +687,10 @@ function getRandomDateInWeek(weekStart: Date): Date {
 
 function getOptimalTime(platform: string): string {
   const times = {
-    'LinkedIn': ['09:00', '10:30', '14:00', '17:00'],
-    'Instagram': ['12:00', '15:00', '18:00', '20:00'],
-    'X (Twitter)': ['08:00', '12:00', '17:00', '19:00'],
+    'LinkedIn': ['09:00', '12:00', '17:00'],
+    'Instagram': ['11:00', '14:00', '19:00'],
+    'X (Twitter)': ['08:00', '12:00', '18:00'],
   };
-  
   const platformTimes = times[platform as keyof typeof times] || times['LinkedIn'];
   return platformTimes[Math.floor(Math.random() * platformTimes.length)];
 } 

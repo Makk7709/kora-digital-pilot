@@ -1,6 +1,8 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ArrowRight, Zap, Brain, TrendingUp, Calendar, BarChart3, Users, Target, CheckCircle, Star, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DigitalWave from '@/components/DigitalWave';
 
@@ -8,7 +10,7 @@ const Landing = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       {/* Nouvelle animation de vague numérique qui traverse l'écran */}
       <DigitalWave />
 
@@ -25,11 +27,11 @@ const Landing = () => {
         </div>
         
         <Button 
-          onClick={() => navigate('/app')}
-          className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+          size="lg" 
+          className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+          onClick={() => window.location.href = '/app'}
         >
           Accéder à l'application
-          <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </header>
 
@@ -56,11 +58,10 @@ const Landing = () => {
           <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
             <Button 
               size="lg" 
-              onClick={() => navigate('/app')}
-              className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              onClick={() => window.location.href = '/app'}
             >
-              Commencer maintenant
-              <ArrowRight className="w-5 h-5 ml-2" />
+              Accéder à l'application
             </Button>
           </div>
         </div>

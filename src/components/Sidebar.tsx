@@ -20,6 +20,12 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
       description: 'Vue d\'ensemble'
     },
     {
+      id: 'cm-dashboard',
+      icon: '🧠',
+      label: 'CM Dashboard',
+      description: 'Veille IA automatisée'
+    },
+    {
       id: 'inspiration',
       icon: '✨',
       label: 'Inspiration IA',

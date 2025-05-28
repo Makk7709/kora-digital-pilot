@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Dashboard from '../components/Dashboard';
+import { CommunityManagerDashboard } from '../components/CommunityManagerDashboard';
 import InspirationAI from '../components/InspirationAI';
 import ImageGenerator from '../components/ImageGenerator';
-import Planning from '../components/Planning';
+import { PlanningWithPerplexity } from '../components/PlanningWithPerplexity';
 import Analytics from '../components/Analytics';
 import Library from '../components/Library';
 
@@ -15,12 +16,14 @@ const Index = () => {
     switch (activeSection) {
       case 'dashboard':
         return <Dashboard onSectionChange={setActiveSection} />;
+      case 'cm-dashboard':
+        return <CommunityManagerDashboard />;
       case 'inspiration':
         return <InspirationAI />;
       case 'images':
         return <ImageGenerator />;
       case 'planning':
-        return <Planning />;
+        return <PlanningWithPerplexity />;
       case 'analytics':
         return <Analytics />;
       case 'library':
