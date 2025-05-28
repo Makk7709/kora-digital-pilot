@@ -237,12 +237,13 @@ class AIService {
 
     const systemPrompt = this.buildSystemPrompt(request);
     
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // Utiliser le proxy backend pour contourner CORS
+    console.log('🔄 Utilisation du proxy backend pour Claude (contournement CORS)');
+    
+    const response = await fetch('/api/anthropic/messages', {
       method: 'POST',
       headers: {
-        'x-api-key': this.anthropicKey,
         'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01',
       },
       signal,
       body: JSON.stringify({
@@ -252,19 +253,20 @@ class AIService {
         messages: [
           { role: 'user', content: request.prompt }
         ],
-        temperature: 0.8, // Augmenté pour plus de variété
+        temperature: 0.8,
+        anthropic_key: this.anthropicKey, // Passer la clé au proxy
       }),
     });
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(`Anthropic API Error: ${response.status} - ${error.error?.message || 'Unknown error'}`);
+      throw new Error(`Anthropic Proxy Error: ${response.status} - ${error.error?.message || error.details || 'Unknown error'}`);
     }
 
     const data = await response.json();
     return {
       content: data.content[0]?.text || '',
-      model: `Claude ${model}`,
+      model: `Claude ${model} (via proxy)`,
     };
   }
 
@@ -1132,48 +1134,32 @@ ${this.generateHashtags([mainKeyword, ...keywords.slice(0, 3)], request.platform
       console.warn('❌ OpenAI test failed:', error);
     }
 
-    // Test Anthropic avec gestion spéciale des erreurs CORS
+    // Test Anthropic avec le proxy backend (contournement CORS)
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      console.log('🔄 Test Claude via proxy backend');
+      
+      const response = await fetch('/api/anthropic/messages', {
         method: 'POST',
         headers: {
-          'x-api-key': this.anthropicKey,
           'Content-Type': 'application/json',
-          'anthropic-version': '2023-06-01',
         },
         signal: AbortSignal.timeout(5000),
         body: JSON.stringify({
           model: 'claude-3-5-sonnet-20241022',
           max_tokens: 5,
           messages: [{ role: 'user', content: 'test' }],
+          anthropic_key: this.anthropicKey,
         }),
       });
       
       if (response.ok) {
         results.anthropic = true;
-        console.log('✅ Anthropic connecté');
+        console.log('✅ Anthropic connecté via proxy');
       } else {
-        console.warn('❌ Anthropic échec:', response.status);
+        console.warn('❌ Anthropic proxy échec:', response.status);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      
-      // Détecter les erreurs CORS spécifiquement
-      if (errorMessage.includes('CORS') || 
-          errorMessage.includes('Access-Control-Allow-Origin') ||
-          errorMessage.includes('blocked by CORS policy') ||
-          errorMessage.includes('Failed to fetch')) {
-        console.warn('⚠️ Anthropic: Erreur CORS détectée (normal en développement)');
-        results.corsIssue = true;
-        // En cas d'erreur CORS, on considère qu'Anthropic est potentiellement disponible
-        // car l'erreur vient des restrictions du navigateur, pas de l'API elle-même
-        if (this.anthropicKey && this.anthropicKey.startsWith('sk-ant-') && this.anthropicKey.length > 20) {
-          console.log('🔑 Clé Anthropic valide détectée, considérant comme disponible malgré CORS');
-          results.anthropic = true;
-        }
-      } else {
-        console.warn('❌ Anthropic test failed:', error);
-      }
+      console.warn('❌ Anthropic proxy test failed:', error);
     }
 
     console.log('🔍 Résultats du test de connectivité:', results);

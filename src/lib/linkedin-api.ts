@@ -287,24 +287,16 @@ class LinkedInAPI {
     }
 
     try {
-      // Essayer d'abord avec l'API v2 moderne
-      let response = await fetch(`${this.baseURL}/userinfo`, {
+      // Utiliser le proxy local pour éviter les problèmes CORS
+      const response = await fetch('/api/linkedin/profile', {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          access_token: this.accessToken
+        }),
       });
-
-      if (!response.ok) {
-        console.log('🔄 Tentative avec l\'ancienne API LinkedIn...');
-        // Fallback vers l'ancienne API si la nouvelle ne fonctionne pas
-        response = await fetch(`${this.baseURL}/people/~:(id,firstName,lastName,profilePicture(displayImage~:playableStreams))`, {
-          headers: {
-            'Authorization': `Bearer ${this.accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-      }
 
       if (!response.ok) {
         throw new Error(`Erreur profil LinkedIn: ${response.status}`);
@@ -344,6 +336,8 @@ class LinkedInAPI {
    * Récupérer les métriques LinkedIn pour une période donnée
    */
   async getMetrics(period: '7d' | '30d' | '90d'): Promise<LinkedInMetrics> {
+    console.log(`📊 LinkedIn getMetrics appelé pour la période: ${period}`);
+    
     // Vérifier si les credentials sont configurés
     if (!this.config.clientSecret) {
       console.info('📊 LinkedIn: Credentials non configurés - Utilisation des données de démonstration');
@@ -358,8 +352,15 @@ class LinkedInAPI {
     }
 
     try {
-      // Récupérer les posts de l'organisation
-      const posts = await this.getOrganizationPosts(period);
+      console.log('🔄 Tentative de récupération des vraies données LinkedIn...');
+      
+      // Récupérer les posts de l'organisation avec timeout
+      const posts = await Promise.race([
+        this.getOrganizationPosts(period),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout récupération posts')), 5000)
+        )
+      ]) as LinkedInPost[];
       
       // Calculer les métriques agrégées
       const totalImpressions = posts.reduce((sum, post) => sum + post.metrics.impressions, 0);
@@ -396,10 +397,15 @@ class LinkedInAPI {
    * Récupérer les posts de l'organisation
    */
   private async getOrganizationPosts(period: string): Promise<LinkedInPost[]> {
+    console.log('📝 Récupération des posts LinkedIn...');
+    
+    // Simuler un délai réaliste d'API (500ms à 2s)
+    const delay = Math.random() * 1500 + 500;
+    await new Promise(resolve => setTimeout(resolve, delay));
+    
     // Note: Cette méthode nécessite l'ID de l'organisation
     // Pour l'instant, on simule avec des données réalistes
-    
-    console.log('📝 Récupération des posts LinkedIn (mode simulation)');
+    console.log('📝 Posts LinkedIn récupérés (mode simulation)');
     return this.getMockPosts();
   }
 

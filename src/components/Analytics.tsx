@@ -23,7 +23,8 @@ const Analytics = () => {
     isAuthenticated: isLinkedInConnected, 
     metrics: linkedInMetrics, 
     fetchMetrics: fetchLinkedInMetrics,
-    lastSync 
+    lastSync,
+    isLoading: isLinkedInLoading
   } = useLinkedInAnalytics();
   const { toast } = useToast();
 
@@ -801,6 +802,13 @@ const Analytics = () => {
                       <div className="flex items-center space-x-2">
                         <h4 className={`font-semibold ${platform.textColor}`}>{platform.name}</h4>
                         <DataSourceBadge isRealData={platform.isRealData} platform={platform.name} />
+                        {/* Indicateur de chargement spécifique pour LinkedIn */}
+                        {platform.name === 'LinkedIn' && isLinkedInConnected && isLinkedInLoading && (
+                          <div className="flex items-center space-x-1">
+                            <div className="w-3 h-3 border border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
+                            <span className="text-xs text-blue-600">Sync...</span>
+                          </div>
+                        )}
                       </div>
                       <p className="text-slate-500 text-sm">{platform.stats.posts} posts</p>
                     </div>

@@ -181,13 +181,17 @@ const InspirationAI = () => {
   const getConnectionStatusText = () => {
     if (!connectionStatus) return "Test en cours...";
     
-    // Priorité à Claude pour l'affichage, même avec des problèmes CORS
+    // Affichage plus précis du statut réel
+    if (connectionStatus.anthropic && connectionStatus.openai) {
+      return connectionStatus.corsIssue ? "Claude-3.5 (CORS) → GPT-4o actif" : "Claude-3.5 + GPT-4o connectés";
+    }
+    
     if (connectionStatus.anthropic) {
-      return connectionStatus.corsIssue ? "Claude-3.5 (CORS contourné)" : "Claude-3.5 connecté";
+      return connectionStatus.corsIssue ? "Claude-3.5 (CORS détecté)" : "Claude-3.5 connecté";
     }
     
     if (connectionStatus.openai) {
-      return "GPT-4o connecté (fallback)";
+      return "GPT-4o connecté";
     }
     
     return "Aucune connexion";
@@ -196,12 +200,15 @@ const InspirationAI = () => {
   const getPrimaryAIBadge = () => {
     if (!connectionStatus) return "Test en cours...";
     
-    // Afficher Claude en priorité s'il est disponible (même avec CORS)
-    if (connectionStatus.anthropic) {
+    // Afficher le provider réellement disponible
+    if (connectionStatus.corsIssue && connectionStatus.openai) {
+      return "GPT-4o"; // Si CORS avec Claude, OpenAI sera utilisé
+    }
+    
+    if (connectionStatus.anthropic && !connectionStatus.corsIssue) {
       return "Claude-3.5";
     }
     
-    // Fallback vers OpenAI
     if (connectionStatus.openai) {
       return "GPT-4o";
     }

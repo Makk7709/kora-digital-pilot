@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import LinkedInDashboardWidget from '@/components/LinkedInDashboardWidget';
+import LinkedInWidget from '@/components/LinkedInWidget';
 
 interface DashboardProps {
   onSectionChange?: (section: string) => void;
@@ -128,7 +128,7 @@ const Dashboard = ({ onSectionChange }: DashboardProps) => {
         </Card>
 
         {/* LinkedIn Analytics Widget */}
-        <LinkedInDashboardWidget />
+        <LinkedInWidget />
 
         {/* AI Suggestions */}
         <Card className="premium-card">

@@ -7,10 +7,6 @@ import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
-import LinkedInTest from "./pages/LinkedInTest";
-import LinkedInTestSimple from "./pages/LinkedInTestSimple";
-import LinkedInTestComplete from "./pages/LinkedInTestComplete";
-import LinkedInDebug from "./pages/LinkedInDebug";
 import LinkedInCallback from "./components/LinkedInCallback";
 import { TestAPI } from "./components/TestAPI";
 
@@ -27,10 +23,6 @@ const App = () => (
           <Route path="/app" element={<Index />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/test-api" element={<TestAPI />} />
-          <Route path="/linkedin-test" element={<LinkedInTest />} />
-          <Route path="/linkedin-test-simple" element={<LinkedInTestSimple />} />
-          <Route path="/linkedin-test-complete" element={<LinkedInTestComplete />} />
-          <Route path="/linkedin-debug" element={<LinkedInDebug />} />
           <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

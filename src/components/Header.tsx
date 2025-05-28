@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate } from 'react-router-dom';
+import LinkedInStatus from './LinkedInStatus';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -29,6 +29,8 @@ const Header = () => {
           <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
           <span className="text-blue-600 text-sm font-medium">Kora en ligne</span>
         </div>
+        
+        <LinkedInStatus />
         
         <Button 
           variant="ghost" 

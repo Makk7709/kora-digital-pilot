@@ -75,8 +75,22 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
   // Récupérer les métriques
   const fetchMetrics = useCallback(async (period: '7d' | '30d' | '90d') => {
     setIsLoading(true);
+    
+    // Timeout de 10 secondes pour éviter le blocage
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Timeout: Récupération des métriques trop longue')), 10000);
+    });
+    
     try {
-      const data = await linkedinAPI.getMetrics(period);
+      console.log(`🔄 Début récupération métriques LinkedIn (${period})`);
+      
+      // Course entre la récupération des données et le timeout
+      const data = await Promise.race([
+        linkedinAPI.getMetrics(period),
+        timeoutPromise
+      ]) as LinkedInMetrics;
+      
+      console.log('✅ Métriques LinkedIn récupérées avec succès');
       setMetrics(data);
       setLastSync(new Date());
       
@@ -84,10 +98,23 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
       localStorage.setItem('linkedin_last_sync', new Date().toISOString());
       
     } catch (error) {
-      console.error('Erreur récupération métriques LinkedIn:', error);
-      // En cas d'erreur, on garde les métriques précédentes
+      console.error('❌ Erreur récupération métriques LinkedIn:', error);
+      
+      // En cas d'erreur ou timeout, utiliser les données de fallback
+      try {
+        console.log('🔄 Utilisation des données de fallback...');
+        const fallbackData = await linkedinAPI.getMetrics(period);
+        setMetrics(fallbackData);
+        setLastSync(new Date());
+        localStorage.setItem('linkedin_last_sync', new Date().toISOString());
+        console.log('✅ Données de fallback chargées');
+      } catch (fallbackError) {
+        console.error('❌ Erreur même avec les données de fallback:', fallbackError);
+        // Garder les métriques précédentes si elles existent
+      }
     } finally {
       setIsLoading(false);
+      console.log('🏁 Fin du chargement des métriques LinkedIn');
     }
   }, []);
 

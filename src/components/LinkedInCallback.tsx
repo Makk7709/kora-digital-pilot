@@ -11,9 +11,14 @@ const LinkedInCallback: React.FC = () => {
   const { toast } = useToast();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('Authentification en cours...');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
+    // Éviter le double traitement
+    if (isProcessing) return;
+
     const handleCallback = async () => {
+      setIsProcessing(true);
       try {
         console.log('🔄 Début traitement callback LinkedIn');
         console.log('📍 URL actuelle:', window.location.href);
@@ -85,10 +90,10 @@ const LinkedInCallback: React.FC = () => {
 
         console.log('🎉 Authentification LinkedIn terminée avec succès');
 
-        // Rediriger vers la page de test après 2 secondes
+        // Rediriger vers l'app principale après 2 secondes
         setTimeout(() => {
-          console.log('🔄 Redirection vers /linkedin-test');
-          navigate('/linkedin-test');
+          console.log('🔄 Redirection vers /app');
+          navigate('/app');
         }, 2000);
 
       } catch (error) {
@@ -103,16 +108,18 @@ const LinkedInCallback: React.FC = () => {
           variant: "destructive",
         });
 
-        // Rediriger vers la page de test après 3 secondes
+        // Rediriger vers l'app principale après 3 secondes
         setTimeout(() => {
-          console.log('🔄 Redirection vers /linkedin-test après erreur');
-          navigate('/linkedin-test');
+          console.log('🔄 Redirection vers /app après erreur');
+          navigate('/app');
         }, 3000);
+      } finally {
+        setIsProcessing(false);
       }
     };
 
     handleCallback();
-  }, [searchParams, navigate, toast]);
+  }, [searchParams, navigate, toast, isProcessing]);
 
   const getStatusIcon = () => {
     switch (status) {

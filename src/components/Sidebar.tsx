@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import LinkedInDashboardWidget from '@/components/LinkedInDashboardWidget';
+import LinkedInWidget from '@/components/LinkedInWidget';
 
 interface SidebarProps {
   activeSection: string;
@@ -51,10 +51,6 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
     }
   ];
 
-  const handleLinkedInTest = () => {
-    navigate('/linkedin-test');
-  };
-
   return (
     <aside className={cn(
       "h-full bg-white/95 backdrop-blur-xl border-r border-slate-200/50 shadow-lg transition-all duration-300",
@@ -92,27 +88,13 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
             )}
           </button>
         ))}
-        
-        {/* LinkedIn Test Link */}
-        <div className="border-t border-slate-200 pt-2 mt-4">
-          <button
-            onClick={handleLinkedInTest}
-            className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 group text-slate-600 hover:bg-blue-50 hover:text-blue-600"
-          >
-            <span className="text-lg">🔗</span>
-            {!isCollapsed && (
-              <div className="flex-1 text-left">
-                <p className="font-medium text-sm">Test LinkedIn</p>
-                <p className="text-xs opacity-60">Intégration avancée</p>
-              </div>
-            )}
-          </button>
-        </div>
       </nav>
 
       {!isCollapsed && (
         <div className="px-3 mt-4">
-          <LinkedInDashboardWidget compact={true} />
+          <div className="scale-75 origin-top">
+            <LinkedInWidget />
+          </div>
         </div>
       )}
 
