@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LinkedIn Posts Proxy</title>
+</head>
+<body>
+    <script>
+        // Proxy simple pour requêtes LinkedIn
+        if (window.location.pathname.includes('/api/linkedin/posts')) {
+            async function handleLinkedInPosts() {
+                try {
+                    const response = {
+                        posts: [],
+                        status: 'proxy_unavailable',
+                        message: 'Proxy non disponible - utilisation des données personnalisées'
+                    };
+                    
+                    return Response.json(response, { status: 404 });
+                } catch (error) {
+                    return Response.json({
+                        error: 'Proxy error',
+                        message: error.message
+                    }, { status: 500 });
+                }
+            }
+        }
+    </script>
+    <p>LinkedIn API Proxy - Not available in static hosting</p>
+</body>
+</html> 

@@ -1,0 +1,304 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 248 250 252;
+    --foreground: 15 23 42;
+
+    --card: 255 255 255;
+    --card-foreground: 15 23 42;
+
+    --popover: 255 255 255;
+    --popover-foreground: 15 23 42;
+
+    --primary: 0 162 232;
+    --primary-foreground: 255 255 255;
+
+    --secondary: 241 245 249;
+    --secondary-foreground: 15 23 42;
+
+    --muted: 241 245 249;
+    --muted-foreground: 100 116 139;
+
+    --accent: 241 245 249;
+    --accent-foreground: 15 23 42;
+
+    --destructive: 239 68 68;
+    --destructive-foreground: 255 255 255;
+
+    --border: 226 232 240;
+    --input: 226 232 240;
+    --ring: 0 162 232;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 15 23 42;
+    --sidebar-foreground: 241 245 249;
+    --sidebar-primary: 0 162 232;
+    --sidebar-primary-foreground: 255 255 255;
+    --sidebar-accent: 30 41 59;
+    --sidebar-accent-foreground: 255 255 255;
+    --sidebar-border: 30 41 59;
+    --sidebar-ring: 0 162 232;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-gradient-to-br from-slate-50 via-white to-blue-50 text-foreground font-sans;
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-effect {
+    @apply bg-white/95 backdrop-blur-xl border border-slate-200/50 shadow-lg;
+  }
+  
+  .korev-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-blue-500;
+  }
+  
+  .gold-gradient {
+    @apply bg-gradient-to-r from-amber-400 to-yellow-400;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/25;
+  }
+  
+  .gradient-blue {
+    @apply bg-gradient-to-r from-blue-600 to-blue-500;
+  }
+  
+  .gradient-azure {
+    @apply bg-gradient-to-br from-blue-50 to-blue-100/50;
+  }
+  
+  .premium-card {
+    @apply bg-white border border-slate-200/60 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl;
+    background-color: white !important;
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Force white background for all cards with TV display optimization */
+  .premium-card,
+  [class*="premium-card"],
+  .card,
+  [class*="card"] {
+    background-color: white !important;
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+  }
+
+  /* Optimisation spécifique pour partage d'écran */
+  @media screen and (min-width: 1920px) {
+    .premium-card,
+    [class*="premium-card"],
+    .card,
+    [class*="card"] {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+    }
+  }
+  
+  /* Mode présentation TV - à activer manuellement */
+  .tv-presentation-mode .premium-card,
+  .tv-presentation-mode [class*="premium-card"],
+  .tv-presentation-mode .card,
+  .tv-presentation-mode [class*="card"] {
+    background-color: #ffffff !important;
+    border: 2px solid #cbd5e1 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    filter: contrast(1.1) brightness(1.05) !important;
+  }
+
+  /* Amélioration du contraste pour TV */
+  .tv-presentation-mode {
+    filter: contrast(1.1) brightness(1.02);
+  }
+  
+  .digital-wave-pattern {
+    background-image: 
+      linear-gradient(45deg, #0ea5e9 25%, transparent 25%), 
+      linear-gradient(-45deg, #0ea5e9 25%, transparent 25%), 
+      linear-gradient(45deg, transparent 75%, #0ea5e9 75%), 
+      linear-gradient(-45deg, transparent 75%, #0ea5e9 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+
+  .animate-wave {
+    animation: wave 8s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  /* Animations optimisées pour de meilleures performances */
+  .animate-wave-dilation-1 {
+    animation: waveDilation1 8s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .animate-wave-dilation-2 {
+    animation: waveDilation2 10s ease-in-out infinite;
+    animation-delay: -2s;
+    will-change: transform;
+  }
+
+  .animate-wave-dilation-3 {
+    animation: waveDilation3 9s ease-in-out infinite;
+    animation-delay: -4s;
+    will-change: transform;
+  }
+
+  .animate-wave-dilation-4 {
+    animation: waveDilation4 12s ease-in-out infinite;
+    animation-delay: -3s;
+    will-change: transform;
+  }
+
+  .animate-wave-dilation-5 {
+    animation: waveDilation5 14s ease-in-out infinite;
+    animation-delay: -6s;
+    will-change: transform;
+  }
+
+  .animate-wave-dilation-6 {
+    animation: waveDilation6 11s ease-in-out infinite;
+    animation-delay: -5s;
+    will-change: transform;
+  }
+
+  .animate-wave-fill-dilation {
+    animation: waveFillDilation 16s ease-in-out infinite;
+    will-change: opacity;
+  }
+
+  .animate-particle-dilation {
+    animation: particleDilation 8s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .animate-data-dilation {
+    animation: dataDilation 6s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+  }
+  25% {
+    transform: translateY(-10px) scaleY(1.05);
+  }
+  50% {
+    transform: translateY(5px) scaleY(0.95);
+  }
+  75% {
+    transform: translateY(-5px) scaleY(1.02);
+  }
+}
+
+/* Animations simplifiées et optimisées */
+@keyframes waveDilation1 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) scaleX(1);
+  }
+  50% {
+    transform: translateX(-40px) translateY(-10px) scaleX(1.1);
+  }
+}
+
+@keyframes waveDilation2 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) scaleY(1);
+  }
+  50% {
+    transform: translateX(-60px) translateY(15px) scaleY(0.9);
+  }
+}
+
+@keyframes waveDilation3 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) scaleX(1);
+  }
+  50% {
+    transform: translateX(-50px) translateY(-20px) scaleX(1.15);
+  }
+}
+
+@keyframes waveDilation4 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) scaleY(1);
+  }
+  50% {
+    transform: translateX(-35px) translateY(12px) scaleY(0.85);
+  }
+}
+
+@keyframes waveDilation5 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) scaleX(1);
+  }
+  50% {
+    transform: translateX(-70px) translateY(-15px) scaleX(1.2);
+  }
+}
+
+@keyframes waveDilation6 {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) scaleY(1);
+  }
+  50% {
+    transform: translateX(-45px) translateY(8px) scaleY(0.95);
+  }
+}
+
+@keyframes waveFillDilation {
+  0%, 100% {
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.08;
+  }
+}
+
+@keyframes particleDilation {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateX(0px) scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: translateX(-80px) scale(1.2);
+  }
+}
+
+@keyframes dataDilation {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.5);
+  }
+}
