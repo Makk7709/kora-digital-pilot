@@ -265,52 +265,86 @@ export const CommunityManagerDashboard: React.FC = () => {
     insights: TrendInsight[];
     color: string;
   }> = ({ title, icon, insights, color }) => (
-    <Card className="h-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          {icon}
-          <span>{title}</span>
-          <Badge variant="outline" className="ml-auto">
+    <Card className="premium-card h-full hover-glow">
+      <CardHeader className="pb-4 border-b border-slate-100">
+        <CardTitle className="flex items-center gap-3 text-xl text-slate-900">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${
+            color === 'blue' ? 'from-blue-50 to-blue-100' :
+            color === 'purple' ? 'from-purple-50 to-purple-100' :
+            color === 'green' ? 'from-green-50 to-green-100' :
+            'from-orange-50 to-orange-100'
+          }`}>
+            {icon}
+          </div>
+          <span className="font-semibold">{title}</span>
+          <Badge variant="outline" className={`ml-auto font-medium ${
+            color === 'blue' ? 'border-blue-200 text-blue-700 bg-blue-50' :
+            color === 'purple' ? 'border-purple-200 text-purple-700 bg-purple-50' :
+            color === 'green' ? 'border-green-200 text-green-700 bg-green-50' :
+            'border-orange-200 text-orange-700 bg-orange-50'
+          }`}>
             {insights.length}
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         <ScrollArea className="h-80">
-          <div className="space-y-3">
+          <div className="space-y-4">
             {insights.length === 0 ? (
-              <div className="text-center text-muted-foreground py-8">
-                <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>Aucun insight disponible</p>
-                <p className="text-sm">Lancez un scan pour obtenir des données</p>
+              <div className="text-center text-slate-500 py-12">
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-gradient-to-br ${
+                  color === 'blue' ? 'from-blue-50 to-blue-100' :
+                  color === 'purple' ? 'from-purple-50 to-purple-100' :
+                  color === 'green' ? 'from-green-50 to-green-100' :
+                  'from-orange-50 to-orange-100'
+                }`}>
+                  <Brain className="h-8 w-8 text-slate-400" />
+                </div>
+                <p className="font-medium text-slate-900 mb-2">Aucun insight disponible</p>
+                <p className="text-sm text-slate-500">Lancez un scan pour obtenir des données</p>
               </div>
             ) : (
               insights.map((insight) => (
-                <div key={insight.id} className="border rounded-lg p-3 hover:bg-muted/50 transition-colors">
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-medium text-sm leading-tight">{insight.title}</h4>
+                <div 
+                  key={insight.id} 
+                  data-testid="insight-card"
+                  className="border border-slate-200 rounded-xl p-4 bg-gradient-to-br from-white to-slate-50/50 hover:border-slate-300 hover:shadow-md transition-all duration-300"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <h4 className="font-semibold text-slate-900 text-sm leading-snug pr-3">
+                      {insight.title}
+                    </h4>
                     <Badge 
                       variant={insight.impact === 'high' ? 'destructive' : insight.impact === 'medium' ? 'default' : 'secondary'}
-                      className="text-xs"
+                      className={`text-xs font-medium shrink-0 ${
+                        insight.impact === 'high' ? 'bg-red-50 text-red-700 border-red-200' :
+                        insight.impact === 'medium' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                        'bg-slate-50 text-slate-700 border-slate-200'
+                      }`}
                     >
-                      {insight.impact}
+                      {insight.impact === 'high' ? 'Élevé' : insight.impact === 'medium' ? 'Moyen' : 'Faible'}
                     </Badge>
                   </div>
                   {insight.description && (
-                    <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
+                    <p className="text-sm text-slate-600 mb-4 leading-relaxed">
                       {insight.description}
                     </p>
                   )}
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <span className="text-xs text-slate-500 font-medium">
                       {insight.timestamp.toLocaleTimeString('fr-FR', { 
                         hour: '2-digit', 
                         minute: '2-digit' 
                       })}
                     </span>
                     {insight.url && (
-                      <Button variant="ghost" size="sm" className="h-6 px-2">
-                        <ExternalLink className="h-3 w-3" />
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 px-3 text-xs hover:bg-slate-100 text-slate-600 hover:text-slate-900"
+                      >
+                        <ExternalLink className="h-3 w-3 mr-1" />
+                        Source
                       </Button>
                     )}
                   </div>
@@ -326,30 +360,32 @@ export const CommunityManagerDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* En-tête avec contrôles */}
-      <Card>
-        <CardHeader>
+      <Card className="premium-card">
+        <CardHeader className="pb-6">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <Brain className="h-6 w-6 text-blue-500" />
-                Dashboard Community Manager
+              <CardTitle className="flex items-center gap-3 text-2xl text-slate-900">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
+                  <Brain className="h-7 w-7 text-blue-600" />
+                </div>
+                <span className="font-bold">Dashboard Community Manager</span>
               </CardTitle>
-              <p className="text-muted-foreground">
+              <p className="text-slate-600 mt-2 text-base">
                 Veille intelligente automatisée - 4 axes stratégiques
               </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               {/* Statut du scan */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 {scanStatus.isScanning ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
-                    <span className="text-sm">Scan en cours...</span>
+                    <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                    <span className="text-sm font-medium text-slate-700">Scan en cours...</span>
                   </>
                 ) : (
                   <>
-                    <div className={`h-2 w-2 rounded-full ${perplexity.isInitialized ? 'bg-green-500' : 'bg-red-500'}`} />
-                    <span className="text-sm">
+                    <div className={`h-3 w-3 rounded-full ${perplexity.isInitialized ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <span className="text-sm font-medium text-slate-700">
                       {perplexity.isInitialized ? 'Connecté' : 'Déconnecté'}
                     </span>
                   </>
@@ -358,7 +394,7 @@ export const CommunityManagerDashboard: React.FC = () => {
 
               {/* Informations de scan */}
               {scanStatus.lastScan && (
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-slate-500 font-medium">
                   Dernier scan: {scanStatus.lastScan.toLocaleTimeString('fr-FR', { 
                     hour: '2-digit', 
                     minute: '2-digit' 
@@ -371,16 +407,20 @@ export const CommunityManagerDashboard: React.FC = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setAutoScanEnabled(!autoScanEnabled)}
-                className="flex items-center gap-2"
+                className={`flex items-center gap-2 border-2 font-medium transition-all duration-300 ${
+                  autoScanEnabled 
+                    ? 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100' 
+                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                }`}
               >
-                <Bell className={`h-4 w-4 ${autoScanEnabled ? 'text-green-500' : 'text-gray-400'}`} />
+                <Bell className={`h-4 w-4 ${autoScanEnabled ? 'text-green-600' : 'text-slate-400'}`} />
                 Auto-scan {autoScanEnabled ? 'ON' : 'OFF'}
               </Button>
 
               <Button
                 onClick={scanAllAxes}
                 disabled={scanStatus.isScanning || !perplexity.isInitialized}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <RefreshCw className={`h-4 w-4 ${scanStatus.isScanning ? 'animate-spin' : ''}`} />
                 Scanner maintenant
@@ -391,50 +431,62 @@ export const CommunityManagerDashboard: React.FC = () => {
       </Card>
 
       {/* Statistiques rapides */}
-      <div className="grid grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-500" />
-              <div>
-                <p className="text-sm font-medium">Tendances IA</p>
-                <p className="text-2xl font-bold">{aiTrends.length}</p>
+      <div className="grid grid-cols-4 gap-6">
+        <Card className="premium-card hover-glow">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-slate-600 mb-1">Tendances IA</p>
+                <p className="text-3xl font-bold text-slate-900">{aiTrends.length}</p>
+                <p className="text-xs text-blue-600 font-medium">Insights disponibles</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-purple-500" />
-              <div>
-                <p className="text-sm font-medium">Améliorations</p>
-                <p className="text-2xl font-bold">{contentImprovements.length}</p>
+        <Card className="premium-card hover-glow">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center">
+                <Sparkles className="h-6 w-6 text-purple-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-slate-600 mb-1">Améliorations</p>
+                <p className="text-3xl font-bold text-slate-900">{contentImprovements.length}</p>
+                <p className="text-xs text-purple-600 font-medium">Conseils actifs</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-green-500" />
-              <div>
-                <p className="text-sm font-medium">Trending</p>
-                <p className="text-2xl font-bold">{trendingContent.length}</p>
+        <Card className="premium-card hover-glow">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-slate-600 mb-1">Trending</p>
+                <p className="text-3xl font-bold text-slate-900">{trendingContent.length}</p>
+                <p className="text-xs text-green-600 font-medium">Sujets populaires</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Eye className="h-5 w-5 text-orange-500" />
-              <div>
-                <p className="text-sm font-medium">Veille marque</p>
-                <p className="text-2xl font-bold">{brandMonitoring.length}</p>
+        <Card className="premium-card hover-glow">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center">
+                <Eye className="h-6 w-6 text-orange-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-slate-600 mb-1">Veille marque</p>
+                <p className="text-3xl font-bold text-slate-900">{brandMonitoring.length}</p>
+                <p className="text-xs text-orange-600 font-medium">Mentions trouvées</p>
               </div>
             </div>
           </CardContent>
@@ -474,16 +526,18 @@ export const CommunityManagerDashboard: React.FC = () => {
 
       {/* Informations sur le prochain scan */}
       {scanStatus.nextScan && autoScanEnabled && (
-        <Card>
-          <CardContent className="p-4">
+        <Card className="premium-card">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+                  <Clock className="h-5 w-5 text-slate-600" />
+                </div>
+                <span className="text-sm text-slate-700 font-medium">
                   Prochain scan automatique: {scanStatus.nextScan.toLocaleString('fr-FR')}
                 </span>
               </div>
-              <Badge variant="outline">
+              <Badge variant="outline" className="border-slate-200 text-slate-700 bg-slate-50 font-medium">
                 Scan #{scanStatus.scanCount}
               </Badge>
             </div>
