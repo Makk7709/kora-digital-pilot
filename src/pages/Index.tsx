@@ -9,9 +9,39 @@ import { PlanningWithPerplexity } from '../components/PlanningWithPerplexity';
 import Analytics from '../components/Analytics';
 import Library from '../components/Library';
 import { BrandMonitoring } from '../components/BrandMonitoring';
+import { BrandIntelligenceDashboard } from '../components/enhanced/BrandIntelligenceDashboard';
+import { usePerplexity } from '../hooks/usePerplexity';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
+  const [brandNameForTDD, setBrandNameForTDD] = useState('');
+  
+  const { isInitialized, initializeService, getBusinessInsights, getCompetitorAnalysis } = usePerplexity();
+
+  // === INITIALISATION DU SERVICE PERPLEXITY ===
+  React.useEffect(() => {
+    if (!isInitialized) {
+      const apiKey = import.meta.env.VITE_PERPLEXITY_API_KEY;
+      if (apiKey && apiKey !== 'your_perplexity_api_key_here') {
+        initializeService({
+          apiKey,
+          model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-small-128k-online',
+          maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 1000,
+          temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2
+        });
+      }
+    }
+  }, [isInitialized, initializeService]);
+
+  // === LISTENER POUR NAVIGATION TDD ===
+  React.useEffect(() => {
+    const handleNavigateToTDD = (event: any) => {
+      setActiveSection(event.detail.section);
+    };
+
+    window.addEventListener('navigate-to-tdd', handleNavigateToTDD);
+    return () => window.removeEventListener('navigate-to-tdd', handleNavigateToTDD);
+  }, []);
 
   const renderContent = () => {
     switch (activeSection) {
@@ -21,6 +51,45 @@ const Index = () => {
         return <CommunityManagerDashboard />;
       case 'brand-monitoring':
         return <BrandMonitoring />;
+      case 'brand-intelligence-tdd':
+        return (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm border">
+              <h2 className="text-xl font-bold mb-4">🧠 Brand Intelligence TDD Enhanced</h2>
+              <div className="flex gap-4 items-end">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nom de la marque à analyser
+                  </label>
+                  <input
+                    type="text"
+                    value={brandNameForTDD}
+                    onChange={(e) => setBrandNameForTDD(e.target.value)}
+                    placeholder="Ex: Nike, Apple, Tesla..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              {!isInitialized && (
+                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-sm text-yellow-800">
+                    ⚠️ Service Perplexity en cours d'initialisation... Assurez-vous que votre clé API est configurée.
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            {brandNameForTDD && isInitialized && (
+              <BrandIntelligenceDashboard 
+                brandName={brandNameForTDD}
+                perplexityService={{
+                  getBusinessInsights,
+                  getCompetitorAnalysis
+                }}
+              />
+            )}
+          </div>
+        );
       case 'inspiration':
         return <InspirationAI />;
       case 'images':

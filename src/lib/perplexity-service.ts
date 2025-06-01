@@ -60,6 +60,11 @@ class PerplexityService {
 
   constructor(config: PerplexityConfig) {
     this.config = config;
+    console.log('🔧 [PerplexityService] Initialisation:', {
+      apiKey: config.apiKey ? `${config.apiKey.substring(0, 10)}...` : 'MANQUANTE',
+      model: config.model,
+      maxTokens: config.maxTokens
+    });
   }
 
   // Méthode principale pour obtenir des insights métier
@@ -72,6 +77,8 @@ class PerplexityService {
 
     try {
       const prompt = this.buildBusinessPrompt(request);
+      console.log('📡 [PerplexityService] Appel API avec prompt:', prompt.substring(0, 100) + '...');
+      
       const response = await this.makeRequest(prompt);
       
       // Mettre en cache
@@ -79,7 +86,7 @@ class PerplexityService {
       
       return response;
     } catch (error) {
-      console.error('Erreur Perplexity Business Insights:', error);
+      console.error('❌ [PerplexityService] Erreur Business Insights:', error);
       throw new Error(`Impossible d'obtenir les insights: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     }
   }
@@ -163,6 +170,23 @@ class PerplexityService {
 
   // Méthodes privées
   private async makeRequest(prompt: string): Promise<PerplexityResponse> {
+    console.log('🔄 [PerplexityService] makeRequest démarré');
+    
+    // Vérification préalable
+    if (!this.config.apiKey) {
+      throw new Error('Clé API Perplexity manquante');
+    }
+    
+    if (!globalThis.fetch && typeof fetch === 'undefined') {
+      console.log('⚠️ [PerplexityService] fetch non disponible, tentative d\'import node-fetch');
+      try {
+        const nodeFetch = await import('node-fetch');
+        globalThis.fetch = nodeFetch.default;
+      } catch (err) {
+        throw new Error('fetch() non disponible - installer node-fetch: npm install node-fetch');
+      }
+    }
+
     const headers = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -186,18 +210,64 @@ class PerplexityService {
       stream: this.config.stream || false,
     };
 
-    const response = await fetch(this.baseURL, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
+    console.log('📡 [PerplexityService] Envoi requête:', {
+      url: this.baseURL,
+      model: body.model,
+      maxTokens: body.max_tokens,
+      promptLength: prompt.length
     });
 
+    let response;
+    try {
+      response = await fetch(this.baseURL, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+      
+      console.log('📊 [PerplexityService] Réponse reçue:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers)
+      });
+    } catch (error) {
+      console.error('❌ [PerplexityService] Erreur fetch:', error);
+      throw new Error(`Erreur réseau: ${error.message}`);
+    }
+
+    if (!response) {
+      throw new Error('Réponse fetch undefined - problème de configuration réseau');
+    }
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = { error: { message: 'Erreur inconnue' } };
+      }
+      
+      console.error('❌ [PerplexityService] Erreur API:', {
+        status: response.status,
+        error: errorData
+      });
+      
       throw new Error(`Erreur API Perplexity: ${response.status} - ${errorData.error?.message || 'Erreur inconnue'}`);
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+      console.log('✅ [PerplexityService] Données parsées:', {
+        hasChoices: !!data.choices,
+        choicesLength: data.choices?.length,
+        hasContent: !!data.choices?.[0]?.message?.content
+      });
+    } catch (error) {
+      console.error('❌ [PerplexityService] Erreur parsing JSON:', error);
+      throw new Error('Impossible de parser la réponse JSON');
+    }
     
     return {
       content: data.choices[0].message.content,

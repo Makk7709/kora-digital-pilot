@@ -32,6 +32,12 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
       description: 'Surveillance e-réputation'
     },
     {
+      id: 'brand-intelligence-tdd',
+      icon: '🚀',
+      label: 'Intelligence TDD',
+      description: 'Deep Research & Métriques'
+    },
+    {
       id: 'inspiration',
       icon: '✨',
       label: 'Inspiration IA',
