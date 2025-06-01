@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Debug LinkedIn AJAX - Test Isolation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .step {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #0073b1;
+        }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; }
+        .info { border-left-color: #17a2b8; background: #d1ecf1; }
+        
+        button {
+            background: linear-gradient(135deg, #0073b1, #005885);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 10px 10px 0;
+            transition: all 0.3s ease;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,115,177,0.4); }
+        button:disabled { background: #6c757d; cursor: not-allowed; transform: none; }
+        
+        .log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+        
+        .config {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        .config span:first-child { font-weight: 600; }
+        .config .value { font-family: monospace; }
+        
+        .tests { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug LinkedIn AJAX - Test Isolation</h1>
+        <p>Test spécialisé pour diagnostiquer l'erreur <code>XMLHttpRequest readyState: 4</code></p>
+        
+        <!-- Configuration -->
+        <div class="step info">
+            <h3>📋 Configuration Détectée</h3>
+            <div class="config" id="config"></div>
+        </div>
+        
+        <!-- Tests -->
+        <div class="tests">
+            <!-- Test 1: Proxy -->
+            <div class="step" id="step1">
+                <h3>1️⃣ Test Proxy Local</h3>
+                <button onclick="testProxy()">Tester Proxy</button>
+                <div id="proxyResult"></div>
+            </div>
+            
+            <!-- Test 2: Credentials -->
+            <div class="step" id="step2">
+                <h3>2️⃣ Test Credentials</h3>
+                <button onclick="testCredentials()">Vérifier Credentials</button>
+                <div id="credentialsResult"></div>
+            </div>
+            
+            <!-- Test 3: Auth URL -->
+            <div class="step" id="step3">
+                <h3>3️⃣ Test Auth URL</h3>
+                <button onclick="generateAuthURL()">Générer URL Auth</button>
+                <div id="authResult"></div>
+            </div>
+            
+            <!-- Test 4: Simulation Code -->
+            <div class="step" id="step4">
+                <h3>4️⃣ Test Échange Token (Simulation)</h3>
+                <button onclick="simulateTokenExchange()">Simuler Échange</button>
+                <div id="tokenResult"></div>
+            </div>
+            
+            <!-- Test 5: LinkedIn Real -->
+            <div class="step" id="step5">
+                <h3>5️⃣ Test LinkedIn Réel</h3>
+                <button onclick="startLinkedInAuth()">🚀 Authentification LinkedIn</button>
+                <div id="linkedinResult"></div>
+            </div>
+        </div>
+        
+        <!-- Logs -->
+        <div class="step">
+            <h3>📝 Logs Détaillés</h3>
+            <button onclick="clearLogs()">Effacer Logs</button>
+            <button onclick="exportLogs()">Exporter Logs</button>
+            <div class="log" id="logs"></div>
+        </div>
+        
+        <!-- Callback Handler -->
+        <div class="step info">
+            <h3>🔄 Callback Handler</h3>
+            <p>Cette page gère automatiquement le callback LinkedIn si un code est présent dans l'URL.</p>
+            <div id="callbackResult"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration LinkedIn
+        const config = {
+            clientId: '779j5z17aygimq',
+            clientSecret: 'WPL_AP1.EiMP8SYSl3AbTu5v.Lu3EPg==', // Visible pour test uniquement
+            redirectUri: 'http://localhost:8088/test-linkedin-ajax-debug.html',
+            scopes: ['openid', 'profile', 'email']
+        };
+        
+        let logs = [];
+        
+        // Utilities
+        function log(level, message, data = null) {
+            const timestamp = new Date().toISOString();
+            const logEntry = { timestamp, level, message, data };
+            logs.push(logEntry);
+            
+            const logElement = document.getElementById('logs');
+            const colorMap = {
+                success: '#00ff00',
+                error: '#ff6b6b',
+                warning: '#ffa500',
+                info: '#00bfff',
+                debug: '#ddd'
+            };
+            
+            logElement.innerHTML += `<span style="color: ${colorMap[level] || '#ddd'}">[${timestamp}] ${level.toUpperCase()}: ${message}</span>\n`;
+            if (data) {
+                logElement.innerHTML += `<span style="color: #888">${JSON.stringify(data, null, 2)}</span>\n`;
+            }
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        function updateStepStatus(stepId, status) {
+            const step = document.getElementById(stepId);
+            step.className = `step ${status}`;
+        }
+        
+        function showResult(elementId, content, status = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${status}" style="padding: 10px; border-radius: 4px; margin-top: 10px;">${content}</div>`;
+        }
+        
+        // Test 1: Proxy
+        async function testProxy() {
+            log('info', 'Test du proxy local...');
+            
+            try {
+                const response = await fetch('http://localhost:3001/api/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('success', 'Proxy fonctionnel', data);
+                    updateStepStatus('step1', 'success');
+                    showResult('proxyResult', '✅ Proxy accessible et fonctionnel', 'success');
+                } else {
+                    throw new Error(`Status ${response.status}`);
+                }
+            } catch (error) {
+                log('error', 'Erreur proxy', error.message);
+                updateStepStatus('step1', 'error');
+                showResult('proxyResult', `❌ Erreur proxy: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test 2: Credentials
+        function testCredentials() {
+            log('info', 'Vérification des credentials...');
+            
+            const checks = {
+                clientId: !!config.clientId && config.clientId.length > 10,
+                clientSecret: !!config.clientSecret && config.clientSecret.length > 10,
+                redirectUri: !!config.redirectUri && config.redirectUri.includes('localhost')
+            };
+            
+            log('debug', 'Checks credentials', checks);
+            
+            if (Object.values(checks).every(Boolean)) {
+                updateStepStatus('step2', 'success');
+                showResult('credentialsResult', '✅ Tous les credentials sont configurés', 'success');
+            } else {
+                updateStepStatus('step2', 'error');
+                showResult('credentialsResult', `❌ Credentials manquants: ${Object.entries(checks).filter(([k,v]) => !v).map(([k]) => k).join(', ')}`, 'error');
+            }
+        }
+        
+        // Test 3: Auth URL
+        function generateAuthURL() {
+            log('info', 'Génération URL d\'authentification...');
+            
+            try {
+                const state = Math.random().toString(36).substring(2, 15);
+                const params = new URLSearchParams({
+                    response_type: 'code',
+                    client_id: config.clientId,
+                    redirect_uri: config.redirectUri,
+                    scope: config.scopes.join(' '),
+                    state: state
+                });
+                
+                const authURL = `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`;
+                
+                localStorage.setItem('linkedin_oauth_state', state);
+                
+                log('success', 'URL d\'authentification générée', { authURL, state });
+                updateStepStatus('step3', 'success');
+                showResult('authResult', `✅ URL générée: <a href="${authURL}" target="_blank">Ouvrir LinkedIn Auth</a>`, 'success');
+                
+            } catch (error) {
+                log('error', 'Erreur génération URL', error.message);
+                updateStepStatus('step3', 'error');
+                showResult('authResult', `❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test 4: Simulation Token Exchange
+        async function simulateTokenExchange() {
+            log('info', 'Simulation échange de token...');
+            
+            const mockCode = 'mock_auth_code_' + Math.random().toString(36).substring(2, 10);
+            
+            try {
+                const requestBody = {
+                    code: mockCode,
+                    client_id: config.clientId,
+                    client_secret: config.clientSecret,
+                    redirect_uri: config.redirectUri
+                };
+                
+                log('debug', 'Requête simulée vers proxy', requestBody);
+                
+                const response = await fetch('/api/linkedin/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const responseText = await response.text();
+                log('debug', 'Réponse proxy', { status: response.status, body: responseText });
+                
+                if (response.ok) {
+                    updateStepStatus('step4', 'warning');
+                    showResult('tokenResult', '⚠️ Simulation réussie (code mock)', 'warning');
+                } else {
+                    // Erreur attendue avec un code mock
+                    updateStepStatus('step4', 'warning');
+                    showResult('tokenResult', `⚠️ Erreur attendue avec code mock: ${response.status}`, 'warning');
+                }
+                
+            } catch (error) {
+                log('error', 'Erreur simulation', error.message);
+                updateStepStatus('step4', 'error');
+                showResult('tokenResult', `❌ Erreur simulation: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test 5: LinkedIn Réel
+        function startLinkedInAuth() {
+            log('info', 'Démarrage authentification LinkedIn réelle...');
+            
+            const state = Math.random().toString(36).substring(2, 15);
+            const params = new URLSearchParams({
+                response_type: 'code',
+                client_id: config.clientId,
+                redirect_uri: config.redirectUri,
+                scope: config.scopes.join(' '),
+                state: state
+            });
+            
+            const authURL = `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`;
+            
+            localStorage.setItem('linkedin_oauth_state', state);
+            
+            log('success', 'Redirection vers LinkedIn...', { authURL, state });
+            updateStepStatus('step5', 'info');
+            showResult('linkedinResult', '🔄 Redirection vers LinkedIn en cours...', 'info');
+            
+            // Ouvrir LinkedIn dans une nouvelle fenêtre
+            window.open(authURL, 'linkedin_auth', 'width=600,height=700,scrollbars=yes,resizable=yes');
+        }
+        
+        // Callback Handler
+        async function handleCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
+            const state = urlParams.get('state');
+            const storedState = localStorage.getItem('linkedin_oauth_state');
+            
+            if (error) {
+                log('error', 'Erreur OAuth LinkedIn', { error, description: urlParams.get('error_description') });
+                showResult('callbackResult', `❌ Erreur OAuth: ${error}`, 'error');
+                return;
+            }
+            
+            if (!code) {
+                log('debug', 'Aucun code de callback détecté');
+                showResult('callbackResult', 'ℹ️ En attente du callback LinkedIn...', 'info');
+                return;
+            }
+            
+            log('info', 'Code de callback reçu', { code: code.substring(0, 10) + '...', state, storedState });
+            
+            if (state !== storedState) {
+                log('warning', 'State OAuth ne correspond pas', { received: state, stored: storedState });
+                showResult('callbackResult', '⚠️ State OAuth invalide', 'warning');
+            }
+            
+            // Échange du code contre un token
+            try {
+                const requestBody = {
+                    code: code,
+                    client_id: config.clientId,
+                    client_secret: config.clientSecret,
+                    redirect_uri: config.redirectUri
+                };
+                
+                log('info', 'Échange code contre token...');
+                showResult('callbackResult', '🔄 Échange du code en cours...', 'info');
+                
+                const response = await fetch('/api/linkedin/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const responseText = await response.text();
+                log('debug', 'Réponse échange token', { status: response.status, body: responseText });
+                
+                if (response.ok) {
+                    const tokenData = JSON.parse(responseText);
+                    log('success', 'Token reçu avec succès', { hasToken: !!tokenData.access_token, expiresIn: tokenData.expires_in });
+                    showResult('callbackResult', '✅ Authentification LinkedIn réussie !', 'success');
+                    updateStepStatus('step5', 'success');
+                    
+                    // Tester le profil utilisateur
+                    await testUserProfile(tokenData.access_token);
+                    
+                } else {
+                    throw new Error(`${response.status}: ${responseText}`);
+                }
+                
+            } catch (error) {
+                log('error', 'Erreur échange token', error.message);
+                showResult('callbackResult', `❌ Erreur échange token: ${error.message}`, 'error');
+                updateStepStatus('step5', 'error');
+            }
+        }
+        
+        // Test profil utilisateur
+        async function testUserProfile(accessToken) {
+            log('info', 'Test récupération profil utilisateur...');
+            
+            try {
+                const response = await fetch('/api/linkedin/profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        access_token: accessToken,
+                        endpoint: 'https://api.linkedin.com/v2/userinfo'
+                    })
+                });
+                
+                if (response.ok) {
+                    const profile = await response.json();
+                    log('success', 'Profil utilisateur récupéré', profile);
+                    showResult('callbackResult', `✅ Profil: ${profile.given_name} ${profile.family_name} (${profile.email})`, 'success');
+                } else {
+                    const errorText = await response.text();
+                    log('error', 'Erreur récupération profil', { status: response.status, error: errorText });
+                }
+                
+            } catch (error) {
+                log('error', 'Erreur test profil', error.message);
+            }
+        }
+        
+        // Utils
+        function clearLogs() {
+            logs = [];
+            document.getElementById('logs').innerHTML = '';
+        }
+        
+        function exportLogs() {
+            const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `linkedin-debug-logs-${new Date().toISOString()}.json`;
+            a.click();
+        }
+        
+        // Initialisation
+        function init() {
+            // Afficher la configuration
+            const configElement = document.getElementById('config');
+            configElement.innerHTML = `
+                <span>Client ID:</span><span class="value">${config.clientId}</span>
+                <span>Redirect URI:</span><span class="value">${config.redirectUri}</span>
+                <span>Scopes:</span><span class="value">${config.scopes.join(', ')}</span>
+                <span>User Agent:</span><span class="value">${navigator.userAgent}</span>
+                <span>Timestamp:</span><span class="value">${new Date().toISOString()}</span>
+            `;
+            
+            log('info', 'Page de test initialisée', { config, url: window.location.href });
+            
+            // Gérer le callback si présent
+            handleCallback();
+        }
+        
+        // Démarrer
+        init();
+    </script>
+</body>
+</html> 

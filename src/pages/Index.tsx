@@ -8,6 +8,7 @@ import ImageGenerator from '../components/ImageGenerator';
 import { PlanningWithPerplexity } from '../components/PlanningWithPerplexity';
 import Analytics from '../components/Analytics';
 import Library from '../components/Library';
+import { BrandMonitoring } from '../components/BrandMonitoring';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -18,6 +19,8 @@ const Index = () => {
         return <Dashboard onSectionChange={setActiveSection} />;
       case 'cm-dashboard':
         return <CommunityManagerDashboard />;
+      case 'brand-monitoring':
+        return <BrandMonitoring />;
       case 'inspiration':
         return <InspirationAI />;
       case 'images':

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,7 @@ const Library = () => {
       content: '🚀 L\'IA générative redéfinit notre approche business...',
       tags: ['IA', 'Business', 'Innovation'],
       createdAt: '2024-01-15',
-      performance: { likes: 156, shares: 23 },
+      performance: { likes: 333, shares: 67 },
       status: 'published'
     },
     {
@@ -38,7 +37,7 @@ const Library = () => {
       content: '🧵 Comparaison détaillée entre GPT-4o et Claude 3.5...',
       tags: ['GPT-4o', 'Claude', 'Comparaison'],
       createdAt: '2024-01-14',
-      performance: { likes: 89, shares: 45 },
+      performance: { likes: 84, shares: 28 },
       status: 'draft'
     },
     {
@@ -49,7 +48,7 @@ const Library = () => {
       content: 'Carrousel : 5 tips pour booster sa productivité...',
       tags: ['Productivité', 'Tips', 'Carrousel'],
       createdAt: '2024-01-13',
-      performance: { likes: 67, shares: 12 },
+      performance: { likes: 136, shares: 12 },
       status: 'scheduled'
     },
     {

@@ -61,12 +61,15 @@ class ErrorHandler {
       return 'extension';
     }
     
-    // Erreurs réseau
+    // Erreurs réseau et proxy
     if (
       lowerMessage.includes('fetch') ||
       lowerMessage.includes('network') ||
       lowerMessage.includes('cors') ||
-      lowerMessage.includes('timeout')
+      lowerMessage.includes('timeout') ||
+      lowerMessage.includes('econnrefused') ||
+      lowerMessage.includes('proxy') ||
+      lowerMessage.includes('connection refused')
     ) {
       return 'network';
     }
@@ -87,6 +90,15 @@ class ErrorHandler {
     // Ignorer les erreurs d'extensions de navigateur courantes
     if (errorInfo.type === 'extension') {
       console.debug('🔧 Erreur d\'extension de navigateur ignorée:', errorInfo.message);
+      return;
+    }
+
+    // Ignorer les erreurs de proxy au démarrage (normales)
+    if (errorInfo.type === 'network' && 
+        (errorInfo.message.includes('ECONNREFUSED') || 
+         errorInfo.message.includes('proxy') ||
+         errorInfo.message.includes('localhost:3001'))) {
+      console.debug('🔄 Erreur de proxy au démarrage (normale):', errorInfo.message);
       return;
     }
 

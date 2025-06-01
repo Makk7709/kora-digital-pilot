@@ -42,7 +42,7 @@ const Header = () => {
         </Button>
         
         <Avatar className="w-8 h-8">
-          <AvatarImage src="" alt="Franck" />
+          <AvatarImage src="" alt="Utilisateur" />
           <AvatarFallback className="bg-blue-500 text-white text-sm font-semibold">
             F
           </AvatarFallback>

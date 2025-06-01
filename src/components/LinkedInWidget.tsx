@@ -20,6 +20,7 @@ const LinkedInWidget: React.FC = () => {
     isAuthenticated,
     isLoading,
     isConfigured,
+    isProxyReady,
     metrics,
     lastSync,
     authenticate,
@@ -38,11 +39,21 @@ const LinkedInWidget: React.FC = () => {
       });
       return;
     }
+    
+    if (!isProxyReady) {
+      toast({
+        title: "Serveur non prêt",
+        description: "Le serveur proxy n'est pas encore disponible",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     authenticate();
   };
 
   const handleRefresh = async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !isProxyReady) return;
     
     try {
       setIsRefreshing(true);
@@ -75,6 +86,41 @@ const LinkedInWidget: React.FC = () => {
     const days = Math.floor(hours / 24);
     return `Il y a ${days}j`;
   };
+
+  // État proxy non prêt
+  if (!isProxyReady) {
+    return (
+      <Card className="w-full">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg flex items-center space-x-2">
+              <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
+                <span className="text-white text-xs font-bold">in</span>
+              </div>
+              <span>LinkedIn Analytics</span>
+            </CardTitle>
+            <Badge variant="secondary" className="text-xs">
+              <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse mr-1"></div>
+              Initialisation...
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-6">
+            <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-3">
+              <div className="w-6 h-6 border-2 border-orange-300 border-t-orange-600 rounded-full animate-spin"></div>
+            </div>
+            <p className="text-gray-600 text-sm mb-2">
+              Démarrage du serveur LinkedIn...
+            </p>
+            <p className="text-xs text-gray-500">
+              Veuillez patienter quelques secondes
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   // État non configuré
   if (!isConfigured) {

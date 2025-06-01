@@ -26,6 +26,12 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
       description: 'Veille IA automatisée'
     },
     {
+      id: 'brand-monitoring',
+      icon: '👁️',
+      label: 'Veille de Marque',
+      description: 'Surveillance e-réputation'
+    },
+    {
       id: 'inspiration',
       icon: '✨',
       label: 'Inspiration IA',
@@ -100,22 +106,6 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
         <div className="px-3 mt-4">
           <div className="scale-75 origin-top">
             <LinkedInWidget />
-          </div>
-        </div>
-      )}
-
-      {!isCollapsed && (
-        <div className="absolute bottom-6 left-3 right-3">
-          <div className="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100/50 border border-blue-200">
-            <div className="flex items-center space-x-2 mb-2">
-              <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-xs font-bold text-white">K</span>
-              </div>
-              <span className="text-blue-600 font-medium text-sm">Kora</span>
-            </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Votre assistante IA pour une communication digitale d'excellence
-            </p>
           </div>
         </div>
       )}

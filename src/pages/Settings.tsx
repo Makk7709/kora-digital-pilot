@@ -42,7 +42,7 @@ const Settings = () => {
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-4">
                 <Avatar className="w-16 h-16">
-                  <AvatarImage src="" alt="Franck" />
+                  <AvatarImage src="" alt="Utilisateur" />
                   <AvatarFallback className="bg-blue-500 text-white text-lg font-semibold">
                     F
                   </AvatarFallback>
@@ -50,11 +50,11 @@ const Settings = () => {
                 <div className="space-y-2 flex-1">
                   <div>
                     <Label htmlFor="username" className="text-slate-700">Nom d'utilisateur</Label>
-                    <Input id="username" defaultValue="Franck" className="mt-1" />
+                    <Input id="username" defaultValue="" className="mt-1" />
                   </div>
                   <div>
                     <Label htmlFor="email" className="text-slate-700">Email</Label>
-                    <Input id="email" type="email" defaultValue="franck@korev.ai" className="mt-1" />
+                    <Input id="email" type="email" defaultValue="" className="mt-1" />
                   </div>
                 </div>
               </div>

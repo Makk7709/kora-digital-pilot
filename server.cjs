@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const path = require('path');
 
 const app = express();
-const PORT = 3001;
+const PORT = 8080;
 
 // Middleware
 app.use(cors());
@@ -137,12 +137,12 @@ app.post('/api/anthropic/messages', async (req, res) => {
   }
 });
 
-// Proxy pour récupérer le profil LinkedIn
+// Proxy pour récupérer le profil LinkedIn via OpenID Connect
 app.post('/api/linkedin/profile', async (req, res) => {
   try {
-    console.log('🔄 Proxy: Récupération profil LinkedIn');
+    console.log('🔄 Proxy: Récupération profil LinkedIn (OpenID Connect)');
     
-    const { access_token } = req.body;
+    const { access_token, endpoint } = req.body;
     
     if (!access_token) {
       return res.status(400).json({
@@ -150,10 +150,12 @@ app.post('/api/linkedin/profile', async (req, res) => {
       });
     }
 
-    console.log('📤 Proxy: Requête profil vers LinkedIn');
+    // Utiliser l'endpoint fourni ou par défaut userinfo OpenID Connect
+    const profileEndpoint = endpoint || 'https://api.linkedin.com/v2/userinfo';
+    
+    console.log('📤 Proxy: Requête profil vers:', profileEndpoint);
 
-    // Essayer d'abord avec l'API userinfo (OpenID Connect)
-    let response = await fetch('https://api.linkedin.com/v2/userinfo', {
+    const response = await fetch(profileEndpoint, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${access_token}`,
@@ -161,31 +163,34 @@ app.post('/api/linkedin/profile', async (req, res) => {
       },
     });
 
-    if (!response.ok) {
-      console.log('🔄 Proxy: Tentative avec ancienne API LinkedIn...');
-      // Fallback vers l'ancienne API
-      response = await fetch('https://api.linkedin.com/v2/people/~:(id,firstName,lastName,profilePicture(displayImage~:playableStreams))', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${access_token}`,
-          'Accept': 'application/json',
-        },
-      });
-    }
-
     const data = await response.text();
     
-    console.log('📥 Proxy: Réponse profil LinkedIn:', {
+    console.log('📥 Proxy: Réponse profil LinkedIn OpenID Connect:', {
       status: response.status,
-      ok: response.ok
+      ok: response.ok,
+      endpoint: profileEndpoint
     });
 
     if (!response.ok) {
       console.error('❌ Proxy: Erreur profil LinkedIn:', data);
       return res.status(response.status).json({
         error: 'LinkedIn Profile error',
-        details: data
+        details: data,
+        endpoint: profileEndpoint
       });
+    }
+
+    // Valider que la réponse est du JSON valide
+    try {
+      const jsonData = JSON.parse(data);
+      console.log('✅ Proxy: Données profil OpenID Connect valides:', {
+        hasId: !!jsonData.sub,
+        hasName: !!jsonData.given_name,
+        hasEmail: !!jsonData.email,
+        claims: Object.keys(jsonData)
+      });
+    } catch (parseError) {
+      console.error('❌ Proxy: Réponse LinkedIn non-JSON:', data);
     }
 
     // Retourner la réponse LinkedIn

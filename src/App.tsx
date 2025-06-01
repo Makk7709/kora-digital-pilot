@@ -10,6 +10,7 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import LinkedInCallback from "./components/LinkedInCallback";
 import { TestAPI } from "./components/TestAPI";
+import DiagnosticTest from "./components/DiagnosticTest";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/app" element={<Index />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/test-api" element={<TestAPI />} />
+          <Route path="/diagnostic" element={<DiagnosticTest />} />
           <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
