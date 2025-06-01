@@ -21,8 +21,8 @@ const Landing = () => {
             <span className="text-white font-bold text-xl">K</span>
           </div>
           <div className="py-1">
-            <h1 className="text-2xl font-bold text-slate-900">Korev AI</h1>
-            <p className="text-xs text-slate-500 leading-normal py-0.5">powered by P.R.I.S.M</p>
+            <h1 className="text-2xl font-bold text-slate-900">Kora</h1>
+            <p className="text-xs text-slate-500 leading-normal py-0.5">Social intelligence powered by P.R.I.S.M</p>
           </div>
         </div>
         
@@ -40,7 +40,7 @@ const Landing = () => {
         <div className="max-w-4xl">
           <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-sky-50 border border-sky-200 mb-8">
             <Sparkles className="w-4 h-4 text-sky-600" />
-            <span className="text-sky-700 text-sm font-medium">Plateforme interne Korev AI</span>
+            <span className="text-sky-700 text-sm font-medium">Plateforme interne Kora</span>
           </div>
           
           <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-8 leading-normal">
@@ -103,7 +103,7 @@ const Landing = () => {
             <div className="w-8 h-8 bg-gradient-to-r from-sky-500 to-sky-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">K</span>
             </div>
-            <span className="text-slate-500">© 2024 Korev AI. Usage interne.</span>
+            <span className="text-slate-500">© 2024 Kora. Usage interne.</span>
           </div>
           
           <div className="flex items-center space-x-2">
