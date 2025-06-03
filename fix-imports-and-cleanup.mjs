@@ -6,9 +6,9 @@
  * Méthodologie TDD stricte avec validation à chaque étape
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
 
 console.log('🚀 DÉMARRAGE PROCÉDURE CHIRURGICALE TDD');
 console.log('═══════════════════════════════════════');
@@ -24,7 +24,7 @@ function runTestAndCheck(command, description) {
     return result;
   } catch (error) {
     console.log(`❌ FAILED: ${description}`);
-    console.log(error.stdout);
+    if (error.stdout) console.log(error.stdout);
     return null;
   }
 }
@@ -110,15 +110,15 @@ filesToDelete.forEach(file => {
     console.log(`🗑️ Suppression: ${file}`);
     
     // Vérification finale qu'aucun import actif
-    const grepResult = runTestAndCheck(
-      `grep -r "from '${file.replace('src/', '../')}" src/`, 
-      `Vérification aucun import actif de ${file}`
-    );
-    
-    if (grepResult && grepResult.trim()) {
-      console.log(`⚠️ WARNING: Import actif détecté pour ${file}`);
-      console.log(grepResult);
-      return; // Ne pas supprimer
+    try {
+      const grepResult = execSync(`grep -r "from '${file.replace('src/', '../')}" src/`, { encoding: 'utf8', stdio: 'pipe' });
+      if (grepResult && grepResult.trim()) {
+        console.log(`⚠️ WARNING: Import actif détecté pour ${file}`);
+        console.log(grepResult);
+        return; // Ne pas supprimer
+      }
+    } catch (error) {
+      // Aucun import trouvé, c'est bon
     }
     
     fs.unlinkSync(file);
@@ -186,16 +186,17 @@ console.log('✅ Architecture simplifiée');
 console.log('✅ Backups sécurisés disponibles');
 console.log('\n🚀 CODEBASE NETTOYÉE - TDD VALIDÉ');
 
-// Suppression backup si tout OK (optionnel)
+// Nettoyage final avec option de garder les backups
 console.log('\n🧹 Nettoyage final...');
-setTimeout(() => {
-  const keepBackup = process.argv.includes('--keep-backup');
-  if (!keepBackup) {
+
+const keepBackup = process.argv.includes('--keep-backup');
+if (!keepBackup) {
+  setTimeout(() => {
     fs.rmSync(backupDir, { recursive: true, force: true });
     console.log('🗑️ Backups temporaires supprimés');
-  } else {
-    console.log('📦 Backups conservés dans:', backupDir);
-  }
-  
+    console.log('\n✨ PROCÉDURE CHIRURGICALE TERMINÉE AVEC SUCCÈS');
+  }, 1000);
+} else {
+  console.log('📦 Backups conservés dans:', backupDir);
   console.log('\n✨ PROCÉDURE CHIRURGICALE TERMINÉE AVEC SUCCÈS');
-}, 1000); 
+} 

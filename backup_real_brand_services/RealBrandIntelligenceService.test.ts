@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
-import { RealBrandIntelligenceService } from '../services/RealBrandIntelligenceService';
+import { RealBrandIntelligenceService } from '../services/RealBrandIntelligenceServiceComplete';
 import type { DeepResearchReport } from '../services/EnhancedBrandIntelligenceService';
 
 // Mock du service Perplexity

@@ -11,7 +11,7 @@
  */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { RealBrandIntelligenceService } from '../services/RealBrandIntelligenceService';
+import { RealBrandIntelligenceService } from '../services/RealBrandIntelligenceServiceFixed';
 import { ReportExportService, createReportExportService, type ExportOptions } from '../services/ReportExportService';
 import type { DeepResearchReport } from '../services/EnhancedBrandIntelligenceService';
 
