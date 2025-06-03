@@ -49,6 +49,19 @@ import {
   SmartAlerts
 } from '../../services/EnhancedBrandIntelligenceService';
 
+// Temporarily commented out to fix the white page issue
+// import { 
+//   ReportExportService, 
+//   createReportExportService,
+//   type ExportOptions 
+// } from '../../services/ReportExportService';
+
+import { 
+  ReportExportService, 
+  createReportExportService,
+  type ExportOptions 
+} from '../../services/ReportExportService';
+
 interface Props {
   brandName: string;
   perplexityService: any;
@@ -66,11 +79,13 @@ interface PerplexityRawData {
 export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplexityService }) => {
   // === ÉTATS ===
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [report, setReport] = useState<DeepResearchReport | null>(null);
   const [rawPerplexityData, setRawPerplexityData] = useState<PerplexityRawData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('rapport-kora');
   const [service] = useState(() => new EnhancedBrandIntelligenceService(perplexityService));
+  const [exportService] = useState(() => createReportExportService());
 
   // === GÉNÉRATION DU RAPPORT ===
   const generateReport = async () => {
@@ -134,6 +149,119 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
     }
   };
 
+  // === EXPORT DU RAPPORT ===
+  const exportReport = async (format: 'json' | 'csv' | 'excel' | 'pdf') => {
+    const dataToExport = report || rawPerplexityData;
+    
+    if (!dataToExport) {
+      setError('Aucun rapport à exporter. Générez d\'abord un rapport.');
+      return;
+    }
+
+    setIsExporting(true);
+    setError(null);
+
+    try {
+      console.log(`🚀 Export du rapport en format ${format.toUpperCase()}...`);
+      
+      // Si on a rawPerplexityData mais pas report, créer un objet export simple
+      let exportData: any = dataToExport;
+      if (rawPerplexityData && !report) {
+        exportData = {
+          brandName: brandName,
+          executionTimestamp: new Date(),
+          rawData: rawPerplexityData,
+          type: 'Kora P.R.I.S.M Analysis',
+          // Utiliser les données brutes directement
+          objectiveAnalysis: rawPerplexityData.objectiveAnalysis,
+          strategicAnalysis: rawPerplexityData.strategicAnalysis,
+          competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
+          trendAnalysis: rawPerplexityData.trendAnalysis,
+          sources: rawPerplexityData.sources
+        };
+      }
+      
+      let result;
+      
+      // === UTILISER SERVICE ENHANCED POUR PDF ===
+      if (format === 'pdf') {
+        console.log('📄 Utilisation du service Enhanced P.R.I.S.M pour export PDF...');
+        
+        // Import dynamique des services Enhanced
+        const { createEnhancedReportExportService, getRecommendedEnhancedOptions } = await import('../../services/EnhancedReportExportService');
+        
+        const enhancedExportService = createEnhancedReportExportService();
+        const enhancedOptions = getRecommendedEnhancedOptions(exportData);
+        
+        // Enrichir les données pour l'Enhanced P.R.I.S.M avec données complètes
+        const enrichedData = {
+          ...exportData,
+          brandName: brandName || 'Marque analysée',
+          // Ajouter les analyses complètes si disponibles
+          fullContent: rawPerplexityData ? {
+            objectiveAnalysis: rawPerplexityData.objectiveAnalysis,
+            strategicAnalysis: rawPerplexityData.strategicAnalysis,
+            competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
+            trendAnalysis: rawPerplexityData.trendAnalysis
+          } : null,
+          enhancedMetadata: {
+            generatedBy: 'Kora P.R.I.S.M Enhanced',
+            analysisDepth: 'Professional',
+            dataSource: 'Perplexity AI + Kora Processing',
+            timestamp: new Date().toISOString()
+          }
+        };
+        
+        result = await enhancedExportService.exportReport(enrichedData, enhancedOptions);
+        
+        if (result.enhancementApplied) {
+          console.log(`✅ Export Enhanced P.R.I.S.M réussi: ${result.pages} pages, ${result.contentMetrics?.totalWords} mots`);
+        }
+        
+      } else {
+        // === UTILISER SERVICE STANDARD POUR AUTRES FORMATS ===
+        const exportOptions: ExportOptions = {
+          format,
+          includeMetadata: true,
+          compressionLevel: 'medium',
+          customization: {
+            includeCharts: false,
+            includeRawData: true,
+            includeExecutiveSummary: true,
+            includeRecommendations: true,
+            includeAlerts: true
+          }
+        };
+
+        result = await exportService.exportReport(exportData, exportOptions);
+      }
+      
+      if (result.success) {
+        // Déclencher le téléchargement directement via l'URL blob
+        const link = document.createElement('a');
+        link.href = result.downloadUrl;
+        link.download = result.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        console.log(`✅ Export ${format.toUpperCase()} réussi:`, result.fileName);
+        
+        // Afficher les métriques Enhanced si disponibles
+        if (result.enhancementApplied && result.contentMetrics) {
+          console.log(`📊 Métriques Enhanced: ${result.contentMetrics.totalWords} mots, Standards: ${result.contentMetrics.professionalStandards ? 'Oui' : 'Non'}`);
+        }
+      } else {
+        throw new Error(result.errors?.join(', ') || 'Erreur export');
+      }
+    } catch (err: any) {
+      setError(`Erreur export ${format.toUpperCase()}: ${err.message}`);
+      console.error('❌ Erreur export:', err);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   // === RENDU ===
   return (
     <div className="space-y-6" data-testid="brand-intelligence-dashboard">
@@ -148,31 +276,97 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
               </div>
               <div>
                 <CardTitle className="text-3xl font-bold" data-testid="dashboard-title">
-                  Intelligence TDD
+                  ⟨⟩ P.R.I.S.M Report
                 </CardTitle>
                 <p className="text-blue-100 mt-2 text-lg">
                   Rapport Kora Premium • Analyse approfondie pour {brandName || 'votre marque'}
                 </p>
               </div>
             </div>
-            <Button 
-              onClick={generateReport}
-              disabled={isGenerating || !brandName}
-              className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-8 py-3"
-              data-testid="generate-report-button"
-            >
-              {isGenerating ? (
-                <>
-                  <Activity className="w-5 h-5 mr-3 animate-spin" />
-                  Génération en cours...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5 mr-3" />
-                  Générer Rapport Kora
-                </>
+            <div className="flex items-center gap-4">
+              {/* Bouton Export avec dropdown */}
+              {(report || rawPerplexityData) && (
+                <div className="relative group">
+                  <Button 
+                    disabled={isExporting}
+                    className="bg-green-600 hover:bg-green-700 text-white border-0 backdrop-blur-sm px-6 py-3"
+                    data-testid="export-dropdown-button"
+                  >
+                    {isExporting ? (
+                      <>
+                        <Activity className="w-5 h-5 mr-2 animate-spin" />
+                        Export...
+                      </>
+                    ) : (
+                      <>
+                        <FileText className="w-5 h-5 mr-2" />
+                        Exporter
+                      </>
+                    )}
+                  </Button>
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="py-2">
+                      <button
+                        onClick={() => exportReport('json')}
+                        disabled={isExporting}
+                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                        data-testid="export-json-button"
+                      >
+                        <FileText className="w-4 h-4" />
+                        JSON (Complet)
+                      </button>
+                      <button
+                        onClick={() => exportReport('csv')}
+                        disabled={isExporting}
+                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                        data-testid="export-csv-button"
+                      >
+                        <BarChart3 className="w-4 h-4" />
+                        CSV (Excel)
+                      </button>
+                      <button
+                        onClick={() => exportReport('excel')}
+                        disabled={isExporting}
+                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                        data-testid="export-excel-button"
+                      >
+                        <BarChart3 className="w-4 h-4" />
+                        Excel
+                      </button>
+                      <button
+                        onClick={() => exportReport('pdf')}
+                        disabled={isExporting}
+                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                        data-testid="export-pdf-button"
+                      >
+                        <FileText className="w-4 h-4" />
+                        PDF
+                      </button>
+                    </div>
+                  </div>
+                </div>
               )}
-            </Button>
+              
+              {/* Bouton Générer Rapport */}
+              <Button 
+                onClick={generateReport}
+                disabled={isGenerating || !brandName}
+                className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-8 py-3"
+                data-testid="generate-report-button"
+              >
+                {isGenerating ? (
+                  <>
+                    <Activity className="w-5 h-5 mr-3 animate-spin" />
+                    Génération en cours...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5 mr-3" />
+                    Générer Rapport Kora
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </CardHeader>
       </Card>
@@ -260,7 +454,7 @@ const KoraReportDisplay: React.FC<{ brandName: string; data: PerplexityRawData }
               </div>
               <div>
                 <h1 className="text-4xl font-bold">Rapport Kora</h1>
-                <p className="text-xl text-blue-200">Intelligence TDD Premium</p>
+                <p className="text-xl text-blue-200">P.R.I.S.M Report Premium</p>
               </div>
             </div>
             <div className="bg-white/10 rounded-xl p-6 backdrop-blur-sm">
@@ -412,7 +606,7 @@ const KoraReportDisplay: React.FC<{ brandName: string; data: PerplexityRawData }
           <Sparkles className="w-5 h-5 text-yellow-400" />
         </div>
         <p className="text-slate-300 text-sm">
-          Intelligence TDD • Données en temps réel • Analyse approfondie
+          P.R.I.S.M Report • Données en temps réel • Analyse approfondie
         </p>
       </CardContent>
     </Card>

@@ -1,0 +1,161 @@
+{
+  "brandName": "MultiFormat_Test",
+  "executionTimestamp": "2025-06-03T16:01:28.037Z",
+  "confidenceScore": 80,
+  "objectiveAnalysis": {
+    "brandHistory": "Test company history",
+    "marketPosition": "Test position",
+    "financialHealth": "Test health",
+    "innovationIndex": 75,
+    "reputationScore": 80,
+    "keyMilestones": []
+  },
+  "recentActions": [],
+  "strategicAnalysis": {
+    "coreStrategy": "Test strategy",
+    "targetMarkets": [
+      "Test"
+    ],
+    "competitiveAdvantage": [
+      "Test"
+    ],
+    "futureDirection": "Test",
+    "risksAndChallenges": [
+      "Test"
+    ],
+    "strategicPriorities": [],
+    "businessModel": {
+      "revenueStreams": [],
+      "costStructure": [],
+      "valueProposition": "Test",
+      "customerSegments": [],
+      "keyPartners": [],
+      "channels": []
+    }
+  },
+  "trendAnalysis": {
+    "emergingTrends": [],
+    "weakSignals": [],
+    "disruptiveThreats": [],
+    "opportunities": [],
+    "sectorEvolution": {
+      "growthRate": 10,
+      "maturityLevel": "growth",
+      "keyTrends": [],
+      "regulatoryChanges": [],
+      "technologicalDisruptions": []
+    }
+  },
+  "swotMetrics": {
+    "strengthsScore": 80,
+    "weaknessesScore": 40,
+    "opportunitiesScore": 75,
+    "threatsScore": 30,
+    "strategicHealthIndex": 80,
+    "detailedBreakdown": {
+      "strengths": [],
+      "weaknesses": [],
+      "opportunities": [],
+      "threats": []
+    },
+    "competitiveAdvantage": [],
+    "strategicRecommendations": []
+  },
+  "contentMetrics": {
+    "topicsDistribution": [],
+    "sentimentByTopic": {},
+    "contentVolume": 100,
+    "engagementMetrics": {
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "clickThroughRate": 0,
+      "timeSpent": 0,
+      "conversionRate": 0
+    },
+    "viralityIndex": 50,
+    "influencerMetrics": {
+      "totalInfluencers": 0,
+      "averageFollowers": 0,
+      "topInfluencers": [],
+      "sentimentByInfluencer": {},
+      "reachAmplification": 0
+    },
+    "contentQuality": {
+      "authorityScore": 50,
+      "credibilityIndex": 50,
+      "factualAccuracy": 50,
+      "biasLevel": 50,
+      "sourceReliability": 50
+    },
+    "trendingTopics": []
+  },
+  "competitiveMetrics": {
+    "marketShareEvolution": {
+      "currentShare": 10,
+      "trend": "stable",
+      "projectedShare": 10,
+      "historicalData": [],
+      "benchmarkPosition": 5
+    },
+    "competitorBenchmark": [],
+    "competitiveAdvantageIndex": 50,
+    "threatLevel": 5,
+    "opportunityGaps": [],
+    "competitivePositioning": {
+      "positionQuadrant": "follower",
+      "differentiationLevel": 50,
+      "costAdvantage": 0,
+      "brandStrength": 50,
+      "operationalExcellence": 50
+    },
+    "marketDynamics": {
+      "competitionIntensity": 50,
+      "barriers": [],
+      "newEntrants": [],
+      "substituteThreats": [],
+      "supplierPower": 50,
+      "buyerPower": 50
+    }
+  },
+  "reputationKPIs": {
+    "overallReputationScore": 70,
+    "trustIndex": 70,
+    "brandLoyaltyScore": 70,
+    "crisisResilienceIndex": 70,
+    "stakeholderSentiment": {
+      "customers": 70,
+      "employees": 70,
+      "investors": 70,
+      "media": 70,
+      "regulators": 70,
+      "communities": 70,
+      "partners": 70
+    },
+    "reputationDrivers": [],
+    "riskIndicators": [],
+    "benchmarkComparison": []
+  },
+  "recommendations": [],
+  "alerts": {
+    "critical": [],
+    "warning": [],
+    "info": [],
+    "opportunities": []
+  },
+  "dataFreshness": {
+    "isDataFresh": true,
+    "oldestDataAge": 24,
+    "averageDataAge": 12,
+    "lastUpdateTime": "2025-06-03T16:01:28.037Z",
+    "dataQualityScore": 85
+  },
+  "sources": [],
+  "limitations": [],
+  "_exportMetadata": {
+    "exportedAt": "2025-06-03T16:01:28.037Z",
+    "format": "json",
+    "sections": "all",
+    "customization": "none"
+  }
+}

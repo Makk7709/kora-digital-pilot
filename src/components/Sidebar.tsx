@@ -33,8 +33,8 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
     },
     {
       id: 'brand-intelligence-tdd',
-      icon: '🚀',
-      label: 'Intelligence TDD',
+      icon: '⟨⟩',
+      label: 'P.R.I.S.M Report',
       description: 'Deep Research & Métriques'
     },
     {

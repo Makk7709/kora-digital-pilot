@@ -396,7 +396,7 @@ export const BrandMonitoring: React.FC = () => {
     handleAnalyzeWithAI();
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     if (!realBrandReport) {
       toast({
         title: "Aucune donnée",
@@ -405,13 +405,77 @@ export const BrandMonitoring: React.FC = () => {
       });
       return;
     }
-    toast({
-      title: "Export en cours",
-      description: "Génération du rapport PDF avec données Perplexity..."
-    });
+
+    try {
+      console.log('📄 Génération PDF en cours avec données Perplexity...');
+      
+      // Import du service d'export
+      const { createReportExportService } = await import('../services/ReportExportService');
+      const exportService = createReportExportService();
+      
+      // Préparer les données pour l'export
+      const exportData = {
+        brandName: realBrandReport.brandName,
+        type: 'Brand Monitoring Report',
+        sentiment: realBrandReport.sentiment,
+        mentions: realBrandReport.mentions,
+        competitors: realBrandReport.competitors,
+        keywords: realBrandReport.keywords,
+        swot: realBrandReport.swot,
+        alerts: realBrandReport.alerts,
+        analysisTimestamp: realBrandReport.analysisTimestamp,
+        metadata: {
+          source: 'Perplexity API + Kora Processing',
+          exportedAt: new Date(),
+          reportType: 'Brand Monitoring'
+        }
+      };
+      
+      const options = {
+        format: 'pdf' as const,
+        includeMetadata: true,
+        compressionLevel: 'medium' as const,
+        customization: {
+          includeCharts: false,
+          includeRawData: true,
+          includeExecutiveSummary: true,
+          includeRecommendations: true,
+          includeAlerts: true
+        }
+      };
+      
+      const result = await exportService.exportReport(exportData, options);
+      
+      if (result.success) {
+        // Déclencher le téléchargement
+        const link = document.createElement('a');
+        link.href = result.downloadUrl;
+        link.download = result.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast({
+          title: "✅ Export PDF réussi",
+          description: `Fichier téléchargé: ${result.fileName} (${result.fileSize} bytes)`
+        });
+        
+        console.log(`✅ Export PDF réussi: ${result.fileName}`);
+      } else {
+        throw new Error(result.errors?.join(', ') || 'Erreur export PDF');
+      }
+      
+    } catch (error) {
+      console.error('❌ Erreur export PDF:', error);
+      toast({
+        title: "❌ Erreur export PDF", 
+        description: error.message || 'Impossible de générer le PDF',
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     if (!realBrandReport) {
       toast({
         title: "Aucune donnée",
@@ -420,10 +484,69 @@ export const BrandMonitoring: React.FC = () => {
       });
       return;
     }
-    toast({
-      title: "Export en cours",
-      description: "Génération du fichier Excel avec insights Perplexity..."
-    });
+
+    try {
+      console.log('📊 Génération Excel en cours...');
+      
+      // Import du service d'export
+      const { createReportExportService } = await import('../services/ReportExportService');
+      const exportService = createReportExportService();
+      
+      // Préparer les données pour l'export Excel
+      const exportData = {
+        brandName: realBrandReport.brandName,
+        type: 'Brand Monitoring Excel Report',
+        sentiment: realBrandReport.sentiment,
+        mentions: realBrandReport.mentions,
+        competitors: realBrandReport.competitors,
+        keywords: realBrandReport.keywords,
+        swot: realBrandReport.swot,
+        alerts: realBrandReport.alerts,
+        analysisTimestamp: realBrandReport.analysisTimestamp
+      };
+      
+      const options = {
+        format: 'excel' as const,
+        includeMetadata: true,
+        compressionLevel: 'medium' as const,
+        customization: {
+          includeCharts: true,
+          includeRawData: true,
+          includeExecutiveSummary: true,
+          includeRecommendations: true,
+          includeAlerts: true
+        }
+      };
+      
+      const result = await exportService.exportReport(exportData, options);
+      
+      if (result.success) {
+        // Déclencher le téléchargement
+        const link = document.createElement('a');
+        link.href = result.downloadUrl;
+        link.download = result.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast({
+          title: "✅ Export Excel réussi",
+          description: `Fichier téléchargé: ${result.fileName}`
+        });
+        
+        console.log(`✅ Export Excel réussi: ${result.fileName}`);
+      } else {
+        throw new Error(result.errors?.join(', ') || 'Erreur export Excel');
+      }
+      
+    } catch (error) {
+      console.error('❌ Erreur export Excel:', error);
+      toast({
+        title: "❌ Erreur export Excel",
+        description: error.message || 'Impossible de générer le fichier Excel',
+        variant: "destructive"
+      });
+    }
   };
 
   const handleGenerateReport = async () => {
