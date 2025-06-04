@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Fond bleu azur OM -->
+  <circle cx="8" cy="8" r="8" fill="#00A8E6"/>
+  
+  <!-- Lettre K en blanc, simplifiée pour 16px -->
+  <g fill="white">
+    <!-- Barre verticale gauche du K -->
+    <rect x="3" y="3" width="2" height="10"/>
+    
+    <!-- Barre diagonale haute du K -->
+    <polygon points="5,3 12,3 12,5 7.5,8 5,6"/>
+    
+    <!-- Barre diagonale basse du K -->
+    <polygon points="5,10 7.5,8 12,11 12,13 5,13"/>
+  </g>
+</svg> 

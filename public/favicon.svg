@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Fond bleu azur OM -->
+  <circle cx="16" cy="16" r="16" fill="#00A8E6"/>
+  
+  <!-- Lettre K en blanc -->
+  <g fill="white">
+    <!-- Barre verticale gauche du K -->
+    <rect x="6" y="6" width="3" height="20"/>
+    
+    <!-- Barre diagonale haute du K -->
+    <polygon points="9,6 24,6 24,9 15,17 9,11"/>
+    
+    <!-- Barre diagonale basse du K -->
+    <polygon points="9,21 15,15 24,23 24,26 9,26"/>
+  </g>
+  
+  <!-- Effet de brillance subtil -->
+  <ellipse cx="12" cy="10" rx="2" ry="1" fill="rgba(255,255,255,0.4)"/>
+</svg> 
