@@ -181,39 +181,39 @@ const InspirationAI = () => {
   const getConnectionStatusText = () => {
     if (!connectionStatus) return "Test en cours...";
     
-    // Affichage plus précis du statut réel
+    // Affichage Kora uniformisé
     if (connectionStatus.anthropic && connectionStatus.openai) {
-      return connectionStatus.corsIssue ? "Claude-3.5 (CORS) → GPT-4o actif" : "Claude-3.5 + GPT-4o connectés";
+      return connectionStatus.corsIssue ? "Kora IA Premium actif" : "Kora IA connectée";
     }
     
     if (connectionStatus.anthropic) {
-      return connectionStatus.corsIssue ? "Claude-3.5 (CORS détecté)" : "Claude-3.5 connecté";
+      return connectionStatus.corsIssue ? "Kora IA (mode alternatif)" : "Kora IA connectée";
     }
     
     if (connectionStatus.openai) {
-      return "GPT-4o connecté";
+      return "Kora IA connectée";
     }
     
-    return "Aucune connexion";
+    return "Kora IA déconnectée";
   };
 
   const getPrimaryAIBadge = () => {
-    if (!connectionStatus) return "Test en cours...";
+    if (!connectionStatus) return "Kora IA";
     
-    // Afficher le provider réellement disponible
+    // Toujours afficher Kora peu importe le provider
     if (connectionStatus.corsIssue && connectionStatus.openai) {
-      return "GPT-4o"; // Si CORS avec Claude, OpenAI sera utilisé
+      return "Kora IA"; // Si CORS avec Claude, OpenAI sera utilisé mais on affiche Kora
     }
     
     if (connectionStatus.anthropic && !connectionStatus.corsIssue) {
-      return "Claude-3.5";
+      return "Kora IA";
     }
     
     if (connectionStatus.openai) {
-      return "GPT-4o";
+      return "Kora IA";
     }
     
-    return "Fallback";
+    return "Kora IA";
   };
 
   // Nouvelle méthode pour générer des images (toujours avec OpenAI)
@@ -379,9 +379,9 @@ const InspirationAI = () => {
                     onClick={handleTestGeneration}
                     variant="outline"
                     size="sm"
-                    className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                    className="border-blue-300 text-blue-600 hover:bg-blue-50"
                   >
-                    🧪 Test IA
+                    ✨ Kora Test
                   </Button>
                   <Button 
                     onClick={handleGenerate}
