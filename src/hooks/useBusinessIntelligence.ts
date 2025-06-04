@@ -88,17 +88,9 @@ export const useBusinessIntelligence = () => {
       throw new Error('Le domaine doit contenir au moins 3 caractères');
     }
 
-    setState(prev => ({ 
-      ...prev, 
-      isLoading: true, 
-      error: null 
-    }));
+    setState(prev => ({ ...prev, isLoading: true, error: null }));
 
-    // Message de progression avec emojis sympa
-    toast({
-      title: "🔍 Sherlock au travail...",
-      description: `Investigation en cours sur "${domain}" 🕵️`,
-    });
+    console.log(`🔍 Recherche domain: ${domain}`);
 
     try {
       // === ANALYSE MULTI-FACETTES VIA IA (ENGINE MASQUÉ) ===
@@ -119,11 +111,7 @@ export const useBusinessIntelligence = () => {
         context: 'Analyse sectorielle pour Kora Digital'
       });
 
-      // Message d'étape 1
-      toast({
-        title: "📊 Décortiquage du marché...",
-        description: "🔬 Dissection des données en cours",
-      });
+      console.log('📊 Étape 1: Analyse marché terminée');
 
       // 2. Tendances émergentes
       const trendsQuery = `Tendances 2024-2025 dans le secteur "${domain}":
@@ -141,11 +129,7 @@ export const useBusinessIntelligence = () => {
         context: 'Veille tendances sectorielles'
       });
 
-      // Message d'étape 2
-      toast({
-        title: "🚀 Détection d'opportunités...",
-        description: "🎯 Le nez dans les tendances qui décoiffent !",
-      });
+      console.log('🚀 Étape 2: Détection tendances terminée');
 
       // 3. Opportunités business
       const opportunitiesQuery = `Opportunités business dans "${domain}":
@@ -163,11 +147,7 @@ export const useBusinessIntelligence = () => {
         context: 'Identification opportunités business'
       });
 
-      // Message d'étape 3
-      toast({
-        title: "💡 Espionnage concurrentiel...",
-        description: "🥷 Mission impossible en cours...",
-      });
+      console.log('💡 Étape 3: Analyse concurrentielle terminée');
 
       // 4. Intelligence concurrentielle
       const competitorsQuery = `Paysage concurrentiel "${domain}":
@@ -205,20 +185,9 @@ export const useBusinessIntelligence = () => {
         searchHistory: [domain, ...prev.searchHistory.filter(h => h !== domain).slice(0, 9)]
       }));
 
-      // Message de succès final avec humour
-      const successMessages = [
-        `🎉 Bingo ! ${result.trends.length} pépites découvertes !`,
-        `✨ Eurêka ! ${result.opportunities.length} opportunités en or !`,
-        `🏆 Mission accomplie ! Le secteur n'a plus de secrets !`,
-        `🎯 Bullseye ! Analyse ${domain} dans la poche !`,
-        `🚀 Houston, nous avons les données ! Objectif atteint !`
-      ];
-      
-      const randomMessage = successMessages[Math.floor(Math.random() * successMessages.length)];
-      
       toast({
-        title: randomMessage,
-        description: `${result.trends.length} tendances et ${result.opportunities.length} opportunités identifiées 🎊`,
+        title: `Analyse "${domain}" terminée`,
+        description: `${result.trends.length} tendances et ${result.opportunities.length} opportunités identifiées`,
       });
 
       return result;
@@ -232,19 +201,9 @@ export const useBusinessIntelligence = () => {
         error: errorMessage
       }));
 
-      const errorMessages = [
-        "😅 Oups ! Notre IA a fait une pause café...",
-        "🤖 Robot en panne ! Veuillez réessayer plus tard",
-        "🔧 Houston, nous avons un problème...",
-        "💻 L'ordinateur fait la grève !",
-        "🌐 Internet joue à cache-cache..."
-      ];
-      
-      const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
-
       toast({
-        title: randomError,
-        description: "Impossible de récupérer les données sectorielles 🙃",
+        title: "Erreur d'analyse",
+        description: "Impossible de récupérer les données sectorielles",
         variant: "destructive"
       });
 
@@ -259,21 +218,8 @@ export const useBusinessIntelligence = () => {
       favorites: [...prev.favorites.filter(f => f !== domain), domain].slice(0, 10)
     }));
 
-    const favoriteMessages = [
-      `⭐ "${domain}" dans ton cœur maintenant ! 💝`,
-      `🌟 Ajouté aux VIP ! "${domain}" a de la classe !`,
-      `💎 "${domain}" rejoint la collection de luxe !`,
-      `🏆 "${domain}" dans le hall of fame personnel !`,
-      `✨ "${domain}" a conquis ton attention !`
-    ];
-    
-    const randomFav = favoriteMessages[Math.floor(Math.random() * favoriteMessages.length)];
-
-    toast({
-      title: randomFav,
-      description: "Retrouve-le facilement dans tes secteurs chouchous ! 😉",
-    });
-  }, [toast]);
+    console.log(`⭐ "${domain}" ajouté aux favoris`);
+  }, []);
 
   const removeFromFavorites = useCallback((domain: string) => {
     setState(prev => ({
@@ -281,21 +227,8 @@ export const useBusinessIntelligence = () => {
       favorites: prev.favorites.filter(f => f !== domain)
     }));
 
-    const removeMessages = [
-      `🗑️ "${domain}" viré manu militari !`,
-      `👋 Adieu "${domain}", c'était sympa !`,
-      `💔 "${domain}" banni du royaume des favoris`,
-      `🧹 "${domain}" dans la poubelle numérique !`,
-      `⚡ "${domain}" effacé d'un coup de baguette !`
-    ];
-    
-    const randomRemove = removeMessages[Math.floor(Math.random() * removeMessages.length)];
-
-    toast({
-      title: randomRemove,
-      description: "Il ne reviendra que si tu l'invites ! 😜",
-    });
-  }, [toast]);
+    console.log(`🗑️ "${domain}" retiré des favoris`);
+  }, []);
 
   // === NETTOYAGE HISTORIQUE ===
   const clearSearchHistory = useCallback(() => {

@@ -29,6 +29,15 @@ const LinkedInWidget: React.FC = () => {
   
   const { toast } = useToast();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showInitializing, setShowInitializing] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowInitializing(false);
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleConnect = () => {
     if (!isConfigured) {
@@ -87,8 +96,7 @@ const LinkedInWidget: React.FC = () => {
     return `Il y a ${days}j`;
   };
 
-  // État proxy non prêt
-  if (!isProxyReady) {
+  if (!isProxyReady && showInitializing) {
     return (
       <Card className="w-full">
         <CardHeader className="pb-3">
@@ -122,7 +130,70 @@ const LinkedInWidget: React.FC = () => {
     );
   }
 
-  // État non configuré
+  if (!isProxyReady && !showInitializing) {
+    return (
+      <Card className="w-full">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg flex items-center space-x-2">
+              <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
+                <span className="text-white text-xs font-bold">in</span>
+              </div>
+              <span>LinkedIn Analytics</span>
+            </CardTitle>
+            <Badge variant="secondary" className="text-xs bg-blue-500/10 text-blue-600 border-blue-500/30">
+              Mode Démo
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center p-3 bg-blue-50 rounded-lg">
+              <Eye className="w-5 h-5 text-blue-600 mx-auto mb-1" />
+              <div className="text-lg font-semibold text-blue-900">
+                12.5K
+              </div>
+              <div className="text-xs text-blue-600">Impressions</div>
+            </div>
+            
+            <div className="text-center p-3 bg-green-50 rounded-lg">
+              <Users className="w-5 h-5 text-green-600 mx-auto mb-1" />
+              <div className="text-lg font-semibold text-green-900">
+                8.9K
+              </div>
+              <div className="text-xs text-green-600">Portée</div>
+            </div>
+            
+            <div className="text-center p-3 bg-purple-50 rounded-lg">
+              <MessageSquare className="w-5 h-5 text-purple-600 mx-auto mb-1" />
+              <div className="text-lg font-semibold text-purple-900">
+                567
+              </div>
+              <div className="text-xs text-purple-600">Engagement</div>
+            </div>
+            
+            <div className="text-center p-3 bg-orange-50 rounded-lg">
+              <TrendingUp className="w-5 h-5 text-orange-600 mx-auto mb-1" />
+              <div className="text-lg font-semibold text-orange-900">
+                89
+              </div>
+              <div className="text-xs text-orange-600">Clics</div>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg text-center">
+            <p className="text-xs text-blue-600 mb-2">
+              💡 Données de démonstration
+            </p>
+            <p className="text-xs text-gray-500">
+              Connectez LinkedIn pour voir vos vraies métriques
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (!isConfigured) {
     return (
       <Card className="w-full">
@@ -154,7 +225,6 @@ const LinkedInWidget: React.FC = () => {
     );
   }
 
-  // État non connecté
   if (!isAuthenticated) {
     return (
       <Card className="w-full">
@@ -202,7 +272,6 @@ const LinkedInWidget: React.FC = () => {
     );
   }
 
-  // État connecté avec métriques
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">

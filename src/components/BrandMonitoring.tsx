@@ -945,43 +945,6 @@ export const BrandMonitoring: React.FC = () => {
               </div>
             )}
           </div>
-
-          {/* Section des outils de diagnostic - réorganisée */}
-          <div className="pt-6 border-t border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="section-title">🔧 Outils de diagnostic</h4>
-              <span className="text-xs text-slate-500">Pour le développement et les tests</span>
-            </div>
-            
-            <div className="responsive-grid">
-              <Button
-                variant="outline"
-                onClick={handleTestMode}
-                className={`transition-all duration-300 ${
-                  testMode 
-                    ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100' 
-                    : 'border-slate-300 hover:bg-slate-50'
-                }`}
-                data-testid="test-mode-button"
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                {testMode ? 'Désactiver Test' : 'Mode Test'}
-              </Button>
-              
-              {isInitialized && brandService && (
-                <Button
-                  variant="outline"
-                  onClick={handleTestWithRealAPI}
-                  disabled={isAnalyzing}
-                  className="border-purple-300 text-purple-700 hover:bg-purple-50 transition-all duration-300"
-                  data-testid="test-api-button"
-                >
-                  <Zap className="w-4 h-4 mr-2" />
-                  Test API Réelle
-                </Button>
-              )}
-            </div>
-          </div>
         </CardContent>
       </Card>
 

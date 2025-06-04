@@ -216,10 +216,7 @@ export const usePerplexity = (): UsePerplexityReturn => {
           error: null,
         }));
         
-        toast({
-          title: "Perplexity initialisé",
-          description: "Service d'insights IA activé avec succès",
-        });
+        console.log('🔧 Perplexity initialisé en mode API');
       } else {
         // Mode simulation
         setState(prev => ({
@@ -230,10 +227,7 @@ export const usePerplexity = (): UsePerplexityReturn => {
           cacheStats: { size: 5, keys: ['demo-cache-1', 'demo-cache-2'] }
         }));
         
-        toast({
-          title: "Mode simulation activé",
-          description: "Actions IA disponibles en mode démo (configurez l'API pour le mode réel)",
-        });
+        console.log('🔧 Mode simulation Perplexity activé');
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erreur d\'initialisation';
@@ -244,13 +238,9 @@ export const usePerplexity = (): UsePerplexityReturn => {
         error: errorMessage,
       }));
       
-      toast({
-        title: "Erreur d'initialisation",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      console.error('❌ Erreur initialisation Perplexity:', errorMessage);
     }
-  }, [toast]);
+  }, []);
 
   // Vérifier l'initialisation automatiquement
   useEffect(() => {

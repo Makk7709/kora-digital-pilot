@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic Simple - Kora</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .status.success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .status.error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .status.info { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 10px 5px;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnostic Simple - Kora</h1>
+        <p>Ce diagnostic teste les composants de base de votre application.</p>
+        
+        <div class="status info" id="status">
+            ✅ Page de diagnostic chargée avec succès
+        </div>
+
+        <h2>Tests de Base</h2>
+        <button class="btn" onclick="testFetch()">🌐 Tester l'API Backend</button>
+        <button class="btn" onclick="testLocalStorage()">💾 Tester LocalStorage</button>
+        <button class="btn" onclick="testConsole()">🔧 Tester Console</button>
+        <button class="btn" onclick="testReactMount()">⚛️ Tester React Mount</button>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+
+        async function testFetch() {
+            addResult('🔄 Test de l\'API backend en cours...', 'info');
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ API Backend OK - Service: ${data.service}`, 'success');
+                } else {
+                    addResult(`⚠️ API Backend répond mais erreur ${response.status}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ API Backend inaccessible: ${error.message}`, 'error');
+            }
+        }
+
+        function testLocalStorage() {
+            try {
+                localStorage.setItem('test', 'ok');
+                const test = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                addResult('✅ LocalStorage fonctionne', 'success');
+            } catch (error) {
+                addResult(`❌ LocalStorage erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function testConsole() {
+            try {
+                console.log('Test console depuis diagnostic');
+                console.warn('Test warning depuis diagnostic');
+                console.error('Test error depuis diagnostic');
+                addResult('✅ Console fonctionne (vérifiez F12)', 'success');
+            } catch (error) {
+                addResult(`❌ Console erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function testReactMount() {
+            addResult('🔄 Test React Mount...', 'info');
+            
+            // Simuler un composant React simple
+            const testDiv = document.createElement('div');
+            testDiv.id = 'react-test';
+            testDiv.innerHTML = '<p>✅ React simulation OK</p>';
+            
+            try {
+                document.body.appendChild(testDiv);
+                setTimeout(() => {
+                    document.body.removeChild(testDiv);
+                    addResult('✅ React Mount simulation réussie', 'success');
+                }, 1000);
+            } catch (error) {
+                addResult(`❌ React Mount erreur: ${error.message}`, 'error');
+            }
+        }
+
+        // Test automatique au chargement
+        window.addEventListener('load', () => {
+            addResult('🚀 Diagnostic démarré', 'info');
+            
+            // Test des APIs de base du navigateur
+            const tests = {
+                'fetch': typeof fetch !== 'undefined',
+                'localStorage': typeof localStorage !== 'undefined',
+                'console': typeof console !== 'undefined',
+                'Promise': typeof Promise !== 'undefined',
+                'URL': typeof URL !== 'undefined'
+            };
+
+            let allPassed = true;
+            for (const [api, available] of Object.entries(tests)) {
+                if (available) {
+                    addResult(`✅ ${api} disponible`, 'success');
+                } else {
+                    addResult(`❌ ${api} non disponible`, 'error');
+                    allPassed = false;
+                }
+            }
+
+            if (allPassed) {
+                addResult('🎉 Tous les tests de base sont OK', 'success');
+            } else {
+                addResult('⚠️ Certains tests ont échoué', 'error');
+            }
+        });
+    </script>
+</body>
+</html> 

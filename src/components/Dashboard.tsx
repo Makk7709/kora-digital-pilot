@@ -9,8 +9,7 @@ import {
   Calendar, 
   Sparkles,
   Tv,
-  Monitor,
-  Brain
+  Monitor
 } from 'lucide-react';
 import LinkedInWidget from '@/components/LinkedInWidget';
 import { useHybridAI } from '@/hooks/useHybridAI';
@@ -202,19 +201,6 @@ const Dashboard = ({ onSectionChange }: DashboardProps) => {
     }
   };
 
-  // ✅ Nouvelle action ChatGPT
-  const handleGenerateWithChatGPT = async () => {
-    try {
-      // Simplification temporaire pour éviter les erreurs TypeScript
-      console.log('🤖 ChatGPT 4.1 activé - Génération en cours...');
-      if (onSectionChange) {
-        onSectionChange('inspiration');
-      }
-    } catch (error) {
-      console.error('Erreur génération ChatGPT:', error);
-    }
-  };
-
   const handlePlanWeek = () => {
     if (onSectionChange) {
       onSectionChange('planning');
@@ -391,20 +377,13 @@ const Dashboard = ({ onSectionChange }: DashboardProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Button 
               onClick={handleGenerateWithKora}
               className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-blue-50 to-white border border-blue-200 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/20 text-slate-900 hover:text-blue-600 transition-all duration-300"
             >
               <span className="text-3xl">✨</span>
-              <span className="font-semibold">Générer avec Kora</span>
-            </Button>
-            <Button 
-              onClick={handleGenerateWithChatGPT}
-              className="h-24 flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-emerald-50 to-white border border-emerald-200 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-500/20 text-slate-900 hover:text-emerald-600 transition-all duration-300"
-            >
-              <Brain className="w-8 h-8" />
-              <span className="font-semibold">ChatGPT 4.1</span>
+              <span className="font-semibold">Inspiration Kora</span>
             </Button>
             <Button 
               onClick={handlePlanWeek}

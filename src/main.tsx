@@ -1,5 +1,6 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 import App from './App.tsx'
 import './index.css'
 import './lib/error-handler'
@@ -11,8 +12,13 @@ if (typeof window !== 'undefined') {
   console.log('🔗 LinkedIn API exposée dans window.linkedinAPI pour les tests')
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+// 🛑 PROTECTION ANTI-SPAM - Initialiser le bloqueur global
+import './lib/global-api-blocker'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </StrictMode>,
 )

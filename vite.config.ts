@@ -119,26 +119,123 @@ export default defineConfig(({ mode }) => ({
     
     // === PROXY CONFIGURATION INTELLIGENTE ===
     proxy: {
-      // LinkedIn/Anthropic API Proxy
+      // LinkedIn/Anthropic API Proxy avec protection anti-spam DÉFINITIVE
       '/api': {
         target: `http://localhost:${PORTS.PROXY}`,
         changeOrigin: true,
         secure: false,
+        timeout: 5000, // 5s timeout
         configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('🚨 [Vite Proxy] Error:', err.message);
-            console.log(`💡 [Vite Proxy] Ensure server running on port ${PORTS.PROXY}`);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
+          let errorCount = 0;
+          let isServerDefinitelyDown = false;
+          let serverDownTime: Date | null = null;
+          const maxErrors = 3;
+
+          // SOLUTION RADICALE : Intercepter TOUTES les requêtes vers /api quand down
+          const originalProxyReq = proxy.on.bind(proxy);
+          
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            // ARRÊT TOTAL : Si serveur down, bloquer immédiatement
+            if (isServerDefinitelyDown) {
+              console.log(`🛑 [Vite Proxy] BLOCKED ${req.method} ${req.url} - Server marked as permanently down`);
+              
+              // Terminer la requête immédiatement avec 503
+              res.writeHead(503, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+              });
+              res.end(JSON.stringify({
+                error: 'Backend server permanently unavailable',
+                code: 'SERVER_PERMANENTLY_DOWN',
+                message: 'Backend server is down. Please start it with: npm run proxy',
+                timestamp: new Date().toISOString(),
+                blocked: true
+              }));
+              
+              // Arrêter la requête proxy
+              proxyReq.destroy();
+              return false; // Ne pas continuer
+            }
+            
+            // Sinon, logger normalement
             console.log(`🔄 [Vite Proxy] ${req.method} ${req.url} → port ${PORTS.PROXY}`);
           });
+
+          proxy.on('error', (err, req, res) => {
+            errorCount++;
+            
+            // Phase d'apprentissage : montrer les 3 premières erreurs
+            if (errorCount <= maxErrors && !isServerDefinitelyDown) {
+              console.log(`🚨 [Vite Proxy] Error ${errorCount}/${maxErrors}:`, err.message);
+              console.log(`💡 [Vite Proxy] Ensure server running on port ${PORTS.PROXY}`);
+              
+              if (errorCount === maxErrors) {
+                isServerDefinitelyDown = true;
+                serverDownTime = new Date();
+                console.log(`🛑 [Vite Proxy] ===== SERVER MARKED AS PERMANENTLY DOWN =====`);
+                console.log(`🔧 [Vite Proxy] ALL API calls will now be BLOCKED until server restart`);
+                console.log(`💡 [Vite Proxy] To fix: Run 'npm run proxy' in another terminal`);
+                console.log(`⏰ [Vite Proxy] Auto-recovery disabled. Manual restart required.`);
+                console.log(`🛑 [Vite Proxy] =============================================`);
+              }
+            }
+
+            // Réponse gracieuse même après down (pour les appels déjà en cours)
+            if (res && !res.headersSent) {
+              res.writeHead(503, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+              });
+              res.end(JSON.stringify({
+                error: 'Backend server unavailable',
+                code: isServerDefinitelyDown ? 'SERVER_PERMANENTLY_DOWN' : 'SERVER_DOWN',
+                message: 'The backend server is not running. Please start it with: npm run proxy',
+                timestamp: new Date().toISOString(),
+                fallback: true,
+                permanent: isServerDefinitelyDown
+              }));
+            }
+          });
+
+          // Fonction de reset manuelle uniquement (plus de reset auto)
+          (global as any).resetProxyState = () => {
+            console.log(`🔄 [Vite Proxy] Manual reset requested...`);
+            errorCount = 0;
+            isServerDefinitelyDown = false;
+            serverDownTime = null;
+            console.log(`✅ [Vite Proxy] Proxy state reset. Ready to retry connections.`);
+          };
+
+          // Commande pour reset via console
+          console.log(`💡 [Vite Proxy] To manually reset proxy state, run: global.resetProxyState()`);
         }
       },
       
-      // Health Check Endpoint
+      // Health Check Endpoint complètement silencieux
       '/health': {
         target: `http://localhost:${getMonitoringPort()}`,
-        changeOrigin: true
+        changeOrigin: true,
+        timeout: 3000,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, req, res) => {
+            // Complètement silencieux pour health check
+            if (res && !res.headersSent) {
+              res.writeHead(503, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+              });
+              res.end(JSON.stringify({
+                status: 'DOWN',
+                service: 'Backend Health Check',
+                timestamp: new Date().toISOString()
+              }));
+            }
+          });
+        }
       }
     },
     

@@ -7,7 +7,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { usePerplexity } from './usePerplexity';
 import { ChatGPTService, type ChatGPTConfig, type ChatGPTResponse } from '@/lib/chatgpt-service';
-import { useToast } from '@/hooks/use-toast';
 
 export interface HybridAIState {
   perplexityReady: boolean;
@@ -67,7 +66,6 @@ export const useHybridAI = () => {
   });
 
   const perplexity = usePerplexity();
-  const { toast } = useToast();
 
   // ========================================
   // 🔧 INITIALISATION
@@ -92,15 +90,12 @@ export const useHybridAI = () => {
       chatgptService = new ChatGPTService(config);
       
       if (chatgptService.isConfigured()) {
-        toast({
-          title: "ChatGPT activé",
-          description: "Service de rédaction IA initialisé",
-        });
+        console.log('🔧 ChatGPT initialisé en mode API');
       }
     }
     
     updateState();
-  }, [toast]);
+  }, []);
 
   const updateState = useCallback(() => {
     setState(prev => ({
@@ -203,11 +198,7 @@ export const useHybridAI = () => {
     } = {}
   ): Promise<ChatGPTResponse | null> => {
     if (!state.chatgptReady || !chatgptService) {
-      toast({
-        title: "Service indisponible",
-        description: "ChatGPT n'est pas configuré",
-        variant: "destructive"
-      });
+      console.warn('⚠️ ChatGPT non configuré pour résumé');
       return null;
     }
 
@@ -225,7 +216,7 @@ export const useHybridAI = () => {
     } finally {
       setState(prev => ({ ...prev, isLoading: false }));
     }
-  }, [state.chatgptReady, toast, updateState]);
+  }, [state.chatgptReady, updateState]);
 
   /**
    * Réécriture avec ChatGPT
@@ -238,11 +229,7 @@ export const useHybridAI = () => {
     }
   ): Promise<ChatGPTResponse | null> => {
     if (!state.chatgptReady || !chatgptService) {
-      toast({
-        title: "Service indisponible",
-        description: "ChatGPT n'est pas configuré",
-        variant: "destructive"
-      });
+      console.warn('⚠️ ChatGPT non configuré pour réécriture');
       return null;
     }
 
@@ -260,7 +247,7 @@ export const useHybridAI = () => {
     } finally {
       setState(prev => ({ ...prev, isLoading: false }));
     }
-  }, [state.chatgptReady, toast, updateState]);
+  }, [state.chatgptReady, updateState]);
 
   /**
    * Analyse seule avec Perplexity
@@ -270,11 +257,7 @@ export const useHybridAI = () => {
     level: 'quick' | 'detailed' | 'comprehensive' = 'detailed'
   ) => {
     if (!state.perplexityReady) {
-      toast({
-        title: "Service indisponible",
-        description: "Perplexity n'est pas configuré",
-        variant: "destructive"
-      });
+      console.warn('⚠️ Perplexity non configuré pour analyse');
       return null;
     }
 
@@ -291,7 +274,7 @@ export const useHybridAI = () => {
     } finally {
       setState(prev => ({ ...prev, isLoading: false }));
     }
-  }, [state.perplexityReady, perplexity, toast, updateState]);
+  }, [state.perplexityReady, perplexity, updateState]);
 
   // ========================================
   // 🧹 GESTION DU CACHE
@@ -302,11 +285,8 @@ export const useHybridAI = () => {
     chatgptService?.clearCache();
     updateState();
     
-    toast({
-      title: "Caches vidés",
-      description: "Tous les caches IA ont été nettoyés",
-    });
-  }, [perplexity, toast, updateState]);
+    console.log('🧹 Caches IA nettoyés');
+  }, [perplexity, updateState]);
 
   const getServicesStatus = useCallback(() => {
     return {
