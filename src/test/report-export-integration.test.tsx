@@ -11,9 +11,11 @@
  */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { RealBrandIntelligenceService } from '../services/RealBrandIntelligenceService';
-import { ReportExportService, createReportExportService, type ExportOptions } from '../services/ReportExportService';
-import type { DeepResearchReport } from '../services/EnhancedBrandIntelligenceService';
+import { RealBrandIntelligenceService } from "../services/RealBrandIntelligenceService";
+
+// 🔗 Import depuis la nouvelle structure modulaire
+import { ReportExportOrchestrator as ReportExportService, createReportExportService } from '../services/export';
+import type { DeepResearchReport, ExportOptions } from '../types/BrandIntelligenceTypes';
 
 describe('🔗 Intégration Complète - Génération + Export Rapport', () => {
   let brandIntelligenceService: RealBrandIntelligenceService;
@@ -39,29 +41,39 @@ describe('🔗 Intégration Complète - Génération + Export Rapport', () => {
       executionTimestamp: new Date(),
       confidenceScore: 85,
       objectiveAnalysis: {
-        brandHistory: 'TechCorp fondée en 2015, spécialisée en IA',
-        marketPosition: 'Leader sur le marché européen de l\'IA B2B',
-        financialHealth: 'Croissance +25% annuelle, rentable depuis 2019',
-        innovationIndex: 88,
-        reputationScore: 82,
-        foundingYear: 2015,
-        keyMilestones: [
-          {
-            date: new Date('2015-03-01'),
-            title: 'Fondation TechCorp',
-            description: 'Création de l\'entreprise',
-            impact: 'transformative',
-            category: 'business'
-          }
-        ],
-        marketCapitalization: 2500000000,
-        employeeCount: 450
+        brandHistory: {
+          foundingYear: 2015,
+          founders: ['Tech Founder 1', 'Tech Founder 2'],
+          keyMilestones: [
+            { year: 2015, event: 'Company founded', impact: 'major' as const },
+            { year: 2019, event: 'Series B funding', impact: 'major' as const }
+          ],
+          evolution: ['Founded as tech startup', 'Expanded to European market', 'AI specialization']
+        },
+        marketPosition: {
+          sector: ['Technology', 'AI'],
+          markets: ['Europe', 'North America'],
+          marketCap: 2500000000,
+          employeeCount: 450,
+          globalRank: 15
+        },
+        financialHealth: {
+          revenue: 150000000,
+          growth: 25,
+          profitability: 'Profitable since 2019',
+          valuation: 2500000000
+        },
+        metrics: {
+          innovationIndex: 88,
+          reputationScore: 82
+        }
       },
       recentActions: [
         {
           date: new Date('2024-01-10'),
           type: 'product',
           description: 'Lancement plateforme IA générative',
+          impact: 9,
           impactEstimation: 90,
           sourceVerification: 'Communiqué presse officiel',
           confidenceLevel: 0.95,
@@ -72,7 +84,7 @@ describe('🔗 Intégration Complète - Génération + Export Rapport', () => {
       strategicAnalysis: {
         coreStrategy: 'Innovation IA et expansion internationale',
         targetMarkets: ['Enterprise B2B', 'Secteur public', 'Healthcare'],
-        competitiveAdvantage: ['Propriété intellectuelle', 'Expertise technique', 'Réseau partenaires'],
+        competitiveAdvantage: ['Propriété intellectuelle', 'Innovation technologique'],
         futureDirection: 'Expansion Amérique du Nord et Asie',
         risksAndChallenges: ['Concurrence GAFAM', 'Régulation IA', 'Recrutement talents'],
         strategicPriorities: [
@@ -85,47 +97,41 @@ describe('🔗 Intégration Complète - Génération + Export Rapport', () => {
           }
         ],
         businessModel: {
-          revenueStreams: [
-            { name: 'SaaS Platform', percentage: 70, trend: 'growing', predictability: 'high' },
-            { name: 'Consulting', percentage: 20, trend: 'stable', predictability: 'medium' },
-            { name: 'Licensing', percentage: 10, trend: 'growing', predictability: 'low' }
-          ],
-          costStructure: ['R&D', 'Sales & Marketing', 'Operations'],
-          valueProposition: 'IA éthique et explicable pour entreprises',
-          customerSegments: ['Large enterprises', 'Government', 'Healthcare'],
+          type: 'SaaS B2B',
+          revenueStreams: ['SaaS Platform', 'Consulting', 'Licensing'],
           keyPartners: ['Cloud providers', 'System integrators'],
-          channels: ['Direct sales', 'Partner channel']
+          valueProposition: 'IA éthique et explicable pour entreprises',
+          costStructure: 'R&D focused with high operational efficiency'
         }
       },
       trendAnalysis: {
         emergingTrends: [
           {
-            name: 'IA Explicable',
-            description: 'Demande croissante pour transparence algorithmes',
-            maturityLevel: 'growing',
-            timeToImpact: 6,
-            potentialImpact: 85,
-            relevanceScore: 90,
-            keyDrivers: ['Régulation', 'Confiance client', 'Éthique']
+            trend: 'IA Explicable',
+            relevance: 90,
+            timeline: '6-12 months',
+            impact: 'evolutionary' as const
           }
         ],
         weakSignals: [
           {
-            description: 'Projet réglementation IA Europe renforcé',
-            confidenceLevel: 0.8,
-            potentialImpact: 80,
-            timeHorizon: 12,
-            sources: ['Commission Européenne', 'Parlement UE'],
-            relatedTrends: ['AI Act', 'GDPR IA'],
-            monitoringRecommendations: ['Veille réglementaire active', 'Participation consultations']
+            signal: 'Projet réglementation IA Europe renforcé',
+            strength: 80,
+            implications: ['Compliance costs', 'Market opportunity']
           }
         ],
         disruptiveThreats: [],
         opportunities: [],
         sectorEvolution: {
+          currentTrends: ['AI adoption', 'Regulation increase'],
+          futureProjections: ['Market maturation', 'Consolidation'],
+          disruptionPotential: 'high' as const,
           growthRate: 35.2,
-          maturityLevel: 'growth',
-          keyTrends: ['Adoption massive', 'Spécialisation sectorielle'],
+          maturity: 'growth' as const,
+          keyPlayers: [
+            { name: 'TechCorp', position: 'Leader', marketShare: 12.5 },
+            { name: 'BigTech Corp', position: 'Challenger', marketShare: 25.5 }
+          ],
           regulatoryChanges: ['AI Act européen', 'Standards éthiques'],
           technologicalDisruptions: ['LLM open source', 'Edge AI', 'Quantum computing']
         }
@@ -160,28 +166,31 @@ describe('🔗 Intégration Complète - Génération + Export Rapport', () => {
       },
       contentMetrics: {
         topicsDistribution: [
-          { theme: 'Innovation IA', percentage: 45, volume: 1200, growthRate: 25, sentimentScore: 88, engagementRate: 15, keyPhrases: ['IA explicable', 'Innovation'] }
+          { topic: 'Innovation IA', percentage: 45, theme: 'Innovation' }
         ],
         sentimentByTopic: {
           'Innovation IA': { positive: 85, neutral: 12, negative: 3 }
         },
         contentVolume: 2850,
-        engagementMetrics: { likes: 890, shares: 340, comments: 180, clickThroughRate: 0.18, timeSpent: 245, conversionRate: 0.12 },
+        engagementMetrics: { likes: 890, shares: 340, comments: 180, avgEngagement: 0.18, conversionRate: 0.12 },
         viralityIndex: 78,
         influencerMetrics: {
           totalInfluencers: 45,
           averageFollowers: 85000,
           topInfluencers: [
-            { name: 'AI_Expert_EU', followers: 150000, engagementRate: 0.20, sentiment: 90, influence: 95, topics: ['IA', 'Innovation'] }
+            { name: 'AI_Expert_EU', metrics: { followers: 150000, engagementRate: 0.20, sentiment: 90, influence: 95, topics: ['IA', 'Innovation'] } }
           ],
           sentimentByInfluencer: { 'AI_Expert_EU': 90 },
           reachAmplification: 1250000
         },
         contentQuality: {
+          score: 90,
+          readability: 92,
+          relevance: 95,
+          originality: 88,
           authorityScore: 90,
           credibilityIndex: 92,
           factualAccuracy: 95,
-          biasLevel: 8,
           sourceReliability: 93
         },
         trendingTopics: [
@@ -195,21 +204,28 @@ describe('🔗 Intégration Complète - Génération + Export Rapport', () => {
           projectedShare: 18.2,
           historicalData: [
             { period: '2023-Q1', share: 8.5, volume: 250000, value: 125000000 },
-            { period: '2023-Q4', share: 12.5, volume: 380000, value: 190000000 }
+            { period: '2023-Q4', share: 12.5, volume: 380000, value: 190000000 },
           ],
-          benchmarkPosition: 3
+          benchmarkPosition: {
+            rank: 3,
+            percentile: 85,
+            gapToLeader: 15
+          }
         },
         competitorBenchmark: [
           {
+            competitor: 'BigTech Corp',
             name: 'BigTech Corp',
-            marketShare: 25.5,
-            strengthAreas: ['Resources', 'Distribution'],
-            vulnerabilities: ['Innovation speed', 'Regulation'],
-            threatLevel: 8,
-            recentMoves: [
-              { date: new Date(), type: 'acquisition', description: 'Acquisition startup IA', impact: 75 }
-            ],
-            performanceMetrics: { revenue: 5000000000, growth: 15, profitability: 22, innovation: 70, customerSatisfaction: 85 }
+            metrics: {
+              marketShare: 25.5,
+              strengthAreas: ['Resources', 'Distribution'],
+              vulnerabilities: ['Innovation speed', 'Regulation'],
+              threatLevel: 8,
+              recentMoves: [
+                { date: new Date(), type: 'acquisition', description: 'Acquisition startup IA', impact: 75 }
+              ],
+              performanceMetrics: { revenue: 5000000000, growth: 15, profitability: 22, innovation: 70, customerSatisfaction: 85 }
+            }
           }
         ],
         competitiveAdvantageIndex: 82,

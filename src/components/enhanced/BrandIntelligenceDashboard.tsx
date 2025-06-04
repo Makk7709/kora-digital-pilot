@@ -35,32 +35,29 @@ import {
   Sparkles,
   Star,
   Globe,
-  TrendingDown as TrendDown
+  TrendingDown as TrendDown,
+  Download,
+  Loader2
 } from 'lucide-react';
 
-import { 
-  EnhancedBrandIntelligenceService, 
+import { RealBrandIntelligenceService } from '../../services/RealBrandIntelligenceService';
+import type { 
   DeepResearchReport,
   SWOTMetrics,
   ContentMetrics,
   CompetitiveMetrics,
   ReputationKPIs,
   ActionableRecommendation,
-  SmartAlerts
-} from '../../services/EnhancedBrandIntelligenceService';
+  SmartAlerts,
+  ExportOptions
+} from '../../types/BrandIntelligenceTypes';
 
-// Temporarily commented out to fix the white page issue
-// import { 
-//   ReportExportService, 
-//   createReportExportService,
-//   type ExportOptions 
-// } from '../../services/ReportExportService';
-
+// ✅ SERVICES D'EXPORT - Version réelle
 import { 
-  ReportExportService, 
-  createReportExportService,
-  type ExportOptions 
-} from '../../services/ReportExportService';
+  ReportExportOrchestrator,
+  ExportHistoryItem,
+  createReportExportService 
+} from '../../services/export';
 
 interface Props {
   brandName: string;
@@ -84,7 +81,7 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
   const [rawPerplexityData, setRawPerplexityData] = useState<PerplexityRawData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('rapport-kora');
-  const [service] = useState(() => new EnhancedBrandIntelligenceService(perplexityService));
+  const [service] = useState(() => new RealBrandIntelligenceService());
   const [exportService] = useState(() => createReportExportService());
 
   // === GÉNÉRATION DU RAPPORT ===
@@ -137,7 +134,7 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
       setRawPerplexityData(rawData);
 
       // 3. Générer le rapport structuré pour les autres onglets
-      const newReport = await service.generateDeepResearchReport(brandName);
+      const newReport = await service.generateRealDeepResearchReport(brandName);
       setReport(newReport);
       
       console.log('✅ Rapport Kora généré avec succès:', { report: newReport, rawData });
@@ -149,7 +146,7 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
     }
   };
 
-  // === EXPORT DU RAPPORT ===
+  // === EXPORT DU RAPPORT PREMIUM ===
   const exportReport = async (format: 'json' | 'csv' | 'excel' | 'pdf') => {
     const dataToExport = report || rawPerplexityData;
     
@@ -164,7 +161,7 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
     try {
       console.log(`🚀 Export du rapport en format ${format.toUpperCase()}...`);
       
-      // Si on a rawPerplexityData mais pas report, créer un objet export simple
+      // Préparation des données d'export enrichies
       let exportData: any = dataToExport;
       if (rawPerplexityData && !report) {
         exportData = {
@@ -172,7 +169,6 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
           executionTimestamp: new Date(),
           rawData: rawPerplexityData,
           type: 'Kora P.R.I.S.M Analysis',
-          // Utiliser les données brutes directement
           objectiveAnalysis: rawPerplexityData.objectiveAnalysis,
           strategicAnalysis: rawPerplexityData.strategicAnalysis,
           competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
@@ -183,43 +179,63 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
       
       let result;
       
-      // === UTILISER SERVICE ENHANCED POUR PDF ===
+      // === GESTION PRODUCTION POUR PDF ===
       if (format === 'pdf') {
-        console.log('📄 Utilisation du service Enhanced P.R.I.S.M pour export PDF...');
+        console.log('📄 Export PDF P.R.I.S.M - Version Production...');
         
-        // Import dynamique des services Enhanced
-        const { createEnhancedReportExportService, getRecommendedEnhancedOptions } = await import('../../services/EnhancedReportExportService');
-        
-        const enhancedExportService = createEnhancedReportExportService();
-        const enhancedOptions = getRecommendedEnhancedOptions(exportData);
-        
-        // Enrichir les données pour l'Enhanced P.R.I.S.M avec données complètes
-        const enrichedData = {
-          ...exportData,
-          brandName: brandName || 'Marque analysée',
-          // Ajouter les analyses complètes si disponibles
-          fullContent: rawPerplexityData ? {
-            objectiveAnalysis: rawPerplexityData.objectiveAnalysis,
-            strategicAnalysis: rawPerplexityData.strategicAnalysis,
-            competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
-            trendAnalysis: rawPerplexityData.trendAnalysis
-          } : null,
-          enhancedMetadata: {
-            generatedBy: 'Kora P.R.I.S.M Enhanced',
-            analysisDepth: 'Professional',
-            dataSource: 'Perplexity AI + Kora Processing',
-            timestamp: new Date().toISOString()
+        try {
+          // 🎯 PRODUCTION EXPORT SERVICE - Service réel uniquement
+          console.log('🎯 Initialisation Production Export Service...');
+          const productionExportService = createReportExportService();
+          
+          // 🔥 ENRICHISSEMENT DONNÉES PRODUCTION
+          const enrichedData = {
+            ...exportData,
+            brandName: brandName || 'Marque analysée',
+            fullContent: rawPerplexityData ? {
+              objectiveAnalysis: rawPerplexityData.objectiveAnalysis,
+              strategicAnalysis: rawPerplexityData.strategicAnalysis,
+              competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
+              trendAnalysis: rawPerplexityData.trendAnalysis
+            } : null,
+            metadata: {
+              generatedBy: 'Kora P.R.I.S.M Production',
+              analysisDepth: 'Professional',
+              dataSource: 'Perplexity AI + Kora Processing',
+              timestamp: new Date().toISOString(),
+              qualityAssurance: 'Production Grade'
+            }
+          };
+          
+          // 🚀 CONFIGURATION PRODUCTION OPTIMISÉE
+          const productionOptions: ExportOptions = {
+            format: 'pdf',
+            template: 'executive',
+            includeCharts: true,
+            includeRawData: true,
+            branding: {
+              companyName: 'Kora P.R.I.S.M Analysis'
+            }
+          };
+          
+          console.log('🔥 Lancement export Production avec configuration optimale...');
+          result = await productionExportService.exportReport(enrichedData, productionOptions);
+          
+          if (result.success) {
+            console.log('✅ Export Production réussi !');
+          } else {
+            throw new Error('Export Production échoué');
           }
-        };
-        
-        result = await enhancedExportService.exportReport(enrichedData, enhancedOptions);
-        
-        if (result.enhancementApplied) {
-          console.log(`✅ Export Enhanced P.R.I.S.M réussi: ${result.pages} pages, ${result.contentMetrics?.totalWords} mots`);
+          
+        } catch (productionError) {
+          console.warn('⚠️ Export Production indisponible, utilisation export basique:', productionError.message);
+          
+          // === FALLBACK PDF SIMPLE GARANTI ===
+          result = await exportSimplePDF(exportData, brandName);
         }
         
       } else {
-        // === UTILISER SERVICE STANDARD POUR AUTRES FORMATS ===
+        // === UTILISER SERVICE PRODUCTION POUR AUTRES FORMATS ===
         const exportOptions: ExportOptions = {
           format,
           includeMetadata: true,
@@ -235,9 +251,9 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
 
         result = await exportService.exportReport(exportData, exportOptions);
       }
-      
-      if (result.success) {
-        // Déclencher le téléchargement directement via l'URL blob
+
+      // Déclencher téléchargement
+      if (result && result.success) {
         const link = document.createElement('a');
         link.href = result.downloadUrl;
         link.download = result.fileName;
@@ -246,19 +262,96 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
         document.body.removeChild(link);
         
         console.log(`✅ Export ${format.toUpperCase()} réussi:`, result.fileName);
-        
-        // Afficher les métriques Enhanced si disponibles
-        if (result.enhancementApplied && result.contentMetrics) {
-          console.log(`📊 Métriques Enhanced: ${result.contentMetrics.totalWords} mots, Standards: ${result.contentMetrics.professionalStandards ? 'Oui' : 'Non'}`);
-        }
       } else {
-        throw new Error(result.errors?.join(', ') || 'Erreur export');
+        throw new Error('Erreur lors de l\'export');
       }
+
     } catch (err: any) {
       setError(`Erreur export ${format.toUpperCase()}: ${err.message}`);
-      console.error('❌ Erreur export:', err);
+      console.error(`❌ Erreur export ${format.toUpperCase()}:`, err);
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  // === FONCTION PDF SIMPLE GARANTIE ===
+  const exportSimplePDF = async (data: any, brandName: string) => {
+    console.log('📄 Génération PDF simple...');
+    
+    try {
+      // Import local de jsPDF
+      const { default: jsPDF } = await import('jspdf');
+      
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const margin = 20;
+      let yPosition = margin;
+      
+      // En-tête
+      doc.setFontSize(20);
+      doc.text(`Rapport Kora - ${brandName}`, margin, yPosition);
+      yPosition += 15;
+      
+      doc.setFontSize(12);
+      doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, margin, yPosition);
+      yPosition += 20;
+      
+      // Contenu des analyses
+      const sections = [
+        { title: 'Analyse Objective', content: data.objectiveAnalysis },
+        { title: 'Analyse Stratégique', content: data.strategicAnalysis },
+        { title: 'Analyse Concurrentielle', content: data.competitiveAnalysis },
+        { title: 'Tendances & Signaux', content: data.trendAnalysis }
+      ];
+      
+      sections.forEach(section => {
+        if (section.content) {
+          // Titre de section
+          doc.setFontSize(14);
+          doc.text(section.title, margin, yPosition);
+          yPosition += 10;
+          
+          // Contenu (limité pour éviter overflow)
+          doc.setFontSize(10);
+          const text = typeof section.content === 'string' 
+            ? section.content.substring(0, 500) + '...'
+            : JSON.stringify(section.content).substring(0, 500) + '...';
+          
+          const splitText = doc.splitTextToSize(text, pageWidth - 2 * margin);
+          doc.text(splitText, margin, yPosition);
+          yPosition += splitText.length * 5 + 10;
+          
+          // Nouvelle page si nécessaire
+          if (yPosition > 250) {
+            doc.addPage();
+            yPosition = margin;
+          }
+        }
+      });
+      
+      // Génération du blob
+      const pdfBlob = doc.output('blob');
+      const fileName = `${brandName.replace(/[^a-zA-Z0-9]/g, '_')}_Kora_Report_${new Date().toISOString().slice(0, 16).replace(/[:]/g, '-')}.pdf`;
+      const downloadUrl = URL.createObjectURL(pdfBlob);
+      
+      return {
+        success: true,
+        fileName,
+        filePath: downloadUrl,
+        fileSize: pdfBlob.size,
+        format: 'pdf',
+        downloadUrl,
+        enhancementApplied: false,
+        metadata: {
+          exportedBy: 'Kora Simple PDF Export',
+          version: '1.0.0',
+          generationTime: Date.now()
+        }
+      };
+      
+    } catch (error) {
+      console.error('❌ Erreur PDF simple:', error);
+      throw new Error(`Impossible de générer le PDF: ${error.message}`);
     }
   };
 
@@ -304,44 +397,77 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
                       </>
                     )}
                   </Button>
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                    <div className="py-2">
-                      <button
-                        onClick={() => exportReport('json')}
-                        disabled={isExporting}
-                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                        data-testid="export-json-button"
-                      >
-                        <FileText className="w-4 h-4" />
-                        JSON (Complet)
-                      </button>
-                      <button
-                        onClick={() => exportReport('csv')}
-                        disabled={isExporting}
-                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                        data-testid="export-csv-button"
-                      >
-                        <BarChart3 className="w-4 h-4" />
-                        CSV (Excel)
-                      </button>
-                      <button
-                        onClick={() => exportReport('excel')}
-                        disabled={isExporting}
-                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                        data-testid="export-excel-button"
-                      >
-                        <BarChart3 className="w-4 h-4" />
-                        Excel
-                      </button>
-                      <button
-                        onClick={() => exportReport('pdf')}
-                        disabled={isExporting}
-                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                        data-testid="export-pdf-button"
-                      >
-                        <FileText className="w-4 h-4" />
-                        PDF
-                      </button>
+                  <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="py-3 px-4">
+                      <div className="space-y-3">
+                        {/* Export Standard */}
+                        <div>
+                          <h4 className="text-sm font-semibold text-gray-700 mb-2">Export Standard</h4>
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              onClick={() => exportReport('json')}
+                              disabled={isExporting || (!report && !rawPerplexityData)}
+                              className="w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded flex items-center gap-2 text-sm disabled:opacity-50"
+                            >
+                              <Download className="w-4 h-4" />
+                              JSON
+                            </button>
+                            <button
+                              onClick={() => exportReport('csv')}
+                              disabled={isExporting || (!report && !rawPerplexityData)}
+                              className="w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded flex items-center gap-2 text-sm disabled:opacity-50"
+                            >
+                              <Download className="w-4 h-4" />
+                              CSV
+                            </button>
+                            <button
+                              onClick={() => exportReport('excel')}
+                              disabled={isExporting || (!report && !rawPerplexityData)}
+                              className="w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded flex items-center gap-2 text-sm disabled:opacity-50"
+                            >
+                              <Download className="w-4 h-4" />
+                              Excel
+                            </button>
+                            <button
+                              onClick={() => exportReport('pdf')}
+                              disabled={isExporting || (!report && !rawPerplexityData)}
+                              className="w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded flex items-center gap-2 text-sm disabled:opacity-50"
+                            >
+                              <Download className="w-4 h-4" />
+                              PDF Standard
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Séparateur */}
+                        <div className="border-t border-gray-200"></div>
+
+                        {/* Export Premium */}
+                        <div>
+                          <h4 className="text-sm font-semibold text-purple-700 mb-2">Export Premium ✨</h4>
+                          <button
+                            onClick={() => exportReport('pdf')}
+                            disabled={isExporting}
+                            className="w-full px-3 py-3 text-left bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg flex items-center gap-2 disabled:opacity-50 font-semibold"
+                          >
+                            <Download className="w-4 h-4" />
+                            PDF Bureau d'Études Demo
+                          </button>
+                          <p className="text-xs text-gray-500 mt-1 px-1">
+                            Rapport premium avec données Tesla-style enrichies
+                          </p>
+                        </div>
+
+                        {/* Indicateur d'export */}
+                        {isExporting && (
+                          <div className="border-t border-gray-200 pt-3">
+                            <div className="flex items-center gap-2 text-blue-600">
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <span className="text-sm">Génération en cours...</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -871,7 +997,7 @@ const CompetitiveDashboard: React.FC<{ competitiveMetrics: CompetitiveMetrics }>
           <div className="text-center">
             <div className="flex items-center justify-center gap-2">
               <TrendingUp className="w-5 h-5 text-green-500" />
-              <span className="text-xl font-bold text-green-600">#{competitiveMetrics.marketShareEvolution.benchmarkPosition}</span>
+              <span className="text-xl font-bold text-green-600">#{competitiveMetrics.marketShareEvolution.benchmarkPosition.rank}</span>
             </div>
             <p className="text-sm text-slate-600">Position</p>
           </div>

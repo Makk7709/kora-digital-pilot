@@ -7,7 +7,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrandMonitoring } from '../components/BrandMonitoring';
-import { BrandAnalysisServiceImpl, PerplexityReport } from '../services/BrandAnalysisService';
+import { BrandAnalysisOrchestrator } from '../services/brand/brand-analysis-orchestrator';
+import { PerplexityReport } from '../types/brand-analysis';
 
 describe('🔍 TDD SPEC - Brand Intelligence Deep Research Report', () => {
   

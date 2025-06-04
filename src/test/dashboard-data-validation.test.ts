@@ -1,8 +1,9 @@
 /**
- * 🧪 TESTS TDD - Validation des données Dashboard
- * Tests pour identifier les incohérences dans les données Analytics
- * Phase RED : Ces tests DOIVENT ÉCHOUER avec les données actuelles
+ * 🧪 DASHBOARD DATA VALIDATION - TDD PHASE RED
+ * Tests de validation des données du dashboard
  */
+
+import { describe, test, expect } from 'vitest';
 
 describe('Dashboard Data Validation - TDD Phase RED', () => {
   

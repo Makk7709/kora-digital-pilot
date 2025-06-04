@@ -511,13 +511,14 @@ export const usePerplexity = (): UsePerplexityReturn => {
     });
   }, []);
 
-  // Actualiser les stats du cache périodiquement
+  // 🛡️ PROTECTION CRÉDIT API - Actualiser les stats du cache seulement sur demande
   useEffect(() => {
     if (state.isInitialized) {
-      const interval = setInterval(refreshCacheStats, 30000); // Toutes les 30 secondes
-      return () => clearInterval(interval);
+      // ✅ RETIRÉ: Plus d'actualisation automatique périodique pour protéger les crédits
+      // L'utilisateur peut manuellement actualiser via refreshCacheStats()
+      console.log('📊 Cache stats: Actualisation manuelle uniquement pour protéger les crédits API');
     }
-  }, [state.isInitialized, refreshCacheStats]);
+  }, [state.isInitialized]); // ✅ RETIRÉ refreshCacheStats des dependencies
 
   // Mémoriser les fonctions pour éviter les re-renders inutiles
   const memoizedReturn = useMemo(() => ({
@@ -554,14 +555,19 @@ export const useMarketingInsights = (topic?: string) => {
   const perplexity = usePerplexity();
   const [autoRefresh, setAutoRefresh] = useState(false);
 
-  // Auto-refresh des insights
+  // 🛡️ PROTECTION CRÉDIT API - Auto-refresh désactivé par défaut 
   useEffect(() => {
     if (autoRefresh && topic && perplexity.isInitialized) {
+      console.warn('⚠️ Auto-refresh activé - Consommation crédits API en cours');
       const interval = setInterval(() => {
+        console.log(`🔄 [Auto-refresh] Appel API pour: ${topic}`);
         perplexity.getMarketingTrends(topic, '24h');
       }, 60 * 60 * 1000); // Toutes les heures
 
-      return () => clearInterval(interval);
+      return () => {
+        console.log('🛑 Auto-refresh arrêté');
+        clearInterval(interval);
+      };
     }
   }, [autoRefresh, topic, perplexity]);
 

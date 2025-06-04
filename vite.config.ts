@@ -3,28 +3,264 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+// ===== CONFIGURATION PORTS ENTERPRISE - ARCHITECTURE IMPECCABLE =====
+
+/**
+ * 🏗️ ARCHITECTURE PORTS KORA - NIVEAU ENTERPRISE
+ * 
+ * ENVIRONNEMENT DEVELOPMENT:
+ * ├── 8088 - KORA App Frontend (React/Vite)
+ * ├── 8089 - Hot Module Replacement (HMR)  
+ * ├── 8090 - Preview Build Mode
+ * ├── 8091 - Tests & Storybook (disponible)
+ * ├── 3001 - LinkedIn/Anthropic Proxy (CORS)
+ * ├── 3002 - Fallback Proxy
+ * └── 3003 - Monitoring & Health Check
+ * 
+ * ENVIRONNEMENT STAGING:
+ * ├── 9088 - KORA App Staging
+ * ├── 9089 - HMR Staging
+ * └── 4001 - Proxy Staging
+ * 
+ * ENVIRONNEMENT PRODUCTION:
+ * ├── 10088 - KORA App Production
+ * └── 5001 - Proxy Production
+ */
+
+// === INTERFACES TYPESCRIPT STRICTES ===
+interface BasePortConfig {
+  APP: number;
+  PROXY: number;
+}
+
+interface DevPortConfig extends BasePortConfig {
+  HMR: number;
+  PREVIEW: number;
+  TESTING: number;
+  PROXY_FALLBACK: number;
+  MONITORING: number;
+}
+
+interface StagingPortConfig extends BasePortConfig {
+  HMR: number;
+}
+
+interface ProductionPortConfig extends BasePortConfig {}
+
+const PORT_CONFIG = {
+  // === DEVELOPMENT PORTS ===
+  DEV: {
+    APP: 8088,
+    HMR: 8089,
+    PREVIEW: 8090,
+    TESTING: 8091,
+    PROXY: 3001,
+    PROXY_FALLBACK: 3002,
+    MONITORING: 3003
+  } as DevPortConfig,
+  
+  // === STAGING PORTS ===
+  STAGING: {
+    APP: 9088,
+    HMR: 9089,
+    PROXY: 4001
+  } as StagingPortConfig,
+  
+  // === PRODUCTION PORTS ===
+  PRODUCTION: {
+    APP: 10088,
+    PROXY: 5001
+  } as ProductionPortConfig
+};
+
+// Détection environnement intelligente
+const getEnvironment = (): keyof typeof PORT_CONFIG => {
+  if (process.env.NODE_ENV === 'production') return 'PRODUCTION';
+  if (process.env.NODE_ENV === 'staging' || process.env.VITE_ENV === 'staging') return 'STAGING';
+  return 'DEV';
+};
+
+const ENV = getEnvironment();
+const PORTS = PORT_CONFIG[ENV];
+
+// Fonctions utilitaires pour accès sécurisé aux ports
+const getHMRPort = (): number => {
+  if (ENV === 'DEV') return (PORTS as DevPortConfig).HMR;
+  if (ENV === 'STAGING') return (PORTS as StagingPortConfig).HMR;
+  return 8089; // Fallback pour production
+};
+
+const getPreviewPort = (): number => {
+  if (ENV === 'DEV') return (PORTS as DevPortConfig).PREVIEW;
+  return 8090; // Fallback pour staging/production
+};
+
+const getMonitoringPort = (): number => {
+  if (ENV === 'DEV') return (PORTS as DevPortConfig).MONITORING;
+  return PORTS.PROXY; // Fallback vers proxy pour staging/production
+};
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
-    port: 8088,
-    strictPort: true,
+    // === CONFIGURATION RÉSEAU ENTERPRISE ===
+    host: "::", // IPv6 + IPv4 support
+    port: PORTS.APP,
+    strictPort: true, // ✅ CHANGÉ: Port strict pour éviter conflits
+    open: false, // Pas d'ouverture auto (contrôle manuel)
+    
+    // === HOT MODULE REPLACEMENT OPTIMISÉ ===
+    hmr: {
+      port: getHMRPort(),
+      host: "localhost", // HMR sur localhost uniquement (sécurité)
+      clientPort: getHMRPort(), // Port côté client
+      overlay: true, // Overlay erreurs en développement
+    },
+    
+    // === PROXY CONFIGURATION INTELLIGENTE ===
     proxy: {
+      // LinkedIn/Anthropic API Proxy
       '/api': {
-        target: 'http://localhost:8080',
+        target: `http://localhost:${PORTS.PROXY}`,
         changeOrigin: true,
         secure: false,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('🚨 [Vite Proxy] Error:', err.message);
+            console.log(`💡 [Vite Proxy] Ensure server running on port ${PORTS.PROXY}`);
+          });
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            console.log(`🔄 [Vite Proxy] ${req.method} ${req.url} → port ${PORTS.PROXY}`);
+          });
+        }
+      },
+      
+      // Health Check Endpoint
+      '/health': {
+        target: `http://localhost:${getMonitoringPort()}`,
+        changeOrigin: true
       }
+    },
+    
+    // === CORS CONFIGURATION ENTERPRISE ===
+    cors: {
+      origin: [
+        `http://localhost:${PORTS.APP}`,
+        `http://127.0.0.1:${PORTS.APP}`,
+        `http://localhost:${getPreviewPort()}`,
+        // Staging et production URLs si nécessaire
+        ...(ENV === 'STAGING' ? [`http://localhost:${PORT_CONFIG.STAGING.APP}`] : []),
+        ...(ENV === 'PRODUCTION' ? [`http://localhost:${PORT_CONFIG.PRODUCTION.APP}`] : [])
+      ],
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    },
+    
+    // === HEADERS SÉCURISÉS ===
+    headers: {
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
+      ...(ENV === 'PRODUCTION' && {
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+      })
     }
   },
+  
+  // === CONFIGURATION PREVIEW (BUILD MODE) ===
+  preview: {
+    port: getPreviewPort(),
+    host: "::",
+    strictPort: true,
+    open: false
+  },
+  
   plugins: [
     react(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
+  
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  
+  // === BUILD CONFIGURATION OPTIMISÉE ===
+  build: {
+    // Target moderne pour de meilleures performances  
+    target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari13.1'],
+    
+    rollupOptions: {
+      output: {
+        // Chunking intelligent pour optimiser le cache
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          'vendor-charts': ['recharts'],
+          'enhanced-services': ['./src/services/EnhancedReportExportService.ts'],
+          'pdf-utils': ['jspdf'],
+          'brand-intelligence': ['./src/services/RealBrandIntelligenceService.ts']
+        },
+        
+        // Nommage cohérent des chunks
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId 
+            ? chunkInfo.facadeModuleId.split('/').pop()?.replace('.ts', '').replace('.tsx', '')
+            : 'chunk';
+          return `${facadeModuleId}-[hash].js`;
+        },
+        
+        // Assets avec hash pour cache busting
+        assetFileNames: 'assets/[name]-[hash][extname]'
+      }
+    },
+    
+    // === OPTIMISATIONS BUILD ===
+    minify: ENV === 'PRODUCTION' ? 'esbuild' : false,
+    sourcemap: ENV !== 'PRODUCTION', // Source maps uniquement hors production
+    
+    // Limite de warnings pour build clean
+    chunkSizeWarningLimit: 1000
+  },
+  
+  // === OPTIMISATION DÉPENDANCES ===
+  optimizeDeps: {
+    include: [
+      'jspdf',
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'recharts'
+    ],
+    exclude: [],
+    
+    // Force re-bundling pour certaines dépendances
+    force: mode === 'development'
+  },
+  
+  // === DÉFINITIONS GLOBALES ===
+  define: {
+    global: 'globalThis',
+    
+    // Variables d'environnement pour l'app
+    __APP_ENV__: JSON.stringify(ENV),
+    __APP_PORT__: PORTS.APP,
+    __PROXY_PORT__: PORTS.PROXY,
+    __DEV_MODE__: mode === 'development'
+  },
+  
+  // === CONFIGURATION ESBuild ===
+  esbuild: {
+    drop: ENV === 'PRODUCTION' ? ['console', 'debugger'] : [],
+    logOverride: {
+      'this-is-undefined-in-esm': 'silent'
+    }
+  },
+  
+  // === LOGGING CONFIGURATION ===
+  logLevel: ENV === 'PRODUCTION' ? 'error' : 'info',
+  
+  clearScreen: false // Garde l'historique console visible
 }));

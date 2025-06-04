@@ -12,8 +12,9 @@
  */
 
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
+import type { PerplexityService } from '../lib/perplexity-service';
 import { RealBrandIntelligenceService } from '../services/RealBrandIntelligenceService';
-import type { DeepResearchReport } from '../services/EnhancedBrandIntelligenceService';
+import type { DeepResearchReport } from '../types/BrandIntelligenceTypes';
 
 // Mock du service Perplexity
 const mockPerplexityService = {

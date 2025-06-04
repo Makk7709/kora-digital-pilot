@@ -11,8 +11,8 @@
  */
 
 import { describe, test, expect, beforeEach } from 'vitest';
-import type { DeepResearchReport } from '../services/EnhancedBrandIntelligenceService';
-import { ReportExportService, createReportExportService, type ExportOptions, type ExportResult } from '../services/ReportExportService';
+import { ReportExportOrchestrator as ReportExportService, createReportExportService } from '../services/export';
+import type { DeepResearchReport, ExportOptions, ExportResult } from '../types/BrandIntelligenceTypes';
 
 // === MOCK DATA POUR TESTS ===
 

@@ -37,9 +37,19 @@ import {
 } from 'lucide-react';
 
 // Import des nouveaux types et services
-import { BrandAnalysisServiceImpl, BrandReport, RealMention, RealSentiment, RealCompetitor, RealKeyword, RealSWOT, RealAlert, PerplexityReport } from '../services/BrandAnalysisService';
+import { 
+  RealMention, 
+  RealSentiment, 
+  RealCompetitor, 
+  RealKeyword, 
+  RealSWOT, 
+  RealAlert, 
+  PerplexityReport,
+  BrandReport
+} from '../types/brand-analysis';
 import { PerplexityReportViewer } from './PerplexityReportViewer';
 import { RealBrandIntelligenceService } from '../services/RealBrandIntelligenceService';
+import { BrandAnalysisOrchestrator } from '../services/brand/brand-analysis-orchestrator';
 
 // Données de test mockées pour le mode test
 const mockBrandReport: BrandReport = {
@@ -125,7 +135,7 @@ export const BrandMonitoring: React.FC = () => {
   const { toast } = useToast();
 
   // Service d'analyse de marque
-  const [brandService, setBrandService] = useState<BrandAnalysisServiceImpl | null>(null);
+  const [brandService, setBrandService] = useState<BrandAnalysisOrchestrator | null>(null);
 
   // === NOUVEAU ÉTAT POUR MIGRATION TDD ===
   const [showTDDMigration, setShowTDDMigration] = useState(true);
@@ -151,7 +161,12 @@ export const BrandMonitoring: React.FC = () => {
   // Initialiser le service d'analyse quand Perplexity est prêt
   useEffect(() => {
     if (isInitialized && !brandService) {
-      setBrandService(new BrandAnalysisServiceImpl({ getBusinessInsights, getCompetitorAnalysis }));
+      const mockPerplexityService = {
+        getBusinessInsights: getBusinessInsights,
+        getCompetitorAnalysis: getCompetitorAnalysis
+      };
+      const service = new BrandAnalysisOrchestrator(mockPerplexityService);
+      setBrandService(service);
     }
   }, [isInitialized, brandService, getBusinessInsights, getCompetitorAnalysis]);
 
@@ -237,7 +252,7 @@ export const BrandMonitoring: React.FC = () => {
       setLastUpdate(new Date());
       
       toast({
-        title: "✅ Analyse Perplexity terminée",
+        title: "✅ Analyse IA terminée",
         description: `Données réelles récupérées pour ${targetName}`,
       });
 
@@ -268,13 +283,13 @@ export const BrandMonitoring: React.FC = () => {
       const parsed = JSON.parse(content);
       return {
         ...parsed,
-        brandName: brandName + ' (Perplexity)',
+        brandName: brandName + ' (Analysé IA)',
         analysisTimestamp: new Date()
       };
     } catch {
       // Fallback : créer rapport basé sur le contenu texte
       return {
-        brandName: brandName + ' (Analysé)',
+        brandName: brandName + ' (Analysé IA)',
         sentiment: {
           overallScore: 75 + Math.floor(Math.random() * 20),
           positive: 60 + Math.floor(Math.random() * 20),
@@ -286,7 +301,7 @@ export const BrandMonitoring: React.FC = () => {
         mentions: [{
           id: '1',
           content: content.substring(0, 150) + '...',
-          source: 'Perplexity AI',
+          source: 'Intelligence Artificielle',
           sentiment: 'positive' as const,
           date: new Date(),
           reach: 1000 + Math.floor(Math.random() * 5000),
@@ -307,7 +322,7 @@ export const BrandMonitoring: React.FC = () => {
           { word: 'service', count: 15 + Math.floor(Math.random() * 10), trend: 'stable' as const, isFromContent: true }
         ],
         swot: {
-          strengths: ['Innovation reconnue par Perplexity', 'Position marché solide'],
+          strengths: ['Innovation reconnue par IA', 'Position marché solide'],
           weaknesses: ['Prix premium', 'Concurrence accrue'],
           opportunities: ['Expansion digitale', 'Nouveaux marchés'],
           threats: ['Volatilité économique', 'Disruption technologique'],
@@ -315,9 +330,9 @@ export const BrandMonitoring: React.FC = () => {
         },
         alerts: [{
           type: 'info' as const,
-          message: 'Analyse Perplexity complétée avec succès',
+          message: 'Analyse IA complétée avec succès',
           timestamp: new Date(),
-          source: 'Perplexity Analysis',
+          source: 'IA Analysis',
           isReal: true
         }],
         analysisTimestamp: new Date()
@@ -407,10 +422,10 @@ export const BrandMonitoring: React.FC = () => {
     }
 
     try {
-      console.log('📄 Génération PDF en cours avec données Perplexity...');
+      console.log('📄 Génération PDF en cours avec données IA...');
       
       // Import du service d'export
-      const { createReportExportService } = await import('../services/ReportExportService');
+      const { createReportExportService } = await import("../services/export");
       const exportService = createReportExportService();
       
       // Préparer les données pour l'export
@@ -425,7 +440,7 @@ export const BrandMonitoring: React.FC = () => {
         alerts: realBrandReport.alerts,
         analysisTimestamp: realBrandReport.analysisTimestamp,
         metadata: {
-          source: 'Perplexity API + Kora Processing',
+          source: 'Intelligence Artificielle + Kora Processing',
           exportedAt: new Date(),
           reportType: 'Brand Monitoring'
         }
@@ -489,7 +504,7 @@ export const BrandMonitoring: React.FC = () => {
       console.log('📊 Génération Excel en cours...');
       
       // Import du service d'export
-      const { createReportExportService } = await import('../services/ReportExportService');
+      const { createReportExportService } = await import("../services/export");
       const exportService = createReportExportService();
       
       // Préparer les données pour l'export Excel
@@ -606,13 +621,13 @@ export const BrandMonitoring: React.FC = () => {
       
       toast({
         title: "Rapport généré avec succès !",
-        description: `Rapport Perplexity créé pour ${realBrandReport.brandName}`,
+        description: `Rapport IA créé pour ${realBrandReport.brandName}`,
       });
     } catch (error) {
       console.error('❌ [DEBUG] Erreur lors de la génération du rapport:', error);
       toast({
         title: "Erreur de génération",
-        description: "Impossible de générer le rapport Perplexity",
+        description: "Impossible de générer le rapport IA",
         variant: "destructive"
       });
     } finally {
@@ -667,7 +682,7 @@ export const BrandMonitoring: React.FC = () => {
       
       toast({
         title: "Test API réussi",
-        description: "Analyse réelle effectuée avec Perplexity"
+        description: "Analyse réelle effectuée avec IA"
       });
     } catch (err) {
       setAnalysisError('Erreur lors du test API: ' + (err as Error).message);
@@ -690,7 +705,7 @@ export const BrandMonitoring: React.FC = () => {
                   <Zap className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">🚀 Nouveau : Intelligence TDD Enhanced</h3>
+                  <h3 className="font-semibold text-slate-900">🚀 Nouveau : P.R.I.S.M Report</h3>
                   <p className="text-sm text-slate-600">Deep Research complet avec métriques quantifiées et actions concrètes</p>
                 </div>
               </div>
@@ -706,7 +721,7 @@ export const BrandMonitoring: React.FC = () => {
                   className="bg-gradient-to-r from-green-500 to-blue-500 hover:shadow-lg"
                 >
                   <Target className="w-4 h-4 mr-2" />
-                  Passer au TDD
+                  Accéder au P.R.I.S.M
                 </Button>
                 <Button
                   variant="ghost"
@@ -737,7 +752,7 @@ export const BrandMonitoring: React.FC = () => {
                 {realBrandReport && (
                   <Badge className="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border-purple-200">
                     <Bot className="w-3 h-3 mr-1" />
-                    Données réelles
+                    IA Intégrée
                   </Badge>
                 )}
               </CardTitle>
@@ -791,82 +806,162 @@ export const BrandMonitoring: React.FC = () => {
       </Card>
 
       {/* ======= FORMULAIRE D'ANALYSE DE MARQUE ======= */}
-      <Card className="premium-card border-blue-200/60 bg-gradient-to-br from-blue-50/20 to-white" data-testid="brand-analysis-form">
-        <CardHeader className="border-b border-blue-100">
-          <CardTitle className="flex items-center gap-2 text-slate-900">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-              <Search className="w-4 h-4 text-blue-600" />
-            </div>
-            Analyse de Marque avec IA
-            <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-              <Activity className="w-3 h-3 mr-1" />
-              Perplexity
+      <Card className="premium-card ai-analysis-card" data-testid="brand-analysis-form">
+        <CardHeader className="border-b border-blue-100 bg-gradient-to-r from-blue-50/50 to-indigo-50/30">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-3 text-slate-900">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm animated-icon">
+                <Search className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-slate-900">Analyse de Marque avec IA</h3>
+                <p className="text-sm text-slate-600 font-normal">Analyse complète alimentée par Intelligence Artificielle</p>
+              </div>
+            </CardTitle>
+            <Badge className="bg-purple-100 text-purple-700 border-purple-200">
+              <Bot className="w-3 h-3 mr-1" />
+              IA Avancée
             </Badge>
-          </CardTitle>
+          </div>
         </CardHeader>
-        <CardContent className="p-6 space-y-4">
+        
+        <CardContent className="p-8 space-y-6">
+          {/* Section d'entrée principale */}
           <div className="space-y-4">
-            {/* Input pour le nom de marque */}
-            <div className="space-y-2">
-              <label htmlFor="brand-name" className="text-sm font-medium text-slate-700">
-                Nom de la marque à analyser
-              </label>
-              <Input
-                id="brand-name"
-                data-testid="brand-name-input"
-                placeholder="Nom de la marque ou concurrent"
-                value={targetName}
-                onChange={(e) => {
-                  setTargetName(e.target.value);
-                  if (validationError) setValidationError(null);
-                }}
-                className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
-              />
-              {validationError && (
-                <p className="text-sm text-red-600" data-testid="validation-error">
-                  {validationError}
-                </p>
-              )}
-            </div>
-
-            {/* Bouton d'analyse */}
-            <div className="flex gap-3">
-              <Button
-                data-testid="analyze-brand-button"
-                onClick={handleAnalyzeWithAI}
-                disabled={!targetName.trim() || isAnalyzing || !isInitialized}
-                className="bg-gradient-to-r from-blue-600 to-blue-500 hover:shadow-lg transition-all duration-300 focus:ring-2 focus:ring-blue-500 flex-1"
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" data-testid="analysis-loader" />
-                    <span data-testid="streaming-indicator">Analyse en cours...</span>
-                  </>
-                ) : (
-                  <>
-                    <Brain className="w-4 h-4 mr-2" />
-                    Analyser ma marque
-                  </>
+            <div className="responsive-grid">
+              {/* Input pour le nom de marque */}
+              <div className="space-y-3">
+                <label htmlFor="brand-name" className="section-title">
+                  🎯 Nom de la marque
+                </label>
+                <Input
+                  id="brand-name"
+                  data-testid="brand-name-input"
+                  placeholder="Ex: Nike, Apple, Tesla..."
+                  value={targetName}
+                  onChange={(e) => {
+                    setTargetName(e.target.value);
+                    if (validationError) setValidationError(null);
+                  }}
+                  className="enhanced-input h-12 text-base"
+                />
+                {validationError && (
+                  <p className="text-sm text-red-600 flex items-center gap-1" data-testid="validation-error">
+                    <AlertTriangle className="w-4 h-4" />
+                    {validationError}
+                  </p>
                 )}
-              </Button>
-              
-              {analysisError && (
+              </div>
+
+              {/* Bouton d'analyse principal */}
+              <div className="space-y-3">
+                <label className="section-title">
+                  🚀 Action
+                </label>
+                <Button
+                  data-testid="analyze-brand-button"
+                  onClick={handleAnalyzeWithAI}
+                  disabled={!targetName.trim() || isAnalyzing || !isInitialized}
+                  className="w-full h-12 enhanced-button text-base font-semibold"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" data-testid="analysis-loader" />
+                      <span data-testid="streaming-indicator">Analyse en cours...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Brain className="w-5 h-5 mr-2" />
+                      Analyser ma marque
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+            
+            {/* Bouton de réessai si erreur */}
+            {analysisError && (
+              <div className="flex justify-center">
                 <Button
                   variant="outline"
                   onClick={handleRetryAnalysis}
-                  className="border-red-200 text-red-600 hover:bg-red-50"
+                  className="border-red-300 text-red-700 hover:bg-red-50 transition-all duration-300"
                 >
-                  Réessayer
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Réessayer l'analyse
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
+          </div>
 
-            {/* Boutons de test pour diagnostic */}
-            <div className="flex gap-2 pt-4 border-t border-slate-200">
+          {/* Section des messages d'état */}
+          <div className="space-y-4">
+            {/* Message de mode test - plus visible */}
+            {testMode && (
+              <div className="status-message success">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <Settings className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-semibold">Mode Test Activé</span>
+                    <p className="text-sm mt-1">
+                      Données de démonstration affichées pour tester l'interface
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Messages d'erreur - améliorés */}
+            {analysisError && (
+              <div className="status-message error" data-testid="error-message">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center mt-0.5">
+                    <AlertTriangle className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-semibold">Erreur d'analyse</span>
+                    <p className="text-sm mt-1">{analysisError}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Statut de l'API - plus clair */}
+            {!isInitialized && (
+              <div className="status-message warning">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center mt-0.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-600" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-semibold">Configuration requise</span>
+                    <p className="text-sm mt-1">
+                      Veuillez configurer votre clé API IA dans les variables d'environnement
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Section des outils de diagnostic - réorganisée */}
+          <div className="pt-6 border-t border-slate-200">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="section-title">🔧 Outils de diagnostic</h4>
+              <span className="text-xs text-slate-500">Pour le développement et les tests</span>
+            </div>
+            
+            <div className="responsive-grid">
               <Button
                 variant="outline"
                 onClick={handleTestMode}
-                className={`flex-1 ${testMode ? 'bg-green-50 border-green-200 text-green-700' : 'border-slate-200'}`}
+                className={`transition-all duration-300 ${
+                  testMode 
+                    ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100' 
+                    : 'border-slate-300 hover:bg-slate-50'
+                }`}
                 data-testid="test-mode-button"
               >
                 <Settings className="w-4 h-4 mr-2" />
@@ -878,7 +973,7 @@ export const BrandMonitoring: React.FC = () => {
                   variant="outline"
                   onClick={handleTestWithRealAPI}
                   disabled={isAnalyzing}
-                  className="flex-1 border-purple-200 text-purple-700 hover:bg-purple-50"
+                  className="border-purple-300 text-purple-700 hover:bg-purple-50 transition-all duration-300"
                   data-testid="test-api-button"
                 >
                   <Zap className="w-4 h-4 mr-2" />
@@ -886,43 +981,6 @@ export const BrandMonitoring: React.FC = () => {
                 </Button>
               )}
             </div>
-
-            {/* Message de mode test */}
-            {testMode && (
-              <div className="p-3 bg-green-50 border border-green-200 rounded-xl">
-                <div className="flex items-center gap-2">
-                  <Settings className="w-4 h-4 text-green-600" />
-                  <span className="text-sm text-green-700 font-medium">Mode Test Activé</span>
-                </div>
-                <p className="text-sm text-green-600 mt-1">
-                  Données de test affichées pour diagnostiquer l'interface. L'affichage des sections ci-dessous indique que le composant fonctionne.
-                </p>
-              </div>
-            )}
-
-            {/* Messages d'erreur */}
-            {analysisError && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-xl" data-testid="error-message">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-red-500" />
-                  <span className="text-sm text-red-700">Erreur d'analyse</span>
-                </div>
-                <p className="text-sm text-red-600 mt-1">{analysisError}</p>
-              </div>
-            )}
-
-            {/* Statut de l'API */}
-            {!isInitialized && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-500" />
-                  <span className="text-sm text-amber-700">Configuration Perplexity requise</span>
-                </div>
-                <p className="text-sm text-amber-600 mt-1">
-                  Veuillez configurer votre clé API Perplexity pour utiliser cette fonctionnalité.
-                </p>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>
@@ -931,118 +989,136 @@ export const BrandMonitoring: React.FC = () => {
       {realBrandReport ? (
         <>
           {/* SECTION 1: SCORE DE RÉPUTATION ET SENTIMENT - DONNÉES RÉELLES */}
-          <Card className="premium-card border-blue-200/60 bg-gradient-to-br from-blue-50/20 to-white" data-testid="reputation-score-card">
-            <CardHeader className="border-b border-blue-100">
-              <CardTitle className="flex items-center gap-2 text-slate-900">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-                  <BarChart3 className="w-4 h-4 text-blue-600" />
+          <Card className="premium-card result-card border-blue-200/60 bg-gradient-to-br from-blue-50/30 to-white" data-testid="reputation-score-card">
+            <CardHeader className="border-b border-blue-100 bg-gradient-to-r from-blue-50/50 to-indigo-50/30">
+              <CardTitle className="flex items-center gap-3 text-slate-900">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm animated-icon">
+                  <BarChart3 className="w-5 h-5 text-white" />
                 </div>
-                Score de réputation - {realBrandReport.brandName}
-                <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+                <div>
+                  <h3 className="text-lg font-semibold">Score de réputation</h3>
+                  <p className="text-sm text-slate-600 font-normal">{realBrandReport.brandName}</p>
+                </div>
+                <Badge className="bg-purple-100 text-purple-700 border-purple-200">
                   <Bot className="w-3 h-3 mr-1" />
-                  Calculé par Perplexity
+                  IA Calculée
                 </Badge>
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-6">
-              {/* Score principal */}
+            <CardContent className="p-8 space-y-8">
+              {/* Score principal avec animation */}
               <div className="text-center" data-testid="reputation-score">
-                <div className="text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <div className="metric-value text-7xl mb-3 pulse-glow">
                   {realBrandReport.sentiment.overallScore}
                 </div>
-                <p className="text-slate-600 mt-2" aria-label="Score de réputation">Score de réputation</p>
-                <Progress 
-                  value={realBrandReport.sentiment.overallScore} 
-                  className="mt-4 h-3"
-                  aria-label="Graphique de sentiment"
-                />
+                <p className="metric-label text-base" aria-label="Score de réputation">Score de réputation global</p>
+                <div className="mt-6">
+                  <Progress 
+                    value={realBrandReport.sentiment.overallScore} 
+                    className="enhanced-progress h-4"
+                    aria-label="Graphique de sentiment"
+                  />
+                </div>
               </div>
 
-              {/* Répartition sentiment */}
-              <div className="grid grid-cols-3 gap-4 mt-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600" data-testid="sentiment-positive">
+              {/* Répartition sentiment avec cartes métriques */}
+              <div className="responsive-grid">
+                <div className="metric-card text-center">
+                  <div className="text-4xl font-bold text-green-600 mb-2" data-testid="sentiment-positive">
                     {realBrandReport.sentiment.positive}%
                   </div>
-                  <div className="text-sm text-slate-600">Positif</div>
-                  <Progress value={realBrandReport.sentiment.positive} className="mt-2 h-2" />
+                  <div className="metric-label">Positif</div>
+                  <div className="mt-3">
+                    <Progress value={realBrandReport.sentiment.positive} className="enhanced-progress h-3" />
+                  </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-slate-600" data-testid="sentiment-neutral">
+                <div className="metric-card text-center">
+                  <div className="text-4xl font-bold text-slate-600 mb-2" data-testid="sentiment-neutral">
                     {realBrandReport.sentiment.neutral}%
                   </div>
-                  <div className="text-sm text-slate-600">Neutre</div>
-                  <Progress value={realBrandReport.sentiment.neutral} className="mt-2 h-2" />
+                  <div className="metric-label">Neutre</div>
+                  <div className="mt-3">
+                    <Progress value={realBrandReport.sentiment.neutral} className="enhanced-progress h-3" />
+                  </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-red-600" data-testid="sentiment-negative">
+                <div className="metric-card text-center">
+                  <div className="text-4xl font-bold text-red-600 mb-2" data-testid="sentiment-negative">
                     {realBrandReport.sentiment.negative}%
                   </div>
-                  <div className="text-sm text-slate-600">Négatif</div>
-                  <Progress value={realBrandReport.sentiment.negative} className="mt-2 h-2" />
+                  <div className="metric-label">Négatif</div>
+                  <div className="mt-3">
+                    <Progress value={realBrandReport.sentiment.negative} className="enhanced-progress h-3" />
+                  </div>
                 </div>
               </div>
 
-              {/* Affichage des mentions réelles */}
+              {/* Affichage des mentions réelles amélioré */}
               {realBrandReport.mentions.length > 0 && (
-                <div className="mt-6 space-y-3">
-                  <h4 className="text-sm font-medium text-slate-700">Mentions analysées par Perplexity</h4>
-                  {realBrandReport.mentions.slice(0, 3).map((mention) => (
-                    <div key={mention.id} className="p-3 bg-slate-50 rounded-lg border">
-                      <p className="text-sm text-slate-700">{mention.content}</p>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs text-slate-500">{mention.source}</span>
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs ${
-                            mention.sentiment === 'positive' ? 'text-green-600 border-green-200' :
-                            mention.sentiment === 'negative' ? 'text-red-600 border-red-200' :
-                            'text-slate-600 border-slate-200'
-                          }`}
-                        >
-                          {mention.sentiment}
-                        </Badge>
+                <div className="mt-8 space-y-4">
+                  <h4 className="section-title">💬 Mentions analysées par IA</h4>
+                  <div className="space-y-3 custom-scrollbar max-h-64 overflow-y-auto">
+                    {realBrandReport.mentions.slice(0, 3).map((mention) => (
+                      <div key={mention.id} className="result-card p-4 bg-gradient-to-r from-slate-50 to-white">
+                        <p className="text-sm text-slate-700 mb-3 leading-relaxed">{mention.content}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-slate-500 font-medium">{mention.source}</span>
+                          <Badge 
+                            variant="outline" 
+                            className={`text-xs font-medium ${
+                              mention.sentiment === 'positive' ? 'text-green-700 border-green-300 bg-green-50' :
+                              mention.sentiment === 'negative' ? 'text-red-700 border-red-300 bg-red-50' :
+                              'text-slate-700 border-slate-300 bg-slate-50'
+                            }`}
+                          >
+                            {mention.sentiment}
+                          </Badge>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
         </>
       ) : (
-        /* PLACEHOLDERS POUR LES TESTS - TOUJOURS VISIBLES */
-        <Card className="premium-card border-slate-200/60" data-testid="reputation-score-card">
+        /* PLACEHOLDERS POUR LES TESTS - AMÉLIORÉS */
+        <Card className="premium-card result-card border-slate-200/60 bg-gradient-to-br from-slate-50/30 to-white" data-testid="reputation-score-card">
           <CardHeader className="border-b border-slate-100">
-            <CardTitle className="flex items-center gap-2 text-slate-700">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-                <BarChart3 className="w-4 h-4 text-slate-400" />
+            <CardTitle className="flex items-center gap-3 text-slate-700">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-white" />
               </div>
-              Score de réputation
+              <div>
+                <h3 className="text-lg font-semibold">Score de réputation</h3>
+                <p className="text-sm text-slate-500 font-normal">En attente d'analyse</p>
+              </div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6 space-y-6">
+          <CardContent className="p-8 space-y-8">
             <div className="text-center" data-testid="reputation-score">
-              <div className="text-6xl font-bold text-slate-300">--</div>
-              <p className="text-slate-400 mt-2" aria-label="Score de réputation">En attente d'analyse</p>
-              <Progress 
-                value={0} 
-                className="mt-4 h-3"
-                aria-label="Graphique de sentiment"
-              />
+              <div className="text-7xl font-bold text-slate-300 mb-3">--</div>
+              <p className="text-slate-400 text-base" aria-label="Score de réputation">Saisissez une marque pour analyser</p>
+              <div className="mt-6">
+                <Progress 
+                  value={0} 
+                  className="enhanced-progress h-4"
+                  aria-label="Graphique de sentiment"
+                />
+              </div>
             </div>
-            <div className="grid grid-cols-3 gap-4 mt-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-slate-300" data-testid="sentiment-positive">--%</div>
-                <div className="text-sm text-slate-400">Positif</div>
+            <div className="responsive-grid">
+              <div className="metric-card text-center opacity-50">
+                <div className="text-4xl font-bold text-slate-300 mb-2" data-testid="sentiment-positive">--%</div>
+                <div className="metric-label">Positif</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-slate-300" data-testid="sentiment-neutral">--%</div>
-                <div className="text-sm text-slate-400">Neutre</div>
+              <div className="metric-card text-center opacity-50">
+                <div className="text-4xl font-bold text-slate-300 mb-2" data-testid="sentiment-neutral">--%</div>
+                <div className="metric-label">Neutre</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-slate-300" data-testid="sentiment-negative">--%</div>
-                <div className="text-sm text-slate-400">Négatif</div>
+              <div className="metric-card text-center opacity-50">
+                <div className="text-4xl font-bold text-slate-300 mb-2" data-testid="sentiment-negative">--%</div>
+                <div className="metric-label">Négatif</div>
               </div>
             </div>
           </CardContent>
@@ -1097,7 +1173,7 @@ export const BrandMonitoring: React.FC = () => {
               Surveillance concurrentielle
               <Badge className="bg-purple-100 text-purple-700 border-purple-200">
                 <Bot className="w-3 h-3 mr-1" />
-                Perplexity AI
+                IA Avancée
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -1132,7 +1208,7 @@ export const BrandMonitoring: React.FC = () => {
               Contenu et thématiques
               <Badge className="bg-green-100 text-green-700 border-green-200">
                 <Bot className="w-3 h-3 mr-1" />
-                Mots-clés extraits
+                Mots-clés IA
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -1172,7 +1248,7 @@ export const BrandMonitoring: React.FC = () => {
               Analyse SWOT - {realBrandReport.brandName}
               <Badge className="bg-indigo-100 text-indigo-700 border-indigo-200">
                 <Bot className="w-3 h-3 mr-1" />
-                Généré par Perplexity
+                Généré par IA
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -1243,7 +1319,7 @@ export const BrandMonitoring: React.FC = () => {
             <div className="mt-6 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
               <div className="flex items-center gap-2">
                 <Brain className="w-5 h-5 text-indigo-600" />
-                <span className="font-medium text-indigo-800">Analyse générée par Perplexity</span>
+                <span className="font-medium text-indigo-800">Analyse générée par Intelligence Artificielle</span>
               </div>
               <p className="text-sm text-indigo-700 mt-2">
                 Cette analyse SWOT a été générée en temps réel à partir des données de marché actuelles pour {realBrandReport.brandName}.
@@ -1253,35 +1329,6 @@ export const BrandMonitoring: React.FC = () => {
         </Card>
       )}
 
-      {/* 🔧 SECTION DEBUG TEMPORAIRE - POUR DIAGNOSTIQUER */}
-      <Card className="premium-card border-yellow-200 bg-yellow-50">
-        <CardHeader>
-          <CardTitle className="text-yellow-800">🔧 Debug - États des données</CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 text-sm">
-          <div className="space-y-2 text-yellow-700">
-            <div>✅ realBrandReport: {realBrandReport ? `✓ (${realBrandReport.brandName})` : '❌ Aucun'}</div>
-            <div>📝 perplexityReport: {perplexityReport ? `✓ (ID: ${perplexityReport.id})` : '❌ Aucun'}</div>
-            <div>⚙️ isGeneratingReport: {isGeneratingReport ? '🔄 En cours' : '⏸️ Arrêté'}</div>
-            <div>🔧 Étapes à suivre:</div>
-            <ol className="list-decimal list-inside ml-4 space-y-1">
-              <li>Entrez un nom de marque (ex: Nike)</li>
-              <li>Cliquez "Analyser ma marque" OU "Mode Test"</li>
-              <li>Une fois l'analyse terminée, cliquez "Générer rapport Perplexity"</li>
-              <li>Le rapport formaté apparaîtra en-dessous</li>
-            </ol>
-            {perplexityReport && (
-              <div className="mt-4 p-3 bg-white rounded border">
-                <div className="font-medium">📊 Contenu du rapport:</div>
-                <div>- Insights: {perplexityReport.keyInsights?.length || 0}</div>
-                <div>- Actions: {perplexityReport.recommendedActions?.length || 0}</div>
-                <div>- Score: {perplexityReport.reputationScore}/100</div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* SECTION RAPPORT PERPLEXITY - AFFICHAGE DU RAPPORT GÉNÉRÉ */}
       {perplexityReport && (
         <Card className="premium-card border-purple-200/60 bg-gradient-to-br from-purple-50/20 to-white">
@@ -1290,10 +1337,10 @@ export const BrandMonitoring: React.FC = () => {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center">
                 <FileText className="w-4 h-4 text-purple-600" />
               </div>
-              Rapport Perplexity - {perplexityReport.brandName}
+              Rapport IA - {perplexityReport.brandName}
               <Badge className="bg-purple-100 text-purple-700 border-purple-200">
                 <Bot className="w-3 h-3 mr-1" />
-                Optimisé pour lecture
+                Rapport optimisé
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -1341,7 +1388,7 @@ export const BrandMonitoring: React.FC = () => {
                 ) : (
                   <>
                     <FileText className="w-4 h-4" />
-                    Générer rapport Perplexity
+                    Générer rapport IA
                   </>
                 )}
               </Button>
@@ -1349,7 +1396,7 @@ export const BrandMonitoring: React.FC = () => {
 
             <div className="text-sm text-slate-500">
               {realBrandReport ? 
-                `Rapport basé sur l'analyse Perplexity de ${realBrandReport.brandName}` :
+                `Rapport basé sur l'analyse IA de ${realBrandReport.brandName}` :
                 "Aucune analyse disponible"
               }
             </div>
@@ -1367,7 +1414,7 @@ export const BrandMonitoring: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-slate-900">Aucune analyse en cours</h3>
               <p className="text-slate-600">
-                Saisissez le nom d'une marque ci-dessus et lancez l'analyse pour voir les résultats de veille Perplexity en temps réel.
+                Saisissez le nom d'une marque ci-dessus et lancez l'analyse pour voir les résultats de veille IA en temps réel.
               </p>
               <div className="pt-4">
                 <Badge className="bg-blue-50 text-blue-700 border-blue-200">

@@ -501,23 +501,23 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => techWatch.addToWatchList(query)}
+                  onClick={() => techWatch.addToWatchlist(query)}
                   disabled={!query.trim()}
                 >
                   Ajouter à la veille
                 </Button>
               </div>
               
-              {techWatch.watchList.length > 0 && (
+              {techWatch.watchlist.length > 0 && (
                 <div>
                   <h4 className="font-medium text-sm mb-2">Liste de veille:</h4>
                   <div className="flex flex-wrap gap-2">
-                    {techWatch.watchList.map((domain, index) => (
+                    {techWatch.watchlist.map((domain, index) => (
                       <Badge 
                         key={index} 
                         variant="secondary"
                         className="cursor-pointer"
-                        onClick={() => techWatch.removeFromWatchList(domain)}
+                        onClick={() => techWatch.removeFromWatchlist(domain)}
                       >
                         {domain} ×
                       </Badge>

@@ -59,23 +59,32 @@ export const CommunityManagerDashboard: React.FC = () => {
     scanCount: 0,
   });
 
-  const [autoScanEnabled, setAutoScanEnabled] = useState(true);
+  const [autoScanEnabled, setAutoScanEnabled] = useState(false);
 
-  // Scan automatique toutes les 12 heures (2x par jour)
+  // 🛡️ PROTECTION CRÉDIT API - Scan automatique désactivé par défaut 
   useEffect(() => {
     if (!autoScanEnabled || !perplexity.isInitialized) return;
 
+    console.warn('⚠️ Auto-scan Community Manager activé - Consommation crédits API en cours');
+
     const performAutoScan = async () => {
+      console.log('🔄 [Auto-scan] Démarrage scan automatique des 4 axes');
       await scanAllAxes();
     };
 
-    // Scan initial
-    performAutoScan();
+    // ✅ RETIRÉ: Plus de scan initial automatique 
+    // L'utilisateur doit déclencher manuellement
 
     // Programmer les scans suivants (12h = 43200000ms)
-    const interval = setInterval(performAutoScan, 12 * 60 * 60 * 1000);
+    const interval = setInterval(() => {
+      console.log('🔄 [Auto-scan] Scan programmé toutes les 12h');
+      performAutoScan();
+    }, 12 * 60 * 60 * 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      console.log('🛑 Auto-scan Community Manager arrêté');
+      clearInterval(interval);
+    };
   }, [autoScanEnabled, perplexity.isInitialized]);
 
   // Fonction principale de scan des 4 axes

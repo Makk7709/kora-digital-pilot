@@ -1,3 +1,6 @@
+// ✅ UTILISATION DU FETCH NATIF DU NAVIGATEUR
+// import fetch, { Response } from 'node-fetch'; // ❌ Retiré car incompatible navigateur
+
 export interface PerplexityConfig {
   apiKey: string;
   model?: string;
@@ -170,44 +173,34 @@ class PerplexityService {
 
   // Méthodes privées
   private async makeRequest(prompt: string): Promise<PerplexityResponse> {
+    console.log('📡 [PerplexityService] Appel API avec prompt:', prompt.substring(0, 100) + '...');
     console.log('🔄 [PerplexityService] makeRequest démarré');
-    
-    // Vérification préalable
+
+    // ✅ VALIDATIONS INITIALES
     if (!this.config.apiKey) {
       throw new Error('Clé API Perplexity manquante');
     }
     
-    if (!globalThis.fetch && typeof fetch === 'undefined') {
-      console.log('⚠️ [PerplexityService] fetch non disponible, tentative d\'import node-fetch');
-      try {
-        const nodeFetch = await import('node-fetch');
-        globalThis.fetch = nodeFetch.default;
-      } catch (err) {
-        throw new Error('fetch() non disponible - installer node-fetch: npm install node-fetch');
-      }
+    if (!prompt || prompt.trim().length === 0) {
+      throw new Error('Prompt vide ou invalide');
     }
 
     const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
       'Authorization': `Bearer ${this.config.apiKey}`,
+      'Content-Type': 'application/json',
     };
 
     const body = {
-      model: this.config.model,
+      model: this.config.model || 'sonar-pro',
       messages: [
         {
-          role: 'system',
-          content: 'Tu es un expert en intelligence économique et marketing digital. Fournis des analyses précises, sourcées et actionnables.'
-        },
-        {
           role: 'user',
-          content: prompt
-        }
+          content: prompt,
+        },
       ],
-      max_tokens: this.config.maxTokens || 2000,
-      temperature: this.config.temperature || 0.3,
-      stream: this.config.stream || false,
+      max_tokens: this.config.maxTokens || 4000,
+      temperature: this.config.temperature || 0.2,
+      stream: false,
     };
 
     console.log('📡 [PerplexityService] Envoi requête:', {
@@ -217,7 +210,7 @@ class PerplexityService {
       promptLength: prompt.length
     });
 
-    let response;
+    let response: Response;
     try {
       response = await fetch(this.baseURL, {
         method: 'POST',
@@ -228,16 +221,11 @@ class PerplexityService {
       console.log('📊 [PerplexityService] Réponse reçue:', {
         status: response.status,
         statusText: response.statusText,
-        ok: response.ok,
-        headers: Object.fromEntries(response.headers)
+        ok: response.ok
       });
     } catch (error) {
       console.error('❌ [PerplexityService] Erreur fetch:', error);
-      throw new Error(`Erreur réseau: ${error.message}`);
-    }
-
-    if (!response) {
-      throw new Error('Réponse fetch undefined - problème de configuration réseau');
+      throw new Error(`Erreur réseau: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     }
 
     if (!response.ok) {
@@ -268,12 +256,20 @@ class PerplexityService {
       console.error('❌ [PerplexityService] Erreur parsing JSON:', error);
       throw new Error('Impossible de parser la réponse JSON');
     }
+
+    // ✅ VALIDATION DES DONNÉES
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      throw new Error('Réponse API invalide: structure de données manquante');
+    }
+    
+    // Nettoyer le contenu avant de le retourner
+    const cleanedContent = this.cleanPerplexityContent(data.choices[0].message.content);
     
     return {
-      content: data.choices[0].message.content,
-      sources: this.extractSources(data.choices[0].message.content),
-      usage: data.usage,
-      model: data.model,
+      content: cleanedContent,
+      sources: this.extractSources(cleanedContent),
+      usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+      model: data.model || this.config.model || 'sonar-pro',
       timestamp: new Date(),
     };
   }
@@ -419,6 +415,85 @@ class PerplexityService {
 
   updateConfig(newConfig: Partial<PerplexityConfig>): void {
     this.config = { ...this.config, ...newConfig };
+  }
+
+  /**
+   * 🧹 Nettoie le contenu de Perplexity en supprimant les prompts système
+   * et autres éléments indésirables qui peuvent apparaître dans la réponse
+   */
+  private cleanPerplexityContent(content: string): string {
+    if (!content) return content;
+
+    // Liste des patterns de prompts système à supprimer
+    const systemPromptPatterns = [
+      // Prompt Perplexity principal
+      /Tu es Perplexity, un assistant de recherche utile formé par Perplexity AI\.[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
+      
+      // Instructions système complètes
+      /Ta tâche est de rédiger une réponse précise, complète et détaillée[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
+      
+      // Instructions de formatage
+      /Suis ces instructions pour formuler ta réponse[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
+      
+      // Règles de citation
+      /Cite les résultats de recherche utilisés directement[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
+      
+      // Instructions de formatage markdown
+      /Rédige une réponse bien formatée optimisée pour la lisibilité[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
+      
+      // Restrictions
+      /N'inclus pas d'URL ou de liens dans la réponse[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
+      
+      // Types de requêtes spécifiques
+      /<query_type_rules>[\s\S]*?<\/query_type_rules>/gi,
+      
+      // Restrictions générales
+      /<restrictions>[\s\S]*?<\/restrictions>/gi,
+      
+      // Enrichissement contextuel
+      /===== ENRICHISSEMENT CONTEXTUEL =====[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
+      
+      // Synthèse stratégique
+      /SYNTHÈSE STRATÉGIQUE:[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
+      
+      // Recommandations opérationnelles
+      /RECOMMANDATIONS OPÉRATIONNELLES:[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
+      
+      // Lignes de métadonnées KORA
+      /KORA[\s]*$/gm,
+      
+      // Instructions génériques de début
+      /^(Voici une analyse|Voici un rapport|Voici une synthèse)[\s\S]*?(?=\n\n)/gi,
+      
+      // Références aux instructions
+      /selon les instructions fournies|conformément aux directives|comme demandé dans les instructions/gi
+    ];
+
+    let cleanedContent = content;
+
+    // Appliquer tous les patterns de nettoyage
+    systemPromptPatterns.forEach(pattern => {
+      cleanedContent = cleanedContent.replace(pattern, '');
+    });
+
+    // Nettoyer les espaces multiples et les sauts de ligne excessifs
+    cleanedContent = cleanedContent
+      .replace(/\n{3,}/g, '\n\n')  // Réduire les sauts de ligne multiples
+      .replace(/\s{3,}/g, ' ')     // Réduire les espaces multiples
+      .trim();                     // Supprimer les espaces en début/fin
+
+    // Si le contenu a été trop nettoyé, retourner l'original avec un nettoyage minimal
+    if (cleanedContent.length < content.length * 0.3) {
+      console.warn('⚠️ [PerplexityService] Nettoyage trop agressif, conservation du contenu original');
+      return content
+        .replace(/Tu es Perplexity, un assistant de recherche utile formé par Perplexity AI\.[\s\S]*?(?=\n\n)/gi, '')
+        .replace(/KORA[\s]*$/gm, '')
+        .trim();
+    }
+
+    console.log(`🧹 [PerplexityService] Contenu nettoyé: ${content.length} → ${cleanedContent.length} caractères`);
+    
+    return cleanedContent;
   }
 }
 

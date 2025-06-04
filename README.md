@@ -357,3 +357,266 @@ git push origin feature/nouvelle-fonctionnalite
 **🎯 Real Brand Intelligence Service - Veille concurrentielle nouvelle génération avec données réelles**
 
 *Développé avec ❤️ et TypeScript*
+
+# 🚀 KORA - Brand Intelligence Platform
+
+## 🏗️ ARCHITECTURE RÉSEAU ENTERPRISE
+
+### 📡 **CONFIGURATION PORTS IMPECCABLE**
+
+```
+🌐 ENVIRONNEMENT DEVELOPMENT (par défaut)
+├── 8088 - KORA App Frontend (React/Vite)
+├── 8089 - Hot Module Replacement (HMR)  
+├── 8090 - Preview Build Mode
+├── 8091 - Tests & Storybook (disponible)
+├── 3001 - LinkedIn/Anthropic Proxy (CORS)
+├── 3002 - Fallback Proxy
+└── 3003 - Monitoring & Health Check
+
+🎭 ENVIRONNEMENT STAGING  
+├── 9088 - KORA App Staging
+├── 9089 - HMR Staging
+└── 4001 - Proxy Staging
+
+🏢 ENVIRONNEMENT PRODUCTION
+├── 10088 - KORA App Production
+└── 5001 - Proxy Production
+```
+
+## 🚀 DÉMARRAGE RAPIDE
+
+### **Option 1 : Développement Complet (Recommandé)**
+```bash
+npm run start
+# ou
+npm run dev:full
+```
+
+### **Option 2 : Par Composant**
+```bash
+# 1. Démarrer le proxy
+npm run proxy
+
+# 2. Démarrer l'app (dans un autre terminal)
+npm run dev
+```
+
+### **Option 3 : Environnements Spécifiques**
+```bash
+# Staging
+npm run start:staging
+
+# Production
+npm run start:production
+```
+
+## 🛠️ COMMANDES DISPONIBLES
+
+### **📱 Application**
+```bash
+npm run dev              # Démarrer l'app seule (port 8088)
+npm run dev:full         # App + Proxy complet
+npm run build            # Build production
+npm run preview          # Preview build (port 8090)
+```
+
+### **🔧 Proxy Server**
+```bash
+npm run proxy                # Démarrer proxy dev (port 3001)
+npm run proxy:staging        # Proxy staging (port 4001)  
+npm run proxy:production     # Proxy production (port 5001)
+```
+
+### **🩺 Health Checks**
+```bash
+npm run health-check              # Dev proxy
+npm run health-check:staging      # Staging proxy
+npm run health-check:production   # Production proxy
+```
+
+### **🔍 Gestion Ports**
+```bash
+npm run ports:check        # Vérifier ports utilisés
+npm run ports:kill         # Arrêter tous les processus
+npm run ports:reset        # Reset complet des ports
+```
+
+### **🧪 Tests**
+```bash
+npm test                   # Tests en mode watch
+npm run test:run          # Tests une fois
+npm run test:ui           # Interface tests (port par défaut)
+npm run test:8091         # Interface tests sur port 8091
+npm run test:coverage     # Tests avec couverture
+```
+
+## 🌐 URLs d'accès
+
+### **Development**
+- **App**: http://localhost:8088
+- **Preview**: http://localhost:8090  
+- **Tests UI**: http://localhost:8091
+- **Proxy Health**: http://localhost:3001/api/health
+- **Proxy Metrics**: http://localhost:3001/api/metrics
+
+### **Staging**  
+- **App**: http://localhost:9088
+- **Proxy Health**: http://localhost:4001/api/health
+
+### **Production**
+- **App**: http://localhost:10088  
+- **Proxy Health**: http://localhost:5001/api/health
+
+## ⚙️ CONFIGURATION AVANCÉE
+
+### **Variables d'Environnement**
+
+```bash
+# .env.local
+VITE_PERPLEXITY_API_KEY=your_perplexity_key
+VITE_ANTHROPIC_API_KEY=your_anthropic_key
+
+# Variables optionnelles
+VITE_ENV=staging                    # Force environnement
+NODE_ENV=production                 # Environnement Node.js
+PROXY_PORT=3001                     # Port proxy custom
+```
+
+### **Changement d'Environnement**
+
+```bash
+# Forcer staging
+VITE_ENV=staging npm run dev
+
+# Forcer production  
+NODE_ENV=production npm run dev
+```
+
+## 🚨 TROUBLESHOOTING
+
+### **Problèmes Ports**
+
+#### Port déjà utilisé
+```bash
+# Identifier le processus
+npm run ports:check
+
+# Arrêter tous les processus KORA
+npm run ports:reset
+
+# Redémarrer
+npm run start
+```
+
+#### Port spécifique bloqué
+```bash
+# Identifier le processus sur port 8088
+lsof -i :8088
+
+# Tuer le processus
+kill -9 <PID>
+```
+
+### **Problèmes Proxy**
+
+#### Proxy ne démarre pas
+```bash
+# Vérifier la configuration
+npm run health-check
+
+# Démarrer proxy seul avec logs
+DEBUG=* npm run proxy
+```
+
+#### CORS Errors
+```bash
+# Vérifier les origines autorisées dans server.cjs
+# Port de l'app doit matcher la config proxy
+```
+
+### **Problèmes Build**
+
+#### Erreurs TypeScript
+```bash
+# Build avec diagnostics complets
+npm run build 2>&1 | tee build.log
+
+# Vérifier les types
+npx tsc --noEmit
+```
+
+#### Erreurs Bundle
+```bash
+# Analyser le bundle
+npm run build -- --mode development
+npm run preview
+```
+
+## 📊 MONITORING
+
+### **Métriques en Temps Réel**
+```bash
+# Métriques proxy (dev uniquement)
+curl http://localhost:3001/api/metrics | jq
+
+# Health check détaillé
+curl http://localhost:3001/api/health | jq
+```
+
+### **Logs Développement**
+- Proxy logs: Console du serveur proxy
+- App logs: Console navigateur + terminal Vite
+- HMR logs: Console terminal Vite
+
+## 🔒 SÉCURITÉ
+
+### **Headers Sécurisés**
+- ✅ CORS configuré par environnement
+- ✅ Content Security Policy (production)
+- ✅ XSS Protection
+- ✅ HTTPS Strict Transport Security (production)
+
+### **Rate Limiting**
+- LinkedIn: 50 req/min
+- Anthropic: 30 req/min  
+- Profile: 100 req/min
+
+### **Validation**
+- ✅ API Keys validation
+- ✅ JSON payload validation
+- ✅ Input sanitization
+
+## 📋 CHECKLIST DÉMARRAGE
+
+- [ ] Variables d'environnement configurées
+- [ ] Ports disponibles (8088, 8089, 3001)
+- [ ] Node.js v18+ installé
+- [ ] Dépendances installées (`npm install`)
+- [ ] Build réussi (`npm run build`)
+- [ ] Tests passent (`npm test`)
+- [ ] Health check OK (`npm run health-check`)
+
+## 🆘 SUPPORT
+
+### **Commandes Utiles**
+```bash
+# Diagnostic complet
+npm run ports:check && npm run health-check
+
+# Reset total
+npm run ports:reset && npm run start
+
+# Logs détaillés
+DEBUG=* npm run dev:full
+```
+
+### **Logs Importants**
+- 🟢 `✅ Proxy ready` - Proxy démarré
+- 🟢 `🚀 Local: http://localhost:8088` - App démarrée  
+- 🔴 `❌ Port 8088 already in use` - Conflit de port
+- 🔴 `ECONNREFUSED` - Proxy non accessible
+
+**Configuration par**: Architecte Senior Infrastructure KORA  
+**Version**: Enterprise v1.0.0  
+**Dernière MAJ**: $(date +'%Y-%m-%d')

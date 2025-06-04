@@ -16,7 +16,7 @@ import {
   CheckCircle2,
   Clock
 } from 'lucide-react';
-import { PerplexityReport } from '@/services/BrandAnalysisService';
+import { PerplexityReport } from '@/types/brand-analysis';
 
 interface PerplexityReportViewerProps {
   report: PerplexityReport;

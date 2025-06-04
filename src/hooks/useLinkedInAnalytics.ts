@@ -81,16 +81,17 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
 
     checkAuth();
 
-    // Vérifier périodiquement l'expiration du token et la disponibilité du proxy
+    // 🛡️ PROTECTION CRÉDIT API - Vérification réduite à 5 minutes au lieu de 10 secondes
     const interval = setInterval(async () => {
-      await checkProxyHealth();
-      if (isProxyReady) {
-        checkAuth();
+      // Seulement vérifier si nécessaire
+      if (!isProxyReady) {
+        await checkProxyHealth();
       }
-    }, 10000); // Toutes les 10 secondes
+      // Plus de vérification auth automatique - seulement si utilisateur interagit
+    }, 5 * 60 * 1000); // ✅ CHANGÉ: 5 minutes au lieu de 10 secondes
     
     return () => clearInterval(interval);
-  }, [checkProxyHealth, isProxyReady]);
+  }, [checkProxyHealth]); // ✅ RETIRÉ isProxyReady de dependencies pour éviter boucle
 
   // Démarrer l'authentification OAuth
   const authenticate = useCallback(() => {
