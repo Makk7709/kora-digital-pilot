@@ -3,7 +3,7 @@
 ## 🏆 Identité Visuelle Kora
 
 ### 🎯 Positionnement de Marque
-**Kora** se positionne comme une **plateforme premium d'intelligence artificielle** qui allie **innovation technologique** et **excellence professionnelle**. Notre identité visuelle reflète cette dualité entre **sophistication corporate** et **accessibilité moderne**.
+* *Kora** se positionne comme une **plateforme premium d'intelligence artificielle** qui allie **innovation technologique** et **excellence professionnelle**. Notre identité visuelle reflète cette dualité entre **sophistication corporate** et **accessibilité moderne**.
 
 ### 🌈 Palette de Couleurs Premium
 ```css
@@ -439,14 +439,14 @@ Phase 3 (Future):
 - **Efficacité maximale** de création
 - **Impact business** mesurable
 
----
+- --
 
 ## 🏆 Excellence Visuelle Kora
 
-**Notre mission** : Créer des visuels qui ne se contentent pas d'illustrer, mais qui **renforcent l'identité de marque** et **génèrent de l'engagement**.
+* *Notre mission** : Créer des visuels qui ne se contentent pas d'illustrer, mais qui **renforcent l'identité de marque** et **génèrent de l'engagement**.
 
-**Notre standard** : Chaque image créée doit être **immédiatement identifiable** comme un visuel Kora, reflétant notre **excellence technologique** et notre **sophistication professionnelle**.
+* *Notre standard** : Chaque image créée doit être **immédiatement identifiable** comme un visuel Kora, reflétant notre **excellence technologique** et notre **sophistication professionnelle**.
 
-**Notre promesse** : Des visuels premium qui **élèvent votre communication** et **renforcent votre crédibilité** sur tous vos canaux digitaux.
+* *Notre promesse** : Des visuels premium qui **élèvent votre communication** et **renforcent votre crédibilité** sur tous vos canaux digitaux.
 
-🎨 **Créez l'Excellence. Créez avec Kora.** 
+🎨 **Créez l'Excellence. Créez avec Kora.**

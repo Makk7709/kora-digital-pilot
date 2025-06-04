@@ -49,4 +49,4 @@ npm run dev:full
 - ❌ **Avant** : Erreurs 401, tentatives de connexion échouées
 - ✅ **Maintenant** : Application fluide, mode démo professionnel, pas d'erreurs
 
-L'application s'adapte intelligemment à votre configuration et offre une expérience optimale dans tous les cas ! 
+L'application s'adapte intelligemment à votre configuration et offre une expérience optimale dans tous les cas !

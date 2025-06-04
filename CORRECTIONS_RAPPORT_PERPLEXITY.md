@@ -7,27 +7,19 @@ Le rapport Perplexity se générait correctement dans les logs mais ne s'afficha
 
 ### 1. Ajout de Logs de Diagnostic Complets
 
-#### Dans `BrandMonitoring.tsx`
-- ✅ Logs détaillés dans `handleGenerateReport()`
-- ✅ useEffect pour tracer les changements d'état `perplexityReport`
-- ✅ Logs des données transmises au composant `PerplexityReportViewer`
-
-#### Dans `PerplexityReportViewer.tsx`
-- ✅ Logs de réception des props
+#### Dans `BrandMonitoring.tsx` - ✅ Logs détaillés dans `handleGenerateReport()` - ✅ useEffect pour tracer les changements d'état `perplexityReport` - ✅ Logs des données transmises au composant `PerplexityReportViewer` #### Dans `PerplexityReportViewer.tsx` - ✅ Logs de réception des props
 - ✅ Logs des changements d'onglets
 - ✅ Logs des re-renders du composant
 
 ### 2. Enrichissement du Contenu du Service
 
-#### Dans `BrandAnalysisService.ts`
-
-**Fonction `extractKeyInsights()` :**
+#### Dans `BrandAnalysisService.ts` * *Fonction `extractKeyInsights()` :**
 - ✅ Garantit **minimum 8 insights** toujours générés
 - ✅ Ajout de conditions `else` pour couvrir tous les cas
 - ✅ Insights supplémentaires automatiques si < 8
 - ✅ Fallback avec insights génériques
 
-**Fonction `generateRecommendedActions()` :**
+* *Fonction `generateRecommendedActions()` :**
 - ✅ Garantit **minimum 12 actions** toujours générées
 - ✅ Actions stratégiques détaillées ajoutées
 - ✅ Actions basées sur tous les aspects (sentiment, concurrence, SWOT, etc.)
@@ -83,16 +75,13 @@ Vérifier la présence de ces logs :
 - ✅ Compteurs corrects : "Insights Clés (8+)" et "Actions (12+)"
 
 ### 3. Données Générées
-- ✅ `keyInsights.length >= 8`
-- ✅ `recommendedActions.length >= 12`
-- ✅ `detailedAnalysis` complet avec 6 sections
+- ✅ `keyInsights.length >= 8` - ✅ `recommendedActions.length >= 12` - ✅ `detailedAnalysis` complet avec 6 sections
 - ✅ Texte formaté avec émojis et structure
 
 ## 🚀 Test de Validation
 
 ### Étapes Rapides
-1. Lancer l'app : `npm run dev`
-2. Aller dans "Veille de Marque"
+1. Lancer l'app : `npm run dev` 2. Aller dans "Veille de Marque"
 3. Cliquer "Mode Test"
 4. Cliquer "Générer rapport Perplexity"
 5. Vérifier les 4 onglets du rapport
@@ -106,21 +95,19 @@ Vérifier la présence de ces logs :
 ## 📁 Fichiers Modifiés
 
 1. **`src/components/BrandMonitoring.tsx`**
-   - Ajout logs de diagnostic
-   - useEffect pour tracer l'état
+ - Ajout logs de diagnostic
+ - useEffect pour tracer l'état
 
 2. **`src/components/PerplexityReportViewer.tsx`**
-   - Ajout logs de réception des props
-   - Logs des changements d'onglets
+ - Ajout logs de réception des props
+ - Logs des changements d'onglets
 
 3. **`src/services/BrandAnalysisService.ts`**
-   - Enrichissement `extractKeyInsights()`
-   - Enrichissement `generateRecommendedActions()`
-   - Garanties de contenu minimum
+ - Enrichissement `extractKeyInsights()` - Enrichissement `generateRecommendedActions()` - Garanties de contenu minimum
 
 4. **`GUIDE_TEST_RAPPORT_PERPLEXITY.md`** (nouveau)
-   - Guide de test complet
-   - Procédures de diagnostic
+ - Guide de test complet
+ - Procédures de diagnostic
 
 ## 🎯 Prochaines Étapes
 
@@ -134,6 +121,6 @@ Vérifier la présence de ces logs :
 Les logs de diagnostic peuvent être conservés en développement et supprimés en production en utilisant :
 ```typescript
 if (process.env.NODE_ENV === 'development') {
-  console.log('Debug info...');
+ console.log('Debug info...');
 }
-``` 
+```

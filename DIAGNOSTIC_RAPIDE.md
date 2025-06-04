@@ -11,10 +11,10 @@ http://localhost:8088
 ```javascript
 // Test immédiat
 window.linkedinAPI?.getMetrics('7d').then(data => {
-  console.log('✅ MÉTRIQUES RÉCUPÉRÉES:');
-  console.log('📊 Engagement:', data.totalEngagement);
-  console.log('📈 Premier post likes:', data.posts?.[0]?.metrics.likes);
-  console.log('📱 Portée:', data.totalReach);
+ console.log('✅ MÉTRIQUES RÉCUPÉRÉES:');
+ console.log('📊 Engagement:', data.totalEngagement);
+ console.log('📈 Premier post likes:', data.posts?.[0]?.metrics.likes);
+ console.log('📱 Portée:', data.totalReach);
 });
 ```
 
@@ -32,8 +32,8 @@ window.linkedinAPI?.getMetrics('7d').then(data => {
 ```javascript
 // Vérifier si l'API est disponible
 if (!window.linkedinAPI) {
-  console.log('❌ API non chargée - Rechargez la page');
-  location.reload();
+ console.log('❌ API non chargée - Rechargez la page');
+ location.reload();
 }
 ```
 
@@ -48,7 +48,7 @@ if (!window.linkedinAPI) {
 ```javascript
 // Dans la console
 window.linkedinAPI?.getMetrics('7d').then(data => {
-  console.log('🔄 Métriques forcées:', data);
+ console.log('🔄 Métriques forcées:', data);
 });
 ```
 
@@ -90,4 +90,4 @@ Coller le contenu de `diagnostic-linkedin.js` dans la console pour un diagnostic
 3. **Navigation** → Aller sur "Test LinkedIn"
 4. **Vérifier** que 6.8% s'affiche dans les métriques
 
-Si rien ne fonctionne → Recharger la page et recommencer. 
+Si rien ne fonctionne → Recharger la page et recommencer.

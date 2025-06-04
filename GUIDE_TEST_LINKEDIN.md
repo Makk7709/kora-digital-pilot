@@ -9,15 +9,15 @@ Vérifier et récupérer les **vraies données LinkedIn** vs les données hardco
 ```bash
 1. Ouvrez http://localhost:8088
 2. Cliquez sur "🧪 Test LinkedIn" dans la sidebar gauche
-3. Cliquez sur "🧪 Lancer Tests" 
+3. Cliquez sur "🧪 Lancer Tests"
 4. Consultez les résultats détaillés
 ```
 
 ### 2. **Console Navigateur (DIAGNOSTIC RAPIDE)**
 ```javascript
 # Dans F12 → Console, collez:
-document.body.textContent.includes('4.8%')  // Doit retourner false
-document.body.textContent.includes('5.3%')  // Doit retourner true
+document.body.textContent.includes('4.8%') // Doit retourner false
+document.body.textContent.includes('5.3%') // Doit retourner true
 
 # OU coller le contenu de: linkedin-test-direct.js
 ```
@@ -70,7 +70,7 @@ Si vous connectez LinkedIn:
 
 ### Pour Tester AVEC Connexion LinkedIn
 ```bash
-1. Cliquez "🔗 Connecter LinkedIn" 
+1. Cliquez "🔗 Connecter LinkedIn"
 2. Autorisez l'accès dans la popup
 3. Retour automatique → données réelles chargées
 4. Comparez avec les anciennes valeurs
@@ -97,7 +97,7 @@ Si vous connectez LinkedIn:
 ## 📱 Test Rapide (30 secondes)
 
 1. **Ouvrez** http://localhost:8088
-2. **Naviguez** vers "Analytics" 
+2. **Naviguez** vers "Analytics"
 3. **Cherchez** l'engagement - doit afficher **5.3%**
 4. **Naviguez** vers "Test LinkedIn"
 5. **Cliquez** "🧪 Lancer Tests"
@@ -113,6 +113,6 @@ Si vous connectez LinkedIn:
 - Connexion LinkedIn: Optionnelle mais fonctionnelle
 ```
 
----
+- --
 
-**💡 Conseil**: Commencez par vérifier les données corrigées SANS connexion LinkedIn, puis testez la connexion pour les vraies données. 
+* *💡 Conseil**: Commencez par vérifier les données corrigées SANS connexion LinkedIn, puis testez la connexion pour les vraies données.

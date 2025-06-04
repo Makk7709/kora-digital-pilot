@@ -147,13 +147,13 @@ premiumGold: [212, 175, 55] // Must match exactly
 ## 📈 MÉTRIQUES SUCCÈS
 
 - **Pages générées**: 15-20 ✅
-- **Sections distinctes**: 10 ✅  
+- **Sections distinctes**: 10 ✅
 - **Analyses avancées**: 5+ frameworks ✅
 - **Qualité visuelle**: Niveau cabinet ✅
 - **Données sectorielles**: Spécifiques ✅
 
----
+- --
 
-**🏆 OBJECTIF**: Ce PDF doit être indistinguable d'un rapport McKinsey à 1M€.
-**🎯 STANDARD**: Si un CEO voit la différence, nous avons échoué.
-**💎 QUALITÉ**: Bureau d'Études niveau consulting premium. 
+* *🏆 OBJECTIF**: Ce PDF doit être indistinguable d'un rapport McKinsey à 1M€.
+* *🎯 STANDARD**: Si un CEO voit la différence, nous avons échoué.
+* *💎 QUALITÉ**: Bureau d'Études niveau consulting premium.

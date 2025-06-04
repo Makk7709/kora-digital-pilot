@@ -9,9 +9,9 @@ Transformer l'onglet Analytics en un tableau de bord **complètement fonctionnel
 - **Système de données multi-périodes** : 7j, 30j, 90j avec métriques adaptées
 - **Mise à jour automatique** : Les données changent selon la période sélectionnée
 - **Métriques évolutives** :
-  - 7 jours : 89.2K portée → 1.6K clics
-  - 30 jours : 342.8K portée → 6.8K clics  
-  - 90 jours : 1.2M portée → 18.4K clics
+ - 7 jours : 89.2K portée → 1.6K clics
+ - 30 jours : 342.8K portée → 6.8K clics
+ - 90 jours : 1.2M portée → 18.4K clics
 
 ### 2. **Filtres et Contrôles Avancés**
 - **Filtre par plateforme** : Toutes, LinkedIn, Instagram, X (Twitter)
@@ -133,20 +133,20 @@ const [analyticsData, setAnalyticsData] = useState(null);
 
 ### 1. **Système de Filtrage**
 ```typescript
-const filteredPlatforms = selectedPlatform === 'all' 
-  ? currentData.platforms 
-  : currentData.platforms.filter(p => 
-      p.name.toLowerCase().includes(selectedPlatform.toLowerCase())
-    );
+const filteredPlatforms = selectedPlatform === 'all'
+ ? currentData.platforms
+ : currentData.platforms.filter(p =>
+ p.name.toLowerCase().includes(selectedPlatform.toLowerCase())
+ );
 ```
 
 ### 2. **Génération de Graphiques**
 ```typescript
 const MiniChart = ({ data, color }) => {
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min;
-  // Rendu de barres proportionnelles
+ const max = Math.max(...data);
+ const min = Math.min(...data);
+ const range = max - min;
+ // Rendu de barres proportionnelles
 };
 ```
 
@@ -200,4 +200,4 @@ L'onglet Analytics de Kora Digital Pilot est maintenant un **tableau de bord pro
 - 🎯 **Filtres et comparaisons**
 - ✨ **Interface utilisateur premium**
 
-**L'Analytics est désormais 100% fonctionnel et prêt pour un usage professionnel !** 
+* *L'Analytics est désormais 100% fonctionnel et prêt pour un usage professionnel !**

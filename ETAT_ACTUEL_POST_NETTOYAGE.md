@@ -12,24 +12,24 @@
 ### 📁 Structure Actuelle (Nettoyée)
 ```
 kora/
-├── 📁 src/              # Code source (état critique à refactorer)
-│   ├── components/      # 30+ composants (3 > 1000 lignes)
-│   ├── services/        # 4 services monolithiques
-│   ├── hooks/           # React hooks
-│   ├── lib/             # Utilitaires
-│   ├── types/           # Types TypeScript
-│   ├── test/            # Tests (à fusionner avec tests/)
-│   └── tests/           # Tests (doublons à nettoyer)
-├── 📁 public/           # Assets (nettoyés des tests)
-├── 📁 docs/             # Documentation (créé, vide)
-└── 📄 Config files      # package.json, vite.config.ts, etc.
+├── 📁 src/ # Code source (état critique à refactorer)
+│ ├── components/ # 30+ composants (3 > 1000 lignes)
+│ ├── services/ # 4 services monolithiques
+│ ├── hooks/ # React hooks
+│ ├── lib/ # Utilitaires
+│ ├── types/ # Types TypeScript
+│ ├── test/ # Tests (à fusionner avec tests/)
+│ └── tests/ # Tests (doublons à nettoyer)
+├── 📁 public/ # Assets (nettoyés des tests)
+├── 📁 docs/ # Documentation (créé, vide)
+└── 📄 Config files # package.json, vite.config.ts, etc.
 ```
 
 ## 🚨 PROBLÈMES CRITIQUES IDENTIFIÉS
 
 ### 1. Services Monolithiques (Architecture Debt)
 - **RealBrandIntelligenceService.ts** : 82KB, 2291 lignes
-- **BrandAnalysisService.ts** : 42KB, 1109 lignes  
+- **BrandAnalysisService.ts** : 42KB, 1109 lignes
 - **ReportExportService.ts** : 37KB, 992 lignes
 - **ContentDeduplicationService.ts** : 13KB, 398 lignes
 
@@ -113,16 +113,16 @@ mkdir -p src/components/features/{brand-monitoring,analytics,export}
 - État Redux/Context (s'il existe)
 - Variables d'environnement (.env)
 
----
+- --
 
 ## 🚀 READY FOR PHASE 2
 
-**État** : Base code nettoyée, structure claire
-**Prochaine étape** : Découpage architectural des services
-**Durée estimée** : 4-6h pour architecture complète
-**Livrable** : Architecture modulaire audit-ready
+* *État** : Base code nettoyée, structure claire
+* *Prochaine étape** : Découpage architectural des services
+* *Durée estimée** : 4-6h pour architecture complète
+* *Livrable** : Architecture modulaire audit-ready
 
-**📋 Fichiers de référence créés :**
+* *📋 Fichiers de référence créés :**
 - `ARCHITECTURE_REFACTORING_PLAN.md` ✅
 - `PROMPT_CONSIGNES_AUDIT_REFACTORING.md` ✅
-- `ETAT_ACTUEL_POST_NETTOYAGE.md` ✅ 
+- `ETAT_ACTUEL_POST_NETTOYAGE.md` ✅

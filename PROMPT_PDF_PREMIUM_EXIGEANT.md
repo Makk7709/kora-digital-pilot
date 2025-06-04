@@ -4,10 +4,10 @@
 
 ### Palette Couleurs Marque (Usage Strict)
 ```
-- BLEU PROFOND PRINCIPAL : #0A1628 (RGB: 10, 22, 40) 
+- BLEU PROFOND PRINCIPAL : #0A1628 (RGB: 10, 22, 40)
 - BLEU CORPORATE : #1B2951 (RGB: 27, 41, 81)
 - DORÉ PREMIUM : #D4AF37 (RGB: 212, 175, 55)
-- DORÉ ACCENT : #B8941F (RGB: 184, 148, 31) 
+- DORÉ ACCENT : #B8941F (RGB: 184, 148, 31)
 - BLANC PREMIUM : #FAFBFC (RGB: 250, 251, 252)
 - GRIS CORPORATE : #4A5568 (RGB: 74, 85, 104)
 - GRIS SUBTLE : #E2E8F0 (RGB: 226, 232, 240)
@@ -16,7 +16,7 @@
 ## 📐 EXIGENCES DE MISE EN PAGE PREMIUM
 
 ### 1. COUVERTURE EXECUTIVE (Page 1)
-**OBLIGATOIRE - Standards McKinsey/BCG :**
+* *OBLIGATOIRE - Standards McKinsey/BCG :**
 
 - **Header Premium** : Bande pleine largeur bleu profond (#0A1628) hauteur 40mm
 - **Logo Zone** : Rectangle blanc 50x25mm avec ombre portée dorée
@@ -27,7 +27,7 @@
 - **Metadata Box** : Encadré doré avec date, référence, classification
 
 ### 2. TABLE DES MATIÈRES (Page 2)
-**Standards Consulting Premium :**
+* *Standards Consulting Premium :**
 
 - **Titre Section** : "SOMMAIRE EXÉCUTIF" en doré 20pt bold
 - **Numérotation** : Chiffres dorés avec cercles bleu profond
@@ -37,25 +37,25 @@
 - **Sous-sections** : Texte gris corporate 12pt, indentation 20mm
 
 ### 3. RÉSUMÉ EXÉCUTIF (Page 3)
-**Layout C-Suite Quality :**
+* *Layout C-Suite Quality :**
 
-- **KPI Boxes Premium** : 
-  - Dimensions : 70x50mm chacune
-  - Fond : Dégradé blanc vers gris subtle
-  - Bordure : 2pt doré avec coins arrondis 5mm
-  - Ombre portée : 3mm décalage, opacité 20%
-  - Icônes : Dorées 24x24pt
-  - Valeurs : 32pt bold bleu profond
-  - Labels : 10pt gris corporate
+- **KPI Boxes Premium** :
+ - Dimensions : 70x50mm chacune
+ - Fond : Dégradé blanc vers gris subtle
+ - Bordure : 2pt doré avec coins arrondis 5mm
+ - Ombre portée : 3mm décalage, opacité 20%
+ - Icônes : Dorées 24x24pt
+ - Valeurs : 32pt bold bleu profond
+ - Labels : 10pt gris corporate
 
 - **Texte Executive** :
-  - Interligne : 1.6x
-  - Justification parfaite
-  - Puces : Losanges dorés 8pt
-  - Alinéas : 6mm première ligne
+ - Interligne : 1.6x
+ - Justification parfaite
+ - Puces : Losanges dorés 8pt
+ - Alinéas : 6mm première ligne
 
 ### 4. SECTIONS ANALYTIQUES (Pages 4-8)
-**Requirements Absolus :**
+* *Requirements Absolus :**
 
 #### Headers de Section
 - **Bande colorée** : Hauteur 15mm, dégradé bleu profond vers bleu corporate
@@ -81,7 +81,7 @@
 ```
 Spécifications exactes :
 - Largeur : 80mm
-- Hauteur : 45mm  
+- Hauteur : 45mm
 - Rayon coins : 8mm
 - Ombre : Décalage 2mm/2mm, blur 4mm, opacité 15%
 - Fond : Dégradé blanc (100%) vers gris subtle (3%)
@@ -105,7 +105,7 @@ Quadrants : 4 zones égales 85x85mm
 Spacing : 5mm entre quadrants
 Headers : Triangles colorés 15mm hauteur
 - Forces : Fond vert emeraude (#10B981)
-- Faiblesses : Fond rouge corporate (#DC2626) 
+- Faiblesses : Fond rouge corporate (#DC2626)
 - Opportunités : Fond bleu corporate (#1B2951)
 - Menaces : Fond orange premium (#EA580C)
 ```
@@ -142,7 +142,7 @@ Structure Card :
 ### Typography Hierarchy
 ```
 H1 (Titre Principal) : 24pt Bold Bleu Profond
-H2 (Section) : 18pt Bold Bleu Corporate  
+H2 (Section) : 18pt Bold Bleu Corporate
 H3 (Sous-section) : 14pt Bold Gris Corporate
 Body : 11pt Regular Bleu Profond
 Caption : 9pt Italic Gris Corporate
@@ -183,7 +183,7 @@ Zone : 0 à 15mm du bas
 Fond : Bleu profond (#0A1628)
 Contenu aligné :
 - Gauche : "KORA P.R.I.S.M © 2024" doré 8pt
-- Centre : Numéro page blanc 10pt bold  
+- Centre : Numéro page blanc 10pt bold
 - Droite : "CONFIDENTIEL" doré 8pt
 ```
 
@@ -220,11 +220,11 @@ Contenu aligné :
 ### Avant Génération
 - [ ] Palette couleurs marque appliquée partout
 - [ ] Typography hierarchy cohérente
-- [ ] Espacements proportionnels respectés  
+- [ ] Espacements proportionnels respectés
 - [ ] Éléments graphiques vectorisés
 - [ ] Shadows et gradients appliqués
 
-### Post-Génération  
+### Post-Génération
 - [ ] Qualité visuelle = standard McKinsey
 - [ ] Navigation PDF fonctionnelle
 - [ ] Aucun débordement de texte
@@ -233,6 +233,6 @@ Contenu aligné :
 
 ## 💎 OBJECTIF FINAL
 
-**Le PDF généré DOIT être indiscernable d'un rapport produit par McKinsey, BCG ou Bain avec l'identité visuelle Kora (bleu profond + doré). Chaque élément doit respirer le premium et la précision.**
+* *Le PDF généré DOIT être indiscernable d'un rapport produit par McKinsey, BCG ou Bain avec l'identité visuelle Kora (bleu profond + doré). Chaque élément doit respirer le premium et la précision.**
 
-**Standard minimum : 12 pages, qualité impression offset, utilisable en présentation C-Suite sans modification.** 
+* *Standard minimum : 12 pages, qualité impression offset, utilisable en présentation C-Suite sans modification.**

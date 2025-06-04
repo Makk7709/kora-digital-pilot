@@ -9,8 +9,7 @@ VITE_PERPLEXITY_API_KEY=pplx-fZQoc...
 ```
 
 ### Accès aux Insights
-1. Ouvrez l'application : `http://localhost:8088`
-2. Naviguez vers **Planning** dans le menu
+1. Ouvrez l'application : `http://localhost:8088` 2. Naviguez vers **Planning** dans le menu
 3. Le panel **Insights IA** apparaît à droite avec le statut "Connecté" ✅
 
 ## 📊 Fonctionnalités Disponibles
@@ -29,9 +28,9 @@ VITE_PERPLEXITY_API_KEY=pplx-fZQoc...
 
 ### 3. Analyse Concurrentielle
 - **Usage** : Comparaison avec vos concurrents
-- **Exemple** : 
-  - Concurrents : "HubSpot, Salesforce, Mailchimp"
-  - Marché : "Marketing automation"
+- **Exemple** :
+ - Concurrents : "HubSpot, Salesforce, Mailchimp"
+ - Marché : "Marketing automation"
 - **Résultat** : Analyse comparative détaillée
 
 ### 4. Génération de Contenu
@@ -112,8 +111,7 @@ VITE_PERPLEXITY_API_KEY=pplx-fZQoc...
 ## 🔍 Dépannage
 
 ### Statut "IA Déconnectée"
-1. Vérifiez la clé API dans `.env.local`
-2. Redémarrez le serveur de développement
+1. Vérifiez la clé API dans `.env.local` 2. Redémarrez le serveur de développement
 3. Consultez la console pour les erreurs
 
 ### Erreurs API
@@ -127,6 +125,6 @@ VITE_PERPLEXITY_API_KEY=pplx-fZQoc...
 - **Cache** : Utilisez le cache pour les requêtes répétées
 - **Optimisation** : Réduisez la complexité des questions
 
----
+- --
 
-**🎉 Félicitations !** Votre intégration Perplexity est maintenant opérationnelle et prête à booster votre stratégie de contenu avec des insights IA en temps réel. 
+* *🎉 Félicitations !** Votre intégration Perplexity est maintenant opérationnelle et prête à booster votre stratégie de contenu avec des insights IA en temps réel.

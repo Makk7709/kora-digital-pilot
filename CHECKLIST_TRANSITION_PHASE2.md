@@ -21,7 +21,7 @@
 - [x] `RESUME_TRANSITION_PHASE2.md` - Résumé complet transition
 - [x] `PROMPT_PHASE2_READY.md` - Prompt optimisé démarrage immédiat
 
----
+- --
 
 ## 🎯 PRIORITÉS PHASE 2 VALIDÉES
 
@@ -51,7 +51,7 @@ Configuration vitest → standardisation
 Coverage target → > 90%
 ```
 
----
+- --
 
 ## ⚠️ CONTRAINTES VÉRIFIÉES
 
@@ -67,7 +67,7 @@ Coverage target → > 90%
 - [x] **TypeScript config** → Types à maintenir
 - [x] **TailwindCSS theming** → Styles composants
 
----
+- --
 
 ## 📊 MÉTRIQUES BASELINE CONFIRMÉES
 
@@ -75,7 +75,7 @@ Coverage target → > 90%
 ```bash
 Services monolithiques : ~200KB (4 fichiers)
 ├── RealBrandIntelligenceService.ts : 84,427 bytes
-├── BrandAnalysisService.ts : 43,192 bytes  
+├── BrandAnalysisService.ts : 43,192 bytes
 ├── ReportExportService.ts : 37,466 bytes
 └── ContentDeduplicationService.ts : 12,952 bytes
 
@@ -93,7 +93,7 @@ Total estimé app : ~2.5MB non optimisé
 - **Test coverage** : 0% (19 tests non fonctionnels à réécrire)
 - **Code duplication** : ~20% estimé entre services
 
----
+- --
 
 ## 🚀 PRÊT DÉMARRAGE PHASE 2
 
@@ -113,7 +113,7 @@ Total estimé app : ~2.5MB non optimisé
 - [x] **Workflow** : HMR opérationnel, ports dev validés
 - [x] **APIs** : Perplexity fonctionnel, Export PDF stable
 
----
+- --
 
 ## 📋 ACTIONS IMMÉDIATE NOUVEAU CHAT
 
@@ -136,13 +136,13 @@ Vérifier exports/imports après découpage services
 Maintenir fonctionnalité Export PDF et Perplexity API
 ```
 
----
+- --
 
 ## ✅ STATUS FINAL
 
-**PHASE 1 TERMINÉE** : Nettoyage architectural complet  
-**PHASE 2 READY** : Documentation complète, priorités définies, contraintes identifiées  
-**DURÉE ESTIMÉE** : 8-10 heures sur 3 jours  
-**LIVRABLE** : Architecture modulaire audit-ready (25 juin)
+* *PHASE 1 TERMINÉE** : Nettoyage architectural complet
+* *PHASE 2 READY** : Documentation complète, priorités définies, contraintes identifiées
+* *DURÉE ESTIMÉE** : 8-10 heures sur 3 jours
+* *LIVRABLE** : Architecture modulaire audit-ready (25 juin)
 
-**🚀 PRÊT POUR NOUVEAU CHAT - DÉMARRAGE IMMÉDIAT PHASE 2** 
+* *🚀 PRÊT POUR NOUVEAU CHAT - DÉMARRAGE IMMÉDIAT PHASE 2**

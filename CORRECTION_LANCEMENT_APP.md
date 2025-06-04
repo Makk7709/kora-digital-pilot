@@ -12,9 +12,7 @@ npm error enoent Could not read package.json: Error: ENOENT: no such file or dir
 ```
 
 ## 🔍 Cause Racine
-- L'utilisateur tentait de lancer `npm run dev` depuis le répertoire racine `/kora`
-- L'application avait été déplacée dans le sous-dossier `/kora/kora-digital-pilot`
-- Le fichier `package.json` n'existait donc pas à l'emplacement attendu
+- L'utilisateur tentait de lancer `npm run dev` depuis le répertoire racine `/kora` - L'application avait été déplacée dans le sous-dossier `/kora/kora-digital-pilot` - Le fichier `package.json` n'existait donc pas à l'emplacement attendu
 
 ## ✅ Solution Appliquée
 
@@ -28,7 +26,7 @@ cd kora-digital-pilot
 # Terminal 1 - Backend
 node server.cjs
 
-# Terminal 2 - Frontend  
+# Terminal 2 - Frontend
 npm run dev
 ```
 
@@ -56,6 +54,6 @@ cd /Users/aminemohamed/Desktop/kora/kora-digital-pilot
 npm run dev
 ```
 
----
-**Status** : ✅ RÉSOLU
-**Application** : 🚀 OPÉRATIONNELLE 
+- --
+* *Status** : ✅ RÉSOLU
+* *Application** : 🚀 OPÉRATIONNELLE

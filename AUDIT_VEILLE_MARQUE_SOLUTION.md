@@ -9,15 +9,13 @@ Rien ne s'affiche dans la fonction de veille de marque malgré une clé API Perp
 
 #### ✅ **Tests Réalisés**
 1. **Parsing des données** ✅ FONCTIONNEL
-   - Test avec `test-brand-monitoring-debug.js`
-   - Extraction correcte des mentions, sentiment, concurrents, mots-clés, SWOT
-   
-2. **Intégration du service** ✅ FONCTIONNEL  
-   - Test avec `test-brand-service-debug.js`
-   - Simulation des appels API réussie
-   
+ - Test avec `test-brand-monitoring-debug.js` - Extraction correcte des mentions, sentiment, concurrents, mots-clés, SWOT
+
+2. **Intégration du service** ✅ FONCTIONNEL
+ - Test avec `test-brand-service-debug.js` - Simulation des appels API réussie
+
 3. **Clé API Perplexity** ✅ FONCTIONNELLE
-   - Confirmée par l'utilisateur
+ - Confirmée par l'utilisateur
 
 #### 🚨 **Problème Root Cause**
 Le problème se situe dans l'**interface React** et non dans le parsing ou l'API.
@@ -31,14 +29,14 @@ J'ai ajouté un **mode de diagnostic intégré** directement dans l'interface :
 ```typescript
 // Mode test avec données mockées complètes
 const mockBrandReport: BrandReport = {
-  mentions: [...], // 3 mentions de test
-  sentiment: { overallScore: 79, positive: 67, neutral: 23, negative: 10 },
-  competitors: [...], // Adidas, Puma, New Balance
-  keywords: [...], // innovation, qualité, sport, design
-  swot: {...}, // Forces, faiblesses, opportunités, menaces
-  alerts: [...], // Alertes critiques et warnings
-  brandName: 'Nike (Test)',
-  analysisTimestamp: new Date()
+ mentions: [...], // 3 mentions de test
+ sentiment: { overallScore: 79, positive: 67, neutral: 23, negative: 10 },
+ competitors: [...], // Adidas, Puma, New Balance
+ keywords: [...], // innovation, qualité, sport, design
+ swot: {...}, // Forces, faiblesses, opportunités, menaces
+ alerts: [...], // Alertes critiques et warnings
+ brandName: 'Nike (Test)',
+ analysisTimestamp: new Date()
 };
 ```
 
@@ -49,7 +47,7 @@ const mockBrandReport: BrandReport = {
 - Permet de vérifier si l'interface s'affiche correctement
 - Diagnostic immédiat des problèmes d'affichage
 
-#### **Bouton "Test API Réelle"** 
+#### **Bouton "Test API Réelle"**
 - Test avec la vraie API Perplexity
 - Vérification de l'intégration complète
 - Diagnostic des problèmes de service
@@ -59,30 +57,30 @@ const mockBrandReport: BrandReport = {
 ### 📝 **Étapes de Diagnostic**
 
 1. **Lancer l'application**
-   ```bash
-   cd kora-digital-pilot
-   npm run dev
-   ```
+ ```bash
+ cd kora-digital-pilot
+ npm run dev
+ ```
 
 2. **Aller dans Veille de Marque**
-   - Cliquer sur l'icône 👁️ dans la sidebar
+ - Cliquer sur l'icône 👁️ dans la sidebar
 
 3. **Activer le Mode Test**
-   - Cliquer sur le bouton "Mode Test" 
-   - ✅ Si les données s'affichent → Interface OK
-   - ❌ Si rien ne s'affiche → Problème d'interface React
+ - Cliquer sur le bouton "Mode Test"
+ - ✅ Si les données s'affichent → Interface OK
+ - ❌ Si rien ne s'affiche → Problème d'interface React
 
 4. **Tester l'API Réelle**
-   - Cliquer sur "Test API Réelle"
-   - ✅ Si ça fonctionne → Tout est OK
-   - ❌ Si erreur → Problème d'intégration
+ - Cliquer sur "Test API Réelle"
+ - ✅ Si ça fonctionne → Tout est OK
+ - ❌ Si erreur → Problème d'intégration
 
 ### 🎯 **Données de Test Affichées**
 
 Quand le mode test est activé, vous devriez voir :
 
 - **Score de réputation** : 79/100
-- **Sentiment** : 67% positif, 23% neutre, 10% négatif  
+- **Sentiment** : 67% positif, 23% neutre, 10% négatif
 - **3 mentions** : Twitter, Reddit, LinkedIn
 - **3 concurrents** : Adidas, Puma, New Balance
 - **4 mots-clés** : innovation, qualité, sport, design
@@ -136,7 +134,7 @@ VITE_PERPLEXITY_API_KEY=votre_vraie_clé_ici
 
 ### ✅ **Fonctionnalités Opérationnelles**
 - [x] Parsing des réponses Perplexity
-- [x] Service d'analyse de marque  
+- [x] Service d'analyse de marque
 - [x] Mode test avec données mockées
 - [x] Interface utilisateur complète
 - [x] Gestion d'erreurs robuste
@@ -150,7 +148,7 @@ VITE_PERPLEXITY_API_KEY=votre_vraie_clé_ici
 ### 🎯 **Prochaines Étapes**
 
 1. **Tester le Mode Test** → Valider l'interface
-2. **Tester l'API Réelle** → Valider l'intégration  
+2. **Tester l'API Réelle** → Valider l'intégration
 3. **Déboguer si nécessaire** → Résoudre les problèmes identifiés
 4. **Optimiser la configuration** → Améliorer les performances
 
@@ -166,7 +164,7 @@ VITE_PERPLEXITY_API_KEY=votre_vraie_clé_ici
 - Vérifier les logs de console régulièrement
 - Tester avec différentes marques
 
----
+- --
 
-**🎉 La veille de marque est maintenant équipée d'outils de diagnostic complets !**
-**Utilisez le mode test pour valider l'interface, puis testez l'API réelle.** 
+* *🎉 La veille de marque est maintenant équipée d'outils de diagnostic complets !**
+* *Utilisez le mode test pour valider l'interface, puis testez l'API réelle.**

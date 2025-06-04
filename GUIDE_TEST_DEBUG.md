@@ -8,7 +8,7 @@ Diagnostiquer pourquoi le score de réputation affiche "NaN" au lieu d'un nombre
 ### 1️⃣ **Ouvrir la Console du Navigateur**
 ```
 1. Allez sur l'application (localhost:8088/app)
-2. Appuyez sur F12 
+2. Appuyez sur F12
 3. Onglet "Console"
 4. Vider la console (Clear)
 ```
@@ -16,7 +16,7 @@ Diagnostiquer pourquoi le score de réputation affiche "NaN" au lieu d'un nombre
 ### 2️⃣ **Tester avec l'API Réelle**
 ```
 1. Aller dans "Veille de Marque"
-2. Cliquer sur "Test API Réelle" 
+2. Cliquer sur "Test API Réelle"
 3. Regarder les logs dans la console
 ```
 
@@ -89,6 +89,6 @@ Diagnostiquer pourquoi le score de réputation affiche "NaN" au lieu d'un nombre
 2. **Capture d'écran** du mode test (si différent)
 3. **Confirmation** si mode test affiche 79 ou NaN
 
----
+- --
 
-**🎯 Avec ces informations, je peux corriger le problème en 5 minutes !** 
+* *🎯 Avec ces informations, je peux corriger le problème en 5 minutes !**

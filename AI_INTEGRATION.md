@@ -46,11 +46,11 @@ VITE_MAX_TOKENS=4000
 
 ```
 1. Tentative Anthropic Claude-3.5-Sonnet (PRIORITÉ)
-   ↓ (si échec)
+ ↓ (si échec)
 2. Tentative OpenAI GPT-4o (FALLBACK)
-   ↓ (si échec)
+ ↓ (si échec)
 3. Tentative OpenAI GPT-3.5-turbo (économique)
-   ↓ (si échec)
+ ↓ (si échec)
 4. Template de fallback (garantie 100%)
 ```
 
@@ -66,12 +66,12 @@ VITE_MAX_TOKENS=4000
 ```
 src/
 ├── lib/
-│   └── ai-service.ts          # Service principal IA
+│ └── ai-service.ts # Service principal IA
 ├── hooks/
-│   └── useAI.ts              # Hook React pour l'IA
+│ └── useAI.ts # Hook React pour l'IA
 ├── components/
-│   ├── InspirationAI.tsx     # Interface de génération
-│   └── AIConnectionTest.tsx  # Tests de connectivité
+│ ├── InspirationAI.tsx # Interface de génération
+│ └── AIConnectionTest.tsx # Tests de connectivité
 ```
 
 ## 🔍 Fonctionnalités
@@ -112,10 +112,10 @@ const status = await testConnection();
 ```typescript
 const { generateContent } = useAI();
 const response = await generateContent({
-  prompt: "Votre idée de contenu",
-  platform: "linkedin",
-  contentType: "post",
-  tone: "Professionnel & stratégique"
+ prompt: "Votre idée de contenu",
+ platform: "linkedin",
+ contentType: "post",
+ tone: "Professionnel & stratégique"
 });
 ```
 
@@ -183,14 +183,14 @@ npx serve dist
 ```typescript
 // Dans ai-service.ts
 private async callNewProvider(request: AIRequest, model: string, signal: AbortSignal) {
-  // Implémentation du nouveau provider
+ // Implémentation du nouveau provider
 }
 
 // Ajouter dans les attempts
 const attempts = [
-  { provider: 'openai', model: 'gpt-4o' },
-  { provider: 'anthropic', model: 'claude-3-sonnet-20240229' },
-  { provider: 'newprovider', model: 'new-model' }, // Nouveau
+ { provider: 'openai', model: 'gpt-4o' },
+ { provider: 'anthropic', model: 'claude-3-sonnet-20240229' },
+ { provider: 'newprovider', model: 'new-model' }, // Nouveau
 ];
 ```
 
@@ -198,9 +198,9 @@ const attempts = [
 ```typescript
 // Dans ai-service.ts > getFallbackContent()
 const fallbackTemplates = {
-  linkedin: `Votre nouveau template LinkedIn...`,
-  instagram: `Votre nouveau template Instagram...`,
-  // Ajoutez d'autres plateformes
+ linkedin: `Votre nouveau template LinkedIn...`,
+ instagram: `Votre nouveau template Instagram...`,
+ // Ajoutez d'autres plateformes
 };
 ```
 
@@ -230,8 +230,7 @@ const fallbackTemplates = {
 - Le système basculera automatiquement sur l'autre provider
 
 #### "Timeout"
-- Augmentez `VITE_AI_TIMEOUT` dans `.env.local`
-- Vérifiez votre connexion internet
+- Augmentez `VITE_AI_TIMEOUT` dans `.env.local` - Vérifiez votre connexion internet
 
 #### "Aucune réponse générée"
 - Le système utilisera automatiquement les templates de fallback
@@ -245,6 +244,6 @@ Pour toute question ou problème :
 3. Consultez cette documentation
 4. Contactez l'équipe technique Korev AI
 
----
+- --
 
-**🎉 Félicitations ! Votre IA est maintenant opérationnelle avec une garantie de 100% de réussite !** 
+* *🎉 Félicitations ! Votre IA est maintenant opérationnelle avec une garantie de 100% de réussite !**

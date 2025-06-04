@@ -51,13 +51,13 @@ npm run dev
 
 ### ❌ Problèmes Courants
 
-**"Service non initialisé"**
+* *"Service non initialisé"**
 ```bash
 # Vérifiez la clé API
 cat .env.local | grep PERPLEXITY
 ```
 
-**"Erreur réseau"**
+* *"Erreur réseau"**
 ```bash
 # Testez la connectivité
 curl -H "Authorization: Bearer YOUR_KEY" https://api.perplexity.ai/chat/completions
@@ -113,8 +113,8 @@ curl -H "Authorization: Bearer YOUR_KEY" https://api.perplexity.ai/chat/completi
 - **Appliquez** les suggestions d'horaires
 - **Suivez** les tendances détectées
 
----
+- --
 
-**🎉 Félicitations !** Votre intégration Perplexity est opérationnelle.
+* *🎉 Félicitations !** Votre intégration Perplexity est opérationnelle.
 
-**Support** : Consultez `PERPLEXITY_INTEGRATION.md` pour la documentation complète. 
+* *Support** : Consultez `PERPLEXITY_INTEGRATION.md` pour la documentation complète.

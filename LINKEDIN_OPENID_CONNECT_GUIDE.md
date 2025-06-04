@@ -8,19 +8,19 @@ Votre code a été mis à jour pour utiliser la **configuration OpenID Connect s
 
 ```json
 {
-  "issuer": "https://www.linkedin.com",
-  "authorization_endpoint": "https://www.linkedin.com/oauth/v2/authorization",
-  "token_endpoint": "https://www.linkedin.com/oauth/v2/accessToken",
-  "userinfo_endpoint": "https://api.linkedin.com/v2/userinfo",
-  "jwks_uri": "https://www.linkedin.com/oauth/openid/jwks",
-  "response_types_supported": ["code"],
-  "subject_types_supported": ["pairwise"],
-  "id_token_signing_alg_values_supported": ["RS256"],
-  "scopes_supported": ["openid", "profile", "email"],
-  "claims_supported": [
-    "iss", "aud", "iat", "exp", "sub", "name", "given_name", 
-    "family_name", "picture", "email", "email_verified", "locale"
-  ]
+ "issuer": "https://www.linkedin.com",
+ "authorization_endpoint": "https://www.linkedin.com/oauth/v2/authorization",
+ "token_endpoint": "https://www.linkedin.com/oauth/v2/accessToken",
+ "userinfo_endpoint": "https://api.linkedin.com/v2/userinfo",
+ "jwks_uri": "https://www.linkedin.com/oauth/openid/jwks",
+ "response_types_supported": ["code"],
+ "subject_types_supported": ["pairwise"],
+ "id_token_signing_alg_values_supported": ["RS256"],
+ "scopes_supported": ["openid", "profile", "email"],
+ "claims_supported": [
+ "iss", "aud", "iat", "exp", "sub", "name", "given_name",
+ "family_name", "picture", "email", "email_verified", "locale"
+ ]
 }
 ```
 
@@ -28,7 +28,7 @@ Votre code a été mis à jour pour utiliser la **configuration OpenID Connect s
 
 ### **1. Scopes OpenID Connect Standard**
 - ✅ `openid` - Identification de base
-- ✅ `profile` - Profil utilisateur complet  
+- ✅ `profile` - Profil utilisateur complet
 - ✅ `email` - Email utilisateur
 
 ### **2. Validation ID Token JWT**
@@ -39,8 +39,7 @@ Votre code a été mis à jour pour utiliser la **configuration OpenID Connect s
 - ✅ Validation de l'algorithme (RS256)
 
 ### **3. Endpoint userinfo OpenID Connect**
-- ✅ Utilisation directe de `/v2/userinfo`
-- ✅ Claims standardisés OpenID Connect
+- ✅ Utilisation directe de `/v2/userinfo` - ✅ Claims standardisés OpenID Connect
 - ✅ Compatibilité maximale
 
 ## 🧪 **Test de votre configuration :**
@@ -82,7 +81,7 @@ console.log('Validation ID Token:', validation);
 ## 📊 **Claims disponibles dans l'ID Token :**
 
 | Claim | Description | Exemple |
-|-------|-------------|---------|
+| ------- |-------------| --------- |
 | `sub` | Identifiant unique utilisateur | `"12345678"` |
 | `name` | Nom complet | `"John Doe"` |
 | `given_name` | Prénom | `"John"` |
@@ -99,22 +98,16 @@ console.log('Validation ID Token:', validation);
 
 ### **Endpoints à configurer :**
 
-| Resource | Method | OAuth Scopes | Permission Types |
-|----------|--------|--------------|------------------|
-| `/v2/userinfo` | GET | `openid` | Member (3-legged) |
-| `/v2/emailAddress` | GET | `email` | Member (3-legged) |
+| Resource | Method | OAuth Scopes | Permission Types |   |----------| -------- |--------------| ------------------ |
+| `/v2/userinfo` | GET | `openid` | Member (3-legged) |   | `/v2/emailAddress` | GET | `email` | Member (3-legged) |
 | `/v2/people/(id)` | GET | `profile` | Member (3-legged) |
 
 ### **URLs importantes :**
-- **Redirect URI** : `http://localhost:8088/auth/linkedin/callback`
-- **Scopes requis** : `openid profile email`
-
-## ⚠️ **Points importants :**
+- **Redirect URI** : `http://localhost:8088/auth/linkedin/callback` - **Scopes requis** : `openid profile email` ## ⚠️ **Points importants :**
 
 ### **1. Validation de signature (Production)**
 En production, vous devriez :
-- Récupérer les clés publiques depuis `jwks_uri`
-- Valider la signature RS256 du JWT
+- Récupérer les clés publiques depuis `jwks_uri` - Valider la signature RS256 du JWT
 - Implémenter une validation complète
 
 ### **2. Gestion des erreurs**
@@ -145,6 +138,6 @@ En production, vous devriez :
 3. **Migrer vers l'application approuvée** (`226379168`) si souhaité
 4. **Implémenter la validation de signature** pour la production
 
----
+- --
 
-**📝 Note** : Cette configuration respecte les standards OpenID Connect et devrait fonctionner avec votre application actuelle et la nouvelle application approuvée. 
+* *📝 Note** : Cette configuration respecte les standards OpenID Connect et devrait fonctionner avec votre application actuelle et la nouvelle application approuvée.

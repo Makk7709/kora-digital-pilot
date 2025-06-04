@@ -6,15 +6,15 @@
 L'application faisait des appels en boucle qui ont vidé le compte de crédits Perplexity. Les principales sources étaient :
 
 1. **Polling `/api/health`** - Appels toutes les 10 secondes
-2. **Auto-refresh cache** - Actualisations toutes les 30 secondes  
+2. **Auto-refresh cache** - Actualisations toutes les 30 secondes
 3. **Scans automatiques** - Community Manager Dashboard toutes les 12h
 4. **Marketing insights** - Auto-refresh toutes les heures
 
----
+- --
 
 ## ✅ **CORRECTIONS APPLIQUÉES**
 
-### **1. Hook LinkedIn Analytics** 
+### **1. Hook LinkedIn Analytics**
 ```typescript
 // AVANT: setInterval(..., 10000) - Toutes les 10 secondes
 // APRÈS: setInterval(..., 5 * 60 * 1000) - Toutes les 5 minutes
@@ -38,30 +38,28 @@ L'application faisait des appels en boucle qui ont vidé le compte de crédits P
 // APRÈS: Auto-refresh avec warnings explicites
 ```
 
----
+- --
 
 ## 🛡️ **PROTECTION IMPLÉMENTÉE**
 
 ### **A. Middleware de Protection**
-- **Fichier**: `src/lib/perplexity-protection-middleware.ts`
-- **Limites par défaut**:
-  - 2 appels/minute (anti-boucle)
-  - 10 appels/heure
-  - $5.00/jour maximum
+- **Fichier**: `src/lib/perplexity-protection-middleware.ts` - **Limites par défaut**:
+ - 2 appels/minute (anti-boucle)
+ - 10 appels/heure
+ - $5.00/jour maximum
 - **Fonctionnalités**:
-  - Blocage automatique des appels excessifs
-  - Historique persistant (localStorage)
-  - Wrapper `protectedFetch()` pour tous les appels API
+ - Blocage automatique des appels excessifs
+ - Historique persistant (localStorage)
+ - Wrapper `protectedFetch()` pour tous les appels API
 
 ### **B. Composant de Monitoring**
-- **Fichier**: `src/components/APIUsageProtection.tsx`
-- **Interface utilisateur** pour:
-  - Visualiser la consommation en temps réel
-  - Activer/désactiver la protection
-  - Réinitialiser les statistiques
-  - Alertes visuelles
+- **Fichier**: `src/components/APIUsageProtection.tsx` - **Interface utilisateur** pour:
+ - Visualiser la consommation en temps réel
+ - Activer/désactiver la protection
+ - Réinitialiser les statistiques
+ - Alertes visuelles
 
----
+- --
 
 ## 📊 **UTILISATION**
 
@@ -77,8 +75,8 @@ const response = await perplexityProtection.protectedFetch('https://api.perplexi
 ```typescript
 const { allowed, reason } = perplexityProtection.canMakeCall('endpoint');
 if (!allowed) {
-  console.error('Appel bloqué:', reason);
-  return;
+ console.error('Appel bloqué:', reason);
+ return;
 }
 ```
 
@@ -89,16 +87,16 @@ import { usePerplexityProtection } from '@/lib/perplexity-protection-middleware'
 const { canMakeCall, getStats, protectedFetch } = usePerplexityProtection();
 ```
 
----
+- --
 
 ## 🔍 **DIAGNOSTIC**
 
 ### **Vérifier la Consommation Actuelle**
 1. Aller dans **Vue d'ensemble** → **Protection API**
 2. Vérifier les métriques:
-   - Appels 24h
-   - Coût 24h  
-   - Status de protection
+ - Appels 24h
+ - Coût 24h
+ - Status de protection
 
 ### **Analyser les Logs**
 ```bash
@@ -112,7 +110,7 @@ grep -r "Auto-refresh\|Auto-scan" src/
 - Vérifier les `useEffect` avec dependencies qui changent
 - Monitoring des requêtes réseau (DevTools)
 
----
+- --
 
 ## ⚙️ **CONFIGURATION RECOMMANDÉE**
 
@@ -127,10 +125,10 @@ VITE_PROTECTION_ENABLED=true
 
 ### **Limites de Sécurité**
 - **Développement**: 5 appels/heure, $2/jour
-- **Staging**: 10 appels/heure, $5/jour  
+- **Staging**: 10 appels/heure, $5/jour
 - **Production**: 20 appels/heure, $10/jour
 
----
+- --
 
 ## 🚀 **BONNES PRATIQUES**
 
@@ -138,18 +136,18 @@ VITE_PROTECTION_ENABLED=true
 ❌ **À éviter**:
 ```typescript
 useEffect(() => {
-  const interval = setInterval(callAPI, 1000); // Trop fréquent !
-  return () => clearInterval(interval);
+ const interval = setInterval(callAPI, 1000); // Trop fréquent !
+ return () => clearInterval(interval);
 }, []);
 ```
 
 ✅ **Recommandé**:
 ```typescript
 const handleUserAction = async () => {
-  const { allowed } = await canMakeCall();
-  if (allowed) {
-    await callAPI();
-  }
+ const { allowed } = await canMakeCall();
+ if (allowed) {
+ await callAPI();
+ }
 };
 ```
 
@@ -165,7 +163,7 @@ const cachedData = getCachedData(cacheKey, CACHE_TTL);
 import { debounce } from 'lodash';
 
 const debouncedSearch = debounce(async (query) => {
-  await searchAPI(query);
+ await searchAPI(query);
 }, 1000); // 1 seconde de debounce
 ```
 
@@ -175,7 +173,7 @@ const debouncedSearch = debounce(async (query) => {
 console.log(`🔍 API Call: ${endpoint} - ${new Date().toISOString()}`);
 ```
 
----
+- --
 
 ## 🆘 **EN CAS DE PROBLÈME**
 
@@ -199,7 +197,7 @@ localStorage.removeItem('perplexity_protection_history');
 localStorage.removeItem('perplexity_usage_stats');
 ```
 
----
+- --
 
 ## 📝 **CHECKLIST AVANT DEPLOY**
 
@@ -211,14 +209,14 @@ localStorage.removeItem('perplexity_usage_stats');
 - [ ] ✅ Monitoring et alertes configurés
 - [ ] ✅ Documentation mise à jour
 
----
+- --
 
 ## 🎯 **OBJECTIFS ATTEINTS**
 
-✅ **Protection Active**: Middleware automatique  
-✅ **Monitoring**: Interface utilisateur complète  
-✅ **Prévention**: Tous les appels automatiques contrôlés  
-✅ **Récupération**: Guide de diagnostic et résolution  
-✅ **Documentation**: Guide complet pour l'équipe  
+✅ **Protection Active**: Middleware automatique
+✅ **Monitoring**: Interface utilisateur complète
+✅ **Prévention**: Tous les appels automatiques contrôlés
+✅ **Récupération**: Guide de diagnostic et résolution
+✅ **Documentation**: Guide complet pour l'équipe
 
-**Garantie**: Plus jamais de consommation excessive involontaire ! 🛡️ 
+* *Garantie**: Plus jamais de consommation excessive involontaire ! 🛡️

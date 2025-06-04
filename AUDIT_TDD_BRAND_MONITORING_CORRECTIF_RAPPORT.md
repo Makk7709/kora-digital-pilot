@@ -2,13 +2,13 @@
 
 ## 📋 RÉSUMÉ EXÉCUTIF
 
-**Problème identifié :** La fonction de veille de marque lançait automatiquement des recherches Perplexity avant que l'utilisateur saisisse les informations de marque, causant des appels API inutiles et une mauvaise expérience utilisateur.
+* *Problème identifié :** La fonction de veille de marque lançait automatiquement des recherches Perplexity avant que l'utilisateur saisisse les informations de marque, causant des appels API inutiles et une mauvaise expérience utilisateur.
 
-**Status :** ✅ **RÉSOLU COMPLÈTEMENT**
-**Tests TDD :** ✅ **11/11 PASSENT**
-**Approche :** Test-Driven Development (TDD) sans impact sur les autres composants
+* *Status :** ✅ **RÉSOLU COMPLÈTEMENT**
+* *Tests TDD :** ✅ **11/11 PASSENT**
+* *Approche :** Test-Driven Development (TDD) sans impact sur les autres composants
 
----
+- --
 
 ## 🚨 PROBLÈME INITIAL IDENTIFIÉ
 
@@ -22,39 +22,39 @@
 ```typescript
 // ❌ AVANT - Dans loadBrandData()
 if (getBusinessInsights) {
-  await getBusinessInsights({
-    query: 'brand monitoring insights',  // Générique !
-    context: 'Analyse de la marque et des mentions'
-  });
+ await getBusinessInsights({
+ query: 'brand monitoring insights', // Générique !
+ context: 'Analyse de la marque et des mentions'
+ });
 }
 
 if (getCompetitorAnalysis) {
-  await getCompetitorAnalysis(['Concurrent A', 'Concurrent B'], 'digital marketing');  // En dur !
+ await getCompetitorAnalysis(['Concurrent A', 'Concurrent B'], 'digital marketing'); // En dur !
 }
 ```
 
----
+- --
 
 ## 🔬 MÉTHODE TDD APPLIQUÉE
 
 ### Phase 1 : Tests de détection du problème
 ```typescript
 it('NE DEVRAIT PAS lancer getBusinessInsights automatiquement au chargement initial', async () => {
-  // Test échoue ❌ - confirme le problème
-  expect(mockGetBusinessInsights).not.toHaveBeenCalled();
+ // Test échoue ❌ - confirme le problème
+ expect(mockGetBusinessInsights).not.toHaveBeenCalled();
 });
 ```
 
 ### Phase 2 : Tests définissant le comportement attendu
 ```typescript
-it('DEVRAIT permettre l\'analyse UNIQUEMENT après saisie du nom de marque', async () => {
-  // Définit le comportement correct attendu
-  fireEvent.change(brandInput, { target: { value: 'Nike' } });
-  fireEvent.click(analyzeButton);
-  expect(mockGetBusinessInsights).toHaveBeenCalledWith({
-    query: expect.stringContaining('Nike'),
-    context: expect.any(String)
-  });
+it('DEVRAIT permettre l'analyse UNIQUEMENT après saisie du nom de marque', async () => {
+ // Définit le comportement correct attendu
+ fireEvent.change(brandInput, { target: { value: 'Nike' } });
+ fireEvent.click(analyzeButton);
+ expect(mockGetBusinessInsights).toHaveBeenCalledWith({
+ query: expect.stringContaining('Nike'),
+ context: expect.any(String)
+ });
 });
 ```
 
@@ -62,62 +62,61 @@ it('DEVRAIT permettre l\'analyse UNIQUEMENT après saisie du nom de marque', asy
 ```typescript
 // ✅ APRÈS - Dans loadBrandData()
 const loadBrandData = async () => {
-  try {
-    setIsLoading(true);
-    setError(null);
+ try {
+ setIsLoading(true);
+ setError(null);
 
-    // ✅ Charger uniquement les données mockées pour l'affichage
-    setData(mockData);
-    setIsLoading(false);
-    setLastUpdate(new Date());
-  } catch (err) {
-    // ... gestion d'erreur
-  }
+ // ✅ Charger uniquement les données mockées pour l'affichage
+ setData(mockData);
+ setIsLoading(false);
+ setLastUpdate(new Date());
+ } catch (err) {
+ // ... gestion d'erreur
+ }
 };
 ```
 
----
+- --
 
 ## ✅ CORRECTIFS IMPLÉMENTÉS
 
 ### 1. **Suppression des appels API automatiques**
-- **Avant :** API Perplexity appelées au chargement de `loadBrandData()`
-- **Après :** Chargement uniquement des données mockées
+- **Avant :** API Perplexity appelées au chargement de `loadBrandData()` - **Après :** Chargement uniquement des données mockées
 - **Impact :** Aucun appel API inutile
 
 ### 2. **Interface utilisateur pour contrôle manuel**
 ```typescript
 // Nouveau formulaire de contrôle IA
 <div className="space-y-4">
-  {/* Sélecteur de type d'analyse */}
-  <div className="flex gap-2">
-    <Button variant={analysisType === 'brand' ? "default" : "outline"} 
-            onClick={() => setAnalysisType('brand')}>
-      Ma marque
-    </Button>
-    <Button variant={analysisType === 'competitor' ? "default" : "outline"} 
-            onClick={() => setAnalysisType('competitor')}>
-      Concurrent
-    </Button>
-  </div>
+ {/* Sélecteur de type d'analyse */}
+ <div className="flex gap-2">
+ <Button variant={analysisType === 'brand' ? "default" : "outline"}
+ onClick={() => setAnalysisType('brand')}>
+ Ma marque
+ </Button>
+ <Button variant={analysisType === 'competitor' ? "default" : "outline"}
+ onClick={() => setAnalysisType('competitor')}>
+ Concurrent
+ </Button>
+ </div>
 
-  {/* Champ de saisie obligatoire */}
-  <input
-    type="text"
-    value={targetName}
-    onChange={(e) => setTargetName(e.target.value)}
-    placeholder={analysisType === 'brand' ? 'Ex: Nike, Apple...' : 'Ex: Concurrent à analyser...'}
-    data-testid="target-name-input"
-  />
+ {/* Champ de saisie obligatoire */}
+ <input
+ type="text"
+ value={targetName}
+ onChange={(e) => setTargetName(e.target.value)}
+ placeholder={analysisType === 'brand' ? 'Ex: Nike, Apple...' : 'Ex: Concurrent à analyser...'}
+ data-testid="target-name-input"
+ />
 
-  {/* Bouton d'analyse contrôlé */}
-  <Button
-    onClick={handleAnalyzeWithAI}
-    disabled={isAnalyzing || !targetName.trim()}
-    data-testid="analyze-button"
-  >
-    Analyser avec l'IA
-  </Button>
+ {/* Bouton d'analyse contrôlé */}
+ <Button
+ onClick={handleAnalyzeWithAI}
+ disabled={isAnalyzing || !targetName.trim()}
+ data-testid="analyze-button"
+ >
+ Analyser avec l'IA
+ </Button>
 </div>
 ```
 
@@ -132,7 +131,7 @@ const loadBrandData = async () => {
 - ✅ Configuration des alertes conservée
 - ✅ Données mockées affichées normalement
 
----
+- --
 
 ## 🧪 RÉSULTATS DES TESTS TDD
 
@@ -155,15 +154,15 @@ const loadBrandData = async () => {
 ✅ **DEVRAIT avoir des contrôles séparés pour analyse de marque et analyse concurrentielle**
 ✅ **DEVRAIT afficher des états de chargement pendant l'analyse**
 
-**SCORE FINAL : 11/11 TESTS PASSENT** 🎯
+* *SCORE FINAL : 11/11 TESTS PASSENT** 🎯
 
----
+- --
 
 ## 💡 BÉNÉFICES DE LA CORRECTION
 
 ### Économies de ressources
 - **0 appels API automatiques** (vs 2+ appels avant)
-- **Réduction des coûts Perplexity** 
+- **Réduction des coûts Perplexity**
 - **Amélioration des performances** au chargement
 
 ### Expérience utilisateur améliorée
@@ -177,34 +176,34 @@ const loadBrandData = async () => {
 - **Tests automatisés** garantissant la stabilité
 - **Code plus lisible** et prévisible
 
----
+- --
 
 ## 📊 ARCHITECTURE FINALE
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Chargement    │    │  Interface IA   │    │   APIs Perplexity│
-│                 │    │                 │    │                 │
-│ loadBrandData() │    │ Formulaire      │    │ getBusinessIns- │
-│ • Données mock  │    │ • Type analyse  │────│ights()         │
-│ • PAS d'API     │    │ • Saisie nom    │    │                 │
-│ • Rapide        │    │ • Validation    │    │ getCompetitor-  │
-│                 │    │ • Bouton        │────│ Analysis()      │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-        │                       │                       │
-        │                       │                       │
-        ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│  Affichage      │    │   Contrôle      │    │    Analyse      │
-│  Dashboard      │    │  Utilisateur    │    │     IA          │
-│                 │    │                 │    │                 │
-│ • Métriques     │    │ • Volontaire    │    │ • Ciblée        │
-│ • Sentiment     │    │ • Validé        │    │ • Pertinente    │
-│ • Historique    │    │ • Sécurisé      │    │ • Économique    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│ Chargement │ │ Interface IA │ │ APIs Perplexity│
+│ │ │ │ │ │
+│ loadBrandData() │ │ Formulaire │ │ getBusinessIns- │
+│ • Données mock │ │ • Type analyse │────│ights() │
+│ • PAS d'API │ │ • Saisie nom │ │ │
+│ • Rapide │ │ • Validation │ │ getCompetitor- │
+│ │ │ • Bouton │────│ Analysis() │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
+ │ │ │
+ │ │ │
+ ▼ ▼ ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│ Affichage │ │ Contrôle │ │ Analyse │
+│ Dashboard │ │ Utilisateur │ │ IA │
+│ │ │ │ │ │
+│ • Métriques │ │ • Volontaire │ │ • Ciblée │
+│ • Sentiment │ │ • Validé │ │ • Pertinente │
+│ • Historique │ │ • Sécurisé │ │ • Économique │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
 ```
 
----
+- --
 
 ## 🚀 RECOMMANDATIONS FUTURES
 
@@ -224,13 +223,13 @@ const loadBrandData = async () => {
 - ✅ **États de chargement** pour améliorer l'UX
 - ✅ **Séparation claire** entre données mockées et API réelles
 
----
+- --
 
 ## 📝 CONCLUSION
 
-Le problème logique de la fonction de veille de marque a été **résolu complètement** grâce à une approche TDD rigoureuse. 
+Le problème logique de la fonction de veille de marque a été **résolu complètement** grâce à une approche TDD rigoureuse.
 
-**Résultats :**
+* *Résultats :**
 - ✅ **0 appels API automatiques** inutiles
 - ✅ **Interface utilisateur intuitive** ajoutée
 - ✅ **11/11 tests passent** garantissant la stabilité
@@ -239,8 +238,8 @@ Le problème logique de la fonction de veille de marque a été **résolu compl�
 
 Cette correction démontre l'efficacité de l'approche TDD pour identifier, corriger et valider les problèmes logiques complexes tout en préservant l'intégrité du système existant.
 
----
+- --
 
-**Date :** $(date)  
-**Méthode :** Test-Driven Development (TDD)  
-**Status :** ✅ RÉSOLU ET VALIDÉ 
+* *Date :** $(date)
+* *Méthode :** Test-Driven Development (TDD)
+* *Status :** ✅ RÉSOLU ET VALIDÉ

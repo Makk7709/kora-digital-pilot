@@ -7,9 +7,7 @@
 1. Allez sur [LinkedIn Developers](https://www.linkedin.com/developers/apps)
 2. Cliquez sur "Create app"
 3. Remplissez les informations de votre application
-4. Dans les "Auth" settings, ajoutez l'URL de redirection : `http://localhost:8088/auth/linkedin/callback`
-
-### 2. Configurer les variables d'environnement
+4. Dans les "Auth" settings, ajoutez l'URL de redirection : `http://localhost:8088/auth/linkedin/callback` ### 2. Configurer les variables d'environnement
 
 Créez un fichier `.env` à la racine du projet avec :
 
@@ -38,8 +36,8 @@ Dans votre app LinkedIn, activez les permissions suivantes :
 npm run dev:full
 
 # Ou séparément :
-npm run proxy  # Terminal 1
-npm run dev    # Terminal 2
+npm run proxy # Terminal 1
+npm run dev # Terminal 2
 ```
 
 ## Mode démonstration
@@ -55,8 +53,6 @@ Si LinkedIn n'est pas configuré, l'application fonctionne en mode démonstratio
 
 ### Erreur CORS
 - Le serveur proxy (`server.cjs`) gère les problèmes CORS
-- Assurez-vous qu'il est démarré avec `npm run proxy`
-
-### Token expiré
+- Assurez-vous qu'il est démarré avec `npm run proxy` ### Token expiré
 - Les tokens LinkedIn expirent automatiquement
-- Reconnectez-vous via l'interface utilisateur 
+- Reconnectez-vous via l'interface utilisateur

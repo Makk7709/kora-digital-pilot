@@ -35,19 +35,19 @@ L'intégration LinkedIn de Korev a été considérablement améliorée avec de n
 ### Hook `useLinkedInStats` Enhanced
 ```typescript
 interface UseLinkedInStatsReturn {
-  // Nouvelles propriétés
-  clearCache: () => void;
-  cacheInfo: {
-    isFromCache: boolean;
-    cacheAge: number; // en minutes
-  };
+ // Nouvelles propriétés
+ clearCache: () => void;
+ cacheInfo: {
+ isFromCache: boolean;
+ cacheAge: number; // en minutes
+ };
 }
 
 // Nouveau paramètre
 const useLinkedInStats = (
-  autoRefresh = true,
-  refreshInterval = 300000,
-  cacheTimeout = 120000 // NOUVEAU: timeout du cache
+ autoRefresh = true,
+ refreshInterval = 300000,
+ cacheTimeout = 120000 // NOUVEAU: timeout du cache
 )
 ```
 
@@ -61,36 +61,34 @@ const useLinkedInStats = (
 ```
 src/
 ├── hooks/
-│   ├── useLinkedInStats.ts          # ✅ Enhanced avec cache
-│   └── useLinkedInAnalytics.ts      # ✅ Existant
+│ ├── useLinkedInStats.ts # ✅ Enhanced avec cache
+│ └── useLinkedInAnalytics.ts # ✅ Existant
 ├── components/
-│   ├── StatsCard.tsx                # ✅ Enhanced avec notifications
-│   ├── LinkedInAuth.tsx             # ✅ Existant
-│   ├── LinkedInStatsTest.tsx        # ✅ Existant
-│   ├── LinkedInDashboardWidget.tsx  # 🆕 Nouveau widget
-│   └── LinkedInExport.tsx           # 🆕 Export de données
+│ ├── StatsCard.tsx # ✅ Enhanced avec notifications
+│ ├── LinkedInAuth.tsx # ✅ Existant
+│ ├── LinkedInStatsTest.tsx # ✅ Existant
+│ ├── LinkedInDashboardWidget.tsx # 🆕 Nouveau widget
+│ └── LinkedInExport.tsx # 🆕 Export de données
 ├── pages/
-│   └── LinkedInTest.tsx             # ✅ Enhanced avec nouveaux composants
+│ └── LinkedInTest.tsx # ✅ Enhanced avec nouveaux composants
 └── lib/
-    └── linkedin-api.ts              # ✅ Existant
+ └── linkedin-api.ts # ✅ Existant
 ```
 
 ## 🎯 Fonctionnalités par Composant
 
-### `LinkedInDashboardWidget`
-- **Mode normal** : Affichage complet avec métriques et actions
+### `LinkedInDashboardWidget` - **Mode normal** : Affichage complet avec métriques et actions
 - **Mode compact** : Version réduite pour sidebars
 - **Sélecteur de période** : 7j, 30j, 90j
 - **Navigation** : Lien vers analyse complète
 - **Indicateurs** : Statut de connexion et cache
 
-### `LinkedInExport`
-- **Formats supportés** : CSV, JSON
+### `LinkedInExport` - **Formats supportés** : CSV, JSON
 - **Contenu exporté** :
-  - Métriques principales (portée, engagement, clics, croissance)
-  - Posts les plus performants avec détails complets
-  - Insights et recommandations
-  - Métadonnées d'export (date, période)
+ - Métriques principales (portée, engagement, clics, croissance)
+ - Posts les plus performants avec détails complets
+ - Insights et recommandations
+ - Métadonnées d'export (date, période)
 - **Interface intuitive** : Sélection de format, aperçu des données
 - **Validation** : Vérification de la disponibilité des données
 
@@ -125,19 +123,19 @@ import LinkedInExport from '@/components/LinkedInExport';
 import { useLinkedInStats } from '@/hooks/useLinkedInStats';
 
 const {
-  metrics,
-  cacheInfo,
-  clearCache,
-  // ... autres propriétés
+ metrics,
+ cacheInfo,
+ clearCache,
+ // ... autres propriétés
 } = useLinkedInStats(
-  true,      // autoRefresh
-  300000,    // refreshInterval (5min)
-  120000     // cacheTimeout (2min)
+ true, // autoRefresh
+ 300000, // refreshInterval (5min)
+ 120000 // cacheTimeout (2min)
 );
 
 // Vérifier si les données viennent du cache
 if (cacheInfo.isFromCache) {
-  console.log(`Données en cache depuis ${cacheInfo.cacheAge} minutes`);
+ console.log(`Données en cache depuis ${cacheInfo.cacheAge} minutes`);
 }
 ```
 
@@ -226,9 +224,7 @@ http://localhost:5173/linkedin-test
 
 - **Documentation LinkedIn API** : [LinkedIn Marketing API](https://docs.microsoft.com/en-us/linkedin/marketing/)
 - **OAuth 2.0 Guide** : [LinkedIn OAuth](https://docs.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow)
-- **Test Interface** : `/linkedin-test`
-
----
+- **Test Interface** : `/linkedin-test` - --
 
 ## 📝 Notes de Version
 
@@ -248,6 +244,6 @@ http://localhost:5173/linkedin-test
 - ✅ Gestion d'erreurs et fallback
 - ✅ Interface de test basique
 
----
+- --
 
-*Intégration LinkedIn Enhanced pour Korev Digital Pilot - Développé avec ❤️ et ⚡* 
+* Intégration LinkedIn Enhanced pour Korev Digital Pilot - Développé avec ❤️ et ⚡*

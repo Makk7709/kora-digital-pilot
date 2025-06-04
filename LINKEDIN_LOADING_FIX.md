@@ -15,102 +15,92 @@ LinkedIn était connecté mais le chargement des métriques restait bloqué ind�
 
 ### 1. Timeout et gestion d'erreur améliorée
 
-**Fichier modifié** : `src/hooks/useLinkedInAnalytics.ts`
-
-```typescript
+* *Fichier modifié** : `src/hooks/useLinkedInAnalytics.ts` ```typescript
 // Ajout d'un timeout de 10 secondes
 const timeoutPromise = new Promise((_, reject) => {
-  setTimeout(() => reject(new Error('Timeout: Récupération des métriques trop longue')), 10000);
+ setTimeout(() => reject(new Error('Timeout: Récupération des métriques trop longue')), 10000);
 });
 
 // Course entre récupération et timeout
 const data = await Promise.race([
-  linkedinAPI.getMetrics(period),
-  timeoutPromise
+ linkedinAPI.getMetrics(period),
+ timeoutPromise
 ]) as LinkedInMetrics;
 ```
 
-**Avantages** :
+* *Avantages** :
 - Évite le blocage infini
 - Fallback automatique vers les données de démonstration
 - Logs détaillés pour le debugging
 
 ### 2. Amélioration de l'API LinkedIn
 
-**Fichier modifié** : `src/lib/linkedin-api.ts`
-
-```typescript
+* *Fichier modifié** : `src/lib/linkedin-api.ts` ```typescript
 // Timeout sur la récupération des posts
 const posts = await Promise.race([
-  this.getOrganizationPosts(period),
-  new Promise((_, reject) => 
-    setTimeout(() => reject(new Error('Timeout récupération posts')), 5000)
-  )
+ this.getOrganizationPosts(period),
+ new Promise((_, reject) =>
+ setTimeout(() => reject(new Error('Timeout récupération posts')), 5000)
+ )
 ]) as LinkedInPost[];
 ```
 
-**Avantages** :
+* *Avantages** :
 - Délai réaliste simulé (500ms à 2s)
 - Timeout de sécurité à 5 secondes
 - Logs de progression détaillés
 
 ### 3. Interface utilisateur améliorée
 
-**Fichier modifié** : `src/components/LinkedInWidget.tsx`
-
-```typescript
+* *Fichier modifié** : `src/components/LinkedInWidget.tsx` ```typescript
 {isLoading ? (
-  <div className="space-y-2">
-    <div className="w-8 h-8 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
-    <p className="text-sm text-gray-600">Chargement des métriques...</p>
-    <p className="text-xs text-gray-500">Cela peut prendre quelques secondes</p>
-  </div>
+ <div className="space-y-2">
+ <div className="w-8 h-8 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
+ <p className="text-sm text-gray-600">Chargement des métriques...</p>
+ <p className="text-xs text-gray-500">Cela peut prendre quelques secondes</p>
+ </div>
 ) : (
-  <div className="space-y-2">
-    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
-      <AlertCircle className="w-4 h-4 text-gray-400" />
-    </div>
-    <p className="text-sm text-gray-600">Aucune donnée disponible</p>
-    <Button onClick={handleRefresh} variant="outline" size="sm">
-      <RefreshCw className="w-3 h-3 mr-1" />
-      Réessayer
-    </Button>
-  </div>
+ <div className="space-y-2">
+ <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+ <AlertCircle className="w-4 h-4 text-gray-400" />
+ </div>
+ <p className="text-sm text-gray-600">Aucune donnée disponible</p>
+ <Button onClick={handleRefresh} variant="outline" size="sm">
+ <RefreshCw className="w-3 h-3 mr-1" />
+ Réessayer
+ </Button>
+ </div>
 )}
 ```
 
-**Avantages** :
+* *Avantages** :
 - Feedback visuel clair
 - Bouton de retry en cas d'échec
 - Messages informatifs
 
 ### 4. Indicateur de chargement dans Analytics
 
-**Fichier modifié** : `src/components/Analytics.tsx`
-
-```typescript
+* *Fichier modifié** : `src/components/Analytics.tsx` ```typescript
 {platform.name === 'LinkedIn' && isLinkedInConnected && isLinkedInLoading && (
-  <div className="flex items-center space-x-1">
-    <div className="w-3 h-3 border border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
-    <span className="text-xs text-blue-600">Sync...</span>
-  </div>
+ <div className="flex items-center space-x-1">
+ <div className="w-3 h-3 border border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
+ <span className="text-xs text-blue-600">Sync...</span>
+ </div>
 )}
 ```
 
-**Avantages** :
+* *Avantages** :
 - Indicateur spécifique pour LinkedIn
 - Visible uniquement pendant le chargement
 - Design cohérent avec l'interface
 
 ## 🧪 Tests et validation
 
-### Script de test créé : `test-linkedin-loading.js`
-
-```bash
+### Script de test créé : `test-linkedin-loading.js` ```bash
 node test-linkedin-loading.js
 ```
 
-**Tests inclus** :
+* *Tests inclus** :
 - ✅ Serveur proxy fonctionnel
 - ✅ Gestion des timeouts
 - ✅ Données de fallback
@@ -135,39 +125,37 @@ node test-linkedin-loading.js
 ## 🚀 Comment tester
 
 1. **Démarrer l'application** :
-   ```bash
-   npm run dev:full
-   ```
+ ```bash
+ npm run dev:full
+ ```
 
 2. **Aller sur la page Analytics** et observer :
-   - Le chargement ne doit pas dépasser 10 secondes
-   - Un message informatif doit apparaître
-   - Les données de fallback doivent s'afficher
+ - Le chargement ne doit pas dépasser 10 secondes
+ - Un message informatif doit apparaître
+ - Les données de fallback doivent s'afficher
 
 3. **Tester le retry** :
-   - Si aucune donnée n'apparaît, cliquer sur "Réessayer"
-   - Vérifier que le chargement redémarre
+ - Si aucune donnée n'apparaît, cliquer sur "Réessayer"
+ - Vérifier que le chargement redémarre
 
 4. **Vérifier les logs** :
-   - Ouvrir la console du navigateur (F12)
-   - Observer les messages de progression LinkedIn
+ - Ouvrir la console du navigateur (F12)
+ - Observer les messages de progression LinkedIn
 
 ## 🔧 Dépannage
 
 Si le problème persiste :
 
 1. **Vérifier le serveur proxy** :
-   ```bash
-   curl http://localhost:3001/api/health
-   ```
+ ```bash
+ curl http://localhost:3001/api/health
+ ```
 
 2. **Vérifier les variables d'environnement** :
-   - `.env.local` doit contenir `VITE_LINKEDIN_CLIENT_SECRET`
-
-3. **Redémarrer complètement** :
-   ```bash
-   npm run dev:full
-   ```
+ - `.env.local` doit contenir `VITE_LINKEDIN_CLIENT_SECRET` 3. **Redémarrer complètement** :
+ ```bash
+ npm run dev:full
+ ```
 
 4. **Vider le cache du navigateur** et actualiser
 
@@ -177,4 +165,4 @@ Si le problème persiste :
 - **Timeout API** : 5 secondes (récupération posts)
 - **Délai simulation** : 500ms à 2s (réaliste)
 - **Fallback** : Données de démonstration automatiques
-- **Retry** : Manuel via bouton interface 
+- **Retry** : Manuel via bouton interface

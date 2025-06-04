@@ -3,14 +3,11 @@
 ## ❌ **PROBLÈMES CRITIQUES IDENTIFIÉS**
 
 ### 1. **APPEL API AUTOMATIQUE NON CONTRÔLÉ**
-- **Localisation**: `BrandMonitoring.tsx:328`
-- **Problème**: `loadBrandData()` appelé automatiquement dans `useEffect`
-- **Impact**: Consommation API sans consentement utilisateur
+- **Localisation**: `BrandMonitoring.tsx:328` - **Problème**: `loadBrandData()` appelé automatiquement dans `useEffect` - **Impact**: Consommation API sans consentement utilisateur
 - **Criticité**: 🔴 CRITIQUE
 
 ### 2. **ENRICHISSEMENT IA NON OPTIONNEL**
-- **Localisation**: `BrandMonitoring.tsx:318`
-- **Problème**: `enrichDataWithAI()` appelé systématiquement
+- **Localisation**: `BrandMonitoring.tsx:318` - **Problème**: `enrichDataWithAI()` appelé systématiquement
 - **Impact**: Coût API et latence inutiles
 - **Criticité**: 🔴 CRITIQUE
 
@@ -43,4 +40,4 @@
 2. **Séparation claire** données mock vs réelles
 3. **Contrôle utilisateur** total sur les appels API
 4. **Tests complets** avec couverture 100%
-5. **Performance optimale** sans latence inutile 
+5. **Performance optimale** sans latence inutile

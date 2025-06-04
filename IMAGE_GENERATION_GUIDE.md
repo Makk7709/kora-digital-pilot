@@ -88,41 +88,11 @@ Format: Selon usage (carré pour social, paysage pour bannières)
 ## 🎨 Mots-Clés Premium par Catégorie
 
 ### 📷 Qualité Photographique
-- `ultra-realistic photography`
-- `shot with Canon EOS R5` / `Sony A7R IV` / `Leica Q2`
-- `professional photography`
-- `ultra-high resolution`
-- `cinematic quality`
-
-### 💡 Éclairage Premium
-- `natural lighting`
-- `professional lighting setup`
-- `cinematic lighting`
-- `soft natural light`
-- `architectural lighting`
-
-### 🏢 Environnements Business
-- `modern glass conference room`
-- `sophisticated startup office`
-- `luxury business environment`
-- `premium coworking space`
-- `executive boardroom`
-
-### 🎭 Atmosphère et Style
-- `corporate elegance`
-- `sophisticated atmosphere`
-- `premium business aesthetic`
-- `professional environment`
-- `luxury setting`
-
-### 👥 Sujets Humains
-- `diverse team of executives`
-- `confident business leader`
-- `young professionals`
-- `creative professionals`
-- `innovative team`
-
-## 🚀 Optimisation Automatique Kora
+- `ultra-realistic photography` - `shot with Canon EOS R5` / `Sony A7R IV` / `Leica Q2` - `professional photography` - `ultra-high resolution` - `cinematic quality` ### 💡 Éclairage Premium
+- `natural lighting` - `professional lighting setup` - `cinematic lighting` - `soft natural light` - `architectural lighting` ### 🏢 Environnements Business
+- `modern glass conference room` - `sophisticated startup office` - `luxury business environment` - `premium coworking space` - `executive boardroom` ### 🎭 Atmosphère et Style
+- `corporate elegance` - `sophisticated atmosphere` - `premium business aesthetic` - `professional environment` - `luxury setting` ### 👥 Sujets Humains
+- `diverse team of executives` - `confident business leader` - `young professionals` - `creative professionals` - `innovative team` ## 🚀 Optimisation Automatique Kora
 
 ### 🔄 Fonction "Optimiser pour Kora"
 Cette fonction ajoute automatiquement :
@@ -208,12 +178,12 @@ Prompt optimisé: "Business meeting, professional corporate photography, ultra-r
 - **Cohérence totale** : Tous les visuels alignés sur la marque
 - **Impact business** : ROI mesurable sur la communication visuelle
 
----
+- --
 
 ## 🎨 Créez l'Excellence Visuelle avec Kora !
 
 Votre assistant IA génère maintenant des visuels qui reflètent l'excellence de votre marque. Chaque image créée renforce votre identité visuelle et votre positionnement premium.
 
-**🔑 Clé du succès** : Utilisez les templates premium, optimisez avec la fonction Kora, et maintenez la cohérence ultra-réaliste pour un branding visuel d'exception.
+* *🔑 Clé du succès** : Utilisez les templates premium, optimisez avec la fonction Kora, et maintenez la cohérence ultra-réaliste pour un branding visuel d'exception.
 
-**🎯 Résultat** : Des visuels qui se démarquent, renforcent votre crédibilité et génèrent plus d'engagement sur tous vos canaux de communication. 
+* *🎯 Résultat** : Des visuels qui se démarquent, renforcent votre crédibilité et génèrent plus d'engagement sur tous vos canaux de communication.

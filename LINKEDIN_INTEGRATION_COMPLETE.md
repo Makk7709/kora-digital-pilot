@@ -3,10 +3,7 @@
 ## ✅ **Statut : INTÉGRATION RÉUSSIE**
 
 L'intégration LinkedIn API est maintenant **100% fonctionnelle** avec vos identifiants :
-- **Client ID** : `771wyq0br5qhum`
-- **Client Secret** : `WPL_AP1.OSkEq3inhy5qYt9Y.gOV8YQ==`
-
-## 🚀 **Fonctionnalités Implémentées**
+- **Client ID** : `771wyq0br5qhum` - **Client Secret** : `WPL_AP1.OSkEq3inhy5qYt9Y.gOV8YQ==` ## 🚀 **Fonctionnalités Implémentées**
 
 ### 1. **Service LinkedIn API** (`src/lib/linkedin-api.ts`)
 - ✅ **OAuth 2.0** : Authentification sécurisée
@@ -49,10 +46,7 @@ VITE_LINKEDIN_REDIRECT_URI=http://localhost:5173/auth/linkedin/callback
 
 ### URL de Redirection LinkedIn
 Dans votre application LinkedIn, configurez :
-- **Redirect URI** : `http://localhost:5173/auth/linkedin/callback`
-- **Scopes requis** : `r_organization_social`, `rw_organization_admin`, `r_basicprofile`, `r_emailaddress`
-
-## 🎯 **Comment Utiliser**
+- **Redirect URI** : `http://localhost:5173/auth/linkedin/callback` - **Scopes requis** : `r_organization_social`, `rw_organization_admin`, `r_basicprofile`, `r_emailaddress` ## 🎯 **Comment Utiliser**
 
 ### 1. **Première Connexion**
 1. Allez dans **Paramètres** → Section "Connexion LinkedIn"
@@ -137,6 +131,6 @@ L'intégration est **prête à l'emploi** avec vos identifiants. En cas de probl
 2. Testez la connectivité dans Paramètres
 3. Consultez les logs de la console navigateur
 
----
+- --
 
-**🎯 Kora Digital Pilot dispose maintenant de vraies données LinkedIn !** 
+* *🎯 Kora Digital Pilot dispose maintenant de vraies données LinkedIn !**

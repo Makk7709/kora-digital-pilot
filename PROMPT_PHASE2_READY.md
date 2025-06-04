@@ -1,57 +1,54 @@
 # 🎯 PROMPT IMMÉDIAT PHASE 2 - KORA REFACTORING
 
-## Mission Cursor — Architecture Modulaire KORA
+## Mission Cursor -- Architecture Modulaire KORA
 
-**Persona** : Architecte Logiciel Senior (Clean Architecture + Scalabilité)  
-**Contexte** : Phase 1 nettoyage TERMINÉE → Phase 2 consolidation IMMÉDIATE  
-**Deadline** : Audit 25 juin (architecture modulaire audit-ready)
+* *Persona** : Architecte Logiciel Senior (Clean Architecture + Scalabilité)
+* *Contexte** : Phase 1 nettoyage TERMINÉE → Phase 2 consolidation IMMÉDIATE
+* *Deadline** : Audit 25 juin (architecture modulaire audit-ready)
 
----
+- --
 
 ## 📊 ÉTAT BASELINE POST-NETTOYAGE
 
 ```bash
 ✅ 61+ artefacts supprimés | Structure nettoyée
-⚠️  Services monolithiques critiques détectés :
-    - RealBrandIntelligenceService.ts : 82KB (2291+ lignes)
-    - BrandAnalysisService.ts : 42KB  (1109+ lignes)
-    - ReportExportService.ts : 37KB   (992+ lignes)
+⚠️ Services monolithiques critiques détectés :
+ - RealBrandIntelligenceService.ts : 82KB (2291+ lignes)
+ - BrandAnalysisService.ts : 42KB (1109+ lignes)
+ - ReportExportService.ts : 37KB (992+ lignes)
 
-⚠️  Composants géants avec debug :
-    - BrandMonitoring.tsx : 54KB + 28x console.log
-    - Analytics.tsx : 47KB (1179+ lignes)
-    - BrandIntelligenceDashboard.tsx : 47KB
+⚠️ Composants géants avec debug :
+ - BrandMonitoring.tsx : 54KB + 28x console.log
+ - Analytics.tsx : 47KB (1179+ lignes)
+ - BrandIntelligenceDashboard.tsx : 47KB
 
-⚠️  Tests dispersés : src/test/ (16 fichiers) + src/tests/ (1 fichier)
+⚠️ Tests dispersés : src/test/ (16 fichiers) + src/tests/ (1 fichier)
 ```
 
----
+- --
 
 ## 🚨 ACTIONS PRIORITAIRES IMMÉDIATES
 
 ### 1️⃣ CONSOLIDATION SERVICES (DÉMARRER MAINTENANT)
 
-**Créer architecture modulaire :**
+* *Créer architecture modulaire :**
 ```bash
 mkdir -p src/services/{brand,export,integration,core}
 ```
 
-**Découpage prioritaire :**
+* *Découpage prioritaire :**
 - **RealBrandIntelligenceService.ts** (82KB) → 3 modules spécialisés
-- **BrandAnalysisService.ts** (42KB) → service + utils  
+- **BrandAnalysisService.ts** (42KB) → service + utils
 - **ReportExportService.ts** (37KB) → PDF + Data services
 
 ### 2️⃣ REFACTORING COMPOSANTS
 - **BrandMonitoring.tsx** (54KB) → 8-10 composants features
 - **Supprimer 28x console.log** debug immédiatement
-- Structure feature-based : `src/components/features/`
-
-### 3️⃣ UNIFICATION TESTS
-- Fusionner `src/test/` + `src/tests/` → `src/__tests__/`
-- Configuration vitest standardisée
+- Structure feature-based : `src/components/features/` ### 3️⃣ UNIFICATION TESTS
+- Fusionner `src/test/` + `src/tests/` → `src/__tests__/` - Configuration vitest standardisée
 - Target coverage > 90%
 
----
+- --
 
 ## ⚠️ CONTRAINTES CRITIQUES (NE PAS CASSER)
 
@@ -60,23 +57,23 @@ mkdir -p src/services/{brand,export,integration,core}
 - ❌ **API Perplexity** (cœur application)
 - ❌ **Vite HMR** (ports 8088-8090)
 
----
+- --
 
 ## 🎯 LIVRABLE PHASE 2
 
-**Architecture modulaire audit-ready :**
+* *Architecture modulaire audit-ready :**
 - Services < 20KB chacun
 - Composants < 500 lignes
 - Tests coverage > 90%
 - Zéro console.log debug
 - Bundle optimisé < 1.5MB
 
----
+- --
 
 ## 📋 DOCUMENTS RÉFÉRENCE DISPONIBLES
 
 - `ARCHITECTURE_REFACTORING_PLAN.md` (3.7KB)
-- `ETAT_ACTUEL_POST_NETTOYAGE.md` (4.2KB)  
+- `ETAT_ACTUEL_POST_NETTOYAGE.md` (4.2KB)
 - `RESUME_TRANSITION_PHASE2.md` (complet)
 
-**🚀 DÉMARRER PAR : Analyse RealBrandIntelligenceService.ts (82KB) pour découpage immédiat** 
+* *🚀 DÉMARRER PAR : Analyse RealBrandIntelligenceService.ts (82KB) pour découpage immédiat**

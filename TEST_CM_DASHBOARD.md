@@ -3,9 +3,7 @@
 ## ✅ **Checklist de Vérification**
 
 ### **1. Configuration de Base**
-- [ ] Fichier `.env.local` créé avec `VITE_PERPLEXITY_API_KEY`
-- [ ] Application démarre sur `http://localhost:3000`
-- [ ] Aucune erreur dans la console au démarrage
+- [ ] Fichier `.env.local` créé avec `VITE_PERPLEXITY_API_KEY` - [ ] Application démarre sur `http://localhost:3000` - [ ] Aucune erreur dans la console au démarrage
 - [ ] Menu "🧠 CM Dashboard" visible dans la sidebar
 
 ### **2. Interface Utilisateur**
@@ -35,7 +33,7 @@
 - [ ] Timestamps corrects
 - [ ] Liens externes fonctionnels
 
----
+- --
 
 ## 🔧 **Tests Techniques**
 
@@ -51,7 +49,7 @@ npm run dev
 # 4. Vérifier que les 4 cartes se remplissent
 ```
 
-**Résultat attendu :**
+* *Résultat attendu :**
 - Scan complet en 30-60 secondes
 - 15-25 insights au total
 - Aucune erreur dans la console
@@ -64,7 +62,7 @@ npm run dev
 # 3. Vérifier le timer "Prochain scan"
 ```
 
-**Résultat attendu :**
+* *Résultat attendu :**
 - Scan automatique au chargement
 - Timer affiché pour le prochain scan (12h)
 - Possibilité de désactiver avec le bouton ON/OFF
@@ -77,12 +75,12 @@ npm run dev
 # 3. Tenter un scan
 ```
 
-**Résultat attendu :**
+* *Résultat attendu :**
 - Statut "Déconnecté" affiché
 - Message d'erreur explicite
 - Bouton "Scanner" désactivé
 
----
+- --
 
 ## 📊 **Validation des Insights**
 
@@ -112,13 +110,13 @@ npm run dev
 - ✅ Opportunités identifiées
 - ✅ Signaux faibles détectés
 
----
+- --
 
 ## 🐛 **Problèmes Connus et Solutions**
 
 ### **Erreur : "Service non initialisé"**
-**Cause :** Clé API Perplexity manquante ou invalide
-**Solution :**
+* *Cause :** Clé API Perplexity manquante ou invalide
+* *Solution :**
 ```bash
 # Vérifier la clé
 echo $VITE_PERPLEXITY_API_KEY
@@ -127,26 +125,26 @@ cat .env.local | grep PERPLEXITY
 ```
 
 ### **Erreur : "Scan échoue"**
-**Cause :** Problème réseau ou limite API
-**Solution :**
+* *Cause :** Problème réseau ou limite API
+* *Solution :**
 1. Vérifier la connexion internet
 2. Attendre quelques minutes (limite de taux)
 3. Vérifier les logs de la console
 
 ### **Insights vides ou peu pertinents**
-**Cause :** Réponses Perplexity variables
-**Solution :**
+* *Cause :** Réponses Perplexity variables
+* *Solution :**
 1. Relancer le scan
 2. Vérifier les prompts dans le code
 3. Adapter les requêtes si nécessaire
 
 ### **Performance lente**
-**Cause :** Requêtes Perplexity simultanées
-**Solution :**
+* *Cause :** Requêtes Perplexity simultanées
+* *Solution :**
 - Normal : 30-60 secondes pour 4 axes
 - Optimisation possible : scan séquentiel
 
----
+- --
 
 ## 📈 **Métriques de Performance**
 
@@ -165,7 +163,7 @@ cat .env.local | grep PERPLEXITY
 - **Erreur rate** : < 5%
 - **Satisfaction utilisateur** : > 8/10
 
----
+- --
 
 ## 🎯 **Scénarios de Test Avancés**
 
@@ -194,7 +192,7 @@ cat .env.local | grep PERPLEXITY
 # 3. Vérifier la mise à jour dans l'onglet 2
 ```
 
----
+- --
 
 ## ✅ **Validation Finale**
 
@@ -214,16 +212,16 @@ cat .env.local | grep PERPLEXITY
 4. **Utilisabilité** : Interface intuitive
 5. **Valeur** : Insights actionnables
 
----
+- --
 
 ## 🚀 **Prêt pour la Production**
 
 Une fois tous les tests validés, le Dashboard Community Manager est prêt à transformer votre veille IA en avantage concurrentiel !
 
-**Prochaines étapes :**
+* *Prochaines étapes :**
 1. ✅ Configuration production
 2. ✅ Formation utilisateur
 3. ✅ Monitoring continu
 4. ✅ Optimisations basées sur l'usage
 
-**🎉 Félicitations ! Votre veille IA automatisée est opérationnelle !** 
+* *🎉 Félicitations ! Votre veille IA automatisée est opérationnelle !**

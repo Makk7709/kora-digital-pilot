@@ -1,0 +1,60 @@
+# 🔗 Configuration LinkedIn API
+
+## Étapes de configuration
+
+### 1. Créer une application LinkedIn
+
+1. Allez sur [LinkedIn Developers](https://www.linkedin.com/developers/apps)
+2. Cliquez sur "Create app"
+3. Remplissez les informations de votre application
+4. Dans les "Auth" settings, ajoutez l'URL de redirection : `http://localhost:8088/auth/linkedin/callback` 
+### 2. Configurer les variables d'environnement
+
+Créez un fichier `.env` à la racine du projet avec :
+
+```env
+# LinkedIn API Configuration
+VITE_LINKEDIN_CLIENT_ID=your_linkedin_client_id_here
+VITE_LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret_here
+VITE_LINKEDIN_REDIRECT_URI=http://localhost:8088/auth/linkedin/callback
+
+# Autres configurations API (optionnel)
+VITE_OPENAI_API_KEY=your_openai_api_key_here
+VITE_ANTHROPIC_API_KEY=your_anthropic_api_key_here
+```
+
+### 3. Permissions LinkedIn requises
+
+Dans votre app LinkedIn, activez les permissions suivantes :
+- `openid` - Pour l'authentification de base
+- `profile` - Pour accéder au profil utilisateur
+- `w_member_social` - Pour publier du contenu (optionnel)
+
+### 4. Démarrer l'application
+
+```bash
+# Démarrer le serveur proxy et l'application
+npm run dev:full
+
+# Ou séparément :
+npm run proxy # Terminal 1
+npm run dev # Terminal 2
+```
+
+## Mode démonstration
+
+Si LinkedIn n'est pas configuré, l'application fonctionne en mode démonstration avec des données simulées réalistes.
+
+## Résolution des problèmes
+
+### Erreur "LinkedIn non authentifié"
+- Vérifiez que vos variables d'environnement sont correctement configurées
+- Assurez-vous que l'URL de redirection correspond exactement
+- Vérifiez que le serveur proxy fonctionne sur le port 3001
+
+### Erreur CORS
+- Le serveur proxy (`server.cjs`) gère les problèmes CORS
+- Assurez-vous qu'il est démarré avec `npm run proxy` 
+### Token expiré
+- Les tokens LinkedIn expirent automatiquement
+- Reconnectez-vous via l'interface utilisateur

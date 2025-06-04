@@ -11,7 +11,7 @@ Le Dashboard Community Manager est votre centre de veille intelligente automatis
 3. **📈 Contenus Tendances** - Top 10 des sujets viraux du moment
 4. **👁️ Veille d'Entreprise** - Monitoring de votre réputation et secteur
 
----
+- --
 
 ## 🚀 **Démarrage Rapide**
 
@@ -25,8 +25,7 @@ npm run dev
 ```
 
 ### 2. **Accès au Dashboard**
-1. Ouvrez l'application : `http://localhost:3000`
-2. Cliquez sur **🧠 CM Dashboard** dans le menu
+1. Ouvrez l'application : `http://localhost:3000` 2. Cliquez sur **🧠 CM Dashboard** dans le menu
 3. Vérifiez le statut "Connecté" en haut à droite
 
 ### 3. **Premier Scan**
@@ -34,20 +33,20 @@ npm run dev
 2. Attendez 30-60 secondes (scan des 4 axes)
 3. Explorez les insights générés
 
----
+- --
 
 ## 📊 **Fonctionnalités Détaillées**
 
 ### **🔥 Tendances IA**
 - **Objectif** : Identifier les innovations IA pertinentes pour votre secteur
 - **Fréquence** : Scan automatique 2x/jour (8h et 20h)
-- **Contenu** : 
-  - Nouvelles technologies émergentes
-  - Opportunités business pour agences
-  - Impact sur le marketing digital
-  - Prédictions sectorielles
+- **Contenu** :
+ - Nouvelles technologies émergentes
+ - Opportunités business pour agences
+ - Impact sur le marketing digital
+ - Prédictions sectorielles
 
-**Exemple d'insights :**
+* *Exemple d'insights :**
 - "L'IA générative transforme la création de contenu"
 - "Nouveaux modèles multimodaux pour le marketing"
 - "Automatisation des campagnes publicitaires"
@@ -56,12 +55,12 @@ npm run dev
 - **Objectif** : Optimiser vos publications pour maximiser l'engagement
 - **Focus** : Techniques actuelles qui fonctionnent
 - **Contenu** :
-  - Nouveaux formats de contenu
-  - Algorithmes des réseaux sociaux
-  - Techniques de storytelling
-  - Optimisations SEO social
+ - Nouveaux formats de contenu
+ - Algorithmes des réseaux sociaux
+ - Techniques de storytelling
+ - Optimisations SEO social
 
-**Exemple d'insights :**
+* *Exemple d'insights :**
 - "Les carrousels LinkedIn génèrent +40% d'engagement"
 - "Hashtags optimaux : 3-5 par post Instagram"
 - "Horaires de publication idéaux par plateforme"
@@ -70,12 +69,12 @@ npm run dev
 - **Objectif** : Surfer sur les sujets viraux du moment
 - **Mise à jour** : Temps réel
 - **Contenu** :
-  - Sujets trending dans l'IA/tech
-  - Hashtags populaires
-  - Angles d'approche viral
-  - Opportunités de contenu
+ - Sujets trending dans l'IA/tech
+ - Hashtags populaires
+ - Angles d'approche viral
+ - Opportunités de contenu
 
-**Exemple d'insights :**
+* *Exemple d'insights :**
 - "#AIRevolution - 2.3M mentions cette semaine"
 - "ChatGPT vs Claude : débat viral"
 - "IA et emploi : angle humain à exploiter"
@@ -83,17 +82,17 @@ npm run dev
 ### **👁️ Veille d'Entreprise**
 - **Objectif** : Monitorer votre réputation et celle de vos concurrents
 - **Surveillance** :
-  - Mentions de "Kora Digital"
-  - Tendances du secteur agences IA
-  - Analyses concurrentielles
-  - Opportunités de positionnement
+ - Mentions de "Kora Digital"
+ - Tendances du secteur agences IA
+ - Analyses concurrentielles
+ - Opportunités de positionnement
 
-**Exemple d'insights :**
+* *Exemple d'insights :**
 - "Agences IA : demande +150% en 2025"
 - "Mention positive dans TechCrunch"
 - "Concurrent X lance nouveau service"
 
----
+- --
 
 ## ⚙️ **Configuration Avancée**
 
@@ -113,10 +112,10 @@ Vous pouvez adapter les requêtes Perplexity pour votre secteur :
 ```typescript
 // Exemple : Focus sur un secteur spécifique
 const scanAITrends = async (): Promise<TrendInsight[]> => {
-  const response = await perplexity.getBusinessInsights({
-    query: `Tendances IA spécifiques au secteur [VOTRE_SECTEUR] en ${new Date().getFullYear()}...`,
-    // ... autres paramètres
-  });
+ const response = await perplexity.getBusinessInsights({
+ query: `Tendances IA spécifiques au secteur [VOTRE_SECTEUR] en ${new Date().getFullYear()}...`,
+ // ... autres paramètres
+ });
 };
 ```
 
@@ -125,7 +124,7 @@ const scanAITrends = async (): Promise<TrendInsight[]> => {
 - **Niveaux d'impact** : High/Medium/Low automatiques
 - **Notifications** : Toast en temps réel
 
----
+- --
 
 ## 📈 **Utilisation Optimale**
 
@@ -151,7 +150,7 @@ const scanAITrends = async (): Promise<TrendInsight[]> => {
 - **Engagement** : Performance des posts inspirés par la veille
 - **Réactivité** : Temps entre trend et publication
 
----
+- --
 
 ## 🔧 **Dépannage**
 
@@ -179,7 +178,7 @@ cat .env.local | grep PERPLEXITY
 - **Requêtes parallèles** : 4 axes simultanés
 - **Gestion d'erreurs** : Fallback gracieux
 
----
+- --
 
 ## 🎯 **Cas d'Usage Concrets**
 
@@ -201,7 +200,7 @@ cat .env.local | grep PERPLEXITY
 3. **Planning intégré** → Programmer la diffusion
 4. **Suivi performance** → Mesurer l'impact
 
----
+- --
 
 ## 🚀 **Roadmap Future**
 
@@ -223,31 +222,27 @@ cat .env.local | grep PERPLEXITY
 - [ ] **Intégration CRM** - Sync avec vos outils
 - [ ] **Analytics avancés** - ROI de la veille
 
----
+- --
 
 ## 📞 **Support**
 
 ### **Documentation**
-- **Guide technique** : `PERPLEXITY_INTEGRATION.md`
-- **API Reference** : `src/lib/perplexity-service.ts`
-- **Composants** : `src/components/CommunityManagerDashboard.tsx`
-
-### **Communauté**
+- **Guide technique** : `PERPLEXITY_INTEGRATION.md` - **API Reference** : `src/lib/perplexity-service.ts` - **Composants** : `src/components/CommunityManagerDashboard.tsx` ### **Communauté**
 - **Issues GitHub** : Signaler les bugs
 - **Discussions** : Partager vos cas d'usage
 - **Contributions** : Améliorer les prompts
 
----
+- --
 
 ## 🎉 **Conclusion**
 
 Le Dashboard Community Manager transforme votre approche de la veille en automatisant l'intelligence économique. Avec ses 4 axes stratégiques et son scan automatique 2x/jour, vous restez toujours en avance sur les tendances IA et optimisez votre contenu en temps réel.
 
-**🚀 Prêt à révolutionner votre stratégie de contenu ?**
+* *🚀 Prêt à révolutionner votre stratégie de contenu ?**
 
 1. Configurez votre clé Perplexity
 2. Lancez votre premier scan
 3. Explorez les insights générés
 4. Intégrez dans votre planning éditorial
 
-**L'IA au service de votre créativité !** 🧠✨ 
+* *L'IA au service de votre créativité !** 🧠✨

@@ -9,13 +9,13 @@
 - **APIs intégrées** : LinkedIn (problématique), Perplexity (OK)
 
 ### 🎯 OBJECTIF PHASE 2
-**Finaliser l'architecture modulaire pour audit du 25 juin**
+* *Finaliser l'architecture modulaire pour audit du 25 juin**
 - Services consolidés et modulaires
 - Composants feature-based
 - Tests unifiés > 90% coverage
 - Zéro code smell, sécurité grade A
 
----
+- --
 
 ## 🚨 SERVICES MONOLITHIQUES À DÉCOUPER (URGENCE 1)
 
@@ -24,7 +24,7 @@
 Taille : 84,427 bytes (2291+ lignes estimées)
 Action : Découper en 3 modules spécialisés
 ├── BrandAnalysisCore.ts
-├── DataAggregationService.ts  
+├── DataAggregationService.ts
 └── ReportGenerationService.ts
 ```
 
@@ -50,7 +50,7 @@ Taille : 12,952 bytes (acceptable, à optimiser)
 Action : Refactoring léger uniquement
 ```
 
----
+- --
 
 ## 🎨 COMPOSANTS GÉANTS À REFACTORER (URGENCE 2)
 
@@ -75,11 +75,11 @@ Action : Feature-based components
 
 ### 4. Autres à optimiser (> 20KB)
 - ImageGenerator.tsx : 25KB
-- sidebar.tsx : 23KB  
+- sidebar.tsx : 23KB
 - PerplexityInsights.tsx : 22KB
 - CommunityManagerDashboard.tsx : 22KB
 
----
+- --
 
 ## 🧹 DEBUG À NETTOYER (URGENCE 2)
 
@@ -94,15 +94,15 @@ Fichiers concernés :
 Action : Supprimer tous les console.log debug
 ```
 
----
+- --
 
 ## 🧪 TESTS À UNIFIER (URGENCE 3)
 
 ### Structure Actuelle Problématique
 ```bash
 src/
-├── test/     # 16 fichiers tests (hooks/, services/)
-└── tests/    # 1 fichier test (RealBrandIntelligenceService.test.ts)
+├── test/ # 16 fichiers tests (hooks/, services/)
+└── tests/ # 1 fichier test (RealBrandIntelligenceService.test.ts)
 
 Total tests : 19 fichiers
 Coverage : 0% (tests non fonctionnels)
@@ -120,7 +120,7 @@ src/__tests__/
 # Configuration vitest à valider
 ```
 
----
+- --
 
 ## 🔧 CONFIGURATION TECHNIQUE
 
@@ -139,7 +139,7 @@ src/__tests__/
 - Vite dev server : 8090 (8088-8089 occupés)
 - Hot reload : Opérationnel
 
----
+- --
 
 ## ⚠️ CONTRAINTES CRITIQUES
 
@@ -155,7 +155,7 @@ src/__tests__/
 - Configuration TypeScript
 - TailwindCSS theming
 
----
+- --
 
 ## 📊 MÉTRIQUES BASELINE
 
@@ -171,7 +171,7 @@ src/__tests__/
 - **Code duplication** : ~20% estimé
 - **Test coverage** : 0% (à reconstruire)
 
----
+- --
 
 ## 🎯 ACTIONS PHASE 2 - ORDRE D'EXÉCUTION
 
@@ -203,7 +203,7 @@ mkdir -p src/components/features/{brand-monitoring,analytics,export}
 # Target coverage > 90%
 ```
 
----
+- --
 
 ## 📁 DOCUMENTS DE RÉFÉRENCE CRÉÉS
 
@@ -215,7 +215,7 @@ mkdir -p src/components/features/{brand-monitoring,analytics,export}
 ### Prêts pour Nouveau Chat
 Ces 3 fichiers contiennent tout le contexte nécessaire pour reprendre efficacement le refactoring.
 
----
+- --
 
 ## 🚀 PRÊT POUR DÉMARRAGE PHASE 2
 
@@ -233,11 +233,11 @@ Ces 3 fichiers contiennent tout le contexte nécessaire pour reprendre efficacem
 
 ### Durée Estimée Phase 2
 - **Services** : 2-3 heures
-- **Composants** : 3-4 heures  
+- **Composants** : 3-4 heures
 - **Tests** : 2-3 heures
 - **Total** : 8-10 heures sur 3 jours
 
----
+- --
 
 ## 🎯 LIVRABLE FINAL ATTENDU
 
@@ -249,4 +249,4 @@ Ces 3 fichiers contiennent tout le contexte nécessaire pour reprendre efficacem
 - Bundle optimisé < 1.5MB
 - Sécurité grade A
 
-**🚀 PHASE 1 TERMINÉE - PRÊT POUR PHASE 2 CONSOLIDATION** 
+* *🚀 PHASE 1 TERMINÉE - PRÊT POUR PHASE 2 CONSOLIDATION**

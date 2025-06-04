@@ -4,7 +4,7 @@
 
 Les **Actions IA Rapides** dans l'onglet Planning Éditorial sont maintenant **100% fonctionnelles** et prêtes à l'emploi !
 
----
+- --
 
 ## 🎯 **Fonctionnalités Disponibles**
 
@@ -28,7 +28,7 @@ Les **Actions IA Rapides** dans l'onglet Planning Éditorial sont maintenant **1
 - **Utilisation** : Cliquez sur "Plan Hebdomadaire"
 - **Résultat** : 5-7 posts variés ajoutés au planning
 
----
+- --
 
 ## 🔧 **Modes de Fonctionnement**
 
@@ -38,9 +38,9 @@ Les **Actions IA Rapides** dans l'onglet Planning Éditorial sont maintenant **1
 - ✅ **Contenu** : Généré par l'IA Kora avec des données réalistes
 - ✅ **Performance** : Réponse rapide (1-2 secondes)
 
-**Indicateurs visuels :**
+* *Indicateurs visuels :**
 - 🟢 Point vert + "Mode Simulation"
-- 🏷️ Badge "Démo" 
+- 🏷️ Badge "Démo"
 - 🏷️ Badge "Actif" sur les Actions IA
 
 ### **Mode Perplexity (Optionnel)** 🌐
@@ -48,7 +48,7 @@ Les **Actions IA Rapides** dans l'onglet Planning Éditorial sont maintenant **1
 - 🔄 **Avantages** : Données temps réel, sources vérifiées
 - 🔄 **Prérequis** : Clé API Perplexity
 
----
+- --
 
 ## 🚀 **Comment Utiliser les Actions IA**
 
@@ -69,7 +69,7 @@ Les **Actions IA Rapides** dans l'onglet Planning Éditorial sont maintenant **1
 3. **Ajustez** l'horaire de publication
 4. **Sauvegardez** vos modifications
 
----
+- --
 
 ## 📊 **Exemples de Contenu Généré**
 
@@ -89,7 +89,7 @@ Les **Actions IA Rapides** dans l'onglet Planning Éditorial sont maintenant **1
 
 💡 **Conseil Kora** : Intégrez ces technologies dès maintenant !
 
-#IA #Innovation #Marketing #Tendances2025
+# IA #Innovation #Marketing #Tendances2025
 ```
 
 ### **Veille Concurrence - Marketing Digital**
@@ -104,10 +104,10 @@ Les **Actions IA Rapides** dans l'onglet Planning Éditorial sont maintenant **1
 - Parcours clients auto-optimisés
 - Lead scoring prédictif
 
-#MarketingDigital #Stratégie #Innovation
+# MarketingDigital #Stratégie #Innovation
 ```
 
----
+- --
 
 ## ⚙️ **Configuration Avancée (Optionnelle)**
 
@@ -116,28 +116,28 @@ Les **Actions IA Rapides** dans l'onglet Planning Éditorial sont maintenant **1
 Si vous souhaitez utiliser de vraies données temps réel :
 
 1. **Obtenez une clé API Perplexity** :
-   - Rendez-vous sur [perplexity.ai](https://perplexity.ai)
-   - Créez un compte développeur
-   - Générez votre clé API
+ - Rendez-vous sur [perplexity.ai](https://perplexity.ai)
+ - Créez un compte développeur
+ - Générez votre clé API
 
 2. **Configurez l'environnement** :
-   ```bash
-   # Créez un fichier .env à la racine du projet
-   VITE_PERPLEXITY_API_KEY=votre_vraie_cle_api_ici
-   VITE_PERPLEXITY_MODEL=sonar-pro
-   VITE_PERPLEXITY_MAX_TOKENS=4000
-   ```
+ ```bash
+ # Créez un fichier .env à la racine du projet
+ VITE_PERPLEXITY_API_KEY=votre_vraie_cle_api_ici
+ VITE_PERPLEXITY_MODEL=sonar-pro
+ VITE_PERPLEXITY_MAX_TOKENS=4000
+ ```
 
 3. **Redémarrez l'application** :
-   ```bash
-   npm run dev
-   ```
+ ```bash
+ npm run dev
+ ```
 
 4. **Vérifiez le statut** :
-   - Le statut passera de "Mode Simulation" à "Perplexity Connecté"
-   - Le badge "Démo" disparaîtra
+ - Le statut passera de "Mode Simulation" à "Perplexity Connecté"
+ - Le badge "Démo" disparaîtra
 
----
+- --
 
 ## 🎨 **Interface Utilisateur**
 
@@ -153,7 +153,7 @@ Si vous souhaitez utiliser de vraies données temps réel :
 - **Messages de statut** : Mode de fonctionnement
 - **Indicateurs de progression** : Génération en cours
 
----
+- --
 
 ## 🔍 **Dépannage**
 
@@ -173,7 +173,7 @@ Si vous souhaitez utiliser de vraies données temps réel :
 2. ✅ Vérifiez les notifications toast
 3. ✅ Consultez l'onglet Planning pour voir les nouveaux posts
 
----
+- --
 
 ## 📈 **Avantages des Actions IA Rapides**
 
@@ -192,20 +192,20 @@ Si vous souhaitez utiliser de vraies données temps réel :
 - **Multi-plateforme** : LinkedIn, Instagram, Twitter
 - **Adaptatif** : S'ajuste à votre audience
 
----
+- --
 
 ## 🎉 **Conclusion**
 
 Les **Actions IA Rapides** transforment votre processus de création de contenu :
 
-✅ **Immédiatement utilisables** en mode simulation  
-✅ **Contenu de qualité professionnelle**  
-✅ **Interface intuitive et responsive**  
-✅ **Évolutives** vers le mode Perplexity réel  
+✅ **Immédiatement utilisables** en mode simulation
+✅ **Contenu de qualité professionnelle**
+✅ **Interface intuitive et responsive**
+✅ **Évolutives** vers le mode Perplexity réel
 
-**🚀 Commencez dès maintenant à créer du contenu intelligent avec Kora Digital !**
+* *🚀 Commencez dès maintenant à créer du contenu intelligent avec Kora Digital !**
 
----
+- --
 
-*Dernière mise à jour : Janvier 2025*  
-*Version : 2.0 - Actions IA Actives* 
+* Dernière mise à jour : Janvier 2025*
+* Version : 2.0 - Actions IA Actives*

@@ -47,13 +47,13 @@ npm run dev
 ```
 src/
 ├── services/
-│   ├── RealBrandIntelligenceServiceComplete.ts  # Service principal ⭐
-│   ├── EnhancedBrandIntelligenceService.ts     # Interfaces TypeScript
-│   └── RealBrandIntelligenceServiceFixed.ts    # Version legacy
+│ ├── RealBrandIntelligenceServiceComplete.ts # Service principal ⭐
+│ ├── EnhancedBrandIntelligenceService.ts # Interfaces TypeScript
+│ └── RealBrandIntelligenceServiceFixed.ts # Version legacy
 ├── lib/
-│   └── perplexity-service.ts                   # Client API Perplexity
+│ └── perplexity-service.ts # Client API Perplexity
 └── tests/
-    └── RealBrandIntelligenceService.test.ts    # Tests complets
+ └── RealBrandIntelligenceService.test.ts # Tests complets
 ```
 
 ### Composants Clés
@@ -110,22 +110,22 @@ npm run test:coverage
 ### Écriture de Nouveaux Tests
 ```typescript
 describe('Nouvelle Fonctionnalité', () => {
-  beforeEach(() => {
-    // Configuration test
-    vi.stubEnv('VITE_PERPLEXITY_API_KEY', 'test-key');
-  });
+ beforeEach(() => {
+ // Configuration test
+ vi.stubEnv('VITE_PERPLEXITY_API_KEY', 'test-key');
+ });
 
-  it('doit fonctionner correctement', async () => {
-    // Arrange
-    const service = new RealBrandIntelligenceService();
-    
-    // Act
-    const result = await service.newMethod('test');
-    
-    // Assert
-    expect(result).toBeDefined();
-    expect(result.property).toBe(expectedValue);
-  });
+ it('doit fonctionner correctement', async () => {
+ // Arrange
+ const service = new RealBrandIntelligenceService();
+
+ // Act
+ const result = await service.newMethod('test');
+
+ // Assert
+ expect(result).toBeDefined();
+ expect(result.property).toBe(expectedValue);
+ });
 });
 ```
 
@@ -133,28 +133,27 @@ describe('Nouvelle Fonctionnalité', () => {
 
 ### TypeScript
 - **Mode Strict** : Activé obligatoire
-- **Types Explicites** : Éviter `any`
-- **Interfaces** : Pour tous les objets complexes
+- **Types Explicites** : Éviter `any` - **Interfaces** : Pour tous les objets complexes
 - **Null Safety** : Vérifications obligatoires
 
 ### Conventions de Nommage
 ```typescript
 // ✅ Bon
 interface UserAnalysis {
-  confidenceScore: number;
-  extractionTimestamp: Date;
+ confidenceScore: number;
+ extractionTimestamp: Date;
 }
 
 class RealBrandService {
-  async analyzeCompanyData(brandName: string): Promise<AnalysisResult> {
-    // Implementation
-  }
+ async analyzeCompanyData(brandName: string): Promise<AnalysisResult> {
+ // Implementation
+ }
 }
 
 // ❌ Éviter
 interface data {
-  score: any;
-  time: any;
+ score: any;
+ time: any;
 }
 ```
 
@@ -162,11 +161,11 @@ interface data {
 ```typescript
 // ✅ Bon
 try {
-  const result = await this.perplexityService.getBusinessInsights(query);
-  return this.parseResult(result);
+ const result = await this.perplexityService.getBusinessInsights(query);
+ return this.parseResult(result);
 } catch (error) {
-  console.error(`Erreur analyse ${brandName}:`, error);
-  throw new Error(`Échec analyse: ${error.message}`);
+ console.error(`Erreur analyse ${brandName}:`, error);
+ throw new Error(`Échec analyse: ${error.message}`);
 }
 
 // ❌ Éviter
@@ -178,20 +177,20 @@ return result; // Pas de gestion d'erreur
 ```typescript
 /**
  * 🎯 Génère un rapport complet d'intelligence de marque
- * 
+ *
  * @param brandName - Nom de la marque à analyser
  * @returns Rapport détaillé avec analyses multi-dimensionnelles
  * @throws Error si l'API Perplexity échoue ou données insuffisantes
- * 
+ *
  * @example
  * ```typescript
  * const service = new RealBrandIntelligenceService();
  * const report = await service.generateRealDeepResearchReport('Apple Inc.');
  * console.log(`Score: ${report.confidenceScore}/100`);
  * ```
- */
+ * /
 async generateRealDeepResearchReport(brandName: string): Promise<DeepResearchReport> {
-  // Implementation
+ // Implementation
 }
 ```
 
@@ -418,8 +417,8 @@ Les contributeurs sont listés dans le README principal et recevront :
 - **Discussions** : Pour questions générales
 - **Email** : Pour questions sensibles/privées
 
----
+- --
 
-**Merci pour votre contribution au Real Brand Intelligence Service ! 🚀**
+* *Merci pour votre contribution au Real Brand Intelligence Service ! 🚀**
 
-*Ensemble, nous créons le meilleur service d'intelligence de marque.* 
+* Ensemble, nous créons le meilleur service d'intelligence de marque.*

@@ -2,9 +2,7 @@
 
 ## ⚡ TEST EN 30 SECONDES
 
-1. **Arrêter Vite** (si en cours) : `Ctrl+C`
-2. **Redémarrer** : `npm run dev`
-3. **Observer la console** : Sera propre après 3 erreurs
+1. **Arrêter Vite** (si en cours) : `Ctrl+C` 2. **Redémarrer** : `npm run dev` 3. **Observer la console** : Sera propre après 3 erreurs
 
 ## ✅ RÉSULTAT ATTENDU
 
@@ -28,9 +26,7 @@
 ## 🛡️ DOUBLE PROTECTION ACTIVE
 
 1. **Proxy Vite** : Bloque au niveau réseau
-2. **Global Blocker** : Intercepte tous les `fetch()` vers `/api/`
-
-## 🔍 MONITORING (Optionnel)
+2. **Global Blocker** : Intercepte tous les `fetch()` vers `/api/` ## 🔍 MONITORING (Optionnel)
 
 Ajoutez dans votre interface :
 ```tsx
@@ -50,8 +46,8 @@ globalApiBlocker.getStats()
 globalApiBlocker.reset()
 
 # Terminal - Démarrer avec backend
-npm run proxy  # Terminal 1
-npm run dev     # Terminal 2
+npm run proxy # Terminal 1
+npm run dev # Terminal 2
 ```
 
 ## ✅ VALIDATION
@@ -59,4 +55,4 @@ npm run dev     # Terminal 2
 - ❌ **Avant** : 20+ erreurs par minute
 - ✅ **Après** : Maximum 3 erreurs puis silence total
 
-**L'app fonctionne normalement sans spam ! 🎉** 
+* *L'app fonctionne normalement sans spam ! 🎉**

@@ -18,11 +18,7 @@ npm run dev:full
 ## 📋 **Ordre de Priorité Vite**
 Vite charge les fichiers d'environnement dans cet ordre :
 1. `.env` ← **Celui que nous avons créé**
-2. `.env.local`
-3. `.env.[mode]`
-4. `.env.[mode].local`
-
-## ✅ **Vérification**
+2. `.env.local` 3. `.env.[mode]` 4. `.env.[mode].local` ## ✅ **Vérification**
 Pour vérifier que les variables sont chargées, ouvrez la console du navigateur (F12) et cherchez :
 ```
 🔍 Debug Variables d'environnement:
@@ -41,4 +37,4 @@ VITE_LINKEDIN_CLIENT_SECRET présent: true
 2. Vous devriez voir le bouton de connexion LinkedIn (pas le mode démo)
 3. Cliquez pour tester l'authentification
 
-L'application fonctionne maintenant avec vos vraies credentials LinkedIn ! 🚀 
+L'application fonctionne maintenant avec vos vraies credentials LinkedIn ! 🚀

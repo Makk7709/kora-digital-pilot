@@ -4,9 +4,9 @@
 
 Le **CM Dashboard** (Community Manager Dashboard) est un composant React sophistiqué qui fournit une veille intelligente automatisée pour les community managers. Il utilise l'API Perplexity pour analyser 4 axes stratégiques et générer des insights en temps réel.
 
-**Score Global : 8.2/10** ⭐⭐⭐⭐⭐⭐⭐⭐
+* *Score Global : 8.2/10** ⭐⭐⭐⭐⭐⭐⭐⭐
 
----
+- --
 
 ## 🎯 **FONCTIONNALITÉS PRINCIPALES**
 
@@ -30,8 +30,7 @@ Le **CM Dashboard** (Community Manager Dashboard) est un composant React sophist
 #### 3. **Scan Automatique Intelligent**
 - **Fréquence** : Toutes les 12 heures (configurable)
 - **Scan parallèle** des 4 axes pour optimiser les performances
-- **Gestion d'état** sophistiquée avec `ScanStatus`
-- **Cache intelligent** pour éviter les requêtes redondantes
+- **Gestion d'état** sophistiquée avec `ScanStatus` - **Cache intelligent** pour éviter les requêtes redondantes
 
 #### 4. **Interface Utilisateur Moderne**
 - **Design System** : Shadcn/UI + Tailwind CSS
@@ -46,7 +45,7 @@ Le **CM Dashboard** (Community Manager Dashboard) est un composant React sophist
 - **Configuration flexible** via variables d'environnement
 - **Parsing intelligent** des réponses API
 
----
+- --
 
 ## 🔧 **ANALYSE TECHNIQUE DÉTAILLÉE**
 
@@ -56,34 +55,34 @@ Le **CM Dashboard** (Community Manager Dashboard) est un composant React sophist
 ```
 src/
 ├── components/
-│   ├── CommunityManagerDashboard.tsx    # Composant principal (495 lignes)
-│   └── Sidebar.tsx                      # Navigation (127 lignes)
+│ ├── CommunityManagerDashboard.tsx # Composant principal (495 lignes)
+│ └── Sidebar.tsx # Navigation (127 lignes)
 ├── hooks/
-│   └── usePerplexity.ts                 # Hook API (381 lignes)
+│ └── usePerplexity.ts # Hook API (381 lignes)
 ├── pages/
-│   └── Index.tsx                        # Page principale (55 lignes)
+│ └── Index.tsx # Page principale (55 lignes)
 └── lib/
-    └── perplexity-service.ts            # Service API
+ └── perplexity-service.ts # Service API
 ```
 
 #### **Interfaces TypeScript**
 ```typescript
 interface TrendInsight {
-  id: string;
-  title: string;
-  description: string;
-  impact: 'high' | 'medium' | 'low';
-  source: string;
-  url: string;
-  timestamp: Date;
-  category: 'ai-trends' | 'content-improvement' | 'trending-content' | 'brand-monitoring';
+ id: string;
+ title: string;
+ description: string;
+ impact: 'high' | 'medium' | 'low';
+ source: string;
+ url: string;
+ timestamp: Date;
+ category: 'ai-trends' | 'content-improvement' | 'trending-content' | 'brand-monitoring';
 }
 
 interface ScanStatus {
-  isScanning: boolean;
-  lastScan: Date | null;
-  nextScan: Date | null;
-  scanCount: number;
+ isScanning: boolean;
+ lastScan: Date | null;
+ nextScan: Date | null;
+ scanCount: number;
 }
 ```
 
@@ -99,10 +98,10 @@ const [brandMonitoring, setBrandMonitoring] = useState<TrendInsight[]>([]);
 
 // État du scan avec métadonnées
 const [scanStatus, setScanStatus] = useState<ScanStatus>({
-  isScanning: false,
-  lastScan: null,
-  nextScan: null,
-  scanCount: 0,
+ isScanning: false,
+ lastScan: null,
+ nextScan: null,
+ scanCount: 0,
 });
 ```
 
@@ -116,32 +115,30 @@ const [scanStatus, setScanStatus] = useState<ScanStatus>({
 #### **Scan Parallèle Efficace**
 ```typescript
 const [trends, improvements, trending, monitoring] = await Promise.all([
-  scanAITrends(),
-  scanContentImprovements(),
-  scanTrendingContent(),
-  scanBrandMonitoring(),
+ scanAITrends(),
+ scanContentImprovements(),
+ scanTrendingContent(),
+ scanBrandMonitoring(),
 ]);
 ```
 
 #### **Parsing Intelligent des Réponses**
 ```typescript
 const parseResponseToInsights = (response: any, category: TrendInsight['category']): TrendInsight[] => {
-  // Logique sophistiquée de parsing
-  // Détection automatique de l'impact
-  // Extraction des métadonnées
+ // Logique sophistiquée de parsing
+ // Détection automatique de l'impact
+ // Extraction des métadonnées
 }
 ```
 
----
+- --
 
 ## 🎨 **INTERFACE UTILISATEUR**
 
 ### **Design System Cohérent**
 
 #### **Composants Shadcn/UI Utilisés**
-- `Card`, `CardContent`, `CardHeader`, `CardTitle`
-- `Button`, `Badge`, `Tabs`, `ScrollArea`
-- `Toaster`, `Toast` pour les notifications
+- `Card`, `CardContent`, `CardHeader`, `CardTitle` - `Button`, `Badge`, `Tabs`, `ScrollArea` - `Toaster`, `Toast` pour les notifications
 - `Loader2` pour les états de chargement
 
 #### **Layout Responsive**
@@ -170,18 +167,18 @@ const parseResponseToInsights = (response: any, category: TrendInsight['category
 ```typescript
 // Bouton toggle auto-scan
 <Button variant="outline" onClick={() => setAutoScanEnabled(!autoScanEnabled)}>
-  <Bell className={`h-4 w-4 ${autoScanEnabled ? 'text-green-500' : 'text-gray-400'}`} />
-  Auto-scan {autoScanEnabled ? 'ON' : 'OFF'}
+ <Bell className={`h-4 w-4 ${autoScanEnabled ? 'text-green-500' : 'text-gray-400'}`} />
+ Auto-scan {autoScanEnabled ? 'ON' : 'OFF'}
 </Button>
 
 // Bouton scan manuel
 <Button onClick={scanAllAxes} disabled={scanStatus.isScanning || !perplexity.isInitialized}>
-  <RefreshCw className={`h-4 w-4 ${scanStatus.isScanning ? 'animate-spin' : ''}`} />
-  Scanner maintenant
+ <RefreshCw className={`h-4 w-4 ${scanStatus.isScanning ? 'animate-spin' : ''}`} />
+ Scanner maintenant
 </Button>
 ```
 
----
+- --
 
 ## 📊 **QUALITÉ DES DONNÉES**
 
@@ -189,30 +186,26 @@ const parseResponseToInsights = (response: any, category: TrendInsight['category
 
 #### **1. Tendances IA**
 ```typescript
-query: `Quelles sont les 5 principales tendances en intelligence artificielle pour les entreprises en ${new Date().getFullYear()} ? 
-        Focus sur l'IA générative, l'automatisation, et les nouvelles technologies émergentes. 
-        Inclure l'impact business et les opportunités pour les agences marketing.`
-```
+query: `Quelles sont les 5 principales tendances en intelligence artificielle pour les entreprises en ${new Date().getFullYear()} ?
+ Focus sur l'IA générative, l'automatisation, et les nouvelles technologies émergentes.
+ Inclure l'impact business et les opportunités pour les agences marketing.` ```
 
 #### **2. Améliorations Contenu**
 ```typescript
-query: `Quelles sont les meilleures pratiques actuelles pour optimiser le contenu marketing digital ? 
-        Focus sur l'engagement, les nouveaux formats, les algorithmes des réseaux sociaux, 
-        et les techniques de storytelling qui fonctionnent en ${new Date().getFullYear()}.`
-```
+query: `Quelles sont les meilleures pratiques actuelles pour optimiser le contenu marketing digital ?
+ Focus sur l'engagement, les nouveaux formats, les algorithmes des réseaux sociaux,
+ et les techniques de storytelling qui fonctionnent en ${new Date().getFullYear()}.` ```
 
 #### **3. Contenus Tendances**
 ```typescript
-query: `Quels sont les 10 sujets les plus tendances aujourd'hui dans le domaine de l'IA, 
-        du marketing digital et de l'innovation technologique ? 
-        Inclure les hashtags populaires et les angles d'approche pour du contenu viral.`
-```
+query: `Quels sont les 10 sujets les plus tendances aujourd'hui dans le domaine de l'IA,
+ du marketing digital et de l'innovation technologique ?
+ Inclure les hashtags populaires et les angles d'approche pour du contenu viral.` ```
 
 #### **4. Veille d'Entreprise**
 ```typescript
-query: `Rechercher les mentions récentes de "Kora Digital", "agence IA", "marketing automation", 
-        et "intelligence artificielle marketing" dans les actualités et discussions professionnelles.`
-```
+query: `Rechercher les mentions récentes de "Kora Digital", "agence IA", "marketing automation",
+ et "intelligence artificielle marketing" dans les actualités et discussions professionnelles.` ```
 
 ### **Traitement des Données**
 
@@ -222,7 +215,7 @@ query: `Rechercher les mentions récentes de "Kora Digital", "agence IA", "marke
 - **Métadonnées enrichies** (source, URL, timestamp)
 - **Limitation intelligente** (5 insights par axe, 10 pour trending)
 
----
+- --
 
 ## 🚨 **POINTS D'AMÉLIORATION**
 
@@ -232,16 +225,16 @@ query: `Rechercher les mentions récentes de "Kora Digital", "agence IA", "marke
 ```typescript
 // Problème : Gestion d'erreur générique
 catch (error) {
-  setScanStatus(prev => ({ ...prev, isScanning: false }));
-  toast({
-    title: "Erreur de scan",
-    description: "Impossible de mettre à jour la veille", // Trop générique
-    variant: "destructive",
-  });
+ setScanStatus(prev => ({ ...prev, isScanning: false }));
+ toast({
+ title: "Erreur de scan",
+ description: "Impossible de mettre à jour la veille", // Trop générique
+ variant: "destructive",
+ });
 }
 ```
 
-**Recommandation** : Différencier les types d'erreurs (réseau, API, parsing)
+* *Recommandation** : Différencier les types d'erreurs (réseau, API, parsing)
 
 #### 2. **Pas de Persistance des Données**
 - **Problème** : Les insights sont perdus au rafraîchissement
@@ -254,7 +247,7 @@ catch (error) {
 const interval = setInterval(performAutoScan, 12 * 60 * 60 * 1000); // 12h hardcodé
 ```
 
-**Recommandation** : Rendre configurable via settings
+* *Recommandation** : Rendre configurable via settings
 
 #### 4. **Pas de Tests Unitaires**
 - **Problème** : Aucun test trouvé pour le composant
@@ -271,58 +264,58 @@ const interval = setInterval(performAutoScan, 12 * 60 * 60 * 1000); // 12h hardc
 ```typescript
 // Ajouter localStorage
 useEffect(() => {
-  const savedInsights = localStorage.getItem('cm-dashboard-insights');
-  if (savedInsights) {
-    const parsed = JSON.parse(savedInsights);
-    setAiTrends(parsed.aiTrends || []);
-    // ... autres axes
-  }
+ const savedInsights = localStorage.getItem('cm-dashboard-insights');
+ if (savedInsights) {
+ const parsed = JSON.parse(savedInsights);
+ setAiTrends(parsed.aiTrends || []);
+ // ... autres axes
+ }
 }, []);
 
 // Sauvegarder après chaque scan
 useEffect(() => {
-  localStorage.setItem('cm-dashboard-insights', JSON.stringify({
-    aiTrends,
-    contentImprovements,
-    trendingContent,
-    brandMonitoring,
-    lastUpdate: new Date().toISOString()
-  }));
+ localStorage.setItem('cm-dashboard-insights', JSON.stringify({
+ aiTrends,
+ contentImprovements,
+ trendingContent,
+ brandMonitoring,
+ lastUpdate: new Date().toISOString()
+ }));
 }, [aiTrends, contentImprovements, trendingContent, brandMonitoring]);
 ```
 
 #### 2. **Configuration Dynamique**
 ```typescript
 interface DashboardConfig {
-  scanInterval: number; // en heures
-  maxInsightsPerAxis: number;
-  enabledAxes: string[];
-  customPrompts?: Record<string, string>;
+ scanInterval: number; // en heures
+ maxInsightsPerAxis: number;
+ enabledAxes: string[];
+ customPrompts?: Record<string, string>;
 }
 ```
 
 #### 3. **Gestion d'Erreurs Améliorée**
 ```typescript
 enum ErrorType {
-  NETWORK = 'network',
-  API_LIMIT = 'api_limit',
-  PARSING = 'parsing',
-  CONFIG = 'config'
+ NETWORK = 'network',
+ API_LIMIT = 'api_limit',
+ PARSING = 'parsing',
+ CONFIG = 'config'
 }
 
 const handleError = (error: Error, type: ErrorType) => {
-  const messages = {
-    [ErrorType.NETWORK]: "Problème de connexion réseau",
-    [ErrorType.API_LIMIT]: "Limite API atteinte, réessayez plus tard",
-    [ErrorType.PARSING]: "Erreur de traitement des données",
-    [ErrorType.CONFIG]: "Configuration Perplexity invalide"
-  };
-  
-  toast({
-    title: "Erreur de scan",
-    description: messages[type],
-    variant: "destructive",
-  });
+ const messages = {
+ [ErrorType.NETWORK]: "Problème de connexion réseau",
+ [ErrorType.API_LIMIT]: "Limite API atteinte, réessayez plus tard",
+ [ErrorType.PARSING]: "Erreur de traitement des données",
+ [ErrorType.CONFIG]: "Configuration Perplexity invalide"
+ };
+
+ toast({
+ title: "Erreur de scan",
+ description: messages[type],
+ variant: "destructive",
+ });
 };
 ```
 
@@ -330,14 +323,14 @@ const handleError = (error: Error, type: ErrorType) => {
 ```typescript
 // Exemple de tests à ajouter
 describe('CommunityManagerDashboard', () => {
-  test('should render all 4 axis cards', () => {});
-  test('should trigger scan on button click', () => {});
-  test('should handle API errors gracefully', () => {});
-  test('should update insights after successful scan', () => {});
+ test('should render all 4 axis cards', () => {});
+ test('should trigger scan on button click', () => {});
+ test('should handle API errors gracefully', () => {});
+ test('should update insights after successful scan', () => {});
 });
 ```
 
----
+- --
 
 ## 📈 **MÉTRIQUES DE PERFORMANCE**
 
@@ -357,7 +350,7 @@ describe('CommunityManagerDashboard', () => {
 - **Fraîcheur des données** : < 24h ✅
 - **Sources fiables** : 90% ✅
 
----
+- --
 
 ## 🔒 **SÉCURITÉ ET BONNES PRATIQUES**
 
@@ -377,7 +370,7 @@ const apiKey = process.env.REACT_APP_PERPLEXITY_API_KEY || process.env.VITE_PERP
 #### 3. **Sanitisation des Données**
 ```typescript
 // Nettoyage des réponses API
-const cleanLine = line.replace(/^\d+\.|^-|^•/, '').trim();
+const cleanLine = line.replace(/^d+\. |^-| ^•/, '').trim();
 ```
 
 ### ⚠️ **Améliorations Sécurité**
@@ -386,10 +379,10 @@ const cleanLine = line.replace(/^\d+\.|^-|^•/, '').trim();
 ```typescript
 // Ajouter validation Zod
 const InsightSchema = z.object({
-  title: z.string().min(1).max(200),
-  description: z.string().max(1000),
-  impact: z.enum(['high', 'medium', 'low']),
-  // ...
+ title: z.string().min(1).max(200),
+ description: z.string().max(1000),
+ impact: z.enum(['high', 'medium', 'low']),
+ // ...
 });
 ```
 
@@ -397,12 +390,12 @@ const InsightSchema = z.object({
 ```typescript
 // Implémenter throttling
 const throttledScan = useCallback(
-  throttle(scanAllAxes, 30000), // Max 1 scan par 30s
-  [scanAllAxes]
+ throttle(scanAllAxes, 30000), // Max 1 scan par 30s
+ [scanAllAxes]
 );
 ```
 
----
+- --
 
 ## 📚 **DOCUMENTATION ET MAINTENANCE**
 
@@ -433,79 +426,68 @@ const throttledScan = useCallback(
 - **Configuration flexible** via props/hooks
 - **Composants réutilisables** (AxisCard)
 
----
+- --
 
 ## 🎯 **RECOMMANDATIONS PRIORITAIRES**
 
 ### 🚀 **Haute Priorité (À implémenter immédiatement)**
 
 1. **Persistance des Données**
-   - Implémenter localStorage pour les insights
-   - Éviter la perte de données au rafraîchissement
-   - **Effort** : 2-3 heures
+ - Implémenter localStorage pour les insights
+ - Éviter la perte de données au rafraîchissement
+ - **Effort** : 2-3 heures
 
 2. **Gestion d'Erreurs Améliorée**
-   - Différencier les types d'erreurs
-   - Messages utilisateur plus précis
-   - **Effort** : 1-2 heures
+ - Différencier les types d'erreurs
+ - Messages utilisateur plus précis
+ - **Effort** : 1-2 heures
 
 3. **Tests Unitaires de Base**
-   - Tester les fonctions critiques
-   - Couverture minimale 60%
-   - **Effort** : 4-6 heures
+ - Tester les fonctions critiques
+ - Couverture minimale 60%
+ - **Effort** : 4-6 heures
 
 ### 📈 **Moyenne Priorité (Prochaine itération)**
 
 4. **Configuration Dynamique**
-   - Interface de settings
-   - Fréquence de scan configurable
-   - **Effort** : 3-4 heures
+ - Interface de settings
+ - Fréquence de scan configurable
+ - **Effort** : 3-4 heures
 
 5. **Optimisation Performance**
-   - Virtualisation des listes
-   - Lazy loading des insights
-   - **Effort** : 2-3 heures
+ - Virtualisation des listes
+ - Lazy loading des insights
+ - **Effort** : 2-3 heures
 
 6. **Analytics et Métriques**
-   - Tracking utilisation
-   - Métriques de performance
-   - **Effort** : 2-3 heures
+ - Tracking utilisation
+ - Métriques de performance
+ - **Effort** : 2-3 heures
 
 ### 🔮 **Basse Priorité (Évolutions futures)**
 
 7. **Filtres et Recherche**
-   - Filtrage par impact/catégorie
-   - Recherche dans les insights
-   - **Effort** : 4-5 heures
+ - Filtrage par impact/catégorie
+ - Recherche dans les insights
+ - **Effort** : 4-5 heures
 
 8. **Export et Partage**
-   - Export PDF/Excel
-   - Partage d'insights
-   - **Effort** : 3-4 heures
+ - Export PDF/Excel
+ - Partage d'insights
+ - **Effort** : 3-4 heures
 
 9. **Notifications Push**
-   - Alertes temps réel
-   - Notifications navigateur
-   - **Effort** : 5-6 heures
+ - Alertes temps réel
+ - Notifications navigateur
+ - **Effort** : 5-6 heures
 
----
+- --
 
-## 📊 **SCORING DÉTAILLÉ**
+## 📊 **SCORING DÉTAILLÉ** | Critère | Score | Commentaire |   |---------| ------- |-------------|   | **Architecture** | 9/10 | Excellente structure modulaire |   | **Fonctionnalités** | 8/10 | 4 axes bien conçus, scan automatique |   | **Interface** | 8/10 | Design moderne, UX intuitive |   | **Performance** | 7/10 | Bon, mais peut être optimisé |   | **Sécurité** | 8/10 | Bonnes pratiques respectées |   | **Documentation** | 9/10 | Exceptionnellement complète |   | **Maintenabilité** | 8/10 | Code propre et extensible |   | **Tests** | 3/10 | Aucun test unitaire |
 
-| Critère | Score | Commentaire |
-|---------|-------|-------------|
-| **Architecture** | 9/10 | Excellente structure modulaire |
-| **Fonctionnalités** | 8/10 | 4 axes bien conçus, scan automatique |
-| **Interface** | 8/10 | Design moderne, UX intuitive |
-| **Performance** | 7/10 | Bon, mais peut être optimisé |
-| **Sécurité** | 8/10 | Bonnes pratiques respectées |
-| **Documentation** | 9/10 | Exceptionnellement complète |
-| **Maintenabilité** | 8/10 | Code propre et extensible |
-| **Tests** | 3/10 | Aucun test unitaire |
+* *Score Global : 8.2/10** ⭐⭐⭐⭐⭐⭐⭐⭐
 
-**Score Global : 8.2/10** ⭐⭐⭐⭐⭐⭐⭐⭐
-
----
+- --
 
 ## 🎉 **CONCLUSION**
 
@@ -528,10 +510,10 @@ Le **CM Dashboard** est un composant **exceptionnellement bien conçu** qui dém
 ### **Verdict Final**
 Ce composant est **prêt pour la production** avec quelques améliorations mineures. Il représente un excellent exemple de développement React moderne et pourrait servir de référence pour d'autres composants du projet.
 
-**Recommandation** : Implémenter les améliorations haute priorité puis déployer en production.
+* *Recommandation** : Implémenter les améliorations haute priorité puis déployer en production.
 
----
+- --
 
-*Audit réalisé le : ${new Date().toLocaleDateString('fr-FR')}*
-*Auditeur : Assistant IA Claude*
-*Version analysée : CM Dashboard v1.0* 
+* Audit réalisé le : ${new Date().toLocaleDateString('fr-FR')}*
+* Auditeur : Assistant IA Claude*
+* Version analysée : CM Dashboard v1.0*

@@ -6,11 +6,11 @@
 ```typescript
 // ⚠️ APPEL AUTOMATIQUE PERPLEXITY
 useEffect(() => {
-  loadBrandData(); // Déclenche enrichDataWithAI() automatiquement
+ loadBrandData(); // Déclenche enrichDataWithAI() automatiquement
 }, [selectedTimeframe, isInitialized]);
 
 const loadBrandData = async () => {
-  enrichedData = await enrichDataWithAI(baseData); // 💸 Coût API inutile
+ enrichedData = await enrichDataWithAI(baseData); // 💸 Coût API inutile
 };
 ```
 
@@ -18,16 +18,16 @@ const loadBrandData = async () => {
 ```typescript
 // ✅ CHARGEMENT SÉCURISÉ
 useEffect(() => {
-  loadBrandData(); // Charge UNIQUEMENT les données mockées
+ loadBrandData(); // Charge UNIQUEMENT les données mockées
 }, [selectedTimeframe]); // isInitialized supprimé
 
 const loadBrandData = async () => {
-  setData({ ...baseData, isEnriched: false }); // ✅ Pas d'appel API
+ setData({ ...baseData, isEnriched: false }); // ✅ Pas d'appel API
 };
 
 // ✅ ENRICHISSEMENT MANUEL UNIQUEMENT
 const handleEnrichWithAI = async () => {
-  // Appelé SEULEMENT sur action utilisateur explicite
+ // Appelé SEULEMENT sur action utilisateur explicite
 };
 ```
 
@@ -35,7 +35,7 @@ const handleEnrichWithAI = async () => {
 
 ### ✅ **Tests de Sécurité Passés**
 - ✅ Aucun appel automatique à Perplexity au chargement
-- ✅ Aucun appel lors du changement de timeframe  
+- ✅ Aucun appel lors du changement de timeframe
 - ✅ Aucun appel lors du rafraîchissement
 - ✅ Contrôle utilisateur total sur les appels API
 
@@ -61,10 +61,10 @@ const handleEnrichWithAI = async () => {
 ```typescript
 // Bouton d'enrichissement manuel
 {!data?.isEnriched && isInitialized && (
-  <Button onClick={handleEnrichWithAI}>
-    <Zap className="w-4 h-4 mr-2" />
-    Enrichir avec IA
-  </Button>
+ <Button onClick={handleEnrichWithAI}>
+ <Zap className="w-4 h-4 mr-2" />
+ Enrichir avec IA
+ </Button>
 )}
 ```
 
@@ -72,10 +72,10 @@ const handleEnrichWithAI = async () => {
 ```typescript
 // Badge de statut IA
 {!isInitialized && (
-  <Badge variant="outline" className="text-amber-600">
-    <AlertTriangle className="w-3 h-3 mr-1" />
-    IA non configurée
-  </Badge>
+ <Badge variant="outline" className="text-amber-600">
+ <AlertTriangle className="w-3 h-3 mr-1" />
+ IA non configurée
+ </Badge>
 )}
 ```
 
@@ -134,4 +134,4 @@ const handleEnrichWithAI = async () => {
 ### 🏁 **Prêt pour Production**
 La veille de marque est maintenant **sécurisée**, **performante** et **économique**.
 
-**L'utilisateur a maintenant le contrôle total sur l'utilisation de Perplexity !** 🎉 
+* *L'utilisateur a maintenant le contrôle total sur l'utilisation de Perplexity !** 🎉

@@ -11,7 +11,7 @@
 
 ### 🚨 **Protection Anti-Spam API** (Résolu définitivement)
 - ✅ **Proxy Vite renforcé** : Arrêt automatique après 3 erreurs consécutives
-- ✅ **Blocker global** : Interception de tous les appels API intempestifs  
+- ✅ **Blocker global** : Interception de tous les appels API intempestifs
 - ✅ **Cache intelligent** : Déduplication automatique des requêtes (5s pour /api/health)
 - ✅ **Backoff exponentiel** : Réduction progressive des tentatives (1s → 5min max)
 - ✅ **Recovery gracieuse** : Détection automatique du retour du serveur
@@ -84,61 +84,61 @@ Le **Real Brand Intelligence Service** est un service avancé d'analyse de marqu
 ```
 src/
 ├── services/
-│   ├── EnhancedBrandIntelligenceService.ts    # Interfaces TypeScript
-│   ├── RealBrandIntelligenceServiceComplete.ts # Service principal
-│   └── RealBrandIntelligenceServiceFixed.ts   # Version corrigée (legacy)
+│ ├── EnhancedBrandIntelligenceService.ts # Interfaces TypeScript
+│ ├── RealBrandIntelligenceServiceComplete.ts # Service principal
+│ └── RealBrandIntelligenceServiceFixed.ts # Version corrigée (legacy)
 ├── lib/
-│   ├── perplexity-service.ts                  # Client Perplexity API
-│   ├── api-call-manager.ts                    # 🆕 Gestionnaire API centralisé
-│   ├── global-api-blocker.ts                  # 🆕 Protection anti-spam globale
-│   └── server-detection.ts                    # 🆕 Détection état serveur
+│ ├── perplexity-service.ts # Client Perplexity API
+│ ├── api-call-manager.ts # 🆕 Gestionnaire API centralisé
+│ ├── global-api-blocker.ts # 🆕 Protection anti-spam globale
+│ └── server-detection.ts # 🆕 Détection état serveur
 ├── components/
-│   ├── ApiHealthDashboard.tsx                 # 🆕 Monitoring santé API
-│   └── GlobalApiBlockerStatus.tsx             # 🆕 Statuts protection temps réel
+│ ├── ApiHealthDashboard.tsx # 🆕 Monitoring santé API
+│ └── GlobalApiBlockerStatus.tsx # 🆕 Statuts protection temps réel
 ├── tests/
-│   ├── RealBrandIntelligenceService.test.ts   # Suite de tests complète
-│   └── production/
-│       └── ExportProductionCompliance.test.ts # 🆕 Tests export production
+│ ├── RealBrandIntelligenceService.test.ts # Suite de tests complète
+│ └── production/
+│ └── ExportProductionCompliance.test.ts # 🆕 Tests export production
 └── hooks/
-    ├── useLinkedInAnalytics.ts                # Hook LinkedIn optimisé
-    ├── usePerplexity.ts                       # Hook Perplexity optimisé
-    └── useBusinessIntelligence.ts             # Hook BI optimisé
+ ├── useLinkedInAnalytics.ts # Hook LinkedIn optimisé
+ ├── usePerplexity.ts # Hook Perplexity optimisé
+ └── useBusinessIntelligence.ts # Hook BI optimisé
 ```
 
 ### 🔄 **Flux de Traitement**
 
 ```mermaid
 graph TD
-    A[Brand Name Input] --> B[API Protection Check]
-    B --> C[Perplexity API Queries]
-    C --> D[Data Parsing & Extraction]
-    D --> E[Metrics Calculation]
-    E --> F[Intelligence Generation]
-    F --> G[Report Assembly]
-    G --> H[Quality Validation]
-    H --> I[Export Production]
-    I --> J[Final Report]
-    
-    K[Global API Blocker] --> B
-    L[Server Detection] --> B
-    M[Cache Manager] --> C
+ A[Brand Name Input] --> B[API Protection Check]
+ B --> C[Perplexity API Queries]
+ C --> D[Data Parsing & Extraction]
+ D --> E[Metrics Calculation]
+ E --> F[Intelligence Generation]
+ F --> G[Report Assembly]
+ G --> H[Quality Validation]
+ H --> I[Export Production]
+ I --> J[Final Report]
+
+ K[Global API Blocker] --> B
+ L[Server Detection] --> B
+ M[Cache Manager] --> C
 ```
 
 ### 🛡️ **Protection API Architecture**
 
 ```mermaid
 graph LR
-    A[API Request] --> B[Global Blocker Check]
-    B --> C{Server Status}
-    C -->|UP| D[Cache Check]
-    C -->|DOWN| E[Block Request]
-    D -->|HIT| F[Return Cached]
-    D -->|MISS| G[Make Request]
-    G -->|SUCCESS| H[Update Cache]
-    G -->|ERROR| I[Increment Counter]
-    I --> J{Error Count >= 3}
-    J -->|YES| K[Mark Server DOWN]
-    J -->|NO| L[Retry with Backoff]
+ A[API Request] --> B[Global Blocker Check]
+ B --> C{Server Status}
+ C -->| UP | D[Cache Check]
+ C -->| DOWN | E[Block Request]
+ D -->| HIT | F[Return Cached]
+ D -->| MISS | G[Make Request]
+ G -->| SUCCESS | H[Update Cache]
+ G -->| ERROR | I[Increment Counter]
+ I --> J{Error Count >= 3}
+ J -->| YES | K[Mark Server DOWN]
+ J -->| NO | L[Retry with Backoff]
 ```
 
 ## ⚡ **Installation**
@@ -174,34 +174,34 @@ VITE_PERPLEXITY_TEMPERATURE=0.2
 
 ```bash
 # Développement
-npm run dev              # Frontend seul (démarrage rapide)
-npm run dev:full         # Frontend + Backend (mode complet)
-npm start               # Alias pour dev:full
+npm run dev # Frontend seul (démarrage rapide)
+npm run dev:full # Frontend + Backend (mode complet)
+npm start # Alias pour dev:full
 
 # Backend séparé
-npm run proxy           # Serveur backend seul (port 3001)
-npm run wait-for-proxy  # Attendre que le proxy soit prêt
+npm run proxy # Serveur backend seul (port 3001)
+npm run wait-for-proxy # Attendre que le proxy soit prêt
 
 # Tests
-npm test                # Tests unitaires et intégration
-npm run test:watch      # Tests en mode surveillance
-npm run test:export     # Tests export production spécifiques
+npm test # Tests unitaires et intégration
+npm run test:watch # Tests en mode surveillance
+npm run test:export # Tests export production spécifiques
 
 # Build & Déploiement
-npm run build           # Build production
-npm run preview         # Aperçu build local
+npm run build # Build production
+npm run preview # Aperçu build local
 
 # Maintenance
-npm run clean           # Nettoyage cache et builds
-npm run format          # Formatage code automatique
-npm run lint            # Vérification qualité code
+npm run clean # Nettoyage cache et builds
+npm run format # Formatage code automatique
+npm run lint # Vérification qualité code
 ```
 
 ### 🛠️ **Commandes Utiles en Cas de Problème**
 
 ```bash
 # Nettoyage complet (si problèmes de cache)
-pkill -f "vite|node.*8088|node.*3001" 2>/dev/null || true
+pkill -f "vite| node.*8088 |node.*3001" 2>/dev/null || true
 rm -rf node_modules/.vite
 npm run dev
 
@@ -236,33 +236,33 @@ console.log(`🕒 Fraîcheur données: ${report.dataFreshness.dataQualityScore}/
 ### Exemple de Rapport
 ```typescript
 const report: DeepResearchReport = {
-  brandName: "Apple Inc.",
-  executionTimestamp: Date,
-  confidenceScore: 95,
-  
-  // Analyses principales
-  objectiveAnalysis: {
-    foundingYear: 1976,
-    innovationIndex: 95,
-    reputationScore: 88,
-    // ...
-  },
-  
-  // Métriques quantifiées
-  swotMetrics: {
-    strengthsScore: 85,
-    weaknessesScore: 35,
-    opportunitiesScore: 80,
-    threatsScore: 45
-  },
-  
-  // Recommandations actionnables
-  recommendations: [{
-    title: "Accélération innovation digitale",
-    priority: "high",
-    estimatedImpact: 85,
-    timeline: "6-12 months"
-  }]
+ brandName: "Apple Inc.",
+ executionTimestamp: Date,
+ confidenceScore: 95,
+
+ // Analyses principales
+ objectiveAnalysis: {
+ foundingYear: 1976,
+ innovationIndex: 95,
+ reputationScore: 88,
+ // ...
+ },
+
+ // Métriques quantifiées
+ swotMetrics: {
+ strengthsScore: 85,
+ weaknessesScore: 35,
+ opportunitiesScore: 80,
+ threatsScore: 45
+ },
+
+ // Recommandations actionnables
+ recommendations: [{
+ title: "Accélération innovation digitale",
+ priority: "high",
+ estimatedImpact: 85,
+ timeline: "6-12 months"
+ }]
 };
 ```
 
@@ -282,23 +282,23 @@ npm run test:watch
 
 ### Couverture de Tests
 - ✅ **33 tests** couvrant tous les aspects
-- ✅ **100% de réussite** 
+- ✅ **100% de réussite**
 - ✅ **95%+ de couverture fonctionnelle**
 
 ### Catégories de Tests
 ```typescript
 describe('Real Brand Intelligence Service', () => {
-  // 🚀 Initialisation et Configuration (3 tests)
-  // 📊 Génération Rapport Principal (4 tests)
-  // 🎯 Analyses Spécialisées (4 tests)
-  // 📈 Extraction Métriques (4 tests)
-  // 💡 Recommandations et Alertes (2 tests)
-  // 🔧 Méthodes Utilitaires (5 tests)
-  // ⚠️ Gestion d'Erreurs (3 tests)
-  // ⚡ Tests de Performance (2 tests)
-  // 📋 Validation Qualité (3 tests)
-  // 🔄 Intégration Perplexity (2 tests)
-  // 📊 Monitoring (1 test)
+ // 🚀 Initialisation et Configuration (3 tests)
+ // 📊 Génération Rapport Principal (4 tests)
+ // 🎯 Analyses Spécialisées (4 tests)
+ // 📈 Extraction Métriques (4 tests)
+ // 💡 Recommandations et Alertes (2 tests)
+ // 🔧 Méthodes Utilitaires (5 tests)
+ // ⚠️ Gestion d'Erreurs (3 tests)
+ // ⚡ Tests de Performance (2 tests)
+ // 📋 Validation Qualité (3 tests)
+ // 🔄 Intégration Perplexity (2 tests)
+ // 📊 Monitoring (1 test)
 });
 ```
 
@@ -329,10 +329,10 @@ describe('Real Brand Intelligence Service', () => {
 ### Paramètres Perplexity
 ```typescript
 const config = {
-  model: 'llama-3.1-sonar-large-128k-online',  // Modèle recommandé
-  maxTokens: 8000,                             // Limite tokens
-  temperature: 0.2,                            // Créativité réduite
-  language: 'fr'                               // Langue française
+ model: 'llama-3.1-sonar-large-128k-online', // Modèle recommandé
+ maxTokens: 8000, // Limite tokens
+ temperature: 0.2, // Créativité réduite
+ language: 'fr' // Langue française
 };
 ```
 
@@ -346,13 +346,12 @@ const config = {
 
 ### Méthodes Principales
 
-#### `generateRealDeepResearchReport(brandName: string)`
-Génère un rapport complet d'intelligence de marque.
+#### `generateRealDeepResearchReport(brandName: string)` Génère un rapport complet d'intelligence de marque.
 
-**Paramètres:**
+* *Paramètres:**
 - `brandName` (string) : Nom de la marque à analyser
 
-**Retour:**
+* *Retour:**
 - `DeepResearchReport` : Rapport complet avec toutes les analyses
 
 #### Méthodes d'Analyse Spécialisées
@@ -390,16 +389,7 @@ await service.computeRealReputationKPIs(brandName)
 ### Types TypeScript
 
 Voir `EnhancedBrandIntelligenceService.ts` pour les interfaces complètes :
-- `DeepResearchReport`
-- `ObjectiveAnalysis`
-- `SWOTMetrics`
-- `ContentMetrics`
-- `CompetitiveMetrics`
-- `ReputationKPIs`
-- `ActionableRecommendation`
-- `SmartAlerts`
-
-## 🚨 **Limitations**
+- `DeepResearchReport` - `ObjectiveAnalysis` - `SWOTMetrics` - `ContentMetrics` - `CompetitiveMetrics` - `ReputationKPIs` - `ActionableRecommendation` - `SmartAlerts` ## 🚨 **Limitations**
 
 - **Sources de données** : Limitées aux informations publiques indexées
 - **Fraîcheur** : Dépend de la mise à jour des sources Perplexity
@@ -458,11 +448,11 @@ git push origin feature/nouvelle-fonctionnalite
 - 📖 **Documentation** : Ce README
 - 🧪 **Tests** : `npm test` pour validation
 
----
+- --
 
-**🎯 Real Brand Intelligence Service - Veille concurrentielle nouvelle génération avec données réelles**
+* *🎯 Real Brand Intelligence Service - Veille concurrentielle nouvelle génération avec données réelles**
 
-*Développé avec ❤️ et TypeScript*
+* Développé avec ❤️ et TypeScript*
 
 # 🚀 KORA - Brand Intelligence Platform
 
@@ -473,14 +463,14 @@ git push origin feature/nouvelle-fonctionnalite
 ```
 🌐 ENVIRONNEMENT DEVELOPMENT (par défaut)
 ├── 8088 - KORA App Frontend (React/Vite)
-├── 8089 - Hot Module Replacement (HMR)  
+├── 8089 - Hot Module Replacement (HMR)
 ├── 8090 - Preview Build Mode
 ├── 8091 - Tests & Storybook (disponible)
 ├── 3001 - LinkedIn/Anthropic Proxy (CORS)
 ├── 3002 - Fallback Proxy
 └── 3003 - Monitoring & Health Check
 
-🎭 ENVIRONNEMENT STAGING  
+🎭 ENVIRONNEMENT STAGING
 ├── 9088 - KORA App Staging
 ├── 9089 - HMR Staging
 └── 4001 - Proxy Staging
@@ -521,57 +511,57 @@ npm run start:production
 
 ### **📱 Application**
 ```bash
-npm run dev              # Démarrer l'app seule (port 8088)
-npm run dev:full         # App + Proxy complet
-npm run build            # Build production
-npm run preview          # Preview build (port 8090)
+npm run dev # Démarrer l'app seule (port 8088)
+npm run dev:full # App + Proxy complet
+npm run build # Build production
+npm run preview # Preview build (port 8090)
 ```
 
 ### **🔧 Proxy Server**
 ```bash
-npm run proxy                # Démarrer proxy dev (port 3001)
-npm run proxy:staging        # Proxy staging (port 4001)  
-npm run proxy:production     # Proxy production (port 5001)
+npm run proxy # Démarrer proxy dev (port 3001)
+npm run proxy:staging # Proxy staging (port 4001)
+npm run proxy:production # Proxy production (port 5001)
 ```
 
 ### **🩺 Health Checks**
 ```bash
-npm run health-check              # Dev proxy
-npm run health-check:staging      # Staging proxy
-npm run health-check:production   # Production proxy
+npm run health-check # Dev proxy
+npm run health-check:staging # Staging proxy
+npm run health-check:production # Production proxy
 ```
 
 ### **🔍 Gestion Ports**
 ```bash
-npm run ports:check        # Vérifier ports utilisés
-npm run ports:kill         # Arrêter tous les processus
-npm run ports:reset        # Reset complet des ports
+npm run ports:check # Vérifier ports utilisés
+npm run ports:kill # Arrêter tous les processus
+npm run ports:reset # Reset complet des ports
 ```
 
 ### **🧪 Tests**
 ```bash
-npm test                   # Tests en mode watch
-npm run test:run          # Tests une fois
-npm run test:ui           # Interface tests (port par défaut)
-npm run test:8091         # Interface tests sur port 8091
-npm run test:coverage     # Tests avec couverture
+npm test # Tests en mode watch
+npm run test:run # Tests une fois
+npm run test:ui # Interface tests (port par défaut)
+npm run test:8091 # Interface tests sur port 8091
+npm run test:coverage # Tests avec couverture
 ```
 
 ## 🌐 URLs d'accès
 
 ### **Development**
 - **App**: http://localhost:8088
-- **Preview**: http://localhost:8090  
+- **Preview**: http://localhost:8090
 - **Tests UI**: http://localhost:8091
 - **Proxy Health**: http://localhost:3001/api/health
 - **Proxy Metrics**: http://localhost:3001/api/metrics
 
-### **Staging**  
+### **Staging**
 - **App**: http://localhost:9088
 - **Proxy Health**: http://localhost:4001/api/health
 
 ### **Production**
-- **App**: http://localhost:10088  
+- **App**: http://localhost:10088
 - **Proxy Health**: http://localhost:5001/api/health
 
 ## ⚙️ CONFIGURATION AVANCÉE
@@ -584,9 +574,9 @@ VITE_PERPLEXITY_API_KEY=your_perplexity_key
 VITE_ANTHROPIC_API_KEY=your_anthropic_key
 
 # Variables optionnelles
-VITE_ENV=staging                    # Force environnement
-NODE_ENV=production                 # Environnement Node.js
-PROXY_PORT=3001                     # Port proxy custom
+VITE_ENV=staging # Force environnement
+NODE_ENV=production # Environnement Node.js
+PROXY_PORT=3001 # Port proxy custom
 ```
 
 ### **Changement d'Environnement**
@@ -595,7 +585,7 @@ PROXY_PORT=3001                     # Port proxy custom
 # Forcer staging
 VITE_ENV=staging npm run dev
 
-# Forcer production  
+# Forcer production
 NODE_ENV=production npm run dev
 ```
 
@@ -685,7 +675,7 @@ curl http://localhost:3001/api/health | jq
 
 ### **Rate Limiting**
 - LinkedIn: 50 req/min
-- Anthropic: 30 req/min  
+- Anthropic: 30 req/min
 - Profile: 100 req/min
 
 ### **Validation**
@@ -719,10 +709,10 @@ DEBUG=* npm run dev:full
 
 ### **Logs Importants**
 - 🟢 `✅ Proxy ready` - Proxy démarré
-- 🟢 `🚀 Local: http://localhost:8088` - App démarrée  
+- 🟢 `🚀 Local: http://localhost:8088` - App démarrée
 - 🔴 `❌ Port 8088 already in use` - Conflit de port
 - 🔴 `ECONNREFUSED` - Proxy non accessible
 
-**Configuration par**: Architecte Senior Infrastructure KORA  
-**Version**: Enterprise v1.0.0  
-**Dernière MAJ**: $(date +'%Y-%m-%d')
+* *Configuration par**: Architecte Senior Infrastructure KORA
+* *Version**: Enterprise v1.0.0
+* *Dernière MAJ**: $(date +'%Y-%m-%d')

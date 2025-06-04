@@ -5,7 +5,7 @@
 Vous avez maintenant **PDF Ultra-Premium** avec :
 
 ### 💎 Palette Couleurs Marque
-- **Bleu Profond Principal** : #0A1628 
+- **Bleu Profond Principal** : #0A1628
 - **Bleu Corporate** : #1B2951
 - **Doré Premium** : #D4AF37
 - **Doré Accent** : #B8941F
@@ -19,7 +19,7 @@ Vous avez maintenant **PDF Ultra-Premium** avec :
 - Cards de recommandations avec badges métriques
 - Footer corporate sur toutes les pages
 
----
+- --
 
 ## 🚀 Test Rapide
 
@@ -31,17 +31,17 @@ npm run start
 
 ### 2. Tester PDF Ultra-Premium
 1. Aller sur http://localhost:8088
-2. Brand Intelligence → Entrer "Tesla" 
+2. Brand Intelligence → Entrer "Tesla"
 3. Générer Rapport Kora
 4. Exporter → **"PDF Bureau d'Études Demo"** ✨
 
----
+- --
 
 ## 🎯 Qualité Attendue
 
 ### Avant (Standard)
 - ❌ 2-3 pages basiques
-- ❌ Couleurs génériques 
+- ❌ Couleurs génériques
 - ❌ Mise en page amateur
 
 ### Après (Ultra-Premium)
@@ -54,7 +54,7 @@ npm run start
 - ✅ KPI boxes avec coins arrondis
 - ✅ Footer corporate premium
 
----
+- --
 
 ## ✨ Points Premium à Vérifier
 
@@ -70,7 +70,7 @@ npm run start
 - [ ] Points de conduite dorés
 - [ ] Pages encadrées dorées
 
-### Page 3 : Résumé Exécutif  
+### Page 3 : Résumé Exécutif
 - [ ] 6 KPI boxes premium avec gradients
 - [ ] Lettrine dorée 48pt
 - [ ] Points saillants avec puces losanges dorées
@@ -88,17 +88,17 @@ npm run start
 - [ ] "CONFIDENTIEL" en doré
 - [ ] Numéro page blanc centré
 
----
+- --
 
 ## 🎪 Différence Visuelle Attendue
 
-**Avant → Après = Amateur → C-Suite Ready**
+* *Avant → Après = Amateur → C-Suite Ready**
 
 Le PDF doit maintenant être **indiscernable d'un vrai rapport McKinsey** avec votre identité visuelle (bleu profond + doré).
 
-**Objectif atteint si :** Un dirigeant peut l'utiliser tel quel en présentation board sans modification.
+* *Objectif atteint si :** Un dirigeant peut l'utiliser tel quel en présentation board sans modification.
 
----
+- --
 
 ## 🔧 Si Problème
 
@@ -107,4 +107,4 @@ Le PDF doit maintenant être **indiscernable d'un vrai rapport McKinsey** avec v
 3. **Mise en page cassée** → Dimensions premium respectées ?
 4. **Export ne marche pas** → Bouton "PDF Bureau d'Études Demo" cliqué ?
 
-**Le résultat doit être PREMIUM niveau bureau d'études !** 🏆 
+* *Le résultat doit être PREMIUM niveau bureau d'études !** 🏆

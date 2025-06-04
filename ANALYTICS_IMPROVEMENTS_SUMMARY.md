@@ -35,21 +35,21 @@ L'onglet Analytics a été considérablement amélioré pour mieux distinguer le
 ### `DataSourceBadge` Component
 ```typescript
 const DataSourceBadge = ({ isRealData, platform }) => {
-  if (isRealData) {
-    return (
-      <Badge className="bg-green-500/10 text-green-600 border-green-500/30 text-xs">
-        <CheckCircle2 className="w-3 h-3 mr-1" />
-        Données réelles
-      </Badge>
-    );
-  }
-  
-  return (
-    <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/30 text-xs">
-      <Database className="w-3 h-3 mr-1" />
-      Données simulées
-    </Badge>
-  );
+ if (isRealData) {
+ return (
+ <Badge className="bg-green-500/10 text-green-600 border-green-500/30 text-xs">
+ <CheckCircle2 className="w-3 h-3 mr-1" />
+ Données réelles
+ </Badge>
+ );
+ }
+
+ return (
+ <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/30 text-xs">
+ <Database className="w-3 h-3 mr-1" />
+ Données simulées
+ </Badge>
+ );
 };
 ```
 
@@ -82,55 +82,55 @@ const DataSourceBadge = ({ isRealData, platform }) => {
 ```typescript
 // Ajout de propriétés pour tracker les sources de données
 interface PlatformData {
-  name: string;
-  isRealData: boolean; // Nouvelle propriété
-  stats: PlatformStats;
-  // ... autres propriétés
+ name: string;
+ isRealData: boolean; // Nouvelle propriété
+ stats: PlatformStats;
+ // ... autres propriétés
 }
 
 interface PostData {
-  platform: string;
-  content: string;
-  isRealData: boolean; // Nouvelle propriété
-  metrics: PostMetrics;
-  // ... autres propriétés
+ platform: string;
+ content: string;
+ isRealData: boolean; // Nouvelle propriété
+ metrics: PostMetrics;
+ // ... autres propriétés
 }
 ```
 
 ### Fusion de Données Intelligente
 ```typescript
 const mergeLinkedInData = useCallback((simulatedData, realLinkedInData) => {
-  if (!realLinkedInData || !isLinkedInConnected) {
-    return simulatedData;
-  }
+ if (!realLinkedInData || !isLinkedInConnected) {
+ return simulatedData;
+ }
 
-  // Mise à jour des plateformes avec vraies données LinkedIn
-  const updatedPlatforms = simulatedData.platforms.map(platform => {
-    if (platform.name === 'LinkedIn') {
-      return {
-        ...platform,
-        stats: {
-          ...platform.stats,
-          reach: realLinkedInData.totalReach,
-          engagement: realLinkedInData.totalEngagement,
-          clicks: realLinkedInData.totalClicks,
-          trend: realLinkedInData.growth,
-        },
-        isRealData: true // Marquer comme données réelles
-      };
-    }
-    return {
-      ...platform,
-      isRealData: false // Marquer comme données simulées
-    };
-  });
+ // Mise à jour des plateformes avec vraies données LinkedIn
+ const updatedPlatforms = simulatedData.platforms.map(platform => {
+ if (platform.name === 'LinkedIn') {
+ return {
+ ...platform,
+ stats: {
+ ...platform.stats,
+ reach: realLinkedInData.totalReach,
+ engagement: realLinkedInData.totalEngagement,
+ clicks: realLinkedInData.totalClicks,
+ trend: realLinkedInData.growth,
+ },
+ isRealData: true // Marquer comme données réelles
+ };
+ }
+ return {
+ ...platform,
+ isRealData: false // Marquer comme données simulées
+ };
+ });
 
-  return {
-    ...simulatedData,
-    platforms: updatedPlatforms,
-    hasRealLinkedInData: true,
-    linkedInLastSync: lastSync
-  };
+ return {
+ ...simulatedData,
+ platforms: updatedPlatforms,
+ hasRealLinkedInData: true,
+ linkedInLastSync: lastSync
+ };
 }, [isLinkedInConnected, lastSync]);
 ```
 
@@ -198,7 +198,7 @@ const mergeLinkedInData = useCallback((simulatedData, realLinkedInData) => {
 - **Fiabilité** : Fallback automatique en cas de problème
 - **Évolutivité** : Architecture prête pour nouvelles plateformes
 
----
+- --
 
 ## 🎯 **Résultat Final**
 
@@ -210,4 +210,4 @@ L'onglet Analytics de Kora Digital Pilot offre maintenant :
 4. **Guidance claire** pour optimiser l'expérience
 5. **Architecture extensible** pour futures intégrations
 
-**🚀 L'utilisateur bénéficie d'une expérience premium avec des données authentiques quand disponibles, et des données simulées réalistes en fallback, le tout avec une transparence totale.** 
+* *🚀 L'utilisateur bénéficie d'une expérience premium avec des données authentiques quand disponibles, et des données simulées réalistes en fallback, le tout avec une transparence totale.**
