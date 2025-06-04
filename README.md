@@ -5,6 +5,34 @@
 [![Tests](https://img.shields.io/badge/tests-33%2F33%20passing-brightgreen)](#tests)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue)](#)
 [![Perplexity API](https://img.shields.io/badge/Perplexity-API%20Integration-orange)](#)
+[![API Protection](https://img.shields.io/badge/API-Protection%20Anti--Spam-green)](#protection-api)
+
+## 🛡️ **NOUVEAUTÉS - PROTECTION & OPTIMISATIONS**
+
+### 🚨 **Protection Anti-Spam API** (Résolu définitivement)
+- ✅ **Proxy Vite renforcé** : Arrêt automatique après 3 erreurs consécutives
+- ✅ **Blocker global** : Interception de tous les appels API intempestifs  
+- ✅ **Cache intelligent** : Déduplication automatique des requêtes (5s pour /api/health)
+- ✅ **Backoff exponentiel** : Réduction progressive des tentatives (1s → 5min max)
+- ✅ **Recovery gracieuse** : Détection automatique du retour du serveur
+
+### 📊 **Monitoring Temps Réel**
+- 🆕 **ApiHealthDashboard** : Surveillance continue des endpoints
+- 🆕 **GlobalApiBlockerStatus** : Métriques et statistiques en direct
+- 🆕 **Alertes intelligentes** : Notifications serveur down/up
+- 🆕 **Logs propres** : Messages informatifs sans pollution
+
+### ⚡ **Optimisations Performance**
+- 🔄 **Hooks optimisés** : LinkedIn (10s), Perplexity, Business Intelligence
+- 📈 **Réduction drastique** : 20+ erreurs/min → Max 3 erreurs puis silence
+- 🎯 **UX préservée** : Application fonctionnelle même en mode dégradé
+- 🚀 **Démarrage ultra-rapide** : Plus d'attente du backend
+
+### 🧪 **Tests Export Production**
+- 📄 **Conformité export** : PDF/JSON/CSV/Excel avec données réelles
+- 🔍 **Validation intégrité** : API Perplexity authentique (pas de démo)
+- 📊 **Métriques qualité** : Score de confiance et performance export
+- ⚠️ **Gestion erreurs** : Recovery gracieuse pour données incomplètes
 
 ## 📋 **Table des Matières**
 
@@ -60,22 +88,57 @@ src/
 │   ├── RealBrandIntelligenceServiceComplete.ts # Service principal
 │   └── RealBrandIntelligenceServiceFixed.ts   # Version corrigée (legacy)
 ├── lib/
-│   └── perplexity-service.ts                  # Client Perplexity API
-└── tests/
-    └── RealBrandIntelligenceService.test.ts   # Suite de tests complète
+│   ├── perplexity-service.ts                  # Client Perplexity API
+│   ├── api-call-manager.ts                    # 🆕 Gestionnaire API centralisé
+│   ├── global-api-blocker.ts                  # 🆕 Protection anti-spam globale
+│   └── server-detection.ts                    # 🆕 Détection état serveur
+├── components/
+│   ├── ApiHealthDashboard.tsx                 # 🆕 Monitoring santé API
+│   └── GlobalApiBlockerStatus.tsx             # 🆕 Statuts protection temps réel
+├── tests/
+│   ├── RealBrandIntelligenceService.test.ts   # Suite de tests complète
+│   └── production/
+│       └── ExportProductionCompliance.test.ts # 🆕 Tests export production
+└── hooks/
+    ├── useLinkedInAnalytics.ts                # Hook LinkedIn optimisé
+    ├── usePerplexity.ts                       # Hook Perplexity optimisé
+    └── useBusinessIntelligence.ts             # Hook BI optimisé
 ```
 
 ### 🔄 **Flux de Traitement**
 
 ```mermaid
 graph TD
-    A[Brand Name Input] --> B[Perplexity API Queries]
-    B --> C[Data Parsing & Extraction]
-    C --> D[Metrics Calculation]
-    D --> E[Intelligence Generation]
-    E --> F[Report Assembly]
-    F --> G[Quality Validation]
-    G --> H[Final Report]
+    A[Brand Name Input] --> B[API Protection Check]
+    B --> C[Perplexity API Queries]
+    C --> D[Data Parsing & Extraction]
+    D --> E[Metrics Calculation]
+    E --> F[Intelligence Generation]
+    F --> G[Report Assembly]
+    G --> H[Quality Validation]
+    H --> I[Export Production]
+    I --> J[Final Report]
+    
+    K[Global API Blocker] --> B
+    L[Server Detection] --> B
+    M[Cache Manager] --> C
+```
+
+### 🛡️ **Protection API Architecture**
+
+```mermaid
+graph LR
+    A[API Request] --> B[Global Blocker Check]
+    B --> C{Server Status}
+    C -->|UP| D[Cache Check]
+    C -->|DOWN| E[Block Request]
+    D -->|HIT| F[Return Cached]
+    D -->|MISS| G[Make Request]
+    G -->|SUCCESS| H[Update Cache]
+    G -->|ERROR| I[Increment Counter]
+    I --> J{Error Count >= 3}
+    J -->|YES| K[Mark Server DOWN]
+    J -->|NO| L[Retry with Backoff]
 ```
 
 ## ⚡ **Installation**
@@ -105,6 +168,49 @@ VITE_PERPLEXITY_API_KEY=your-perplexity-api-key
 VITE_PERPLEXITY_MODEL=llama-3.1-sonar-large-128k-online
 VITE_PERPLEXITY_MAX_TOKENS=8000
 VITE_PERPLEXITY_TEMPERATURE=0.2
+```
+
+### 🚀 **Scripts Disponibles**
+
+```bash
+# Développement
+npm run dev              # Frontend seul (démarrage rapide)
+npm run dev:full         # Frontend + Backend (mode complet)
+npm start               # Alias pour dev:full
+
+# Backend séparé
+npm run proxy           # Serveur backend seul (port 3001)
+npm run wait-for-proxy  # Attendre que le proxy soit prêt
+
+# Tests
+npm test                # Tests unitaires et intégration
+npm run test:watch      # Tests en mode surveillance
+npm run test:export     # Tests export production spécifiques
+
+# Build & Déploiement
+npm run build           # Build production
+npm run preview         # Aperçu build local
+
+# Maintenance
+npm run clean           # Nettoyage cache et builds
+npm run format          # Formatage code automatique
+npm run lint            # Vérification qualité code
+```
+
+### 🛠️ **Commandes Utiles en Cas de Problème**
+
+```bash
+# Nettoyage complet (si problèmes de cache)
+pkill -f "vite|node.*8088|node.*3001" 2>/dev/null || true
+rm -rf node_modules/.vite
+npm run dev
+
+# Reset protection API (console navigateur)
+globalApiBlocker.reset()
+global.resetProxyState()
+
+# Vérification état santé API
+curl http://localhost:3001/api/health
 ```
 
 ## 🚀 **Utilisation**
