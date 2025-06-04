@@ -26,6 +26,12 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
       description: 'Veille IA automatisée'
     },
     {
+      id: 'cm-domain-search',
+      icon: '🔍',
+      label: 'Recherche Sectorielle',
+      description: 'Analyser par domaine'
+    },
+    {
       id: 'brand-monitoring',
       icon: '👁️',
       label: 'Veille de Marque',

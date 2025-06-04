@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Dashboard from '../components/Dashboard';
 import { CommunityManagerDashboard } from '../components/CommunityManagerDashboard';
+import { CommunityManagerDomainDashboard } from '../components/CommunityManagerDomainDashboard';
 import InspirationAI from '../components/InspirationAI';
 import ImageGenerator from '../components/ImageGenerator';
 import { PlanningWithPerplexity } from '../components/PlanningWithPerplexity';
@@ -49,6 +50,8 @@ const Index = () => {
         return <Dashboard onSectionChange={setActiveSection} />;
       case 'cm-dashboard':
         return <CommunityManagerDashboard />;
+      case 'cm-domain-search':
+        return <CommunityManagerDomainDashboard />;
       case 'brand-monitoring':
         return <BrandMonitoring />;
       case 'brand-intelligence-tdd':
