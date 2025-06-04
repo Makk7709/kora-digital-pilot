@@ -134,8 +134,8 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
     <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
       <div className="text-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-3" data-testid="search-loader" />
-        <p className="text-sm font-medium text-slate-700">Analyse en cours...</p>
-        <p className="text-xs text-slate-500 mt-1">Recherche d'insights sectoriels</p>
+        <p className="text-sm font-medium text-slate-700">Notre IA carbure à fond ! ⚡</p>
+        <p className="text-xs text-slate-500 mt-1">🧠 Décryptage sectoriel en cours...</p>
         {searchProgress > 0 && (
           <div className="mt-3 w-32 mx-auto">
             <Progress value={searchProgress} className="h-2" />
@@ -155,7 +155,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
           <div>
             <span className="font-bold">Recherche par Domaine</span>
             <p className="text-sm font-normal text-slate-600 mt-1">
-              Analysez n'importe quel secteur d'activité en temps réel
+              Découvrez les opportunités cachées de n'importe quel secteur
             </p>
           </div>
         </CardTitle>
@@ -168,7 +168,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
             <Input
               data-testid="domain-search-input"
               type="text"
-              placeholder="Ex: Intelligence Artificielle, E-commerce, FinTech..."
+              placeholder="Ex: Intelligence Artificielle, E-commerce, FinTech, Santé..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -280,7 +280,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
               <div className="flex items-center gap-3">
                 <CheckCircle className="h-5 w-5 text-green-600" />
                 <span className="font-medium text-slate-900">
-                  Analyse de "{result.domain}" terminée
+                  🎯 Analyse de "{result.domain}" complétée avec succès
                 </span>
               </div>
               <div className="flex items-center gap-2">

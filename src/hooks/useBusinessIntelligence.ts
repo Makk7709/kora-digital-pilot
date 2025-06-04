@@ -1,7 +1,7 @@
 /**
  * 🧠 HOOK BUSINESS INTELLIGENCE
  * Gestion intelligente de la recherche par domaine d'activité
- * Intégration Perplexity masquée - Ready production
+ * Intelligence artificielle intégrée - Ready production
  */
 
 import { useState, useCallback } from 'react';
@@ -94,8 +94,14 @@ export const useBusinessIntelligence = () => {
       error: null 
     }));
 
+    // Message de progression avec emojis sympa
+    toast({
+      title: "🔍 Sherlock au travail...",
+      description: `Investigation en cours sur "${domain}" 🕵️`,
+    });
+
     try {
-      // === ANALYSE MULTI-FACETTES VIA PERPLEXITY (MASQUÉ) ===
+      // === ANALYSE MULTI-FACETTES VIA IA (ENGINE MASQUÉ) ===
       
       // 1. Vue d'ensemble du marché
       const overviewQuery = `Analyse du domaine d'activité "${domain}":
@@ -111,6 +117,12 @@ export const useBusinessIntelligence = () => {
         depth: 'detailed',
         language: 'fr',
         context: 'Analyse sectorielle pour Kora Digital'
+      });
+
+      // Message d'étape 1
+      toast({
+        title: "📊 Décortiquage du marché...",
+        description: "🔬 Dissection des données en cours",
       });
 
       // 2. Tendances émergentes
@@ -129,6 +141,12 @@ export const useBusinessIntelligence = () => {
         context: 'Veille tendances sectorielles'
       });
 
+      // Message d'étape 2
+      toast({
+        title: "🚀 Détection d'opportunités...",
+        description: "🎯 Le nez dans les tendances qui décoiffent !",
+      });
+
       // 3. Opportunités business
       const opportunitiesQuery = `Opportunités business dans "${domain}":
         - Niches inexploitées ou sous-exploitées
@@ -143,6 +161,12 @@ export const useBusinessIntelligence = () => {
         depth: 'detailed',
         language: 'fr',
         context: 'Identification opportunités business'
+      });
+
+      // Message d'étape 3
+      toast({
+        title: "💡 Espionnage concurrentiel...",
+        description: "🥷 Mission impossible en cours...",
       });
 
       // 4. Intelligence concurrentielle
@@ -181,9 +205,20 @@ export const useBusinessIntelligence = () => {
         searchHistory: [domain, ...prev.searchHistory.filter(h => h !== domain).slice(0, 9)]
       }));
 
+      // Message de succès final avec humour
+      const successMessages = [
+        `🎉 Bingo ! ${result.trends.length} pépites découvertes !`,
+        `✨ Eurêka ! ${result.opportunities.length} opportunités en or !`,
+        `🏆 Mission accomplie ! Le secteur n'a plus de secrets !`,
+        `🎯 Bullseye ! Analyse ${domain} dans la poche !`,
+        `🚀 Houston, nous avons les données ! Objectif atteint !`
+      ];
+      
+      const randomMessage = successMessages[Math.floor(Math.random() * successMessages.length)];
+      
       toast({
-        title: "Analyse terminée",
-        description: `Domaine "${domain}" analysé avec succès`,
+        title: randomMessage,
+        description: `${result.trends.length} tendances et ${result.opportunities.length} opportunités identifiées 🎊`,
       });
 
       return result;
@@ -197,28 +232,46 @@ export const useBusinessIntelligence = () => {
         error: errorMessage
       }));
 
+      const errorMessages = [
+        "😅 Oups ! Notre IA a fait une pause café...",
+        "🤖 Robot en panne ! Veuillez réessayer plus tard",
+        "🔧 Houston, nous avons un problème...",
+        "💻 L'ordinateur fait la grève !",
+        "🌐 Internet joue à cache-cache..."
+      ];
+      
+      const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+
       toast({
-        title: "Erreur d'analyse",
-        description: `Impossible d'analyser ce domaine: ${errorMessage}`,
-        variant: "destructive",
+        title: randomError,
+        description: "Impossible de récupérer les données sectorielles 🙃",
+        variant: "destructive"
       });
 
       throw error;
     }
   }, [perplexity, toast]);
 
-  // === FONCTIONS UTILITAIRES ===
+  // === GESTION DES FAVORIS ===
   const addToFavorites = useCallback((domain: string) => {
     setState(prev => ({
       ...prev,
-      favorites: prev.favorites.includes(domain) 
-        ? prev.favorites 
-        : [domain, ...prev.favorites]
+      favorites: [...prev.favorites.filter(f => f !== domain), domain].slice(0, 10)
     }));
+
+    const favoriteMessages = [
+      `⭐ "${domain}" dans ton cœur maintenant ! 💝`,
+      `🌟 Ajouté aux VIP ! "${domain}" a de la classe !`,
+      `💎 "${domain}" rejoint la collection de luxe !`,
+      `🏆 "${domain}" dans le hall of fame personnel !`,
+      `✨ "${domain}" a conquis ton attention !`
+    ];
     
+    const randomFav = favoriteMessages[Math.floor(Math.random() * favoriteMessages.length)];
+
     toast({
-      title: "Ajouté aux favoris",
-      description: `"${domain}" ajouté à vos domaines favoris`,
+      title: randomFav,
+      description: "Retrouve-le facilement dans tes secteurs chouchous ! 😉",
     });
   }, [toast]);
 
@@ -227,62 +280,86 @@ export const useBusinessIntelligence = () => {
       ...prev,
       favorites: prev.favorites.filter(f => f !== domain)
     }));
-  }, []);
 
+    const removeMessages = [
+      `🗑️ "${domain}" viré manu militari !`,
+      `👋 Adieu "${domain}", c'était sympa !`,
+      `💔 "${domain}" banni du royaume des favoris`,
+      `🧹 "${domain}" dans la poubelle numérique !`,
+      `⚡ "${domain}" effacé d'un coup de baguette !`
+    ];
+    
+    const randomRemove = removeMessages[Math.floor(Math.random() * removeMessages.length)];
+
+    toast({
+      title: randomRemove,
+      description: "Il ne reviendra que si tu l'invites ! 😜",
+    });
+  }, [toast]);
+
+  // === NETTOYAGE HISTORIQUE ===
   const clearSearchHistory = useCallback(() => {
-    setState(prev => ({ ...prev, searchHistory: [] }));
-  }, []);
+    setState(prev => ({
+      ...prev,
+      searchHistory: []
+    }));
 
-  // === GETTERS ===
-  const getSectorTrends = useCallback(async (sector: string) => {
-    // Délégué à searchByDomain pour consistance
-    const result = await searchByDomain(sector);
-    return result.trends;
-  }, [searchByDomain]);
+    const clearMessages = [
+      "🧹 Table rase ! Historique parti en fumée !",
+      "💨 Poof ! Tout effacé comme par magie !",
+      "🔥 Historique cramé ! Place au nouveau !",
+      "🌪️ Coup de vent ! Tout est parti !",
+      "✨ Reset complet ! C'est reparti de zéro !"
+    ];
+    
+    const randomClear = clearMessages[Math.floor(Math.random() * clearMessages.length)];
 
-  const getDomainInsights = useCallback(async (domain: string) => {
-    const result = await searchByDomain(domain);
-    return result.insights;
-  }, [searchByDomain]);
+    toast({
+      title: randomClear,
+      description: "Tes recherches sont parties faire un tour ! 🚀",
+    });
+  }, [toast]);
 
-  const getCompetitorAnalysis = useCallback(async (domain: string) => {
-    const result = await searchByDomain(domain);
-    return {
-      competitors: result.competitors,
-      insights: result.insights.filter(i => i.type === 'competition')
-    };
-  }, [searchByDomain]);
-
+  // === API RETOURNÉE ===
   return {
+    // État
     ...state,
-    isInitialized: perplexity.isInitialized,
+    
+    // Actions
     searchByDomain,
-    getSectorTrends,
-    getDomainInsights,
-    getCompetitorAnalysis,
     addToFavorites,
     removeFromFavorites,
-    clearSearchHistory
+    clearSearchHistory,
+    
+    // Helpers
+    isInitialized: true,
+    isReady: !state.isLoading && !state.error
   };
 };
 
-// === FONCTIONS DE PARSING ===
+// === UTILITAIRES DE PARSING ===
+
 function parseOverview(content: string, domain: string): DomainOverview {
-  const lines = content.split('\n').filter(line => line.trim());
+  // Extraction intelligente des données de marché
+  const sizeRegex = /marché.*?(\d+(?:,\d+)?(?:\.\d+)?)\s*(milliard|million|Md|M)\s*(euros?|dollars?|\$|€)/i;
+  const growthRegex = /croissance.*?(\d+(?:\.\d+)?)\s*%/i;
+  const playersRegex = /(?:acteurs?|leaders?|entreprises?)[\s\S]*?(?:\d+[\.\)]\s*([^,\n]+))/gi;
+
+  const sizeMatch = content.match(sizeRegex);
+  const growthMatch = content.match(growthRegex);
   
-  // Extraction basique avec regex
-  const marketSizeMatch = content.match(/(\d+[,.]?\d*)\s*(milliards?|millions?)\s*[€$]/i);
-  const growthMatch = content.match(/(\+?\d+[,.]?\d*)\s*%/);
-  const playersMatch = content.match(/(?:acteurs?|entreprises?|sociétés?).*?:(.*?)(?:\n|$)/i);
-  
+  const keyPlayers: string[] = [];
+  let match;
+  while ((match = playersRegex.exec(content)) !== null && keyPlayers.length < 5) {
+    keyPlayers.push(match[1].trim());
+  }
+
   return {
-    marketSize: marketSizeMatch ? `${marketSizeMatch[1]} ${marketSizeMatch[2]} €` : 'Non spécifié',
-    growth: growthMatch ? `${growthMatch[1]}%` : 'Non spécifié',
-    keyPlayers: playersMatch 
-      ? playersMatch[1].split(',').map(p => p.trim()).slice(0, 5)
-      : ['Données en cours d\'analyse'],
+    marketSize: sizeMatch ? `${sizeMatch[1]} ${sizeMatch[2]} ${sizeMatch[3]}` : 'Données en cours de collecte',
+    growth: growthMatch ? `${growthMatch[1]}%` : 'En analyse',
+    keyPlayers: keyPlayers.length > 0 ? keyPlayers : ['Acteurs principaux en identification'],
     maturity: inferMaturity(content),
-    description: lines.slice(0, 3).join(' ').substring(0, 200) + '...'
+    description: content.substring(0, 300) + '...'
   };
 }
 
