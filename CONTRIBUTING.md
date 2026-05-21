@@ -1,424 +1,81 @@
-# 🤝 Guide de Contribution - Real Brand Intelligence Service
+# Contribuer à Kora Digital Pilot
 
-Merci de votre intérêt pour contribuer au **Real Brand Intelligence Service** ! Ce guide vous aidera à comprendre comment participer efficacement au développement.
+Merci de votre intérêt pour Kora Digital Pilot. Ce guide décrit le processus de contribution attendu sur le dépôt.
 
-## 📋 **Table des Matières**
+## 1. Environnement de développement
 
-- [🚀 Démarrage Rapide](#démarrage-rapide)
-- [🏗️ Architecture](#architecture)
-- [🧪 Tests](#tests)
-- [📝 Standards de Code](#standards-de-code)
-- [🔄 Workflow de Contribution](#workflow-de-contribution)
-- [🐛 Signaler des Bugs](#signaler-des-bugs)
-- [💡 Proposer des Fonctionnalités](#proposer-des-fonctionnalités)
-- [📖 Documentation](#documentation)
+Prérequis et installation : voir [`docs/OPERATIONS.md`](./docs/OPERATIONS.md).
 
-## 🚀 **Démarrage Rapide**
+Architecture et conventions du code : voir [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).
 
-### Prérequis
-- Node.js 18+
-- npm ou yarn
-- Git
-- Clé API Perplexity (pour tests réels)
+## 2. Workflow
 
-### Installation
-```bash
-# 1. Fork et clone
-git clone https://github.com/YOUR_USERNAME/kora.git
-cd kora
+1. Créer une branche depuis `main`. Convention : `feature/<sujet>`, `fix/<sujet>`, `chore/<sujet>`, `docs/<sujet>`, `refactor/<sujet>`.
+2. Itérer en commits atomiques au format Conventional Commits (voir section 4).
+3. S'assurer que la branche reste à jour avec `main` via rebase plutôt que merge.
+4. Ouvrir une pull request en utilisant le gabarit [`.github/pull_request_template.md`](./.github/pull_request_template.md).
+5. La pull request doit être revue par au moins un mainteneur avant fusion.
 
-# 2. Installation dépendances
-npm install
+## 3. Critères d'acceptation
 
-# 3. Configuration environnement
-cp .env.example .env
-# Éditer .env avec votre clé API Perplexity
+Toute pull request doit satisfaire les critères suivants avant fusion :
 
-# 4. Lancer les tests
-npm test
+- `npm run lint` passe sans erreur.
+- `npm run test:run` passe sans erreur ; la couverture des nouvelles lignes est tenue (Vitest + V8).
+- `npm run build` passe sans erreur.
+- Aucune régression visible sur les parcours documentés dans [`docs/DEMO.md`](./docs/DEMO.md).
+- Documentation mise à jour : ajout ou modification dans `docs/` quand le changement impacte l'architecture, le modèle de données, la sécurité, l'exploitation ou les fonctionnalités.
+- `CHANGELOG.md` mis à jour dans la section `Unreleased`.
+- Aucun secret commit en clair. Les nouvelles variables d'environnement sont déclarées dans `.env.local.example`.
 
-# 5. Démarrage développement
-npm run dev
+## 4. Conventional Commits
+
+Format : `<type>(<scope optionnel>): <description courte impérative>`.
+
+Types autorisés : `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
+
+Exemples :
+
+```
+feat(planning): allow drag-and-drop reordering within a week
+fix(linkedin): retry token exchange on transient 5xx
+docs(security): document key rotation procedure
+refactor(brand-intelligence): split metrics extractor from orchestrator
+test(perplexity): cover fallback path when API returns 429
+chore(deps): bump vitest to 2.1.10
 ```
 
-## 🏗️ **Architecture**
+Les commits multi-lignes sont encouragés pour le contexte ; la première ligne reste courte (idéalement < 72 caractères).
 
-### Structure du Projet
-```
-src/
-├── services/
-│ ├── RealBrandIntelligenceServiceComplete.ts # Service principal ⭐
-│ ├── EnhancedBrandIntelligenceService.ts # Interfaces TypeScript
-│ └── RealBrandIntelligenceServiceFixed.ts # Version legacy
-├── lib/
-│ └── perplexity-service.ts # Client API Perplexity
-└── tests/
- └── RealBrandIntelligenceService.test.ts # Tests complets
-```
+## 5. Tests
 
-### Composants Clés
+- Framework : Vitest + Testing Library.
+- Emplacement : `src/tests/` (tests métier) et `src/test/` (utilitaires de test) ; cohabitent les tests unitaires et d'intégration.
+- Préférer des tests décrivant un comportement (et non une implémentation) ; utiliser `describe` / `it` (`it.only` interdit en commit).
+- Pour les hooks et composants : utiliser `@testing-library/react` et éviter les mocks intrusifs lorsqu'un test d'intégration léger est possible.
+- Pour les services dépendants de Perplexity / OpenAI / Anthropic : mocker la couche `fetch` ou `node-fetch` à la frontière du service, ne pas appeler les APIs réelles depuis les tests.
 
-#### **Service Principal**
-- **Responsabilité** : Orchestration des analyses de marque
-- **Technologies** : TypeScript, API Perplexity
-- **Patterns** : Factory, Strategy, Observer
+## 6. Style et qualité
 
-#### **Extraction de Données**
-- **Regex Patterns** : Extraction robuste avec fallback
-- **Parsing Intelligent** : Analyse contextuelle
-- **Validation** : Cohérence et sanitisation
+- TypeScript : éviter `any` ; préférer `unknown` puis narrowing. Les nouveaux modules doivent passer un futur mode strict (cf. `docs/TECH_DEBT.md` pour la trajectoire).
+- Composants React : préférer les fonctions et hooks ; respecter la séparation présentation / logique métier.
+- Logs : utiliser `src/lib/logger.ts` (centralisé) plutôt que `console.*` direct.
+- UI : suivre les primitives shadcn/ui dans `src/components/ui/`, ne pas dupliquer.
+- Aucune image lourde, binaire ou hash long n'est versionné directement.
 
-#### **Tests**
-- **Framework** : Vitest
-- **Couverture** : 33 tests, 100% réussite
-- **Types** : Unitaires, intégration, performance
+## 7. Documentation
 
-## 🧪 **Tests**
+- Documents canoniques : modifier les fichiers existants dans `docs/`.
+- Nouveaux documents : ne créer un nouveau fichier que si aucun document existant ne couvre le sujet. Préférer enrichir.
+- Documents temporaires (post-mortem, audit ponctuel) : déposer dans `docs/archive/<catégorie>/` avec date d'archivage en en-tête.
+- Pas de duplication entre `README.md` racine et `docs/`. Le `README` reste un point d'entrée court qui pointe vers `docs/`.
 
-### Lancement des Tests
-```bash
-# Tests complets
-npm test
+## 8. Signalement et discussion
 
-# Tests avec watch mode
-npm run test:watch
+- Bugs : utiliser le gabarit [`.github/ISSUE_TEMPLATE/bug_report.md`](./.github/ISSUE_TEMPLATE/bug_report.md).
+- Évolutions : utiliser le gabarit [`.github/ISSUE_TEMPLATE/feature_request.md`](./.github/ISSUE_TEMPLATE/feature_request.md).
+- Vulnérabilités : pas de signalement public, voir [`SECURITY.md`](./SECURITY.md).
 
-# Tests spécifiques
-npm test -- RealBrandIntelligenceService
+## 9. Licence des contributions
 
-# Coverage
-npm run test:coverage
-```
-
-### Types de Tests
-
-#### **Tests Unitaires**
-- Méthodes d'extraction de données
-- Algorithmes de scoring
-- Utilitaires de parsing
-
-#### **Tests d'Intégration**
-- Workflow complet de génération de rapport
-- Intégration API Perplexity
-- Validation des types TypeScript
-
-#### **Tests de Performance**
-- Temps d'exécution < 30s
-- Optimisation appels API parallèles
-- Gestion mémoire
-
-### Écriture de Nouveaux Tests
-```typescript
-describe('Nouvelle Fonctionnalité', () => {
- beforeEach(() => {
- // Configuration test
- vi.stubEnv('VITE_PERPLEXITY_API_KEY', 'test-key');
- });
-
- it('doit fonctionner correctement', async () => {
- // Arrange
- const service = new RealBrandIntelligenceService();
-
- // Act
- const result = await service.newMethod('test');
-
- // Assert
- expect(result).toBeDefined();
- expect(result.property).toBe(expectedValue);
- });
-});
-```
-
-## 📝 **Standards de Code**
-
-### TypeScript
-- **Mode Strict** : Activé obligatoire
-- **Types Explicites** : Éviter `any` - **Interfaces** : Pour tous les objets complexes
-- **Null Safety** : Vérifications obligatoires
-
-### Conventions de Nommage
-```typescript
-// ✅ Bon
-interface UserAnalysis {
- confidenceScore: number;
- extractionTimestamp: Date;
-}
-
-class RealBrandService {
- async analyzeCompanyData(brandName: string): Promise<AnalysisResult> {
- // Implementation
- }
-}
-
-// ❌ Éviter
-interface data {
- score: any;
- time: any;
-}
-```
-
-### Gestion d'Erreurs
-```typescript
-// ✅ Bon
-try {
- const result = await this.perplexityService.getBusinessInsights(query);
- return this.parseResult(result);
-} catch (error) {
- console.error(`Erreur analyse ${brandName}:`, error);
- throw new Error(`Échec analyse: ${error.message}`);
-}
-
-// ❌ Éviter
-const result = await this.perplexityService.getBusinessInsights(query);
-return result; // Pas de gestion d'erreur
-```
-
-### Documentation Code
-```typescript
-/**
- * 🎯 Génère un rapport complet d'intelligence de marque
- *
- * @param brandName - Nom de la marque à analyser
- * @returns Rapport détaillé avec analyses multi-dimensionnelles
- * @throws Error si l'API Perplexity échoue ou données insuffisantes
- *
- * @example
- * ```typescript
- * const service = new RealBrandIntelligenceService();
- * const report = await service.generateRealDeepResearchReport('Apple Inc.');
- * console.log(`Score: ${report.confidenceScore}/100`);
- * ```
- * /
-async generateRealDeepResearchReport(brandName: string): Promise<DeepResearchReport> {
- // Implementation
-}
-```
-
-## 🔄 **Workflow de Contribution**
-
-### 1. Préparation
-```bash
-# Fork le repo sur GitHub
-# Clone votre fork
-git clone https://github.com/YOUR_USERNAME/kora.git
-cd kora
-
-# Ajouter remote upstream
-git remote add upstream https://github.com/ORIGINAL_OWNER/kora.git
-```
-
-### 2. Développement
-```bash
-# Créer branche feature
-git checkout -b feature/awesome-feature
-
-# Développer avec tests
-npm run test:watch
-
-# Commits fréquents
-git add .
-git commit -m "feat: add awesome feature"
-```
-
-### 3. Tests et Validation
-```bash
-# Tests complets
-npm test
-
-# Vérification TypeScript
-npm run type-check
-
-# Linting (si configuré)
-npm run lint
-```
-
-### 4. Pull Request
-```bash
-# Push vers votre fork
-git push origin feature/awesome-feature
-
-# Créer PR sur GitHub
-# Titre: "feat: add awesome feature"
-# Description détaillée avec:
-# - Contexte du problème
-# - Solution implémentée
-# - Tests ajoutés
-# - Breaking changes éventuels
-```
-
-### Standards de Commits
-Nous utilisons [Conventional Commits](https://www.conventionalcommits.org/) :
-
-```bash
-# Types principaux
-feat: nouvelle fonctionnalité
-fix: correction de bug
-docs: documentation
-test: ajout/modification tests
-refactor: refactorisation sans changement fonctionnel
-perf: amélioration performance
-chore: tâches maintenance
-
-# Exemples
-feat: add competitive analysis module
-fix: resolve confidence score calculation
-docs: update API reference
-test: add integration tests for SWOT metrics
-```
-
-## 🐛 **Signaler des Bugs**
-
-### Template Issue Bug
-```markdown
-## 🐛 Description du Bug
-Description claire et concise du problème.
-
-## 🔄 Reproduction
-Étapes pour reproduire le comportement:
-1. Aller à '...'
-2. Cliquer sur '...'
-3. Défiler jusqu'à '...'
-4. Voir l'erreur
-
-## ✅ Comportement Attendu
-Description claire de ce qui devrait arriver.
-
-## 📊 Comportement Actuel
-Description de ce qui arrive actuellement.
-
-## 📱 Environnement
-- OS: [ex: macOS 13.0]
-- Node.js: [ex: 18.17.0]
-- Version: [ex: 1.0.0]
-- Navigateur: [ex: Chrome 119]
-
-## 📋 Logs
-```
-Coller les logs d'erreur ici
-```
-
-## 📎 Captures d'Écran
-Si applicable, ajouter des captures d'écran.
-
-## ➕ Contexte Additionnel
-Tout autre contexte utile au problème.
-```
-
-## 💡 **Proposer des Fonctionnalités**
-
-### Template Feature Request
-```markdown
-## 🚀 Feature Request
-
-### 🎯 Problème à Résoudre
-Description claire du problème business/utilisateur.
-
-### 💡 Solution Proposée
-Description détaillée de la solution souhaitée.
-
-### 🔄 Alternatives Considérées
-Autres solutions évaluées et pourquoi elles ne conviennent pas.
-
-### 📊 Impact Business
-- Utilisateurs affectés: [nombre/type]
-- Valeur ajoutée: [description]
-- Effort estimé: [faible/moyen/élevé]
-
-### 🛠️ Spécifications Techniques
-- [ ] Nouvelle API endpoint
-- [ ] Modification base de données
-- [ ] Changement interface utilisateur
-- [ ] Intégration tierce
-- [ ] Breaking change
-
-### ✅ Critères d'Acceptation
-- [ ] Critère 1
-- [ ] Critère 2
-- [ ] Critère 3
-```
-
-## 📖 **Documentation**
-
-### Types de Documentation
-- **README.md** : Vue d'ensemble et démarrage rapide
-- **CHANGELOG.md** : Historique des versions
-- **API Reference** : Documentation détaillée des méthodes
-- **Examples** : Cas d'usage concrets
-- **Architecture** : Diagrammes et explications techniques
-
-### Standards Documentation
-```markdown
-# 📚 Titre avec Émoji Pertinent
-
-> Description courte et claire
-
-## 📋 Table des Matières
-- [Section 1](#section-1)
-- [Section 2](#section-2)
-
-## 🎯 Section avec Émoji
-Description détaillée avec exemples de code.
-
-### Code Examples
-```typescript
-// Exemple claire et commenté
-const service = new RealBrandIntelligenceService();
-const result = await service.method();
-```
-
-### 💡 Tips et Notes
-> 💡 **Tip** : Information utile pour les développeurs
-
-### ⚠️ Warnings
-> ⚠️ **Attention** : Information critique à retenir
-```
-
-## 🎯 **Zones d'Amélioration Prioritaires**
-
-### Performance
-- Cache Redis pour optimiser les appels API
-- Rate limiting intelligent
-- Compression des réponses
-
-### Fonctionnalités
-- Support multi-langues (EN, ES, DE)
-- Export rapports (PDF, Excel)
-- Webhooks pour notifications
-
-### Architecture
-- Modularisation services
-- Plugin system
-- API REST publique
-
-### Tests
-- Tests end-to-end
-- Performance benchmarks
-- Tests de charge
-
-## 🏆 **Reconnaissance**
-
-### Contributors
-Les contributeurs sont listés dans le README principal et recevront :
-- Crédit dans CHANGELOG
-- Badge contributor GitHub
-- Mention dans releases notes
-
-### Types de Contributions Appréciées
-- 🐛 **Bug fixes** : Corrections importantes
-- ✨ **Features** : Nouvelles fonctionnalités
-- 📝 **Documentation** : Améliorations doc
-- 🧪 **Tests** : Amélioration couverture
-- 🎨 **UX** : Amélioration interface
-- ⚡ **Performance** : Optimisations
-
-## 📞 **Contact et Support**
-
-- **GitHub Issues** : Pour bugs et feature requests
-- **Discussions** : Pour questions générales
-- **Email** : Pour questions sensibles/privées
-
-- --
-
-* *Merci pour votre contribution au Real Brand Intelligence Service ! 🚀**
-
-* Ensemble, nous créons le meilleur service d'intelligence de marque.*
+En proposant une contribution sur ce dépôt, vous acceptez que votre code soit distribué sous licence MIT, identique au reste du projet (voir [`LICENSE`](./LICENSE)).

@@ -1,224 +1,57 @@
-# 📋 Changelog - Real Brand Intelligence Service
+# Changelog
 
-Toutes les modifications notables du projet sont documentées dans ce fichier.
+Toutes les modifications notables du projet Kora Digital Pilot sont documentées dans ce fichier.
 
-Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
-et ce projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Le format suit [Keep a Changelog 1.1.0](https://keepachangelog.com/fr/1.1.0/) et le projet adhère à [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2024-12-30
+Tant que la version `1.0.0` officielle n'est pas publiée, les versions `0.x` sont à considérer comme pré-stables : la surface publique peut évoluer entre deux mineures.
 
-### 🎉 **PREMIÈRE VERSION STABLE**
+## [Unreleased]
 
-#### ✅ **Ajouté**
+### Documentation
 
-##### **Service Principal Complet**
-- `RealBrandIntelligenceServiceComplete.ts` - Service principal entièrement fonctionnel
-- Support complet de l'API Perplexity avec modèle `llama-3.1-sonar-large-128k-online` - Architecture modulaire avec séparation claire des responsabilités
-- Gestion robuste des erreurs et logging complet
+- Refonte complète de la documentation : introduction du dossier `docs/` (architecture, modèle de données, fonctionnalités, sécurité, exploitation, licences, dette technique, démo) et archivage de l'historique des rapports d'incidents, audits, refactorings et prompts de tests dans `docs/archive/`.
+- Réécriture du `README.md` racine, de `CONTRIBUTING.md`, et ajout d'un `SECURITY.md` racine pointant vers `docs/SECURITY.md`.
 
-##### **Analyses Multi-Dimensionnelles**
-- **Analyse Objective** : Histoire, position marché, santé financière avec métriques quantifiées
-- **Actions Récentes** : Tracking des 6 derniers mois avec catégorisation automatique
-- **Analyse Stratégique** : Modèle économique, avantages concurrentiels, priorités
-- **Détection Tendances** : Signaux faibles, menaces disruptives, opportunités
-- **Métriques SWOT** : Scores quantifiés Forces/Faiblesses/Opportunités/Menaces
-- **Métriques Contenu** : Analyse sentiment, engagement, influenceurs
-- **Métriques Concurrentielles** : Parts de marché, positionnement, dynamiques
-- **KPIs Réputation** : Indices confiance, loyauté, résilience
+## [0.1.0] - 2026-05-21
 
-##### **Intelligence Actionnable**
-- **Recommandations Intelligentes** : Actions prioritaires avec impact estimé, budget, timeline
-- **Alertes Catégorisées** : Critical/Warning/Info/Opportunities avec contexte
-- **Score de Confiance** : Algorithme sophistiqué (70-95%) basé sur qualité des données
-- **Validation Fraîcheur** : Évaluation qualité et âge des données collectées
+### Note de version
 
-##### **Extraction de Données Avancée**
-- **Patterns Regex Robustes** : Extraction scores avec fallback qualitatif
-- **Parsing Intelligent** : Analyse contextuelle et classification automatique
-- **Gestion Multi-Formats** : Support dates, métriques, entités diverses
-- **Validation Cohérence** : Vérification logique et sanitisation des données
+Version proposée pour matérialiser l'état actuel du logiciel dans le cadre du dossier de valorisation. Le champ `version` de `package.json` reste à aligner sur `0.1.0` par l'équipe avant tag git.
 
-#### 🧪 **Tests Complets (33 Tests - 100% Réussite)**
+### Ajouté
 
-##### **Couverture Fonctionnelle**
-- **Initialisation** (3 tests) : Configuration API, validation environnement
-- **Génération Rapport** (4 tests) : Workflow complet, phases d'analyse, scoring
-- **Analyses Spécialisées** (4 tests) : Méthodes d'analyse individuelles
-- **Extraction Métriques** (4 tests) : SWOT, contenu, concurrence, réputation
-- **Recommandations/Alertes** (2 tests) : Intelligence actionnable
-- **Utilitaires** (5 tests) : Méthodes parsing et extraction
-- **Gestion Erreurs** (3 tests) : Robustesse et résilience
-- **Performance** (2 tests) : Temps d'exécution et optimisations
-- **Qualité Données** (3 tests) : Validation et cohérence
-- **Intégration** (3 tests) : API Perplexity et monitoring
+- Service métier `RealBrandIntelligenceService` orchestrant les analyses Perplexity (analyse objective, actions récentes, analyse stratégique, signaux faibles, SWOT, alertes, recommandations actionnables) avec score de confiance et validation de fraîcheur des données.
+- Variante enrichie sous discipline TDD `BrandIntelligenceDashboard` (couverture unitaire sur le service principal).
+- Module `BrandMonitoring` historique avec export PDF premium.
+- Intégration LinkedIn complète : authentification OpenID Connect via proxy `server.cjs`, hooks `useLinkedInAnalytics` et `useLinkedInStats`, widgets dashboard et analytics, export dédié.
+- Hooks d'assistance IA : `useAI`, `useHybridAI` (OpenAI et Anthropic), `usePerplexity`, `useBusinessIntelligence`.
+- Planning éditorial multi-semaines avec persistance `localStorage` (`kora_planning_data`, `kora_weekly_plans`).
+- Génération d'images depuis prompts via `ImageGenerator`.
+- Bibliothèque de rapports et exports (`Library`), historisation des exports en `localStorage`.
+- Protection anti-spam : `global-api-blocker`, `server-detection`, `perplexity-protection-middleware`, plafonds configurables, widgets `ApiHealthDashboard` et `GlobalApiBlockerStatus`.
+- Proxy Express `server.cjs` exposant `POST /api/linkedin/token`, `POST /api/linkedin/profile`, `POST /api/anthropic/messages`, `GET /api/health`, `GET /api/metrics`, avec rate limiting par fenêtre courte.
+- Suite de tests Vitest couvrant en priorité les services métier (≈ 27 fichiers de tests).
+- Pages applicatives `/`, `/app`, `/settings`, `/test-api`, `/diagnostic`, `/auth/linkedin/callback`.
 
-##### **Environnement de Test**
-- Configuration avec `vi.stubEnv()` pour isolation
-- Mocks Perplexity avec données réalistes
-- Validation complète des types TypeScript
-- Tests de performance et monitoring
+### Modifié
 
-#### 🔧 **Corrections Techniques Majeures**
+- Algorithme de score de confiance plafonné à 95 % avec bonus pondérés (anciennement plafonné à 100 % de manière non réaliste).
+- Extraction de scores par patterns multiples avec fallback qualitatif (auparavant regex unique).
+- Catégorisation stricte des actions récentes (`product`, `partnership`, `acquisition`, `strategy`, `marketing`, `crisis`, `regulation`).
+- Interface `ContentMetrics` recomposée autour de `topicsDistribution` et `sentimentByTopic` (suppression du champ `sentimentOverall`).
 
-##### **Interface ContentMetrics**
-- ❌ **Avant** : Propriété `sentimentOverall` inexistante causant erreurs compilation
-- ✅ **Après** : Interface conforme avec `topicsDistribution`, `sentimentByTopic`, etc.
+### Sécurité
 
-##### **Algorithme Score de Confiance**
-- ❌ **Avant** : Score atteignait systématiquement 100% (non réaliste)
-- ✅ **Après** : Algorithme sophistiqué plafonné à 95% avec bonus pondérés
+- Mise en place de la protection anti-spam Perplexity et du détecteur d'état serveur.
+- Documentation explicite des risques résiduels assumés (tokens LinkedIn en `localStorage`, clés `VITE_*` exposées au bundle, proxy sans authentification applicative) — voir `docs/SECURITY.md` et `docs/TECH_DEBT.md`.
 
-##### **Extraction de Scores**
-- ❌ **Avant** : Regex basique retournant `NaN` fréquemment
-- ✅ **Après** : Patterns multiples + analyse qualitative de contexte
+### Connu
 
-##### **Catégorisation Actions**
-- ❌ **Avant** : Types string libres causant erreurs TypeScript
-- ✅ **Après** : Enum strict avec validation et fallback `partnership` ##### **Gestion Environnement**
-- ❌ **Avant** : Modification directe `import.meta.env` (read-only)
-- ✅ **Après** : Utilisation correcte `vi.stubEnv()` pour tests
+- Les métriques affichées sur le `Dashboard` et certaines vues `Analytics` pour Instagram et X (Twitter) reposent encore sur des valeurs hardcodées d'illustration. Trajectoire de remédiation listée dans `docs/TECH_DEBT.md`.
+- Une migration de la session LinkedIn vers un cookie `HttpOnly` côté proxy reste à réaliser.
+- Le pipeline de déploiement de production n'est pas encore industrialisé.
 
-#### 📊 **Optimisations Performance**
+---
 
-##### **Appels API Parallèles**
-- Phases 5-6 exécutées en parallèle via `Promise.all` - Réduction temps d'exécution de 40%
-- Gestion intelligente des dépendances
-
-##### **Extraction Données**
-- Patterns regex optimisés avec cache
-- Fallback qualitatif pour robustesse
-- Validation et sanitisation automatique
-
-##### **Algorithmes Intelligents**
-- Score de confiance avec bonus pondérés
-- Validation fraîcheur avec scoring adaptatif
-- Classification automatique avec machine learning
-
-#### 🏗️ **Architecture Technique**
-
-##### **Separation of Concerns**
-```
-├── Service Principal (RealBrandIntelligenceServiceComplete.ts)
-├── Types & Interfaces (EnhancedBrandIntelligenceService.ts)
-├── Client API (perplexity-service.ts)
-└── Tests Complets (RealBrandIntelligenceService.test.ts)
-```
-
-##### **Design Patterns**
-- **Factory Pattern** : Création service Perplexity
-- **Strategy Pattern** : Algorithmes d'extraction modulaires
-- **Observer Pattern** : Logging et monitoring
-- **Singleton Pattern** : Configuration API unique
-
-#### 🔒 **Sécurité et Robustesse**
-
-##### **Validation Entrées**
-- Vérification nom de marque (longueur, caractères)
-- Sanitisation données extraites
-- Protection injection patterns regex
-
-##### **Gestion Erreurs**
-- Try-catch global avec logging détaillé
-- Fallback gracieux pour chaque phase
-- Messages d'erreur informatifs sans exposition interne
-
-##### **Configuration Sécurisée**
-- Variables d'environnement pour clés API
-- Validation configuration au démarrage
-- Pas de hardcoding de secrets
-
-### 📈 **Métriques Version 1.0.0**
-
-#### **Qualité Code**
-- **Tests** : 33/33 passent (100%)
-- **Couverture** : 95%+ fonctionnelle
-- **TypeScript** : Strict mode, 0 erreur compilation
-- **Performance** : <30s génération rapport, <500ms tests
-
-#### **Fiabilité Données**
-- **Score Confiance** : 70-95% selon qualité données
-- **Extraction Réussie** : 90%+ des patterns
-- **Données Réelles** : 100% via API Perplexity
-- **Fraîcheur** : Validation <30 jours recommandée
-
-#### **Performance Technique**
-- **Temps Réponse** : 3-8 secondes par analyse
-- **Parallélisation** : 10 appels API optimisés
-- **Mémoire** : <50MB utilisation max
-- **Cache** : Intelligent avec TTL adaptatif
-
-### 🚀 **Migration Depuis Versions Précédentes**
-
-#### **Breaking Changes**
-- `sentimentOverall` supprimé de `ContentMetrics` - Score de confiance plafonné à 95% au lieu de 100%
-- Types d'actions strictement typés
-
-#### **Guide Migration**
-```typescript
-// ❌ Avant
-interface ContentMetrics {
- sentimentOverall: { positive: number; negative: number; neutral: number };
-}
-
-// ✅ Après
-interface ContentMetrics {
- topicsDistribution: TopicMetric[];
- sentimentByTopic: Record<string, SentimentBreakdown>;
-}
-```
-
-### 🔮 **Roadmap Prochaines Versions**
-
-#### **v1.1 - Performance & Cache**
-- [ ] Cache Redis pour optimisation
-- [ ] Rate limiting intelligent
-- [ ] Compression réponses API
-
-#### **v1.2 - Fonctionnalités Avancées**
-- [ ] Support multi-langues (EN, ES, DE)
-- [ ] Export rapports (PDF, Excel)
-- [ ] Webhooks notifications
-
-#### **v2.0 - Intelligence Augmentée**
-- [ ] Sources multiples (Google, Bing, etc.)
-- [ ] Machine Learning prédictif
-- [ ] API REST complète
-
-### 🏆 **Remerciements**
-
-- **Équipe Perplexity** : Pour l'API exceptionnelle
-- **Communauté TypeScript** : Pour les outils robustes
-- **Équipe Vitest** : Pour le framework de test moderne
-
-- --
-
-## [0.9.0] - 2024-12-29
-
-### 🔧 **Corrections de Base**
-
-#### **Corrigé**
-- Erreurs compilation TypeScript de base
-- Configuration environnement de test
-- Imports et exports manquants
-
-#### **Ajouté**
-- Structure projet de base
-- Premiers tests unitaires
-- Configuration Vitest
-
-- --
-
-* *Format** : [Version] - Date
-* *Types** : ✅ Ajouté, 🔧 Corrigé, 📈 Amélioré, ❌ Supprimé, 🔒 Sécurité
-
-* *Légende Émojis** :
-- 🎉 Version majeure
-- ✅ Nouvelle fonctionnalité
-- 🔧 Correction de bug
-- 📈 Amélioration
-- 🧪 Tests
-- 📊 Métriques
-- 🏗️ Architecture
-- 🔒 Sécurité
-- 🚀 Performance
-- 🔮 Roadmap
+Cet historique consolide les versions antérieures `[0.9.0] 2024-12-29` (initialisation, premiers tests Vitest) et `[1.0.0] 2024-12-30` (annoncée en interne pour le service Brand Intelligence) sous le numéro de version pré-stable `0.1.0`, par alignement avec le champ `version` actuel du `package.json`. Les fiches de release et les rapports détaillés associés sont archivés dans `docs/archive/refactoring/`.
