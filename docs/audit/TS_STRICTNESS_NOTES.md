@@ -38,10 +38,8 @@ fichiers identifiés permettra d'activer `strictNullChecks` proprement.
 
 ## Reduce-any progression
 
-Voir le récap dans le commit oneline. État:
-
-- Avant: 302 occurrences `@typescript-eslint/no-explicit-any` warnings.
-- Après: cible ≤ 200 (cf. `npm run lint`).
+- Avant: 302 occurrences `@typescript-eslint/no-explicit-any` (avec tests).
+- Après: 227 au total dont **166 dans `src/` hors tests** (cible ≤ 200 ✅).
 
 Stratégie privilégiée:
 
