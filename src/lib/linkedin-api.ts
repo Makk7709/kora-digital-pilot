@@ -62,29 +62,41 @@ class LinkedInAPI {
   private config: LinkedInConfig;
   private accessToken: string | null = null;
   private baseURL = 'https://api.linkedin.com/v2';
-  
+
   // Configuration OpenID Connect LinkedIn officielle
   private openIDConfig: LinkedInOpenIDConfig = {
-    issuer: "https://www.linkedin.com",
-    authorization_endpoint: "https://www.linkedin.com/oauth/v2/authorization",
-    token_endpoint: "https://www.linkedin.com/oauth/v2/accessToken",
-    userinfo_endpoint: "https://api.linkedin.com/v2/userinfo",
-    jwks_uri: "https://www.linkedin.com/oauth/openid/jwks",
-    response_types_supported: ["code"],
-    subject_types_supported: ["pairwise"],
-    id_token_signing_alg_values_supported: ["RS256"],
-    scopes_supported: ["openid", "profile", "email"],
+    issuer: 'https://www.linkedin.com',
+    authorization_endpoint: 'https://www.linkedin.com/oauth/v2/authorization',
+    token_endpoint: 'https://www.linkedin.com/oauth/v2/accessToken',
+    userinfo_endpoint: 'https://api.linkedin.com/v2/userinfo',
+    jwks_uri: 'https://www.linkedin.com/oauth/openid/jwks',
+    response_types_supported: ['code'],
+    subject_types_supported: ['pairwise'],
+    id_token_signing_alg_values_supported: ['RS256'],
+    scopes_supported: ['openid', 'profile', 'email'],
     claims_supported: [
-      "iss", "aud", "iat", "exp", "sub", "name", "given_name", 
-      "family_name", "picture", "email", "email_verified", "locale"
-    ]
+      'iss',
+      'aud',
+      'iat',
+      'exp',
+      'sub',
+      'name',
+      'given_name',
+      'family_name',
+      'picture',
+      'email',
+      'email_verified',
+      'locale',
+    ],
   };
 
   constructor() {
     this.config = {
-      clientId: import.meta.env.VITE_LINKEDIN_CLIENT_ID || '779j5z17aygimq',
+      clientId: import.meta.env.VITE_LINKEDIN_CLIENT_ID || '',
       clientSecret: import.meta.env.VITE_LINKEDIN_CLIENT_SECRET || '',
-      redirectUri: import.meta.env.VITE_LINKEDIN_REDIRECT_URI || 'http://localhost:8088/auth/linkedin/callback'
+      redirectUri:
+        import.meta.env.VITE_LINKEDIN_REDIRECT_URI ||
+        'http://localhost:8088/auth/linkedin/callback',
     };
 
     // Charger le token existant
@@ -98,7 +110,7 @@ class LinkedInAPI {
       clientId: this.config.clientId,
       redirectUri: this.config.redirectUri,
       hasClientSecret: !!this.config.clientSecret,
-      openIDSupported: true
+      openIDSupported: true,
     });
   }
 
@@ -108,7 +120,9 @@ class LinkedInAPI {
   }
 
   private generateState(): string {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    return (
+      Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    );
   }
 
   /**
@@ -116,27 +130,27 @@ class LinkedInAPI {
    */
   getAuthURL(): string {
     const state = this.generateState();
-    
+
     // Utiliser les scopes OpenID Connect standard
     const openIDScopes = this.openIDConfig.scopes_supported;
-    
+
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: this.config.clientId,
       redirect_uri: this.config.redirectUri,
       scope: openIDScopes.join(' '),
-      state: state
+      state: state,
     });
 
     const authURL = `${this.openIDConfig.authorization_endpoint}?${params.toString()}`;
-    
+
     console.log('🎉 LinkedIn OpenID Connect Auth URL générée:', {
       clientId: this.config.clientId,
       redirectUri: this.config.redirectUri,
       scope: openIDScopes.join(' '),
       state: state,
       fullURL: authURL,
-      note: '✅ Configuration OpenID Connect standard'
+      note: '✅ Configuration OpenID Connect standard',
     });
 
     // Stocker le state pour validation
@@ -149,10 +163,10 @@ class LinkedInAPI {
    * Échanger le code d'autorisation contre un access token et ID token
    */
   async exchangeCodeForToken(code: string): Promise<string> {
-    console.log('🔄 Début échange code LinkedIn (OpenID Connect):', { 
-      code: code.substring(0, 10) + '...', 
+    console.log('🔄 Début échange code LinkedIn (OpenID Connect):', {
+      code: code.substring(0, 10) + '...',
       codeLength: code.length,
-      hasClientSecret: !!this.config.clientSecret
+      hasClientSecret: !!this.config.clientSecret,
     });
 
     if (!this.config.clientSecret) {
@@ -160,7 +174,7 @@ class LinkedInAPI {
       console.error('❌', errorMsg);
       throw new Error(errorMsg);
     }
-    
+
     try {
       const proxyUrl = '/api/linkedin/token';
       const requestBody = {
@@ -174,14 +188,14 @@ class LinkedInAPI {
         url: proxyUrl,
         clientId: this.config.clientId,
         redirectUri: this.config.redirectUri,
-        endpoint: this.openIDConfig.token_endpoint
+        endpoint: this.openIDConfig.token_endpoint,
       });
 
       const response = await fetch(proxyUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: JSON.stringify(requestBody),
       });
@@ -189,7 +203,7 @@ class LinkedInAPI {
       console.log('📥 Réponse LinkedIn (OpenID Connect):', {
         status: response.status,
         statusText: response.statusText,
-        ok: response.ok
+        ok: response.ok,
       });
 
       const responseText = await response.text();
@@ -198,13 +212,15 @@ class LinkedInAPI {
         console.error('❌ Erreur réponse LinkedIn:', {
           status: response.status,
           statusText: response.statusText,
-          body: responseText
+          body: responseText,
         });
 
         if (response.status === 401) {
-          throw new Error(`Credentials LinkedIn invalides. Vérifiez votre Client Secret dans le fichier .env`);
+          throw new Error(
+            `Credentials LinkedIn invalides. Vérifiez votre Client Secret dans le fichier .env`,
+          );
         }
-        
+
         throw new Error(`LinkedIn OAuth error: ${response.status} - ${responseText}`);
       }
 
@@ -222,7 +238,7 @@ class LinkedInAPI {
         tokenLength: data.access_token?.length,
         expiresIn: data.expires_in,
         scope: data.scope,
-        tokenType: data.token_type || 'Bearer'
+        tokenType: data.token_type || 'Bearer',
       });
 
       if (!data.access_token) {
@@ -247,13 +263,15 @@ class LinkedInAPI {
       console.log('💾 Tokens stockés (OpenID Connect):', {
         expiresAt: new Date(expiresAt).toISOString(),
         expiresIn: (data.expires_in || 3600) + ' secondes',
-        hasIdToken: !!data.id_token
+        hasIdToken: !!data.id_token,
       });
 
       return data.access_token;
     } catch (error) {
       console.error('💥 Erreur échange code LinkedIn:', error);
-      throw new Error(`Impossible d'obtenir le token LinkedIn: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+      throw new Error(
+        `Impossible d'obtenir le token LinkedIn: ${error instanceof Error ? error.message : 'Erreur inconnue'}`,
+      );
     }
   }
 
@@ -267,22 +285,22 @@ class LinkedInAPI {
     }
 
     if (!this.accessToken) {
-      console.log('🔐 LinkedIn: Aucun token d\'accès trouvé');
+      console.log("🔐 LinkedIn: Aucun token d'accès trouvé");
       return false;
     }
-    
+
     const expiresAt = localStorage.getItem('linkedin_token_expires');
     if (!expiresAt) {
-      console.log('🔐 LinkedIn: Aucune date d\'expiration trouvée');
+      console.log("🔐 LinkedIn: Aucune date d'expiration trouvée");
       return false;
     }
-    
+
     const isValid = Date.now() < parseInt(expiresAt);
     if (!isValid) {
       console.log('🔐 LinkedIn: Token expiré');
       this.logout();
     }
-    
+
     return isValid;
   }
 
@@ -307,24 +325,24 @@ class LinkedInAPI {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          Accept: 'application/json',
         },
         body: JSON.stringify({
           access_token: this.accessToken,
-          endpoint: this.openIDConfig.userinfo_endpoint
+          endpoint: this.openIDConfig.userinfo_endpoint,
         }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
         const errorMsg = `LinkedIn OpenID Connect Error: ${response.status} - ${response.statusText}`;
-        
+
         if (response.status === 401) {
           console.warn('⚠️ Erreur 401 - Token invalide ou permissions insuffisantes');
           this.logout();
           throw new Error('Token expiré. Veuillez vous reconnecter.');
         }
-        
+
         throw new Error(`${errorMsg}: ${errorText}`);
       }
 
@@ -333,7 +351,7 @@ class LinkedInAPI {
         hasId: !!data.sub,
         hasName: !!data.given_name,
         hasEmail: !!data.email,
-        claims: Object.keys(data)
+        claims: Object.keys(data),
       });
 
       // Format OpenID Connect standard
@@ -341,33 +359,32 @@ class LinkedInAPI {
         id: data.sub || 'unknown',
         firstName: {
           localized: {
-            'en_US': data.given_name || 'Utilisateur'
-          }
+            en_US: data.given_name || 'Utilisateur',
+          },
         },
         lastName: {
           localized: {
-            'en_US': data.family_name || 'LinkedIn'
-          }
+            en_US: data.family_name || 'LinkedIn',
+          },
         },
-        profilePicture: data.picture ? { displayImage: data.picture } : undefined
+        profilePicture: data.picture ? { displayImage: data.picture } : undefined,
       };
-
     } catch (error) {
       console.error('❌ Erreur récupération profil OpenID Connect:', error);
-      
+
       // Profil fallback
       const fallbackProfile = {
         id: 'fallback-user',
         firstName: {
           localized: {
-            'en_US': 'Utilisateur'
-          }
+            en_US: 'Utilisateur',
+          },
         },
         lastName: {
           localized: {
-            'en_US': 'LinkedIn'
-          }
-        }
+            en_US: 'LinkedIn',
+          },
+        },
       };
 
       console.log('🔄 Profil fallback utilisé:', fallbackProfile);
@@ -380,39 +397,47 @@ class LinkedInAPI {
    */
   async getMetrics(period: '7d' | '30d' | '90d'): Promise<LinkedInMetrics> {
     console.log(`📊 LinkedIn getMetrics appelé pour la période: ${period}`);
-    
+
     // Vérifier si les credentials sont configurés
     if (!this.config.clientSecret) {
-      console.info('📊 LinkedIn: Credentials non configurés - Utilisation des données de démonstration');
-      console.info('💡 Pour obtenir des données réelles, configurez VITE_LINKEDIN_CLIENT_SECRET dans votre fichier .env');
+      console.info(
+        '📊 LinkedIn: Credentials non configurés - Utilisation des données de démonstration',
+      );
+      console.info(
+        '💡 Pour obtenir des données réelles, configurez VITE_LINKEDIN_CLIENT_SECRET dans votre fichier .env',
+      );
       return this.getFallbackMetrics(period);
     }
 
     if (!this.isAuthenticated()) {
       console.info('📊 LinkedIn non authentifié - Utilisation des données de démonstration');
-      console.info('💡 Pour obtenir des données réelles, connectez-vous via le bouton "Connecter LinkedIn"');
+      console.info(
+        '💡 Pour obtenir des données réelles, connectez-vous via le bouton "Connecter LinkedIn"',
+      );
       return this.getFallbackMetrics(period);
     }
 
     try {
       console.log('🔄 Tentative de récupération des vraies données LinkedIn...');
-      
+
       // Récupérer les posts de l'organisation avec timeout
-      const posts = await Promise.race([
+      const posts = (await Promise.race([
         this.getOrganizationPosts(period),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout récupération posts')), 5000)
-        )
-      ]) as LinkedInPost[];
-      
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout récupération posts')), 5000),
+        ),
+      ])) as LinkedInPost[];
+
       // Calculer les métriques agrégées
       const totalImpressions = posts.reduce((sum, post) => sum + post.metrics.impressions, 0);
       const totalClicks = posts.reduce((sum, post) => sum + post.metrics.clicks, 0);
-      const totalEngagements = posts.reduce((sum, post) => 
-        sum + post.metrics.likes + post.metrics.comments + post.metrics.shares, 0
+      const totalEngagements = posts.reduce(
+        (sum, post) => sum + post.metrics.likes + post.metrics.comments + post.metrics.shares,
+        0,
       );
 
-      const engagementRate = totalImpressions > 0 ? (totalEngagements / totalImpressions * 100).toFixed(1) : '0.0';
+      const engagementRate =
+        totalImpressions > 0 ? ((totalEngagements / totalImpressions) * 100).toFixed(1) : '0.0';
 
       // Générer des insights basés sur les vraies données
       const insights = this.generateInsights(posts);
@@ -425,9 +450,8 @@ class LinkedInAPI {
         totalClicks: this.formatNumber(totalClicks),
         growth: this.calculateGrowth(posts),
         posts: posts.slice(0, 10), // Top 10 posts
-        insights: insights
+        insights: insights,
       };
-
     } catch (error) {
       console.error('❌ Erreur récupération métriques LinkedIn:', error);
       console.info('🔄 Basculement vers les données de démonstration');
@@ -441,9 +465,9 @@ class LinkedInAPI {
    */
   private async getOrganizationPosts(period: string): Promise<LinkedInPost[]> {
     console.log('🎉 Récupération des VRAIES données LinkedIn (Application Vérifiée)...');
-    
+
     if (!this.accessToken) {
-      console.warn('⚠️ Pas de token d\'accès - utilisation des données de fallback');
+      console.warn("⚠️ Pas de token d'accès - utilisation des données de fallback");
       return this.getMockPosts();
     }
 
@@ -451,7 +475,7 @@ class LinkedInAPI {
       // Calculer la date de début selon la période
       const endDate = new Date();
       const startDate = new Date();
-      
+
       switch (period) {
         case '7d':
           startDate.setDate(endDate.getDate() - 7);
@@ -467,11 +491,13 @@ class LinkedInAPI {
       const startTimestamp = startDate.getTime();
       const endTimestamp = endDate.getTime();
 
-      console.log(`🔍 Recherche des posts entre ${startDate.toISOString()} et ${endDate.toISOString()}`);
+      console.log(
+        `🔍 Recherche des posts entre ${startDate.toISOString()} et ${endDate.toISOString()}`,
+      );
 
       // 🎉 NOUVEAU: Accès direct aux APIs LinkedIn vérifiées
       let posts: LinkedInPost[] = [];
-      
+
       try {
         // Étape 1: Récupérer l'ID de l'utilisateur/organisation
         console.log('🔄 Récupération du profil utilisateur...');
@@ -480,7 +506,7 @@ class LinkedInAPI {
 
         // Étape 2: Récupérer les posts de l'utilisateur via l'API LinkedIn V2
         console.log('🔄 Récupération des posts LinkedIn via API officielle...');
-        
+
         // Construction de la requête UGC (User Generated Content)
         const ugcUrl = `${this.baseURL}/ugcPosts`;
         const ugcParams = new URLSearchParams({
@@ -488,23 +514,23 @@ class LinkedInAPI {
           authors: `List(urn:li:person:${userId})`,
           sortBy: 'LAST_MODIFIED',
           count: '50',
-          start: '0'
+          start: '0',
         });
 
         const ugcResponse = await fetch(`${ugcUrl}?${ugcParams.toString()}`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${this.accessToken}`,
+            Authorization: `Bearer ${this.accessToken}`,
             'Content-Type': 'application/json',
             'X-Restli-Protocol-Version': '2.0.0',
-            'LinkedIn-Version': '202405'
-          }
+            'LinkedIn-Version': '202405',
+          },
         });
 
         if (ugcResponse.ok) {
           const ugcData = await ugcResponse.json();
           console.log('✅ Posts UGC récupérés:', ugcData);
-          
+
           if (ugcData.elements && ugcData.elements.length > 0) {
             posts = this.transformLinkedInUGCPosts(ugcData.elements, startTimestamp, endTimestamp);
             console.log(`✅ ${posts.length} posts transformés à partir des données UGC`);
@@ -515,39 +541,46 @@ class LinkedInAPI {
 
         // Étape 3: Fallback - Essayer l'API des shares si UGC échoue
         if (posts.length === 0) {
-          console.log('🔄 Tentative avec l\'API Shares...');
-          
+          console.log("🔄 Tentative avec l'API Shares...");
+
           const sharesUrl = `${this.baseURL}/shares`;
           const sharesParams = new URLSearchParams({
             q: 'owners',
             owners: `urn:li:person:${userId}`,
             sortBy: 'LAST_MODIFIED',
             count: '50',
-            start: '0'
+            start: '0',
           });
 
           const sharesResponse = await fetch(`${sharesUrl}?${sharesParams.toString()}`, {
             method: 'GET',
             headers: {
-              'Authorization': `Bearer ${this.accessToken}`,
+              Authorization: `Bearer ${this.accessToken}`,
               'Content-Type': 'application/json',
-              'X-Restli-Protocol-Version': '2.0.0'
-            }
+              'X-Restli-Protocol-Version': '2.0.0',
+            },
           });
 
           if (sharesResponse.ok) {
             const sharesData = await sharesResponse.json();
             console.log('✅ Shares LinkedIn récupérés:', sharesData);
-            
+
             if (sharesData.elements && sharesData.elements.length > 0) {
-              posts = this.transformLinkedInSharesPosts(sharesData.elements, startTimestamp, endTimestamp);
+              posts = this.transformLinkedInSharesPosts(
+                sharesData.elements,
+                startTimestamp,
+                endTimestamp,
+              );
               console.log(`✅ ${posts.length} posts transformés à partir des données Shares`);
             }
           } else {
-            console.warn('⚠️ Erreur API Shares:', sharesResponse.status, await sharesResponse.text());
+            console.warn(
+              '⚠️ Erreur API Shares:',
+              sharesResponse.status,
+              await sharesResponse.text(),
+            );
           }
         }
-
       } catch (apiError) {
         console.error('❌ Erreur APIs LinkedIn:', apiError);
       }
@@ -560,7 +593,6 @@ class LinkedInAPI {
 
       console.log(`✅ ${posts.length} posts finaux récupérés pour la période ${period}`);
       return posts;
-
     } catch (error) {
       console.error('❌ Erreur récupération posts LinkedIn:', error);
       console.log('🔄 Fallback vers données personnalisées...');
@@ -571,20 +603,26 @@ class LinkedInAPI {
   /**
    * Transformer les données UGC LinkedIn en format interne
    */
-  private transformLinkedInUGCPosts(ugcElements: any[], startTimestamp: number, endTimestamp: number): LinkedInPost[] {
+  private transformLinkedInUGCPosts(
+    ugcElements: any[],
+    startTimestamp: number,
+    endTimestamp: number,
+  ): LinkedInPost[] {
     console.log('🔄 Transformation des posts UGC LinkedIn...');
-    
+
     return ugcElements
-      .filter(element => {
+      .filter((element) => {
         // Filtrer par période
         const createdTime = element.created?.time || Date.now();
         return createdTime >= startTimestamp && createdTime <= endTimestamp;
       })
       .map((element, index) => {
         // Extraire le contenu
-        const text = element.specificContent?.['com.linkedin.ugc.ShareContent']?.shareCommentary?.text || 
-                     element.specificContent?.['com.linkedin.ugc.ShareContent']?.media?.[0]?.description?.text ||
-                     `Post LinkedIn ${index + 1}`;
+        const text =
+          element.specificContent?.['com.linkedin.ugc.ShareContent']?.shareCommentary?.text ||
+          element.specificContent?.['com.linkedin.ugc.ShareContent']?.media?.[0]?.description
+            ?.text ||
+          `Post LinkedIn ${index + 1}`;
 
         // Extraire les métriques
         const socialActions = element.socialDetail?.totalShareStatistics || {};
@@ -603,8 +641,8 @@ class LinkedInAPI {
             clicks: Math.floor(clicks),
             likes: likes,
             comments: comments,
-            shares: shares
-          }
+            shares: shares,
+          },
         };
       });
   }
@@ -612,17 +650,21 @@ class LinkedInAPI {
   /**
    * Transformer les données Shares LinkedIn en format interne
    */
-  private transformLinkedInSharesPosts(shareElements: any[], startTimestamp: number, endTimestamp: number): LinkedInPost[] {
+  private transformLinkedInSharesPosts(
+    shareElements: any[],
+    startTimestamp: number,
+    endTimestamp: number,
+  ): LinkedInPost[] {
     console.log('🔄 Transformation des posts Shares LinkedIn...');
-    
+
     return shareElements
-      .filter(element => {
+      .filter((element) => {
         const createdTime = element.created?.time || Date.now();
         return createdTime >= startTimestamp && createdTime <= endTimestamp;
       })
       .map((element, index) => {
         const text = element.text?.text || element.content?.title || `Post LinkedIn ${index + 1}`;
-        
+
         // Extraire les métriques si disponibles
         const stats = element.socialDetail || {};
         const likes = stats.numLikes || Math.floor(Math.random() * 150) + 15;
@@ -640,8 +682,8 @@ class LinkedInAPI {
             clicks: Math.floor(clicks),
             likes: likes,
             comments: comments,
-            shares: shares
-          }
+            shares: shares,
+          },
         };
       });
   }
@@ -649,35 +691,38 @@ class LinkedInAPI {
   /**
    * Générer des données mockées mais personnalisées selon le profil
    */
-  private async generatePersonalizedMockPosts(profile: any | null, period: string): Promise<LinkedInPost[]> {
+  private async generatePersonalizedMockPosts(
+    profile: any | null,
+    period: string,
+  ): Promise<LinkedInPost[]> {
     console.log('🎭 Génération de données personnalisées...');
-    
-    const userName = profile ? 
-      `${profile.given_name || profile.firstName?.localized?.['en_US'] || 'Utilisateur'} ${profile.family_name || profile.lastName?.localized?.['en_US'] || 'LinkedIn'}` : 
-      'Utilisateur LinkedIn';
+
+    const userName = profile
+      ? `${profile.given_name || profile.firstName?.localized?.['en_US'] || 'Utilisateur'} ${profile.family_name || profile.lastName?.localized?.['en_US'] || 'LinkedIn'}`
+      : 'Utilisateur LinkedIn';
 
     const now = Date.now();
     const periodDays = period === '7d' ? 7 : period === '30d' ? 30 : 90;
-    
+
     // Générer 3-5 posts personnalisés selon la période
     const numPosts = Math.min(Math.floor(periodDays / 7) + 2, 5);
-    
+
     const personalizedPosts = [];
     for (let i = 0; i < numPosts; i++) {
       const daysAgo = Math.floor((periodDays / numPosts) * i) + 1;
       const postDate = new Date(now - daysAgo * 24 * 60 * 60 * 1000);
-      
+
       // Contenus variés et réalistes
       const contents = [
         `🚀 Ravi de partager nos dernières innovations en IA ! Notre équipe a développé une solution qui optimise l'engagement de 47% en moyenne.`,
         `💡 5 insights clés que j'ai appris cette semaine sur l'automatisation intelligente. Thread ci-dessous 👇`,
         `🎯 Comment nous avons augmenté notre ROI marketing de 32% grâce à l'analyse prédictive. Retour d'expérience.`,
         `🔍 L'IA transforme notre approche client. Découvrez notre nouvelle stratégie de personnalisation à grande échelle.`,
-        `📈 Résultats Q1 : +65% d'engagement, +42% de conversions. Merci à toute l'équipe ! 🙏`
+        `📈 Résultats Q1 : +65% d'engagement, +42% de conversions. Merci à toute l'équipe ! 🙏`,
       ];
-      
+
       const content = contents[i % contents.length];
-      
+
       // Métriques réalistes basées sur l'engagement typique
       const baseEngagement = 100 + Math.floor(Math.random() * 300);
       const impressions = baseEngagement * (8 + Math.random() * 12); // 8-20x ratio
@@ -685,7 +730,7 @@ class LinkedInAPI {
       const comments = Math.floor(likes * (0.1 + Math.random() * 0.15)); // 10-25% des likes
       const shares = Math.floor(likes * (0.05 + Math.random() * 0.1)); // 5-15% des likes
       const clicks = Math.floor(impressions * (0.02 + Math.random() * 0.08)); // 2-10% CTR
-      
+
       personalizedPosts.push({
         id: `real_user_post_${i + 1}`,
         content: content,
@@ -695,13 +740,15 @@ class LinkedInAPI {
           clicks: Math.floor(clicks),
           likes: likes,
           comments: comments,
-          shares: shares
-        }
+          shares: shares,
+        },
       });
     }
-    
+
     console.log(`✅ ${numPosts} posts personnalisés générés pour ${userName}`);
-    return personalizedPosts.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    return personalizedPosts.sort(
+      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    );
   }
 
   /**
@@ -711,40 +758,43 @@ class LinkedInAPI {
     return [
       {
         id: 'demo_post_1',
-        content: '🚀 L\'IA transforme notre approche du marketing digital. Découvrez comment Kora AI optimise vos campagnes avec une précision inégalée.',
+        content:
+          "🚀 L'IA transforme notre approche du marketing digital. Découvrez comment Kora AI optimise vos campagnes avec une précision inégalée.",
         publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
         metrics: {
           impressions: 2450,
           clicks: 125,
           likes: 333,
           comments: 42,
-          shares: 67
-        }
+          shares: 67,
+        },
       },
       {
         id: 'demo_post_2',
-        content: '🧵 Thread : 5 tendances IA qui transforment le business en 2024. De l\'automatisation intelligente à la personnalisation à grande échelle.',
+        content:
+          "🧵 Thread : 5 tendances IA qui transforment le business en 2024. De l'automatisation intelligente à la personnalisation à grande échelle.",
         publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
         metrics: {
           impressions: 3200,
           clicks: 134,
           likes: 284,
           comments: 35,
-          shares: 72
-        }
+          shares: 72,
+        },
       },
       {
         id: 'demo_post_3',
-        content: '💡 Découvrez comment Kora AI optimise votre stratégie digitale avec des insights basés sur l\'IA et des recommandations personnalisées.',
+        content:
+          "💡 Découvrez comment Kora AI optimise votre stratégie digitale avec des insights basés sur l'IA et des recommandations personnalisées.",
         publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
         metrics: {
           impressions: 1890,
           clicks: 67,
           likes: 156,
           comments: 19,
-          shares: 31
-        }
-      }
+          shares: 31,
+        },
+      },
     ];
   }
 
@@ -766,19 +816,21 @@ class LinkedInAPI {
     }
 
     const frequency: { [key: number]: number } = {};
-    arr.forEach(item => frequency[item] = (frequency[item] || 0) + 1);
-    
+    arr.forEach((item) => (frequency[item] = (frequency[item] || 0) + 1));
+
     // Trouver la valeur avec la plus haute fréquence
     const maxFrequency = Math.max(...Object.values(frequency));
     const mostFrequentValues = Object.keys(frequency)
-      .filter(key => frequency[parseInt(key)] === maxFrequency)
-      .map(key => parseInt(key));
-    
+      .filter((key) => frequency[parseInt(key)] === maxFrequency)
+      .map((key) => parseInt(key));
+
     // Si égalité, retourner la valeur la plus récente (ou moyenne)
     if (mostFrequentValues.length > 1) {
-      return Math.round(mostFrequentValues.reduce((sum, val) => sum + val, 0) / mostFrequentValues.length);
+      return Math.round(
+        mostFrequentValues.reduce((sum, val) => sum + val, 0) / mostFrequentValues.length,
+      );
     }
-    
+
     return mostFrequentValues[0];
   }
 
@@ -799,11 +851,12 @@ class LinkedInAPI {
     if (!posts || posts.length === 0) {
       return 0;
     }
-    
-    const totalEngagement = posts.reduce((sum, post) => 
-      sum + this.calculatePostEngagement(post), 0
+
+    const totalEngagement = posts.reduce(
+      (sum, post) => sum + this.calculatePostEngagement(post),
+      0,
     );
-    
+
     return totalEngagement / posts.length;
   }
 
@@ -818,11 +871,11 @@ class LinkedInAPI {
    * Calculer l'engagement moyen par heure
    */
   private calculateHourlyEngagement(posts: LinkedInPost[], targetHour: number): number {
-    const postsAtHour = posts.filter(post => {
+    const postsAtHour = posts.filter((post) => {
       const date = new Date(post.publishedAt);
       return !isNaN(date.getTime()) && date.getHours() === targetHour;
     });
-    
+
     return this.calculateAverageEngagement(postsAtHour);
   }
 
@@ -835,24 +888,36 @@ class LinkedInAPI {
     }
 
     const lowerContent = content.toLowerCase();
-    
+
     // Détection des types de contenu
     if (lowerContent.includes('🧵') || lowerContent.includes('thread')) {
       return 'Thread';
     } else if (lowerContent.includes('💡') || lowerContent.includes('tip')) {
       return 'Conseil';
-    } else if (lowerContent.includes('🚀') || lowerContent.includes('innovation') || lowerContent.includes('ia')) {
+    } else if (
+      lowerContent.includes('🚀') ||
+      lowerContent.includes('innovation') ||
+      lowerContent.includes('ia')
+    ) {
       return 'Innovation/IA';
     } else if (lowerContent.includes('🎯') || lowerContent.includes('stratégie')) {
       return 'Stratégie';
-    } else if (lowerContent.includes('📈') || lowerContent.includes('performance') || lowerContent.includes('résultat')) {
+    } else if (
+      lowerContent.includes('📈') ||
+      lowerContent.includes('performance') ||
+      lowerContent.includes('résultat')
+    ) {
       return 'Performance';
     } else if (lowerContent.includes('❓') || lowerContent.includes('?')) {
       return 'Question engageante';
-    } else if (lowerContent.includes('🔍') || lowerContent.includes('découvrez') || lowerContent.includes('guide')) {
+    } else if (
+      lowerContent.includes('🔍') ||
+      lowerContent.includes('découvrez') ||
+      lowerContent.includes('guide')
+    ) {
       return 'Éducatif';
     }
-    
+
     return 'Texte standard';
   }
 
@@ -868,9 +933,9 @@ class LinkedInAPI {
     }
 
     // Grouper les posts par heure
-    const hourlyData: { [hour: number]: { posts: LinkedInPost[]; totalEngagement: number; } } = {};
-    
-    posts.forEach(post => {
+    const hourlyData: { [hour: number]: { posts: LinkedInPost[]; totalEngagement: number } } = {};
+
+    posts.forEach((post) => {
       const date = new Date(post.publishedAt);
       if (!isNaN(date.getTime())) {
         const hour = date.getHours();
@@ -884,7 +949,7 @@ class LinkedInAPI {
 
     // Calculer l'engagement moyen par heure
     const hourlyAverage: { [hour: number]: number } = {};
-    Object.keys(hourlyData).forEach(hourStr => {
+    Object.keys(hourlyData).forEach((hourStr) => {
       const hour = parseInt(hourStr);
       const data = hourlyData[hour];
       hourlyAverage[hour] = data.totalEngagement / data.posts.length;
@@ -895,27 +960,31 @@ class LinkedInAPI {
     }
 
     // Trouver la moyenne globale
-    const globalAverage = Object.values(hourlyAverage).reduce((sum, avg) => sum + avg, 0) / Object.values(hourlyAverage).length;
-    
+    const globalAverage =
+      Object.values(hourlyAverage).reduce((sum, avg) => sum + avg, 0) /
+      Object.values(hourlyAverage).length;
+
     // Identifier les heures avec engagement supérieur à la moyenne
     const peakHours = Object.keys(hourlyAverage)
-      .map(hour => parseInt(hour))
-      .filter(hour => hourlyAverage[hour] > globalAverage * 1.1) // 10% au-dessus de la moyenne
+      .map((hour) => parseInt(hour))
+      .filter((hour) => hourlyAverage[hour] > globalAverage * 1.1) // 10% au-dessus de la moyenne
       .sort((a, b) => hourlyAverage[b] - hourlyAverage[a]) // Trier par performance
       .slice(0, 3); // Top 3 heures
 
     // Calculer le boost d'engagement moyen des heures de pic
-    const peakEngagementAvg = peakHours.length > 0 
-      ? peakHours.reduce((sum, hour) => sum + hourlyAverage[hour], 0) / peakHours.length
-      : globalAverage;
-    
-    const peakEngagementBoost = globalAverage > 0 
-      ? Math.round(((peakEngagementAvg - globalAverage) / globalAverage) * 100)
-      : 0;
+    const peakEngagementAvg =
+      peakHours.length > 0
+        ? peakHours.reduce((sum, hour) => sum + hourlyAverage[hour], 0) / peakHours.length
+        : globalAverage;
+
+    const peakEngagementBoost =
+      globalAverage > 0
+        ? Math.round(((peakEngagementAvg - globalAverage) / globalAverage) * 100)
+        : 0;
 
     return {
       peakHours: peakHours.sort((a, b) => a - b), // Retrier par ordre chronologique
-      peakEngagementBoost: Math.max(peakEngagementBoost, 0)
+      peakEngagementBoost: Math.max(peakEngagementBoost, 0),
     };
   }
 
@@ -924,22 +993,22 @@ class LinkedInAPI {
    */
   logout(): void {
     console.log('🚪 Déconnexion LinkedIn...');
-    
+
     // Nettoyer tous les tokens LinkedIn
     const tokensToRemove = [
       'linkedin_access_token',
-      'linkedin_token_expires', 
+      'linkedin_token_expires',
       'linkedin_oauth_state',
-      'linkedin_id_token' // Nouveau : nettoyer l'ID token OpenID Connect
+      'linkedin_id_token', // Nouveau : nettoyer l'ID token OpenID Connect
     ];
-    
-    tokensToRemove.forEach(tokenKey => {
+
+    tokensToRemove.forEach((tokenKey) => {
       if (localStorage.getItem(tokenKey)) {
         localStorage.removeItem(tokenKey);
         console.log(`🗑️ ${tokenKey} supprimé`);
       }
     });
-    
+
     this.accessToken = null;
     console.log('✅ Déconnexion LinkedIn terminée');
   }
@@ -952,7 +1021,7 @@ class LinkedInAPI {
       if (!this.isAuthenticated()) {
         return false;
       }
-      
+
       await this.getUserProfile();
       return true;
     } catch (error) {
@@ -969,18 +1038,20 @@ class LinkedInAPI {
 
     // Validation des données d'entrée
     if (!posts || posts.length === 0) {
-      console.warn('⚠️ generateInsights: Aucun post fourni pour l\'analyse');
-      return [{
-        title: 'Données insuffisantes',
-        description: 'Aucun post disponible pour générer des insights',
-        impact: 'Publiez du contenu pour obtenir des analyses',
-        type: 'content'
-      }];
+      console.warn("⚠️ generateInsights: Aucun post fourni pour l'analyse");
+      return [
+        {
+          title: 'Données insuffisantes',
+          description: 'Aucun post disponible pour générer des insights',
+          impact: 'Publiez du contenu pour obtenir des analyses',
+          type: 'content',
+        },
+      ];
     }
 
     // Analyser les meilleurs moments de publication avec validation
     const postTimes = posts
-      .map(post => {
+      .map((post) => {
         const date = new Date(post.publishedAt);
         return isNaN(date.getTime()) ? null : date.getHours();
       })
@@ -988,26 +1059,28 @@ class LinkedInAPI {
 
     if (postTimes.length > 0) {
       const bestHour = this.getMostFrequent(postTimes);
-      const hourFrequency = postTimes.filter(h => h === bestHour).length;
+      const hourFrequency = postTimes.filter((h) => h === bestHour).length;
       const confidencePercent = Math.round((hourFrequency / postTimes.length) * 100);
-      
+
       // Calcul d'impact basé sur les données réelles
       const hourlyEngagement = this.calculateHourlyEngagement(posts, bestHour);
       const avgEngagement = this.calculateAverageEngagement(posts);
-      const impactPercent = avgEngagement > 0 ? 
-        Math.round(((hourlyEngagement - avgEngagement) / avgEngagement) * 100) : 0;
+      const impactPercent =
+        avgEngagement > 0
+          ? Math.round(((hourlyEngagement - avgEngagement) / avgEngagement) * 100)
+          : 0;
 
       insights.push({
         title: 'Meilleur moment de publication',
         description: `Vos posts performent mieux vers ${bestHour}h (${confidencePercent}% de vos publications)`,
         impact: impactPercent > 0 ? `+${impactPercent}% engagement` : 'Données insuffisantes',
-        type: 'timing'
+        type: 'timing',
       });
     }
 
     // Analyser le type de contenu le plus performant avec calculs réels
     const avgEngagement = this.calculateAverageEngagement(posts);
-    
+
     if (avgEngagement > 0) {
       const topPost = posts.reduce((best, current) => {
         const currentEng = this.calculatePostEngagement(current);
@@ -1016,16 +1089,21 @@ class LinkedInAPI {
       });
 
       const topPostEngagement = this.calculatePostEngagement(topPost);
-      const performanceBoost = Math.round(((topPostEngagement - avgEngagement) / avgEngagement) * 100);
-      
+      const performanceBoost = Math.round(
+        ((topPostEngagement - avgEngagement) / avgEngagement) * 100,
+      );
+
       // Analyser le contenu réel du meilleur post
       const contentType = this.analyzeContentType(topPost.content);
-      
+
       insights.push({
         title: 'Contenu le plus performant',
         description: `Posts de type "${contentType}" génèrent plus d'engagement`,
-        impact: performanceBoost > 0 ? `+${performanceBoost}% vs moyenne` : 'Performance égale à la moyenne',
-        type: 'content'
+        impact:
+          performanceBoost > 0
+            ? `+${performanceBoost}% vs moyenne`
+            : 'Performance égale à la moyenne',
+        type: 'content',
       });
     }
 
@@ -1034,12 +1112,13 @@ class LinkedInAPI {
     if (timeAnalysis.peakHours.length > 0) {
       const peakHoursStr = timeAnalysis.peakHours.join('h, ') + 'h';
       const engagementVariation = timeAnalysis.peakEngagementBoost;
-      
+
       insights.push({
         title: 'Audience engagement',
         description: `Pics d'activité détectés : ${peakHoursStr}`,
-        impact: engagementVariation > 0 ? `+${engagementVariation}% interactions` : 'Engagement stable',
-        type: 'audience'
+        impact:
+          engagementVariation > 0 ? `+${engagementVariation}% interactions` : 'Engagement stable',
+        type: 'audience',
       });
     }
 
@@ -1058,24 +1137,25 @@ class LinkedInAPI {
       // Séparer les posts en deux périodes : récents vs anciens
       const now = Date.now();
       const midPeriod = now - 3.5 * 24 * 60 * 60 * 1000; // Milieu de 7 jours
-      
-      const recentPosts = posts.filter(post => {
+
+      const recentPosts = posts.filter((post) => {
         const postDate = new Date(post.publishedAt).getTime();
         return !isNaN(postDate) && postDate > midPeriod;
       });
-      
-      const olderPosts = posts.filter(post => {
+
+      const olderPosts = posts.filter((post) => {
         const postDate = new Date(post.publishedAt).getTime();
         return !isNaN(postDate) && postDate <= midPeriod;
       });
 
       if (recentPosts.length === 0 || olderPosts.length === 0) {
         // Fallback : analyser la tendance générale
-        const totalEngagement = posts.reduce((sum, post) => 
-          sum + this.calculatePostEngagement(post), 0
+        const totalEngagement = posts.reduce(
+          (sum, post) => sum + this.calculatePostEngagement(post),
+          0,
         );
         const averageEngagement = totalEngagement / posts.length;
-        
+
         // Simuler une croissance modeste basée sur l'engagement moyen
         const growthRate = Math.min(Math.max(averageEngagement / 50, 1), 25);
         return `+${growthRate.toFixed(0)}%`;
@@ -1092,9 +1172,8 @@ class LinkedInAPI {
       // Calculer la croissance réelle
       const growthRate = ((recentAvgEngagement - olderAvgEngagement) / olderAvgEngagement) * 100;
       const clampedGrowth = Math.min(Math.max(growthRate, -50), 100); // Limiter entre -50% et +100%
-      
+
       return clampedGrowth >= 0 ? `+${clampedGrowth.toFixed(0)}%` : `${clampedGrowth.toFixed(0)}%`;
-      
     } catch (error) {
       console.error('❌ Erreur calcul croissance:', error);
       return '+0%';
@@ -1110,20 +1189,20 @@ class LinkedInAPI {
         totalReach: '45.2K',
         totalEngagement: '6.8%',
         totalClicks: '892',
-        growth: '+15%'
+        growth: '+15%',
       },
       '30d': {
         totalReach: '178.4K',
         totalEngagement: '7.1%',
         totalClicks: '3.2K',
-        growth: '+22%'
+        growth: '+22%',
       },
       '90d': {
         totalReach: '624K',
         totalEngagement: '7.8%',
         totalClicks: '9.8K',
-        growth: '+35%'
-      }
+        growth: '+35%',
+      },
     };
 
     const data = fallbackData[period] || fallbackData['7d'];
@@ -1134,23 +1213,26 @@ class LinkedInAPI {
       insights: [
         {
           title: '🎉 Application LinkedIn vérifiée',
-          description: 'Votre application est maintenant approuvée par LinkedIn. Les APIs complètes sont accessibles.',
+          description:
+            'Votre application est maintenant approuvée par LinkedIn. Les APIs complètes sont accessibles.',
           impact: 'Accès complet aux données LinkedIn',
-          type: 'content'
+          type: 'content',
         },
         {
           title: '📊 Données temps réel disponibles',
-          description: 'Vous pouvez maintenant accéder aux posts réels, analytics et métriques d\'engagement de votre compte.',
+          description:
+            "Vous pouvez maintenant accéder aux posts réels, analytics et métriques d'engagement de votre compte.",
           impact: 'APIs complètes activées',
-          type: 'audience'
+          type: 'audience',
         },
         {
           title: '🔄 Authentification requise',
-          description: 'Reconnectez-vous pour bénéficier des nouveaux scopes et accéder à toutes vos données LinkedIn.',
+          description:
+            'Reconnectez-vous pour bénéficier des nouveaux scopes et accéder à toutes vos données LinkedIn.',
           impact: 'Nouvelle authentification recommandée',
-          type: 'timing'
-        }
-      ]
+          type: 'timing',
+        },
+      ],
     };
   }
 
@@ -1159,7 +1241,7 @@ class LinkedInAPI {
    */
   async validateIDToken(idToken: string): Promise<any> {
     console.log('🔍 Validation ID Token OpenID Connect...');
-    
+
     try {
       // Décoder le header et payload du JWT
       const parts = idToken.split('.');
@@ -1176,7 +1258,7 @@ class LinkedInAPI {
         issuer: payload.iss,
         audience: payload.aud,
         subject: payload.sub,
-        expiry: payload.exp ? new Date(payload.exp * 1000).toISOString() : 'N/A'
+        expiry: payload.exp ? new Date(payload.exp * 1000).toISOString() : 'N/A',
       });
 
       // Validations basiques selon OpenID Connect
@@ -1185,14 +1267,14 @@ class LinkedInAPI {
         audience: payload.aud === this.config.clientId,
         expiry: payload.exp && payload.exp > Date.now() / 1000,
         issuedAt: payload.iat && payload.iat <= Date.now() / 1000,
-        algorithm: header.alg === 'RS256'
+        algorithm: header.alg === 'RS256',
       };
 
       console.log('✅ Validations ID Token:', validations);
 
       // Vérifier que toutes les validations passent
       const allValid = Object.values(validations).every(Boolean);
-      
+
       if (!allValid) {
         console.warn('⚠️ Certaines validations ID Token ont échoué');
       }
@@ -1201,14 +1283,13 @@ class LinkedInAPI {
         valid: allValid,
         payload: payload,
         header: header,
-        validations: validations
+        validations: validations,
       };
-
     } catch (error) {
       console.error('❌ Erreur validation ID Token:', error);
       return {
         valid: false,
-        error: error instanceof Error ? error.message : 'Erreur inconnue'
+        error: error instanceof Error ? error.message : 'Erreur inconnue',
       };
     }
   }
@@ -1240,13 +1321,13 @@ class LinkedInAPI {
     try {
       const parts = idToken.split('.');
       const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-      
+
       console.log('👤 Informations utilisateur depuis ID Token:', {
         subject: payload.sub,
         name: payload.name,
         hasEmail: !!payload.email,
         hasPicture: !!payload.picture,
-        locale: payload.locale
+        locale: payload.locale,
       });
 
       return payload;
@@ -1259,4 +1340,4 @@ class LinkedInAPI {
 
 // Instance singleton
 export const linkedinAPI = new LinkedInAPI();
-export default LinkedInAPI; 
+export default LinkedInAPI;
