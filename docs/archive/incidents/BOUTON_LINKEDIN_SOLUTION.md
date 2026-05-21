@@ -67,8 +67,8 @@ node validate-linkedin.js
 ### **Fichier .env.local**
 ```env
 # Configuration LinkedIn OAuth
-VITE_LINKEDIN_CLIENT_ID=771wyq0br5qhum
-VITE_LINKEDIN_CLIENT_SECRET=WPL_AP1.OSkEq3inhy5qYt9Y.gOV8YQ==
+VITE_LINKEDIN_CLIENT_ID=[REDACTED]
+VITE_LINKEDIN_CLIENT_SECRET=[REDACTED]
 VITE_LINKEDIN_REDIRECT_URI=http://localhost:8088/auth/linkedin/callback
 ```
 

@@ -8,7 +8,7 @@
 
 ### 2. **Scopes LinkedIn**
 - ✅ Utilisation des scopes modernes : `openid profile` - ✅ Plus d'erreur `unauthorized_scope_error` ### 3. **Identifiants LinkedIn**
-- ✅ **Client ID vérifié** : `771wyq0br5qhum` - ✅ **Client Secret vérifié** : `WPL_AP1.OSKEq3inhy5qYt$` - ✅ **Test confirmé** : LinkedIn accepte nos identifiants
+- ✅ **Client ID vérifié** : `[REDACTED]` - ✅ **Client Secret vérifié** : `[REDACTED]` - ✅ **Test confirmé** : LinkedIn accepte nos identifiants
 
 ## 🚨 **Problème Actuel Identifié**
 
@@ -86,7 +86,7 @@ Puis aller sur http://localhost:8088/linkedin-test
 
 ### **À Vérifier :**
 - **Application** : "CM KORA"
-- **Client ID** : `771wyq0br5qhum` - **Redirect URI** : `http://localhost:8088/auth/linkedin/callback` - **Scopes** : `openid profile` ### **URL du Portal :**
+- **Client ID** : `[REDACTED]` - **Redirect URI** : `http://localhost:8088/auth/linkedin/callback` - **Scopes** : `openid profile` ### **URL du Portal :**
 https://developer.linkedin.com/
 
 ## 🎯 **Objectif**

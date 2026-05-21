@@ -81,8 +81,8 @@ Vérifier dans votre app "CM KORA" :
 ```typescript
 // linkedin-api.ts
 const config = {
- clientId: '771wyq0br5qhum',
- clientSecret: 'WPL_AP1.OSKEq3inhy5qYt$',
+ clientId: '[REDACTED]',
+ clientSecret: '[REDACTED]',
  redirectUri: 'http://localhost:8088/auth/linkedin/callback'
 };
 

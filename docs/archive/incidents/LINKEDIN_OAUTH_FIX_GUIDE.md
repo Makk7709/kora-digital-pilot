@@ -57,8 +57,8 @@ npm run dev:full
 Le script `validate-linkedin.js` a confirmé :
 
 ✅ **Configuration .env valide**
-- `VITE_LINKEDIN_CLIENT_ID`: 771wyq0br5qhum
-- `VITE_LINKEDIN_CLIENT_SECRET`: WPL_AP1.OS... (configuré)
+- `VITE_LINKEDIN_CLIENT_ID`: [REDACTED]
+- `VITE_LINKEDIN_CLIENT_SECRET`: [REDACTED] (configuré)
 - `VITE_LINKEDIN_REDIRECT_URI`: http://localhost:8088/auth/linkedin/callback
 
 ✅ **Tous les fichiers requis présents**

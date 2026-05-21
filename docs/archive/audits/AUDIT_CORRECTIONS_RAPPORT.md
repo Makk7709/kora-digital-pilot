@@ -67,9 +67,9 @@ const attempts = [
 ### **4. Configuration .env.local**
 ```bash
 # ✅ Clés API complètes et fonctionnelles
-VITE_OPENAI_API_KEY=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
-VITE_ANTHROPIC_API_KEY=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
-VITE_PERPLEXITY_API_KEY=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
+VITE_OPENAI_API_KEY=[REDACTED]
+VITE_ANTHROPIC_API_KEY=[REDACTED]
+VITE_PERPLEXITY_API_KEY=[REDACTED]
 VITE_LINKEDIN_REDIRECT_URI=http://localhost:8088/auth/linkedin/callback # ✅ Port corrigé
 ```
 

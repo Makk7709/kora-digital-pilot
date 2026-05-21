@@ -22,7 +22,7 @@ Vite charge les fichiers d'environnement dans cet ordre :
 Pour vérifier que les variables sont chargées, ouvrez la console du navigateur (F12) et cherchez :
 ```
 🔍 Debug Variables d'environnement:
-VITE_LINKEDIN_CLIENT_ID: 771wyq0br5qhum
+VITE_LINKEDIN_CLIENT_ID: [REDACTED]
 VITE_LINKEDIN_CLIENT_SECRET présent: true
 ```
 
