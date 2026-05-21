@@ -1,0 +1,29 @@
+# git filter-repo --replace-text patterns
+#
+# Usage (depuis le repo principal /Users/aminemohamed/Desktop/APP/kora,
+# APRES rotation des clés et création du tag pre-filter-repo) :
+#
+#     git filter-repo --replace-text scripts/filter-repo-patterns.txt --force
+#
+# Format documenté ici :
+#   https://htmlpreview.github.io/?https://github.com/newren/git-filter-repo/blob/docs/html/git-filter-repo.html#_replace_text
+#
+# Chaque ligne est soit :
+#   - une chaîne littérale "FOO==>REPLACEMENT"
+#   - un préfixe "literal:" / "regex:" / "glob:" pour forcer le type
+# Les lignes commençant par # sont ignorées.
+#
+# Nous remplaçons par [REDACTED-<type>] pour que les diffs restent lisibles
+# tout en ne ré-injectant aucun secret valide.
+
+# === API keys (les chaînes ci-dessous attrapent la clé complète) ===
+regex:pplx-[A-Za-z0-9]{20,}==>[REDACTED-PERPLEXITY-KEY]
+regex:sk-proj-[A-Za-z0-9_-]{20,}==>[REDACTED-OPENAI-KEY]
+regex:sk-ant-api[0-9]+-[A-Za-z0-9_-]{20,}==>[REDACTED-ANTHROPIC-KEY]
+regex:WPL_AP1\.[A-Za-z0-9.=$+/]+==>[REDACTED-LINKEDIN-TOKEN]
+
+# === LinkedIn client IDs historiquement présents dans le repo ===
+# Ce sont des identifiants OAuth publics par conception, mais ils ont été
+# listés dans la procédure d'audit et sont remplacés pour la cohérence.
+literal:771wyq0br5qhum==>[REDACTED-LINKEDIN-CLIENT-ID]
+literal:779j5z17aygimq==>[REDACTED-LINKEDIN-CLIENT-ID]
