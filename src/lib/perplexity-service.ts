@@ -66,36 +66,44 @@ class PerplexityService {
     console.log('🔧 [PerplexityService] Initialisation:', {
       apiKey: config.apiKey ? `${config.apiKey.substring(0, 10)}...` : 'MANQUANTE',
       model: config.model,
-      maxTokens: config.maxTokens
+      maxTokens: config.maxTokens,
     });
   }
 
   // Méthode principale pour obtenir des insights métier
   async getBusinessInsights(request: InsightRequest): Promise<PerplexityResponse> {
     const cacheKey = this.generateCacheKey(request);
-    
+
     // Vérifier le cache
     const cached = this.getCachedResponse(cacheKey);
     if (cached) return cached;
 
     try {
       const prompt = this.buildBusinessPrompt(request);
-      console.log('📡 [PerplexityService] Appel API avec prompt:', prompt.substring(0, 100) + '...');
-      
+      console.log(
+        '📡 [PerplexityService] Appel API avec prompt:',
+        prompt.substring(0, 100) + '...',
+      );
+
       const response = await this.makeRequest(prompt);
-      
+
       // Mettre en cache
       this.setCachedResponse(cacheKey, response);
-      
+
       return response;
     } catch (error) {
       console.error('❌ [PerplexityService] Erreur Business Insights:', error);
-      throw new Error(`Impossible d'obtenir les insights: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+      throw new Error(
+        `Impossible d'obtenir les insights: ${error instanceof Error ? error.message : 'Erreur inconnue'}`,
+      );
     }
   }
 
   // Insights spécialisés pour le marketing digital
-  async getDigitalMarketingTrends(topic: string, timeframe: '24h' | '7d' | '30d' = '7d'): Promise<MarketInsight[]> {
+  async getDigitalMarketingTrends(
+    topic: string,
+    timeframe: '24h' | '7d' | '30d' = '7d',
+  ): Promise<MarketInsight[]> {
     const request: InsightRequest = {
       query: `Dernières tendances en marketing digital concernant ${topic}`,
       industry: 'digital-marketing',
@@ -103,7 +111,7 @@ class PerplexityService {
       language: 'fr',
       context: `Analyse pour une agence de marketing digital spécialisée en IA. 
                 Période d'analyse: ${timeframe}. 
-                Focus sur les insights actionnables et les opportunités business.`
+                Focus sur les insights actionnables et les opportunités business.`,
     };
 
     const response = await this.getBusinessInsights(request);
@@ -119,7 +127,7 @@ class PerplexityService {
       language: 'fr',
       context: `Veille technologique pour Kora Digital. 
                 Focus sur les technologies émergentes, les nouveaux outils, 
-                et les applications pratiques en entreprise.`
+                et les applications pratiques en entreprise.`,
     };
 
     return await this.getBusinessInsights(request);
@@ -135,14 +143,17 @@ class PerplexityService {
       language: 'fr',
       context: `Analyse pour Kora Digital. 
                 Identifier les stratégies, innovations, et positionnements récents. 
-                Focus sur les opportunités de différenciation.`
+                Focus sur les opportunités de différenciation.`,
     };
 
     return await this.getBusinessInsights(request);
   }
 
   // Génération de contenu avec recherche temps réel
-  async generateContentWithResearch(topic: string, contentType: 'article' | 'post' | 'thread'): Promise<PerplexityResponse> {
+  async generateContentWithResearch(
+    topic: string,
+    contentType: 'article' | 'post' | 'thread',
+  ): Promise<PerplexityResponse> {
     const request: InsightRequest = {
       query: `Créer un ${contentType} sur ${topic} avec les dernières informations et statistiques`,
       industry: 'digital-marketing',
@@ -150,14 +161,17 @@ class PerplexityService {
       language: 'fr',
       context: `Génération de contenu pour Kora Digital. 
                 Inclure des données récentes, des exemples concrets, 
-                et des insights actionnables. Ton professionnel et engageant.`
+                et des insights actionnables. Ton professionnel et engageant.`,
     };
 
     return await this.getBusinessInsights(request);
   }
 
   // Recherche de sources fiables
-  async findReliableSources(topic: string, sourceTypes: string[] = []): Promise<PerplexityResponse> {
+  async findReliableSources(
+    topic: string,
+    sourceTypes: string[] = [],
+  ): Promise<PerplexityResponse> {
     const sourceFilter = sourceTypes.length > 0 ? ` depuis ${sourceTypes.join(', ')}` : '';
     const request: InsightRequest = {
       query: `Sources fiables et récentes sur ${topic}${sourceFilter}`,
@@ -165,7 +179,7 @@ class PerplexityService {
       language: 'fr',
       context: `Recherche de sources pour Kora Digital. 
                 Privilégier les sources académiques, les rapports d'industrie, 
-                et les publications reconnues.`
+                et les publications reconnues.`,
     };
 
     return await this.getBusinessInsights(request);
@@ -180,13 +194,13 @@ class PerplexityService {
     if (!this.config.apiKey) {
       throw new Error('Clé API Perplexity manquante');
     }
-    
+
     if (!prompt || prompt.trim().length === 0) {
       throw new Error('Prompt vide ou invalide');
     }
 
     const headers = {
-      'Authorization': `Bearer ${this.config.apiKey}`,
+      Authorization: `Bearer ${this.config.apiKey}`,
       'Content-Type': 'application/json',
     };
 
@@ -207,7 +221,7 @@ class PerplexityService {
       url: this.baseURL,
       model: body.model,
       maxTokens: body.max_tokens,
-      promptLength: prompt.length
+      promptLength: prompt.length,
     });
 
     let response: Response;
@@ -219,15 +233,17 @@ class PerplexityService {
         headers,
         body: JSON.stringify(body),
       });
-      
+
       console.log('📊 [PerplexityService] Réponse reçue:', {
         status: response.status,
         statusText: response.statusText,
-        ok: response.ok
+        ok: response.ok,
       });
     } catch (error) {
       console.error('❌ [PerplexityService] Erreur fetch:', error);
-      throw new Error(`Erreur réseau: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+      throw new Error(
+        `Erreur réseau: ${error instanceof Error ? error.message : 'Erreur inconnue'}`,
+      );
     }
 
     if (!response.ok) {
@@ -237,13 +253,15 @@ class PerplexityService {
       } catch {
         errorData = { error: { message: 'Erreur inconnue' } };
       }
-      
+
       console.error('❌ [PerplexityService] Erreur API:', {
         status: response.status,
-        error: errorData
+        error: errorData,
       });
-      
-      throw new Error(`Erreur API Perplexity: ${response.status} - ${errorData.error?.message || 'Erreur inconnue'}`);
+
+      throw new Error(
+        `Erreur API Perplexity: ${response.status} - ${errorData.error?.message || 'Erreur inconnue'}`,
+      );
     }
 
     let data;
@@ -252,7 +270,7 @@ class PerplexityService {
       console.log('✅ [PerplexityService] Données parsées:', {
         hasChoices: !!data.choices,
         choicesLength: data.choices?.length,
-        hasContent: !!data.choices?.[0]?.message?.content
+        hasContent: !!data.choices?.[0]?.message?.content,
       });
     } catch (error) {
       console.error('❌ [PerplexityService] Erreur parsing JSON:', error);
@@ -263,10 +281,10 @@ class PerplexityService {
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
       throw new Error('Réponse API invalide: structure de données manquante');
     }
-    
+
     // Nettoyer le contenu avant de le retourner
     const cleanedContent = this.cleanPerplexityContent(data.choices[0].message.content);
-    
+
     return {
       content: cleanedContent,
       sources: this.extractSources(cleanedContent),
@@ -278,7 +296,7 @@ class PerplexityService {
 
   private buildBusinessPrompt(request: InsightRequest): string {
     let prompt = `${request.query}`;
-    
+
     if (request.context) {
       prompt += `\n\nContexte: ${request.context}`;
     }
@@ -289,9 +307,9 @@ class PerplexityService {
 
     if (request.depth) {
       const depthInstructions = {
-        'quick': 'Réponse concise avec les points clés',
-        'detailed': 'Analyse détaillée avec exemples et données',
-        'comprehensive': 'Analyse complète avec tendances, impacts et recommandations'
+        quick: 'Réponse concise avec les points clés',
+        detailed: 'Analyse détaillée avec exemples et données',
+        comprehensive: 'Analyse complète avec tendances, impacts et recommandations',
       };
       prompt += `\n\nNiveau de détail: ${depthInstructions[request.depth]}`;
     }
@@ -313,19 +331,19 @@ class PerplexityService {
   private extractSources(content: string): Array<{ title: string; url: string; snippet: string }> {
     // Parser intelligent pour extraire les sources du contenu
     const sources: Array<{ title: string; url: string; snippet: string }> = [];
-    
+
     // Regex pour détecter les URLs
-    const urlRegex = /https?:\/\/[^\s\)]+/g;
+    const urlRegex = /https?:\/\/[^\s)]+/g;
     const urls = content.match(urlRegex) || [];
-    
+
     // Regex pour détecter les références [1], [2], etc.
     const refRegex = /\[(\d+)\][^[]*?([^.!?]*[.!?])/g;
     let match;
-    
+
     while ((match = refRegex.exec(content)) !== null) {
       const refNumber = parseInt(match[1]);
       const snippet = match[2].trim();
-      
+
       if (urls[refNumber - 1]) {
         sources.push({
           title: `Source ${refNumber}`,
@@ -341,10 +359,10 @@ class PerplexityService {
   private parseMarketInsights(response: PerplexityResponse): MarketInsight[] {
     // Parser intelligent pour extraire des insights structurés
     const insights: MarketInsight[] = [];
-    const lines = response.content.split('\n').filter(line => line.trim());
-    
+    const lines = response.content.split('\n').filter((line) => line.trim());
+
     let currentInsight: Partial<MarketInsight> = {};
-    
+
     for (const line of lines) {
       if (line.includes('Tendance:') || line.includes('Trend:')) {
         if (currentInsight.trend) {
@@ -354,22 +372,26 @@ class PerplexityService {
         currentInsight.trend = line.replace(/Tendance:|Trend:/, '').trim();
       } else if (line.includes('Impact:')) {
         const impact = line.toLowerCase();
-        currentInsight.impact = impact.includes('élevé') || impact.includes('high') ? 'high' :
-                               impact.includes('moyen') || impact.includes('medium') ? 'medium' : 'low';
+        currentInsight.impact =
+          impact.includes('élevé') || impact.includes('high')
+            ? 'high'
+            : impact.includes('moyen') || impact.includes('medium')
+              ? 'medium'
+              : 'low';
       } else if (line.includes('Délai:') || line.includes('Timeframe:')) {
         currentInsight.timeframe = line.replace(/Délai:|Timeframe:/, '').trim();
       }
     }
-    
+
     if (currentInsight.trend) {
       insights.push(currentInsight as MarketInsight);
     }
 
     // Ajouter des valeurs par défaut si nécessaire
-    return insights.map(insight => ({
+    return insights.map((insight) => ({
       ...insight,
       actionable_insights: insight.actionable_insights || [],
-      sources: response.sources.map(source => ({
+      sources: response.sources.map((source) => ({
         ...source,
         credibility: 0.8, // Score par défaut
       })),
@@ -379,12 +401,14 @@ class PerplexityService {
   }
 
   private generateCacheKey(request: InsightRequest): string {
-    return btoa(JSON.stringify({
-      query: request.query,
-      industry: request.industry,
-      depth: request.depth,
-      context: request.context?.substring(0, 100), // Limiter pour éviter des clés trop longues
-    }));
+    return btoa(
+      JSON.stringify({
+        query: request.query,
+        industry: request.industry,
+        depth: request.depth,
+        context: request.context?.substring(0, 100), // Limiter pour éviter des clés trop longues
+      }),
+    );
   }
 
   private getCachedResponse(key: string): PerplexityResponse | null {
@@ -430,71 +454,78 @@ class PerplexityService {
     const systemPromptPatterns = [
       // Prompt Perplexity principal
       /Tu es Perplexity, un assistant de recherche utile formé par Perplexity AI\.[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      
+
       // Instructions système complètes
       /Ta tâche est de rédiger une réponse précise, complète et détaillée[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      
+
       // Instructions de formatage
       /Suis ces instructions pour formuler ta réponse[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      
+
       // Règles de citation
       /Cite les résultats de recherche utilisés directement[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      
+
       // Instructions de formatage markdown
       /Rédige une réponse bien formatée optimisée pour la lisibilité[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      
+
       // Restrictions
       /N'inclus pas d'URL ou de liens dans la réponse[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      
+
       // Types de requêtes spécifiques
       /<query_type_rules>[\s\S]*?<\/query_type_rules>/gi,
-      
+
       // Restrictions générales
       /<restrictions>[\s\S]*?<\/restrictions>/gi,
-      
+
       // Enrichissement contextuel
       /===== ENRICHISSEMENT CONTEXTUEL =====[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      
+
       // Synthèse stratégique
       /SYNTHÈSE STRATÉGIQUE:[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      
+
       // Recommandations opérationnelles
       /RECOMMANDATIONS OPÉRATIONNELLES:[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      
+
       // Lignes de métadonnées KORA
       /KORA[\s]*$/gm,
-      
+
       // Instructions génériques de début
       /^(Voici une analyse|Voici un rapport|Voici une synthèse)[\s\S]*?(?=\n\n)/gi,
-      
+
       // Références aux instructions
-      /selon les instructions fournies|conformément aux directives|comme demandé dans les instructions/gi
+      /selon les instructions fournies|conformément aux directives|comme demandé dans les instructions/gi,
     ];
 
     let cleanedContent = content;
 
     // Appliquer tous les patterns de nettoyage
-    systemPromptPatterns.forEach(pattern => {
+    systemPromptPatterns.forEach((pattern) => {
       cleanedContent = cleanedContent.replace(pattern, '');
     });
 
     // Nettoyer les espaces multiples et les sauts de ligne excessifs
     cleanedContent = cleanedContent
-      .replace(/\n{3,}/g, '\n\n')  // Réduire les sauts de ligne multiples
-      .replace(/\s{3,}/g, ' ')     // Réduire les espaces multiples
-      .trim();                     // Supprimer les espaces en début/fin
+      .replace(/\n{3,}/g, '\n\n') // Réduire les sauts de ligne multiples
+      .replace(/\s{3,}/g, ' ') // Réduire les espaces multiples
+      .trim(); // Supprimer les espaces en début/fin
 
     // Si le contenu a été trop nettoyé, retourner l'original avec un nettoyage minimal
     if (cleanedContent.length < content.length * 0.3) {
-      console.warn('⚠️ [PerplexityService] Nettoyage trop agressif, conservation du contenu original');
+      console.warn(
+        '⚠️ [PerplexityService] Nettoyage trop agressif, conservation du contenu original',
+      );
       return content
-        .replace(/Tu es Perplexity, un assistant de recherche utile formé par Perplexity AI\.[\s\S]*?(?=\n\n)/gi, '')
+        .replace(
+          /Tu es Perplexity, un assistant de recherche utile formé par Perplexity AI\.[\s\S]*?(?=\n\n)/gi,
+          '',
+        )
         .replace(/KORA[\s]*$/gm, '')
         .trim();
     }
 
-    console.log(`🧹 [PerplexityService] Contenu nettoyé: ${content.length} → ${cleanedContent.length} caractères`);
-    
+    console.log(
+      `🧹 [PerplexityService] Contenu nettoyé: ${content.length} → ${cleanedContent.length} caractères`,
+    );
+
     return cleanedContent;
   }
 }
@@ -509,9 +540,11 @@ export const createPerplexityService = (config: PerplexityConfig): PerplexitySer
 
 export const getPerplexityService = (): PerplexityService => {
   if (!perplexityInstance) {
-    throw new Error('Service Perplexity non initialisé. Appelez createPerplexityService() d\'abord.');
+    throw new Error(
+      "Service Perplexity non initialisé. Appelez createPerplexityService() d'abord.",
+    );
   }
   return perplexityInstance;
 };
 
-export { PerplexityService }; 
+export { PerplexityService };

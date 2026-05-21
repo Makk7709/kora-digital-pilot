@@ -5,13 +5,13 @@
  */
 
 import { PerplexityService, createPerplexityService } from '../../lib/perplexity-service';
-import type { 
+import type {
   SWOTMetrics,
   ContentMetrics,
   CompetitiveMetrics,
   ReputationKPIs,
   ObjectiveAnalysis,
-  RecentAction
+  RecentAction,
 } from '../../types/BrandIntelligenceTypes';
 
 export class DataAggregationService {
@@ -29,7 +29,7 @@ export class DataAggregationService {
       apiKey,
       model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-large-128k-online',
       maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 8000,
-      temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2
+      temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
     });
 
     this.isInitialized = true;
@@ -40,7 +40,7 @@ export class DataAggregationService {
    */
   async extractRealSWOTMetrics(brandName: string): Promise<SWOTMetrics> {
     await this.ensureInitialized();
-    
+
     const query = `ANALYSE SWOT DÉTAILLÉE - ${brandName}
 
 Évalue de manière approfondie:
@@ -80,9 +80,9 @@ Pour chaque élément, fournis une évaluation sur 100 et des preuves factuelles
       context: 'Analyse SWOT approfondie',
       industry: 'business',
       depth: 'comprehensive',
-      language: 'fr'
+      language: 'fr',
     });
-    
+
     return this.parseRealSWOTMetrics(response.content);
   }
 
@@ -91,7 +91,7 @@ Pour chaque élément, fournis une évaluation sur 100 et des preuves factuelles
    */
   async analyzeRealContentMetrics(brandName: string): Promise<ContentMetrics> {
     await this.ensureInitialized();
-    
+
     const query = `ANALYSE MÉTRIQUES CONTENU - ${brandName}
 
 Analyse la présence digitale et le contenu:
@@ -131,9 +131,9 @@ Base ton analyse sur des données récentes et vérifiables.`;
       context: 'Métriques contenu et présence digitale',
       industry: 'business',
       depth: 'comprehensive',
-      language: 'fr'
+      language: 'fr',
     });
-    
+
     return this.parseRealContentMetrics(response.content);
   }
 
@@ -142,7 +142,7 @@ Base ton analyse sur des données récentes et vérifiables.`;
    */
   async calculateRealCompetitiveMetrics(brandName: string): Promise<CompetitiveMetrics> {
     await this.ensureInitialized();
-    
+
     const query = `ANALYSE COMPÉTITIVE QUANTIFIÉE - ${brandName}
 
 Évalue la position concurrentielle:
@@ -186,9 +186,9 @@ Fournis des chiffres précis et des comparaisons factuelles.`;
       context: 'Analyse compétitive quantifiée',
       industry: 'business',
       depth: 'comprehensive',
-      language: 'fr'
+      language: 'fr',
     });
-    
+
     return this.parseRealCompetitiveMetrics(response.content);
   }
 
@@ -197,7 +197,7 @@ Fournis des chiffres précis et des comparaisons factuelles.`;
    */
   async computeRealReputationKPIs(brandName: string): Promise<ReputationKPIs> {
     await this.ensureInitialized();
-    
+
     const query = `AUDIT RÉPUTATION QUANTIFIÉ - ${brandName}
 
 Évalue la réputation et l'image de marque:
@@ -236,16 +236,19 @@ Utilise des données mesurables et des sources fiables.`;
       context: 'Audit réputation quantifié',
       industry: 'business',
       depth: 'comprehensive',
-      language: 'fr'
+      language: 'fr',
     });
-    
+
     return this.parseRealReputationKPIs(response.content);
   }
 
   /**
    * 🔍 CALCUL SCORE DE CONFIANCE
    */
-  calculateRealConfidenceScore(objectiveAnalysis: ObjectiveAnalysis, recentActions: RecentAction[]): number {
+  calculateRealConfidenceScore(
+    objectiveAnalysis: ObjectiveAnalysis,
+    recentActions: RecentAction[],
+  ): number {
     let confidenceScore = 0;
 
     // 1. Score basé sur la complétude des données objectives (30%)
@@ -253,42 +256,48 @@ Utilise des données mesurables et des sources fiables.`;
     if (objectiveAnalysis.brandHistory.foundingYear > 1800) objectiveCompletenesss += 10;
     if (objectiveAnalysis.brandHistory.founders.length > 0) objectiveCompletenesss += 10;
     if (objectiveAnalysis.marketPosition.sector.length > 0) objectiveCompletenesss += 10;
-    if (objectiveAnalysis.financialHealth.revenue && objectiveAnalysis.financialHealth.revenue > 0) objectiveCompletenesss += 20;
+    if (objectiveAnalysis.financialHealth.revenue && objectiveAnalysis.financialHealth.revenue > 0)
+      objectiveCompletenesss += 20;
     if (objectiveAnalysis.metrics.innovationIndex > 0) objectiveCompletenesss += 10;
     if (objectiveAnalysis.metrics.reputationScore > 0) objectiveCompletenesss += 10;
-    
+
     confidenceScore += objectiveCompletenesss * 0.3;
 
     // 2. Score basé sur la fraîcheur des actions récentes (25%)
     let recentActionsScore = 0;
     const now = new Date();
-    const threeMonthsAgo = new Date(now.getTime() - (90 * 24 * 60 * 60 * 1000));
-    
-    const recentActionsCount = recentActions.filter(action => action.date >= threeMonthsAgo).length;
+    const threeMonthsAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+
+    const recentActionsCount = recentActions.filter(
+      (action) => action.date >= threeMonthsAgo,
+    ).length;
     recentActionsScore = Math.min(recentActionsCount * 10, 100);
-    
+
     confidenceScore += recentActionsScore * 0.25;
 
     // 3. Score basé sur la cohérence des données (25%)
     let coherenceScore = 60; // Score de base
-    
+
     // Vérifier la cohérence entre les métriques
-    if (objectiveAnalysis.metrics.innovationIndex > 70 && objectiveAnalysis.metrics.reputationScore < 30) {
+    if (
+      objectiveAnalysis.metrics.innovationIndex > 70 &&
+      objectiveAnalysis.metrics.reputationScore < 30
+    ) {
       coherenceScore -= 20; // Incohérence : innovation élevée mais réputation faible
     }
-    
+
     if (objectiveAnalysis.financialHealth.growth && objectiveAnalysis.financialHealth.growth > 20) {
       coherenceScore += 10; // Croissance élevée augmente la cohérence
     }
-    
+
     confidenceScore += coherenceScore * 0.25;
 
     // 4. Score basé sur la diversité des sources (20%)
     let sourcesDiversityScore = 70; // Score de base pour Perplexity comme source principale
-    
+
     if (recentActions.length > 5) sourcesDiversityScore += 15; // Plus d'actions = plus de sources
-    if (recentActions.some(action => action.impact > 70)) sourcesDiversityScore += 15; // Actions à fort impact
-    
+    if (recentActions.some((action) => action.impact > 70)) sourcesDiversityScore += 15; // Actions à fort impact
+
     confidenceScore += sourcesDiversityScore * 0.2;
 
     // Normaliser le score final entre 0 et 100
@@ -299,115 +308,123 @@ Utilise des données mesurables et des sources fiables.`;
 
   private parseRealSWOTMetrics(content: string): SWOTMetrics {
     const cleanedContent = this.cleanRawContent(content);
-    
+
     return {
-      strengths: this.extractSWOTElements(cleanedContent, 'forces?|strengths?|avantages?').map(item => ({
-        item: item.text,
-        score: this.extractScore(item.text, '', 75),
-        evidence: [item.text]
-      })),
-      
-      weaknesses: this.extractSWOTElements(cleanedContent, 'faiblesses?|weaknesses?|défis?').map(item => ({
-        item: item.text,
-        severity: this.extractScore(item.text, '', 60),
-        impact: [item.text]
-      })),
-      
-      opportunities: this.extractSWOTElements(cleanedContent, 'opportunités?|opportunities?').map(item => ({
-        item: item.text,
-        potential: this.extractScore(item.text, '', 70),
-        timeline: '12-24 mois'
-      })),
-      
-      threats: this.extractSWOTElements(cleanedContent, 'menaces?|threats?|risques?').map(item => ({
-        item: item.text,
-        risk: this.extractScore(item.text, '', 50),
-        urgency: this.categorizeUrgency(item.text)
-      })),
-      
-      overallScore: this.calculateOverallSWOTScore(cleanedContent)
+      strengths: this.extractSWOTElements(cleanedContent, 'forces?|strengths?|avantages?').map(
+        (item) => ({
+          item: item.text,
+          score: this.extractScore(item.text, '', 75),
+          evidence: [item.text],
+        }),
+      ),
+
+      weaknesses: this.extractSWOTElements(cleanedContent, 'faiblesses?|weaknesses?|défis?').map(
+        (item) => ({
+          item: item.text,
+          severity: this.extractScore(item.text, '', 60),
+          impact: [item.text],
+        }),
+      ),
+
+      opportunities: this.extractSWOTElements(cleanedContent, 'opportunités?|opportunities?').map(
+        (item) => ({
+          item: item.text,
+          potential: this.extractScore(item.text, '', 70),
+          timeline: '12-24 mois',
+        }),
+      ),
+
+      threats: this.extractSWOTElements(cleanedContent, 'menaces?|threats?|risques?').map(
+        (item) => ({
+          item: item.text,
+          risk: this.extractScore(item.text, '', 50),
+          urgency: this.categorizeUrgency(item.text),
+        }),
+      ),
+
+      overallScore: this.calculateOverallSWOTScore(cleanedContent),
     };
   }
 
   private parseRealContentMetrics(content: string): ContentMetrics {
     const cleanedContent = this.cleanRawContent(content);
-    
+
     return {
       volume: {
         totalMentions: this.extractNumber(cleanedContent, 'mentions?', 1000),
         weeklyAverage: this.extractNumber(cleanedContent, 'hebdomadaire|semaine', 50),
-        monthlyGrowth: this.extractScore(cleanedContent, 'croissance', 5)
+        monthlyGrowth: this.extractScore(cleanedContent, 'croissance', 5),
       },
-      
+
       sentiment: {
         positive: this.extractPercentage(cleanedContent, 'positif', 60),
         neutral: this.extractPercentage(cleanedContent, 'neutre', 25),
         negative: this.extractPercentage(cleanedContent, 'négatif', 15),
-        overallSentiment: this.extractSentimentScore(cleanedContent)
+        overallSentiment: this.extractSentimentScore(cleanedContent),
       },
-      
+
       reach: {
         totalReach: this.extractNumber(cleanedContent, 'portée|reach', 100000),
         avgEngagement: this.extractPercentage(cleanedContent, 'engagement', 3),
-        viralityScore: this.extractScore(cleanedContent, 'viral', 40)
+        viralityScore: this.extractScore(cleanedContent, 'viral', 40),
       },
-      
+
       topics: this.extractTopics(cleanedContent),
-      
-      influencers: this.extractTopInfluencers(cleanedContent)
+
+      influencers: this.extractTopInfluencers(cleanedContent),
     };
   }
 
   private parseRealCompetitiveMetrics(content: string): CompetitiveMetrics {
     const cleanedContent = this.cleanRawContent(content);
-    
+
     return {
       marketShare: {
         current: this.extractMarketShare(cleanedContent),
         trend: this.extractMarketTrend(cleanedContent),
         projectedShare: this.extractProjectedShare(cleanedContent),
-        historicalData: this.extractHistoricalShares(cleanedContent)
+        historicalData: this.extractHistoricalShares(cleanedContent),
       },
-      
+
       benchmarkPosition: {
         rank: this.extractBenchmarkPosition(cleanedContent),
         percentile: this.extractScore(cleanedContent, 'percentile', 50),
-        gapToLeader: this.extractScore(cleanedContent, 'écart|gap', 20)
+        gapToLeader: this.extractScore(cleanedContent, 'écart|gap', 20),
       },
-      
+
       competitiveAdvantageIndex: this.extractCompetitiveAdvantageIndex(cleanedContent),
       threatLevel: this.extractThreatLevel(cleanedContent),
       opportunityGaps: this.extractOpportunityGaps(cleanedContent),
       positionQuadrant: this.extractPositionQuadrant(cleanedContent),
-      costAdvantage: this.extractCostAdvantage(cleanedContent)
+      costAdvantage: this.extractCostAdvantage(cleanedContent),
     };
   }
 
   private parseRealReputationKPIs(content: string): ReputationKPIs {
     const cleanedContent = this.cleanRawContent(content);
-    
+
     return {
       overallScore: this.extractScore(cleanedContent, 'réputation|global', 65),
-      
+
       brandTrust: this.extractScore(cleanedContent, 'confiance', 70),
       brandRecognition: this.extractScore(cleanedContent, 'reconnaissance|notoriété', 60),
       brandLoyalty: this.extractScore(cleanedContent, 'fidélité|loyauté', 55),
-      
+
       publicPerception: {
         favorability: this.extractScore(cleanedContent, 'favorabilité', 65),
         awareness: this.extractScore(cleanedContent, 'notoriété', 70),
-        consideration: this.extractScore(cleanedContent, 'considération', 50)
+        consideration: this.extractScore(cleanedContent, 'considération', 50),
       },
-      
+
       socialMediaMetrics: {
         followers: this.extractNumber(cleanedContent, 'followers|abonnés', 50000),
         engagement: this.extractPercentage(cleanedContent, 'engagement', 3),
-        sentimentScore: this.extractSentimentScore(cleanedContent)
+        sentimentScore: this.extractSentimentScore(cleanedContent),
       },
-      
+
       crisisResilience: this.extractScore(cleanedContent, 'résilience|récupération', 60),
-      
-      competitorComparison: this.extractCompetitorComparison(cleanedContent)
+
+      competitorComparison: this.extractCompetitorComparison(cleanedContent),
     };
   }
 
@@ -431,11 +448,11 @@ Utilise des données mesurables et des sources fiables.`;
       /SYNTHÈSE STRATÉGIQUE:[\s\S]*$/gi,
       /RECOMMANDATIONS OPÉRATIONNELLES:[\s\S]*$/gi,
       /selon les instructions|conformément aux directives|comme demandé/gi,
-      /^\s*[=-]{3,}\s*$/gm
+      /^\s*[=-]{3,}\s*$/gm,
     ];
 
     let cleanedContent = content;
-    cleanupPatterns.forEach(pattern => {
+    cleanupPatterns.forEach((pattern) => {
       cleanedContent = cleanedContent.replace(pattern, '');
     });
 
@@ -445,29 +462,32 @@ Utilise des données mesurables et des sources fiables.`;
       .trim();
   }
 
-  private extractSWOTElements(content: string, pattern: string): Array<{text: string}> {
-    const elements: Array<{text: string}> = [];
-    const regex = new RegExp(`(?:${pattern})\\s*:?\\s*([^\\n\\r]*(?:[\\n\\r][^\\n\\r]*){0,2})`, 'gi');
-    
+  private extractSWOTElements(content: string, pattern: string): Array<{ text: string }> {
+    const elements: Array<{ text: string }> = [];
+    const regex = new RegExp(
+      `(?:${pattern})\\s*:?\\s*([^\\n\\r]*(?:[\\n\\r][^\\n\\r]*){0,2})`,
+      'gi',
+    );
+
     let match;
     while ((match = regex.exec(content)) !== null) {
       const text = match[1].trim();
       if (text.length > 10) {
-        elements.push({text});
+        elements.push({ text });
       }
     }
-    
+
     // Fallback: recherche par lignes avec des puces
     const lines = content.split('\n');
-    lines.forEach(line => {
+    lines.forEach((line) => {
       if ((line.includes('-') || line.includes('•') || line.includes('*')) && line.length > 20) {
         const text = line.replace(/^[-•*\s]+/, '').trim();
-        if (text.length > 10 && !elements.some(e => e.text.includes(text.substring(0, 20)))) {
-          elements.push({text});
+        if (text.length > 10 && !elements.some((e) => e.text.includes(text.substring(0, 20)))) {
+          elements.push({ text });
         }
       }
     });
-    
+
     return elements.slice(0, 5);
   }
 
@@ -481,7 +501,7 @@ Utilise des données mesurables et des sources fiables.`;
       }
       return fallback;
     }
-    
+
     const scoreMatch = content.match(new RegExp(`${keyword}.*?(\\d+)`, 'i'));
     return scoreMatch ? Math.min(parseInt(scoreMatch[1]), 100) : fallback;
   }
@@ -489,16 +509,16 @@ Utilise des données mesurables et des sources fiables.`;
   private extractNumber(content: string, keyword: string, fallback: number): number {
     const patterns = [
       new RegExp(`${keyword}.*?(\\d{1,3}(?:,\\d{3})*(?:\\.\\d+)?)`, 'i'),
-      new RegExp(`(\\d{1,3}(?:,\\d{3})*(?:\\.\\d+)?).*?${keyword}`, 'i')
+      new RegExp(`(\\d{1,3}(?:,\\d{3})*(?:\\.\\d+)?).*?${keyword}`, 'i'),
     ];
-    
+
     for (const pattern of patterns) {
       const match = content.match(pattern);
       if (match) {
         return parseFloat(match[1].replace(',', ''));
       }
     }
-    
+
     return fallback;
   }
 
@@ -514,23 +534,29 @@ Utilise des données mesurables et des sources fiables.`;
     if (sentimentMatch) {
       return Math.max(-100, Math.min(100, parseInt(sentimentMatch[1])));
     }
-    
+
     // Estimation basée sur les pourcentages positif/négatif
     const positiveMatch = content.match(/positif.*?(\d+)\s*%/i);
     const negativeMatch = content.match(/négatif.*?(\d+)\s*%/i);
-    
+
     if (positiveMatch && negativeMatch) {
       const positive = parseInt(positiveMatch[1]);
       const negative = parseInt(negativeMatch[1]);
       return Math.round(positive - negative);
     }
-    
+
     return 15; // Score neutre positif par défaut
   }
 
-  private categorizeUrgency(text: string): 'immediate' | 'short-term' | 'medium-term' | 'long-term' {
+  private categorizeUrgency(
+    text: string,
+  ): 'immediate' | 'short-term' | 'medium-term' | 'long-term' {
     const lowerText = text.toLowerCase();
-    if (lowerText.includes('immédiat') || lowerText.includes('urgent') || lowerText.includes('critique')) {
+    if (
+      lowerText.includes('immédiat') ||
+      lowerText.includes('urgent') ||
+      lowerText.includes('critique')
+    ) {
       return 'immediate';
     } else if (lowerText.includes('court terme') || lowerText.includes('prochains mois')) {
       return 'short-term';
@@ -546,60 +572,66 @@ Utilise des données mesurables et des sources fiables.`;
     const weaknessesCount = (content.match(/faiblesses?|défis?|lacunes?/gi) || []).length;
     const opportunitiesCount = (content.match(/opportunités?|potentiel/gi) || []).length;
     const threatsCount = (content.match(/menaces?|risques?|défis?/gi) || []).length;
-    
+
     const strengthsScore = Math.min(strengthsCount * 10, 40);
     const weaknessScore = Math.max(0, 30 - weaknessesCount * 5);
     const opportunityScore = Math.min(opportunitiesCount * 8, 30);
     const threatScore = Math.max(0, 20 - threatsCount * 3);
-    
+
     return Math.round(strengthsScore + weaknessScore + opportunityScore + threatScore);
   }
 
-  private extractTopics(content: string): Array<{topic: string; frequency: number; sentiment: number}> {
-    const topics: Array<{topic: string; frequency: number; sentiment: number}> = [];
+  private extractTopics(
+    content: string,
+  ): Array<{ topic: string; frequency: number; sentiment: number }> {
+    const topics: Array<{ topic: string; frequency: number; sentiment: number }> = [];
     const lines = content.split('\n');
-    
-    lines.forEach(line => {
+
+    lines.forEach((line) => {
       if (line.includes('sujet') || line.includes('thème') || line.includes('topic')) {
         const topicMatch = line.match(/([a-zA-ZÀ-ÿ\s]+)/);
         if (topicMatch && topicMatch[1].length > 5) {
           topics.push({
             topic: topicMatch[1].trim(),
             frequency: Math.floor(Math.random() * 50) + 10,
-            sentiment: Math.floor(Math.random() * 200) - 100
+            sentiment: Math.floor(Math.random() * 200) - 100,
           });
         }
       }
     });
-    
+
     return topics.slice(0, 5);
   }
 
-  private extractTopInfluencers(content: string): Array<{name: string; reach: number; engagement: number; credibility: number}> {
-    const influencers: Array<{name: string; reach: number; engagement: number; credibility: number}> = [];
-    const patterns = [
-      /influenceurs?\s*:?\s*([^\.]+)/gi,
-      /personnalités?\s*:?\s*([^\.]+)/gi
-    ];
-    
-    patterns.forEach(pattern => {
+  private extractTopInfluencers(
+    content: string,
+  ): Array<{ name: string; reach: number; engagement: number; credibility: number }> {
+    const influencers: Array<{
+      name: string;
+      reach: number;
+      engagement: number;
+      credibility: number;
+    }> = [];
+    const patterns = [/influenceurs?\s*:?\s*([^.]+)/gi, /personnalités?\s*:?\s*([^.]+)/gi];
+
+    patterns.forEach((pattern) => {
       let match;
       while ((match = pattern.exec(content)) !== null) {
         const names = match[1].split(/,|\s+et\s+/);
-        names.forEach(name => {
+        names.forEach((name) => {
           const cleanName = name.trim().replace(/[^\w\s]/g, '');
           if (cleanName.length > 3) {
             influencers.push({
               name: cleanName,
               reach: Math.floor(Math.random() * 1000000) + 10000,
               engagement: Math.floor(Math.random() * 10) + 1,
-              credibility: Math.floor(Math.random() * 40) + 60
+              credibility: Math.floor(Math.random() * 40) + 60,
             });
           }
         });
       }
     });
-    
+
     return influencers.slice(0, 5);
   }
 
@@ -610,9 +642,17 @@ Utilise des données mesurables et des sources fiables.`;
 
   private extractMarketTrend(content: string): 'growing' | 'stable' | 'declining' {
     const lowerContent = content.toLowerCase();
-    if (lowerContent.includes('croissance') || lowerContent.includes('augment') || lowerContent.includes('progression')) {
+    if (
+      lowerContent.includes('croissance') ||
+      lowerContent.includes('augment') ||
+      lowerContent.includes('progression')
+    ) {
       return 'growing';
-    } else if (lowerContent.includes('déclin') || lowerContent.includes('baisse') || lowerContent.includes('diminution')) {
+    } else if (
+      lowerContent.includes('déclin') ||
+      lowerContent.includes('baisse') ||
+      lowerContent.includes('diminution')
+    ) {
       return 'declining';
     }
     return 'stable';
@@ -623,18 +663,18 @@ Utilise des données mesurables et des sources fiables.`;
     return projectionMatch ? parseFloat(projectionMatch[1]) : this.extractMarketShare(content) + 2;
   }
 
-  private extractHistoricalShares(content: string): Array<{period: string; share: number}> {
-    const historicalData: Array<{period: string; share: number}> = [];
+  private extractHistoricalShares(content: string): Array<{ period: string; share: number }> {
+    const historicalData: Array<{ period: string; share: number }> = [];
     const years = ['2022', '2023', '2024'];
     const baseShare = this.extractMarketShare(content);
-    
+
     years.forEach((year, index) => {
       historicalData.push({
         period: year,
-        share: baseShare + (Math.random() * 6 - 3) // Variation de ±3%
+        share: baseShare + (Math.random() * 6 - 3), // Variation de ±3%
       });
     });
-    
+
     return historicalData;
   }
 
@@ -653,7 +693,7 @@ Utilise des données mesurables et des sources fiables.`;
     if (threatMatch) {
       return Math.min(parseInt(threatMatch[1]), 100);
     }
-    
+
     // Estimation basée sur le contenu
     const lowerContent = content.toLowerCase();
     if (lowerContent.includes('forte menace') || lowerContent.includes('risque élevé')) {
@@ -663,19 +703,19 @@ Utilise des données mesurables et des sources fiables.`;
     } else if (lowerContent.includes('faible menace') || lowerContent.includes('risque faible')) {
       return 20;
     }
-    
+
     return 40; // Niveau de menace moyen par défaut
   }
 
   private extractOpportunityGaps(content: string): string[] {
     const gaps: string[] = [];
     const patterns = [
-      /lacunes?\s*:?\s*([^\.]+)/gi,
-      /opportunités?\s+inexploitées?\s*:?\s*([^\.]+)/gi,
-      /gaps?\s*:?\s*([^\.]+)/gi
+      /lacunes?\s*:?\s*([^.]+)/gi,
+      /opportunités?\s+inexploitées?\s*:?\s*([^.]+)/gi,
+      /gaps?\s*:?\s*([^.]+)/gi,
     ];
-    
-    patterns.forEach(pattern => {
+
+    patterns.forEach((pattern) => {
       let match;
       while ((match = pattern.exec(content)) !== null) {
         const gap = match[1].trim();
@@ -684,23 +724,30 @@ Utilise des données mesurables et des sources fiables.`;
         }
       }
     });
-    
+
     return gaps.slice(0, 3);
   }
 
   private extractPositionQuadrant(content: string): 'leader' | 'challenger' | 'follower' | 'niche' {
     const lowerContent = content.toLowerCase();
-    
-    if (lowerContent.includes('leader') || lowerContent.includes('numéro 1') || lowerContent.includes('dominant')) {
+
+    if (
+      lowerContent.includes('leader') ||
+      lowerContent.includes('numéro 1') ||
+      lowerContent.includes('dominant')
+    ) {
       return 'leader';
-    } else if (lowerContent.includes('challenger') || lowerContent.includes('concurrent principal')) {
+    } else if (
+      lowerContent.includes('challenger') ||
+      lowerContent.includes('concurrent principal')
+    ) {
       return 'challenger';
     } else if (lowerContent.includes('suiveur') || lowerContent.includes('follower')) {
       return 'follower';
     } else if (lowerContent.includes('niche') || lowerContent.includes('spécialisé')) {
       return 'niche';
     }
-    
+
     // Estimation basée sur la part de marché
     const marketShare = this.extractMarketShare(content);
     if (marketShare > 30) return 'leader';
@@ -714,57 +761,64 @@ Utilise des données mesurables et des sources fiables.`;
     if (costMatch) {
       return parseFloat(costMatch[1]);
     }
-    
+
     const lowerContent = content.toLowerCase();
     if (lowerContent.includes('avantage coût') || lowerContent.includes('moins cher')) {
       return 10; // Avantage coût de 10%
     } else if (lowerContent.includes('plus cher') || lowerContent.includes('premium')) {
       return -15; // Désavantage coût de 15%
     }
-    
+
     return 0; // Coûts comparables
   }
 
-  private extractCompetitorComparison(content: string): Array<{competitor: string; ourScore: number; theirScore: number; gap: number}> {
-    const comparisons: Array<{competitor: string; ourScore: number; theirScore: number; gap: number}> = [];
-    
+  private extractCompetitorComparison(
+    content: string,
+  ): Array<{ competitor: string; ourScore: number; theirScore: number; gap: number }> {
+    const comparisons: Array<{
+      competitor: string;
+      ourScore: number;
+      theirScore: number;
+      gap: number;
+    }> = [];
+
     // Recherche de comparaisons explicites
     const comparisonPattern = /(?:vs|contre|comparé à)\s+([A-Za-zÀ-ÿ\s]+)/gi;
     let match;
-    
+
     while ((match = comparisonPattern.exec(content)) !== null) {
       const competitor = match[1].trim();
       if (competitor.length > 3 && competitor.length < 50) {
         const ourScore = Math.floor(Math.random() * 40) + 50; // 50-90
         const theirScore = Math.floor(Math.random() * 40) + 40; // 40-80
-        
+
         comparisons.push({
           competitor,
           ourScore,
           theirScore,
-          gap: ourScore - theirScore
+          gap: ourScore - theirScore,
         });
       }
     }
-    
+
     // Fallback: concurrents génériques
     if (comparisons.length === 0) {
       const genericCompetitors = ['Concurrent A', 'Concurrent B', 'Leader marché'];
-      genericCompetitors.forEach(competitor => {
+      genericCompetitors.forEach((competitor) => {
         const ourScore = Math.floor(Math.random() * 30) + 60; // 60-90
         const theirScore = Math.floor(Math.random() * 30) + 50; // 50-80
-        
+
         comparisons.push({
           competitor,
           ourScore,
           theirScore,
-          gap: ourScore - theirScore
+          gap: ourScore - theirScore,
         });
       });
     }
-    
+
     return comparisons.slice(0, 3);
   }
 }
 
-export const dataAggregationService = new DataAggregationService(); 
+export const dataAggregationService = new DataAggregationService();
