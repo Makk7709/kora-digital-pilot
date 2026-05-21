@@ -11,11 +11,11 @@ import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Separator } from './ui/separator';
 import { useToast } from '../hooks/use-toast';
-import { 
-  Eye, 
-  Building2, 
-  TrendingUp, 
-  Search, 
+import {
+  Eye,
+  Building2,
+  TrendingUp,
+  Search,
   Brain,
   Shield,
   Zap,
@@ -27,7 +27,7 @@ import {
   Settings,
   ChevronRight,
   Star,
-  Award
+  Award,
 } from 'lucide-react';
 
 import { CompanyAnalysisWidget } from './CompanyAnalysisWidget';
@@ -50,10 +50,10 @@ interface AnalysisMode {
 const ANALYSIS_MODES: AnalysisMode[] = [
   {
     id: 'overview',
-    label: 'Vue d\'ensemble',
+    label: "Vue d'ensemble",
     description: 'Dashboard principal avec métriques clés',
     icon: BarChart3,
-    badge: 'Essentiel'
+    badge: 'Essentiel',
   },
   {
     id: 'company-analysis',
@@ -61,66 +61,66 @@ const ANALYSIS_MODES: AnalysisMode[] = [
     description: 'Analyse approfondie de votre entreprise',
     icon: Building2,
     premium: true,
-    badge: 'Nouveau'
+    badge: 'Nouveau',
   },
   {
     id: 'competitive-monitoring',
     label: 'Surveillance Concurrentielle',
     description: 'Monitoring et benchmarking concurrents',
     icon: Target,
-    premium: true
+    premium: true,
   },
   {
     id: 'reputation-tracking',
     label: 'Suivi de Réputation',
     description: 'Analyse sentiment et e-réputation',
-    icon: Shield
-  }
+    icon: Shield,
+  },
 ];
 
 const FEATURE_HIGHLIGHTS = [
   {
     icon: Brain,
     title: 'IA Perplexity Intégrée',
-    description: 'Analyses alimentées par l\'intelligence artificielle',
-    color: 'purple'
+    description: "Analyses alimentées par l'intelligence artificielle",
+    color: 'purple',
   },
   {
     icon: Zap,
     title: 'Temps Réel',
     description: 'Données actualisées en continu',
-    color: 'blue'
+    color: 'blue',
   },
   {
     icon: Shield,
     title: 'Sécurisé & Fiable',
     description: 'Protection et validation des données',
-    color: 'green'
+    color: 'green',
   },
   {
     icon: Award,
     title: 'Qualité Premium',
     description: 'Méthodologie McKinsey & TDD',
-    color: 'orange'
-  }
+    color: 'orange',
+  },
 ];
 
-export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = ({ 
-  className = '' 
+export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = ({
+  className = '',
 }) => {
   const [activeMode, setActiveMode] = useState<string>('overview');
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   // === GESTIONNAIRES D'ÉVÉNEMENTS ===
   const handleModeChange = useCallback((mode: string) => {
     setActiveMode(mode);
-    
+
     // Analytics tracking
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', 'brand_monitoring_mode_change', {
         mode,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     }
   }, []);
@@ -128,8 +128,8 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
   const handleGetStarted = useCallback(() => {
     setActiveMode('company-analysis');
     toast({
-      title: "🚀 Analyse de Société Activée",
-      description: "Commencez par analyser votre entreprise",
+      title: '🚀 Analyse de Société Activée',
+      description: 'Commencez par analyser votre entreprise',
     });
   }, [toast]);
 
@@ -147,17 +147,19 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
                 </div>
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">Veille de Marque Premium</h1>
-                  <p className="text-lg text-gray-600">Intelligence artificielle pour votre succès</p>
+                  <p className="text-lg text-gray-600">
+                    Intelligence artificielle pour votre succès
+                  </p>
                 </div>
               </div>
-              
+
               <p className="text-gray-700 max-w-2xl">
-                Analysez votre société, surveillez vos concurrents et protégez votre réputation 
-                avec notre plateforme alimentée par l'IA Perplexity.
+                Analysez votre société, surveillez vos concurrents et protégez votre réputation avec
+                notre plateforme alimentée par l'IA Perplexity.
               </p>
-              
+
               <div className="flex gap-3">
-                <Button 
+                <Button
                   onClick={handleGetStarted}
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-lg"
                   size="lg"
@@ -165,8 +167,8 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
                   <Building2 className="w-5 h-5 mr-2" />
                   Analyser ma Société
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setActiveMode('competitive-monitoring')}
                   size="lg"
                 >
@@ -175,7 +177,7 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
                 </Button>
               </div>
             </div>
-            
+
             <div className="hidden lg:block">
               <div className="w-48 h-48 rounded-full bg-gradient-to-br from-blue-200 to-purple-200 flex items-center justify-center">
                 <Brain className="w-24 h-24 text-blue-600" />
@@ -191,7 +193,9 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
           <Card key={index} className="hover:shadow-lg transition-all duration-300 border-gray-200">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
-                <div className={`w-12 h-12 rounded-xl bg-${feature.color}-100 flex items-center justify-center`}>
+                <div
+                  className={`w-12 h-12 rounded-xl bg-${feature.color}-100 flex items-center justify-center`}
+                >
                   <feature.icon className={`w-6 h-6 text-${feature.color}-600`} />
                 </div>
                 <div className="space-y-2">
@@ -215,27 +219,33 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
         <CardContent>
           <div className="grid md:grid-cols-2 gap-4">
             {ANALYSIS_MODES.map((mode) => (
-              <Card 
+              <Card
                 key={mode.id}
                 className={`cursor-pointer transition-all hover:shadow-md border-2 ${
-                  mode.premium ? 'border-purple-200 bg-purple-50/50' : 'border-gray-200 hover:border-gray-300'
+                  mode.premium
+                    ? 'border-purple-200 bg-purple-50/50'
+                    : 'border-gray-200 hover:border-gray-300'
                 }`}
                 onClick={() => handleModeChange(mode.id)}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
-                    <div className={`p-3 rounded-lg ${mode.premium ? 'bg-purple-100' : 'bg-gray-100'}`}>
-                      <mode.icon className={`h-6 w-6 ${mode.premium ? 'text-purple-600' : 'text-gray-600'}`} />
+                    <div
+                      className={`p-3 rounded-lg ${mode.premium ? 'bg-purple-100' : 'bg-gray-100'}`}
+                    >
+                      <mode.icon
+                        className={`h-6 w-6 ${mode.premium ? 'text-purple-600' : 'text-gray-600'}`}
+                      />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="font-medium text-gray-900">{mode.label}</h3>
                         {mode.badge && (
-                          <Badge 
-                            variant={mode.premium ? "default" : "secondary"} 
+                          <Badge
+                            variant={mode.premium ? 'default' : 'secondary'}
                             className={`text-xs ${
-                              mode.premium 
-                                ? 'bg-purple-100 text-purple-700' 
+                              mode.premium
+                                ? 'bg-purple-100 text-purple-700'
                                 : 'bg-blue-100 text-blue-700'
                             }`}
                           >
@@ -325,8 +335,8 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
           <Tabs value={activeMode} onValueChange={handleModeChange} className="w-full">
             <TabsList className="grid w-full grid-cols-4 h-auto p-1">
               {ANALYSIS_MODES.map((mode) => (
-                <TabsTrigger 
-                  key={mode.id} 
+                <TabsTrigger
+                  key={mode.id}
                   value={mode.id}
                   className="flex flex-col items-center gap-2 p-4 data-[state=active]:bg-white data-[state=active]:shadow-sm"
                   data-testid={`tab-${mode.id}`}
@@ -334,9 +344,7 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
                   <div className="flex items-center gap-2">
                     <mode.icon className="w-4 h-4" />
                     <span className="font-medium text-sm">{mode.label}</span>
-                    {mode.premium && (
-                      <Star className="w-3 h-3 text-purple-600" />
-                    )}
+                    {mode.premium && <Star className="w-3 h-3 text-purple-600" />}
                   </div>
                   {mode.badge && (
                     <Badge variant="secondary" className="text-xs">
@@ -359,7 +367,9 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
                     <Building2 className="w-6 h-6 text-blue-600" />
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900">Analyse de Société</h2>
-                      <p className="text-gray-600">Analysez votre entreprise avec l'IA Perplexity</p>
+                      <p className="text-gray-600">
+                        Analysez votre entreprise avec l'IA Perplexity
+                      </p>
                     </div>
                   </div>
                   <CompanyAnalysisWidget />
@@ -371,7 +381,9 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
                   <div className="flex items-center gap-3 mb-6">
                     <Target className="w-6 h-6 text-purple-600" />
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900">Surveillance Concurrentielle</h2>
+                      <h2 className="text-xl font-semibold text-gray-900">
+                        Surveillance Concurrentielle
+                      </h2>
                       <p className="text-gray-600">Monitoring avancé de vos concurrents</p>
                     </div>
                   </div>
@@ -388,7 +400,7 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
                       <p className="text-gray-600">Surveillance de votre e-réputation</p>
                     </div>
                   </div>
-                  
+
                   <Card>
                     <CardContent className="p-8 text-center">
                       <Shield className="w-16 h-16 text-green-600 mx-auto mb-4" />
@@ -416,8 +428,8 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
                           <span className="text-sm">Alertes IA intelligentes</span>
                         </div>
                       </div>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         className="mt-6"
                         onClick={() => setActiveMode('company-analysis')}
                       >
@@ -435,4 +447,4 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
   );
 };
 
-export default EnhancedBrandMonitoring; 
+export default EnhancedBrandMonitoring;

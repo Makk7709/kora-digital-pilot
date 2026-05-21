@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { linkedinAPI } from '@/lib/linkedin-api';
 import { useApiCallManager } from '@/lib/api-call-manager';
 import type { LinkedInMetrics } from '@/lib/linkedin-api';
+import { logger } from '../lib/logger';
 
 interface UseLinkedInAnalyticsReturn {
   // État d'authentification
@@ -49,13 +50,13 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
 
         // Utiliser le cache si moins de 24 heures
         if (cacheAge < 86400000) {
-          console.log('🔄 [LinkedIn] Loading cached metrics');
+          logger.debug('🔄 [LinkedIn] Loading cached metrics');
           setMetrics(cachedData);
           setLastSync(new Date(timestamp));
         }
       }
     } catch (error) {
-      console.warn('⚠️ [LinkedIn] Error loading cache:', error);
+      logger.warn('⚠️ [LinkedIn] Error loading cache:', error);
     }
   }, [metrics]);
 
@@ -64,7 +65,7 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
     try {
       // Ne pas faire de health check si déjà marqué comme down
       if (!isProxyReady) {
-        console.debug('🔄 [LinkedIn] Skipping health check - proxy marked as down');
+        logger.debug('🔄 [LinkedIn] Skipping health check - proxy marked as down');
         return false;
       }
 
@@ -78,12 +79,12 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
 
       if (isReady !== isProxyReady) {
         setIsProxyReady(isReady);
-        console.log(`🔄 [LinkedIn] Proxy state changed: ${isReady ? 'READY' : 'NOT READY'}`);
+        logger.debug(`🔄 [LinkedIn] Proxy state changed: ${isReady ? 'READY' : 'NOT READY'}`);
       }
 
       return isReady;
     } catch (error) {
-      console.debug('🔄 [LinkedIn] Health check failed:', (error as Error).message);
+      logger.debug('🔄 [LinkedIn] Health check failed:', (error as Error).message);
 
       if (isProxyReady) {
         setIsProxyReady(false);
@@ -99,13 +100,13 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
       clearInterval(proxyCheckIntervalRef.current);
     }
 
-    console.log('🔄 [LinkedIn] Starting smart proxy monitoring...');
+    logger.debug('🔄 [LinkedIn] Starting smart proxy monitoring...');
 
     const maxRetries = 8; // Réduit à 8 tentatives
 
     const scheduleNextCheck = () => {
       if (retryCountRef.current >= maxRetries) {
-        console.warn('⚠️ [LinkedIn] Proxy monitoring stopped after maximum retries');
+        logger.warn('⚠️ [LinkedIn] Proxy monitoring stopped after maximum retries');
         return;
       }
 
@@ -117,7 +118,7 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
         retryCountRef.current++;
 
         if (isReady) {
-          console.log('✅ [LinkedIn] Proxy ready, stopping monitoring');
+          logger.debug('✅ [LinkedIn] Proxy ready, stopping monitoring');
 
           // Continuer l'initialisation via cookie httpOnly côté proxy
           const authenticated = await linkedinAPI.restoreSession();
@@ -132,7 +133,7 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
         }
       }, interval);
 
-      console.log(
+      logger.debug(
         `🔄 [LinkedIn] Next check in ${interval / 1000}s (retry ${retryCountRef.current + 1}/${maxRetries})`,
       );
     };
@@ -147,7 +148,7 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
     hasInitializedRef.current = true;
 
     const initializeLinkedIn = async () => {
-      console.log('🚀 [LinkedIn] Initializing analytics...');
+      logger.debug('🚀 [LinkedIn] Initializing analytics...');
 
       // 1. Vérification configuration
       const clientSecret = import.meta.env.VITE_LINKEDIN_CLIENT_SECRET;
@@ -155,7 +156,7 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
       setIsConfigured(configured);
 
       if (!configured) {
-        console.info('🔧 [LinkedIn] Demo mode - Credentials not configured');
+        logger.info('🔧 [LinkedIn] Demo mode - Credentials not configured');
         return;
       }
 
@@ -197,7 +198,7 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
   // Démarrer l'authentification OAuth
   const authenticate = useCallback(() => {
     if (!isConfigured) {
-      console.warn(
+      logger.warn(
         '⚠️ [LinkedIn] Attempting LinkedIn authentication without configured credentials',
       );
       throw new Error(
@@ -215,11 +216,11 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
       setIsLoading(true);
 
       try {
-        console.log(`🔄 [LinkedIn] Starting metrics retrieval (${period})`);
+        logger.debug(`🔄 [LinkedIn] Starting metrics retrieval (${period})`);
 
         const data = await linkedinAPI.getMetrics(period);
 
-        console.log('✅ [LinkedIn] Metrics retrieved successfully');
+        logger.debug('✅ [LinkedIn] Metrics retrieved successfully');
 
         // Synchronisation avec cache
         setMetrics(data);
@@ -237,9 +238,9 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
           }),
         );
 
-        console.log('💾 [LinkedIn] Metrics synchronized and saved');
+        logger.debug('💾 [LinkedIn] Metrics synchronized and saved');
       } catch (error) {
-        console.error('❌ [LinkedIn] Error retrieving metrics:', error);
+        logger.error('❌ [LinkedIn] Error retrieving metrics:', error);
 
         // Garder les métriques existantes si disponibles
         if (!metrics) {
@@ -256,7 +257,7 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
   const handleOAuthCallback = useCallback(
     async (code: string): Promise<boolean> => {
       if (!isConfigured) {
-        console.warn('⚠️ [LinkedIn] Attempting OAuth callback without configured credentials');
+        logger.warn('⚠️ [LinkedIn] Attempting OAuth callback without configured credentials');
         return false;
       }
 
@@ -270,7 +271,7 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
 
         return true;
       } catch (error) {
-        console.error('Erreur authentification LinkedIn:', error);
+        logger.error('Erreur authentification LinkedIn:', error);
         return false;
       } finally {
         setIsLoading(false);
@@ -286,7 +287,7 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
       setIsAuthenticated(isConnected);
       return isConnected;
     } catch (error) {
-      console.error('Test connexion LinkedIn échoué:', error);
+      logger.error('Test connexion LinkedIn échoué:', error);
       setIsAuthenticated(false);
       return false;
     }

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useAI } from '@/hooks/useAI';
-import { AlertCircle, CheckCircle, Copy, Download, RefreshCw } from 'lucide-react';
+import { AlertCircle, CheckCircle, Copy, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const InspirationAI = () => {
@@ -12,29 +12,33 @@ const InspirationAI = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['linkedin']);
   const [contentType, setContentType] = useState('post');
   const [tone, setTone] = useState('Professionnel & stratégique');
-  const [connectionStatus, setConnectionStatus] = useState<{ openai: boolean; anthropic: boolean; corsIssue?: boolean } | null>(null);
-  
+  const [connectionStatus, setConnectionStatus] = useState<{
+    openai: boolean;
+    anthropic: boolean;
+    corsIssue?: boolean;
+  } | null>(null);
+
   const { generateContent, isGenerating, lastResponse, error, history, testConnection } = useAI();
   const { toast } = useToast();
 
   const platforms = [
     { id: 'linkedin', name: 'LinkedIn', color: 'bg-blue-600', icon: '💼' },
     { id: 'instagram', name: 'Instagram', color: 'bg-pink-600', icon: '📸' },
-    { id: 'twitter', name: 'X (Twitter)', color: 'bg-black', icon: '𝕏' }
+    { id: 'twitter', name: 'X (Twitter)', color: 'bg-black', icon: '𝕏' },
   ];
 
   const contentTypes = [
     { id: 'post', name: 'Post simple', icon: '📝' },
     { id: 'thread', name: 'Thread/Carrousel', icon: '🧵' },
     { id: 'story', name: 'Story/Réels', icon: '📱' },
-    { id: 'article', name: 'Article long', icon: '📄' }
+    { id: 'article', name: 'Article long', icon: '📄' },
   ];
 
   const tones = [
     'Professionnel & stratégique',
     'Innovant & futuriste',
     'Educatif & expert',
-    'Inspirant & visionnaire'
+    'Inspirant & visionnaire',
   ];
 
   // Test de connexion au chargement
@@ -47,16 +51,16 @@ const InspirationAI = () => {
         console.warn('Test de connexion échoué:', error);
       }
     };
-    
+
     checkConnection();
   }, [testConnection]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
       toast({
-        title: "Prompt requis",
-        description: "Veuillez décrire votre idée de contenu",
-        variant: "destructive",
+        title: 'Prompt requis',
+        description: 'Veuillez décrire votre idée de contenu',
+        variant: 'destructive',
       });
       return;
     }
@@ -77,14 +81,14 @@ const InspirationAI = () => {
       }
 
       toast({
-        title: "Contenu généré avec succès !",
+        title: 'Contenu généré avec succès !',
         description: `${results.length} contenu(s) créé(s) par Kora`,
       });
     } catch (error) {
       toast({
-        title: "Erreur de génération",
-        description: error instanceof Error ? error.message : "Une erreur est survenue",
-        variant: "destructive",
+        title: 'Erreur de génération',
+        description: error instanceof Error ? error.message : 'Une erreur est survenue',
+        variant: 'destructive',
       });
     }
   };
@@ -93,30 +97,30 @@ const InspirationAI = () => {
     const testCases = [
       {
         prompt: "créer un post sur l'IA à l'école",
-        platform: "linkedin",
-        contentType: "article",
-        tone: "Educatif & expert",
-        description: "Test article long éducatif"
+        platform: 'linkedin',
+        contentType: 'article',
+        tone: 'Educatif & expert',
+        description: 'Test article long éducatif',
       },
       {
-        prompt: "thread sur les innovations IA 2024",
-        platform: "linkedin", 
-        contentType: "thread",
-        tone: "Innovant & futuriste",
-        description: "Test thread futuriste"
+        prompt: 'thread sur les innovations IA 2024',
+        platform: 'linkedin',
+        contentType: 'thread',
+        tone: 'Innovant & futuriste',
+        description: 'Test thread futuriste',
       },
       {
         prompt: "post motivant sur l'entrepreneuriat",
-        platform: "instagram",
-        contentType: "post",
-        tone: "Inspirant & visionnaire",
-        description: "Test post inspirant"
-      }
+        platform: 'instagram',
+        contentType: 'post',
+        tone: 'Inspirant & visionnaire',
+        description: 'Test post inspirant',
+      },
     ];
 
     toast({
-      title: "Test en cours...",
-      description: "Génération de 3 contenus de test",
+      title: 'Test en cours...',
+      description: 'Génération de 3 contenus de test',
     });
 
     try {
@@ -133,23 +137,21 @@ const InspirationAI = () => {
       }
 
       toast({
-        title: "Tests terminés !",
-        description: "Vérifiez la console pour les détails",
+        title: 'Tests terminés !',
+        description: 'Vérifiez la console pour les détails',
       });
     } catch (error) {
       toast({
-        title: "Erreur de test",
-        description: error instanceof Error ? error.message : "Erreur lors des tests",
-        variant: "destructive",
+        title: 'Erreur de test',
+        description: error instanceof Error ? error.message : 'Erreur lors des tests',
+        variant: 'destructive',
       });
     }
   };
 
   const togglePlatform = (platformId: string) => {
-    setSelectedPlatforms(prev => 
-      prev.includes(platformId) 
-        ? prev.filter(id => id !== platformId)
-        : [...prev, platformId]
+    setSelectedPlatforms((prev) =>
+      prev.includes(platformId) ? prev.filter((id) => id !== platformId) : [...prev, platformId],
     );
   };
 
@@ -157,79 +159,81 @@ const InspirationAI = () => {
     try {
       await navigator.clipboard.writeText(content);
       toast({
-        title: "Copié !",
-        description: "Le contenu a été copié dans le presse-papiers",
+        title: 'Copié !',
+        description: 'Le contenu a été copié dans le presse-papiers',
       });
     } catch (error) {
       toast({
-        title: "Erreur de copie",
-        description: "Impossible de copier le contenu",
-        variant: "destructive",
+        title: 'Erreur de copie',
+        description: 'Impossible de copier le contenu',
+        variant: 'destructive',
       });
     }
   };
 
   const getConnectionStatusIcon = () => {
     if (!connectionStatus) return <RefreshCw className="w-4 h-4 animate-spin" />;
-    
+
     const hasConnection = connectionStatus.openai || connectionStatus.anthropic;
-    return hasConnection ? 
-      <CheckCircle className="w-4 h-4 text-green-500" /> : 
-      <AlertCircle className="w-4 h-4 text-red-500" />;
+    return hasConnection ? (
+      <CheckCircle className="w-4 h-4 text-green-500" />
+    ) : (
+      <AlertCircle className="w-4 h-4 text-red-500" />
+    );
   };
 
   const getConnectionStatusText = () => {
-    if (!connectionStatus) return "Test en cours...";
-    
+    if (!connectionStatus) return 'Test en cours...';
+
     // Affichage Kora uniformisé
     if (connectionStatus.anthropic && connectionStatus.openai) {
-      return connectionStatus.corsIssue ? "Kora IA Premium actif" : "Kora IA connectée";
+      return connectionStatus.corsIssue ? 'Kora IA Premium actif' : 'Kora IA connectée';
     }
-    
+
     if (connectionStatus.anthropic) {
-      return connectionStatus.corsIssue ? "Kora IA (mode alternatif)" : "Kora IA connectée";
+      return connectionStatus.corsIssue ? 'Kora IA (mode alternatif)' : 'Kora IA connectée';
     }
-    
+
     if (connectionStatus.openai) {
-      return "Kora IA connectée";
+      return 'Kora IA connectée';
     }
-    
-    return "Kora IA déconnectée";
+
+    return 'Kora IA déconnectée';
   };
 
   const getPrimaryAIBadge = () => {
-    if (!connectionStatus) return "Kora IA";
-    
+    if (!connectionStatus) return 'Kora IA';
+
     // Toujours afficher Kora peu importe le provider
     if (connectionStatus.corsIssue && connectionStatus.openai) {
-      return "Kora IA"; // Si CORS avec Claude, OpenAI sera utilisé mais on affiche Kora
+      return 'Kora IA'; // Si CORS avec Claude, OpenAI sera utilisé mais on affiche Kora
     }
-    
+
     if (connectionStatus.anthropic && !connectionStatus.corsIssue) {
-      return "Kora IA";
+      return 'Kora IA';
     }
-    
+
     if (connectionStatus.openai) {
-      return "Kora IA";
+      return 'Kora IA';
     }
-    
-    return "Kora IA";
+
+    return 'Kora IA';
   };
 
   // Nouvelle méthode pour générer des images (toujours avec OpenAI)
   const handleImageGeneration = async (imagePrompt: string) => {
     try {
-      console.log('🎨 Génération d\'image avec OpenAI DALL-E');
+      console.log("🎨 Génération d'image avec OpenAI DALL-E");
       // Cette fonctionnalité sera implémentée plus tard
       toast({
         title: "Génération d'images",
-        description: "Fonctionnalité en cours de développement avec DALL-E 3",
+        description: 'Fonctionnalité en cours de développement avec DALL-E 3',
       });
     } catch (error) {
       toast({
         title: "Erreur de génération d'image",
-        description: error instanceof Error ? error.message : "Une erreur est survenue",
-        variant: "destructive",
+        description: error instanceof Error ? error.message : 'Une erreur est survenue',
+        variant: 'destructive',
       });
     }
   };
@@ -307,7 +311,7 @@ const InspirationAI = () => {
                 <label className="text-slate-600 text-sm font-medium mb-2 block">
                   Ton de communication
                 </label>
-                <select 
+                <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
                   className="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-700 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -338,8 +342,8 @@ const InspirationAI = () => {
                 </div>
               </div>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Je suis prête à créer du contenu premium pour Korev AI. 
-                Décrivez-moi votre idée et je l'adapterai à chaque plateforme.
+                Je suis prête à créer du contenu premium pour Korev AI. Décrivez-moi votre idée et
+                je l'adapterai à chaque plateforme.
               </p>
               {error && (
                 <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-lg">
@@ -363,7 +367,7 @@ const InspirationAI = () => {
                 onChange={(e) => setPrompt(e.target.value)}
                 className="min-h-[120px] bg-white border-slate-200 text-slate-700 placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline" className="border-blue-300 text-blue-600">
@@ -373,9 +377,9 @@ const InspirationAI = () => {
                     {prompt.length}/1000 caractères
                   </Badge>
                 </div>
-                
+
                 <div className="flex space-x-2">
-                  <Button 
+                  <Button
                     onClick={handleTestGeneration}
                     variant="outline"
                     size="sm"
@@ -383,7 +387,7 @@ const InspirationAI = () => {
                   >
                     ✨ Kora Test
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleGenerate}
                     disabled={isGenerating || !prompt.trim()}
                     className="bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 disabled:opacity-50"
@@ -394,9 +398,7 @@ const InspirationAI = () => {
                         Génération...
                       </>
                     ) : (
-                      <>
-                        ✨ Générer avec Kora
-                      </>
+                      <>✨ Générer avec Kora</>
                     )}
                   </Button>
                 </div>
@@ -419,7 +421,9 @@ const InspirationAI = () => {
                     <div className="text-center">
                       <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
                       <p className="text-slate-600">Kora travaille sur votre contenu...</p>
-                      <p className="text-slate-400 text-sm mt-1">Cela peut prendre quelques secondes</p>
+                      <p className="text-slate-400 text-sm mt-1">
+                        Cela peut prendre quelques secondes
+                      </p>
                     </div>
                   </div>
                 )}

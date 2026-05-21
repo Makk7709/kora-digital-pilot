@@ -43,12 +43,9 @@ class ApiCallManager {
   /**
    * Effectuer un appel API avec protection anti-spam
    */
-  async makeCall<T>(
-    config: ApiCallConfig,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const { endpoint, timeout = 5000, retries = 3, backoffMultiplier = 2, cacheDuration = 0 } = config;
-    
+  async makeCall<T>(config: ApiCallConfig, options: RequestInit = {}): Promise<T> {
+    const { endpoint, timeout = 5000, cacheDuration = 0 } = config;
+
     // Vérifier le cache d'abord
     if (cacheDuration > 0) {
       const cached = this.getFromCache<T>(endpoint);
@@ -76,15 +73,15 @@ class ApiCallManager {
 
     try {
       const result = await callPromise;
-      
+
       // Mettre en cache si configuré
       if (cacheDuration > 0) {
         this.setCache(endpoint, result, cacheDuration);
       }
-      
+
       // Marquer comme succès
       this.recordSuccess(endpoint);
-      
+
       return result;
     } catch (error) {
       // Enregistrer l'erreur
@@ -101,14 +98,14 @@ class ApiCallManager {
    */
   private canMakeCall(endpoint: string): { allowed: boolean; reason?: string } {
     const status = this.getStatus(endpoint);
-    
+
     // Si le serveur est marqué comme down, vérifier si c'est encore valide
     if (status.isServerDown) {
       if (status.nextRetryTime && new Date() < status.nextRetryTime) {
         const remainingTime = Math.ceil((status.nextRetryTime.getTime() - Date.now()) / 1000);
         return {
           allowed: false,
-          reason: `Server marked as down. Retry in ${remainingTime}s`
+          reason: `Server marked as down. Retry in ${remainingTime}s`,
         };
       }
     }
@@ -122,7 +119,7 @@ class ApiCallManager {
   private async executeCall<T>(
     endpoint: string,
     options: RequestInit,
-    timeout: number
+    timeout: number,
   ): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -130,7 +127,7 @@ class ApiCallManager {
     try {
       const response = await fetch(endpoint, {
         ...options,
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
@@ -163,7 +160,7 @@ class ApiCallManager {
     status.errorCount = 0;
     status.lastError = null;
     status.nextRetryTime = null;
-    
+
     console.log(`✅ [API] Success recorded for ${endpoint}`);
   }
 
@@ -178,12 +175,14 @@ class ApiCallManager {
     // Marquer le serveur comme down après 3 erreurs consécutives
     if (status.errorCount >= 3) {
       status.isServerDown = true;
-      
+
       // Calculer le temps de retry avec backoff exponentiel
       const backoffTime = Math.min(1000 * Math.pow(2, status.errorCount - 3), 300000); // Max 5 minutes
       status.nextRetryTime = new Date(Date.now() + backoffTime);
-      
-      console.warn(`🚨 [API] Server marked as down for ${endpoint}. Next retry: ${status.nextRetryTime.toLocaleTimeString()}`);
+
+      console.warn(
+        `🚨 [API] Server marked as down for ${endpoint}. Next retry: ${status.nextRetryTime.toLocaleTimeString()}`,
+      );
     } else {
       console.warn(`⚠️ [API] Error ${status.errorCount}/3 for ${endpoint}:`, error.message);
     }
@@ -198,7 +197,7 @@ class ApiCallManager {
         isServerDown: false,
         lastError: null,
         errorCount: 0,
-        nextRetryTime: null
+        nextRetryTime: null,
       });
     }
     return this.endpointStatus.get(endpoint)!;
@@ -212,12 +211,12 @@ class ApiCallManager {
     if (cached && new Date() < cached.expiry) {
       return cached.data;
     }
-    
+
     // Nettoyer le cache expiré
     if (cached) {
       this.cache.delete(key);
     }
-    
+
     return null;
   }
 
@@ -225,7 +224,7 @@ class ApiCallManager {
     this.cache.set(key, {
       data,
       timestamp: new Date(),
-      expiry: new Date(Date.now() + durationMs)
+      expiry: new Date(Date.now() + durationMs),
     });
   }
 
@@ -243,10 +242,10 @@ class ApiCallManager {
     return {
       endpoints: Array.from(this.endpointStatus.entries()).map(([endpoint, status]) => ({
         endpoint,
-        status
+        status,
       })),
       cacheSize: this.cache.size,
-      activeRequests: this.activeRequests.size
+      activeRequests: this.activeRequests.size,
     };
   }
 
@@ -277,13 +276,13 @@ export const apiCallManager = ApiCallManager.getInstance();
 // Hook React pour utiliser le gestionnaire d'API
 export const useApiCallManager = () => {
   return {
-    makeCall: <T>(config: ApiCallConfig, options?: RequestInit) => 
+    makeCall: <T>(config: ApiCallConfig, options?: RequestInit) =>
       apiCallManager.makeCall<T>(config, options),
     getStats: () => apiCallManager.getStats(),
     reset: () => apiCallManager.reset(),
-    markServerAsUp: (endpoint: string) => apiCallManager.markServerAsUp(endpoint)
+    markServerAsUp: (endpoint: string) => apiCallManager.markServerAsUp(endpoint),
   };
 };
 
 // Types d'export
-export type { ApiCallConfig, ApiCallStatus }; 
+export type { ApiCallConfig, ApiCallStatus };

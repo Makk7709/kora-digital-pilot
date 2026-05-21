@@ -1,30 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  Search, 
-  TrendingUp, 
-  Eye, 
-  Users, 
-  FileText, 
-  ExternalLink, 
-  RefreshCw, 
-  Settings, 
+import {
+  Search,
+  TrendingUp,
+  Eye,
+  Users,
+  FileText,
+  ExternalLink,
+  RefreshCw,
   Zap,
   Brain,
   Target,
   BarChart3,
-  Clock,
   CheckCircle,
   AlertCircle,
-  Loader2
+  Loader2,
 } from 'lucide-react';
 import { usePerplexity, useMarketingInsights, useTechWatch } from '@/hooks/usePerplexity';
 import { InsightRequest, MarketInsight, PerplexityResponse } from '@/lib/perplexity-service';
@@ -60,7 +64,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
       industry: selectedIndustry as any,
       depth: selectedDepth as any,
       language: 'fr',
-      context: 'Analyse pour Kora Digital - Agence spécialisée en IA et marketing digital'
+      context: 'Analyse pour Kora Digital - Agence spécialisée en IA et marketing digital',
     };
 
     const response = await perplexity.getBusinessInsights(request);
@@ -81,7 +85,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
   const handleCompetitorAnalysis = async () => {
     if (!competitors.trim() || !market.trim()) return;
 
-    const competitorList = competitors.split(',').map(c => c.trim());
+    const competitorList = competitors.split(',').map((c) => c.trim());
     const response = await perplexity.getCompetitorAnalysis(competitorList, market);
     if (response) {
       setCurrentResponse(response);
@@ -119,14 +123,10 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
           </CardTitle>
           <div className="flex items-center gap-2">
             <Badge variant="outline">{response.model}</Badge>
-            <Badge variant="secondary">
-              {response.usage.total_tokens} tokens
-            </Badge>
+            <Badge variant="secondary">{response.usage.total_tokens} tokens</Badge>
           </div>
         </div>
-        <CardDescription>
-          Généré le {response.timestamp.toLocaleString('fr-FR')}
-        </CardDescription>
+        <CardDescription>Généré le {response.timestamp.toLocaleString('fr-FR')}</CardDescription>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-96 w-full">
@@ -138,7 +138,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
             ))}
           </div>
         </ScrollArea>
-        
+
         {response.sources.length > 0 && (
           <>
             <Separator className="my-4" />
@@ -153,9 +153,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h5 className="font-medium text-sm">{source.title}</h5>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {source.snippet}
-                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">{source.snippet}</p>
                       </div>
                       <Button
                         variant="ghost"
@@ -184,9 +182,14 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">{insight.trend}</CardTitle>
               <div className="flex items-center gap-2">
-                <Badge 
-                  variant={insight.impact === 'high' ? 'destructive' : 
-                          insight.impact === 'medium' ? 'default' : 'secondary'}
+                <Badge
+                  variant={
+                    insight.impact === 'high'
+                      ? 'destructive'
+                      : insight.impact === 'medium'
+                        ? 'default'
+                        : 'secondary'
+                  }
                 >
                   Impact {insight.impact}
                 </Badge>
@@ -195,9 +198,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                 </Badge>
               </div>
             </div>
-            <CardDescription>
-              Délai: {insight.timeframe}
-            </CardDescription>
+            <CardDescription>Délai: {insight.timeframe}</CardDescription>
           </CardHeader>
           <CardContent>
             {insight.actionable_insights.length > 0 && (
@@ -233,14 +234,14 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
           </CardDescription>
           <div className="flex items-center gap-4 pt-2">
             <div className="flex items-center gap-2">
-              <div className={`h-2 w-2 rounded-full ${perplexity.isInitialized ? 'bg-green-500' : 'bg-red-500'}`} />
+              <div
+                className={`h-2 w-2 rounded-full ${perplexity.isInitialized ? 'bg-green-500' : 'bg-red-500'}`}
+              />
               <span className="text-sm">
                 {perplexity.isInitialized ? 'Connecté' : 'Déconnecté'}
               </span>
             </div>
-            <Badge variant="outline">
-              Cache: {perplexity.cacheStats.size} entrées
-            </Badge>
+            <Badge variant="outline">Cache: {perplexity.cacheStats.size} entrées</Badge>
             {perplexity.isLoading && (
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -325,7 +326,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                   rows={3}
                 />
               </div>
-              <Button 
+              <Button
                 onClick={handleBusinessInsights}
                 disabled={!query.trim() || perplexity.isLoading}
                 className="w-full"
@@ -346,9 +347,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
           <Card>
             <CardHeader>
               <CardTitle>Tendances Marketing Digital</CardTitle>
-              <CardDescription>
-                Découvrez les dernières tendances de votre secteur
-              </CardDescription>
+              <CardDescription>Découvrez les dernières tendances de votre secteur</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -359,7 +358,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
-              <Button 
+              <Button
                 onClick={handleMarketingTrends}
                 disabled={!query.trim() || marketingInsights.isLoading}
                 className="w-full"
@@ -373,7 +372,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
               </Button>
             </CardContent>
           </Card>
-          
+
           {insights.length > 0 && <InsightsDisplay insights={insights} />}
         </TabsContent>
 
@@ -388,7 +387,9 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Concurrents (séparés par des virgules)</label>
+                <label className="text-sm font-medium">
+                  Concurrents (séparés par des virgules)
+                </label>
                 <Input
                   placeholder="Ex: HubSpot, Salesforce, Mailchimp"
                   value={competitors}
@@ -403,7 +404,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                   onChange={(e) => setMarket(e.target.value)}
                 />
               </div>
-              <Button 
+              <Button
                 onClick={handleCompetitorAnalysis}
                 disabled={!competitors.trim() || !market.trim() || perplexity.isLoading}
                 className="w-full"
@@ -452,7 +453,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                   </Select>
                 </div>
               </div>
-              <Button 
+              <Button
                 onClick={handleContentGeneration}
                 disabled={!contentTopic.trim() || perplexity.isLoading}
                 className="w-full"
@@ -473,9 +474,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
           <Card>
             <CardHeader>
               <CardTitle>Veille Technologique IA</CardTitle>
-              <CardDescription>
-                Restez à jour sur les innovations technologiques
-              </CardDescription>
+              <CardDescription>Restez à jour sur les innovations technologiques</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -487,7 +486,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                 />
               </div>
               <div className="flex gap-2">
-                <Button 
+                <Button
                   onClick={handleTechWatch}
                   disabled={!query.trim() || techWatch.isLoading}
                   className="flex-1"
@@ -507,14 +506,14 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                   Ajouter à la veille
                 </Button>
               </div>
-              
+
               {techWatch.watchlist.length > 0 && (
                 <div>
                   <h4 className="font-medium text-sm mb-2">Liste de veille:</h4>
                   <div className="flex flex-wrap gap-2">
                     {techWatch.watchlist.map((domain, index) => (
-                      <Badge 
-                        key={index} 
+                      <Badge
+                        key={index}
                         variant="secondary"
                         className="cursor-pointer"
                         onClick={() => techWatch.removeFromWatchlist(domain)}
@@ -565,11 +564,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
               <RefreshCw className="h-3 w-3 mr-1" />
               Vider le cache ({perplexity.cacheStats.size})
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => perplexity.refreshCacheStats()}
-            >
+            <Button variant="outline" size="sm" onClick={() => perplexity.refreshCacheStats()}>
               <BarChart3 className="h-3 w-3 mr-1" />
               Stats cache
             </Button>
@@ -586,4 +581,4 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
       </Card>
     </div>
   );
-}; 
+};

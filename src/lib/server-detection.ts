@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { logger } from './logger';
 
 interface ServerStatus {
   isOnline: boolean;
@@ -28,7 +29,7 @@ class ServerDetector {
     isOnline: false,
     lastCheck: new Date(),
     consecutiveFailures: 0,
-    lastOnlineTime: null
+    lastOnlineTime: null,
   };
   private listeners = new Set<(status: ServerStatus) => void>();
   private checkInterval: NodeJS.Timeout | null = null;
@@ -51,8 +52,8 @@ class ServerDetector {
       this.stopMonitoring();
     }
 
-    console.log('🔍 [Server Detector] Starting backend monitoring...');
-    
+    logger.debug('🔍 [Server Detector] Starting backend monitoring...');
+
     // Check initial
     this.checkServerStatus();
 
@@ -60,11 +61,13 @@ class ServerDetector {
     this.checkInterval = setInterval(() => {
       // Arrêter le monitoring automatique après trop d'échecs
       if (!this.status.isOnline && this.status.consecutiveFailures >= 3) {
-        console.log('🔇 [Server Detector] Auto-monitoring paused - server marked as permanently down');
+        logger.debug(
+          '🔇 [Server Detector] Auto-monitoring paused - server marked as permanently down',
+        );
         this.stopMonitoring();
         return;
       }
-      
+
       this.checkServerStatus();
     }, intervalMs);
   }
@@ -76,7 +79,7 @@ class ServerDetector {
     if (this.checkInterval) {
       clearInterval(this.checkInterval);
       this.checkInterval = null;
-      console.log('🔍 [Server Detector] Stopped backend monitoring');
+      logger.debug('🔍 [Server Detector] Stopped backend monitoring');
     }
   }
 
@@ -85,13 +88,13 @@ class ServerDetector {
    */
   private async checkServerStatus(): Promise<void> {
     if (this.isChecking) return;
-    
+
     // Si le serveur est hors ligne depuis plus de 3 échecs, arrêter les vérifications
     if (!this.status.isOnline && this.status.consecutiveFailures >= 3) {
-      console.debug('🔇 [Server Detector] Server marked as permanently down, skipping check');
+      logger.debug('🔇 [Server Detector] Server marked as permanently down, skipping check');
       return;
     }
-    
+
     this.isChecking = true;
     const wasOnline = this.status.isOnline;
 
@@ -99,54 +102,57 @@ class ServerDetector {
       const response = await fetch('/api/health', {
         method: 'GET',
         signal: AbortSignal.timeout(3000),
-        cache: 'no-cache'
+        cache: 'no-cache',
       });
 
       const isOnline = response.ok && response.status !== 503;
-      
+
       this.status = {
         isOnline,
         lastCheck: new Date(),
         consecutiveFailures: isOnline ? 0 : this.status.consecutiveFailures + 1,
-        lastOnlineTime: isOnline ? new Date() : this.status.lastOnlineTime
+        lastOnlineTime: isOnline ? new Date() : this.status.lastOnlineTime,
       };
 
       // Notifier les changements d'état
       if (wasOnline !== isOnline) {
         if (isOnline) {
-          console.log('✅ [Server Detector] Backend server is now ONLINE!');
+          logger.debug('✅ [Server Detector] Backend server is now ONLINE!');
           // Notifier le gestionnaire d'API que le serveur est revenu
           if (typeof window !== 'undefined' && window.apiCallManager) {
             window.apiCallManager.markServerAsUp('/api/health');
           }
         } else {
-          console.log('🚨 [Server Detector] Backend server is now OFFLINE');
-          
+          logger.debug('🚨 [Server Detector] Backend server is now OFFLINE');
+
           // Après 3 échecs, arrêter les vérifications automatiques
           if (this.status.consecutiveFailures >= 3) {
-            console.log('🛑 [Server Detector] Server marked as permanently down - stopping automatic checks');
+            logger.debug(
+              '🛑 [Server Detector] Server marked as permanently down - stopping automatic checks',
+            );
           }
         }
-        
+
         this.notifyListeners();
       }
-
     } catch (error) {
       this.status = {
         isOnline: false,
         lastCheck: new Date(),
         consecutiveFailures: this.status.consecutiveFailures + 1,
-        lastOnlineTime: this.status.lastOnlineTime
+        lastOnlineTime: this.status.lastOnlineTime,
       };
 
       if (wasOnline) {
-        console.log('🚨 [Server Detector] Backend server is now OFFLINE');
+        logger.debug('🚨 [Server Detector] Backend server is now OFFLINE');
         this.notifyListeners();
       }
 
       // Après 3 échecs, arrêter les vérifications automatiques
       if (this.status.consecutiveFailures >= 3) {
-        console.log('🛑 [Server Detector] Server marked as permanently down - stopping automatic checks');
+        logger.debug(
+          '🛑 [Server Detector] Server marked as permanently down - stopping automatic checks',
+        );
       }
     } finally {
       this.isChecking = false;
@@ -158,10 +164,10 @@ class ServerDetector {
    */
   subscribe(callback: (status: ServerStatus) => void): () => void {
     this.listeners.add(callback);
-    
+
     // Envoyer le statut actuel immédiatement
     callback(this.status);
-    
+
     // Retourner une fonction de désabonnement
     return () => {
       this.listeners.delete(callback);
@@ -172,11 +178,11 @@ class ServerDetector {
    * Notifier tous les listeners
    */
   private notifyListeners(): void {
-    this.listeners.forEach(callback => {
+    this.listeners.forEach((callback) => {
       try {
         callback(this.status);
       } catch (error) {
-        console.error('Error in server detector listener:', error);
+        logger.error('Error in server detector listener:', error);
       }
     });
   }
@@ -200,21 +206,21 @@ class ServerDetector {
    * Reset l'état du serveur et redémarrer la surveillance
    */
   reset(): void {
-    console.log('🔄 [Server Detector] Resetting server status...');
+    logger.debug('🔄 [Server Detector] Resetting server status...');
     this.status = {
       isOnline: false,
       lastCheck: new Date(),
       consecutiveFailures: 0,
-      lastOnlineTime: null
+      lastOnlineTime: null,
     };
-    
+
     // Redémarrer la surveillance si elle était active
     if (this.checkInterval) {
       this.stopMonitoring();
       this.startMonitoring();
     }
-    
-    console.log('✅ [Server Detector] Status reset complete');
+
+    logger.debug('✅ [Server Detector] Status reset complete');
   }
 }
 
@@ -227,10 +233,10 @@ export const useServerDetector = () => {
 
   React.useEffect(() => {
     const unsubscribe = serverDetector.subscribe(setStatus);
-    
+
     // Démarrer la surveillance si pas déjà active
     serverDetector.startMonitoring();
-    
+
     return () => {
       unsubscribe();
     };
@@ -241,7 +247,7 @@ export const useServerDetector = () => {
     checkNow: () => serverDetector.checkNow(),
     startMonitoring: (interval?: number) => serverDetector.startMonitoring(interval),
     stopMonitoring: () => serverDetector.stopMonitoring(),
-    reset: () => serverDetector.reset()
+    reset: () => serverDetector.reset(),
   };
 };
 
@@ -253,33 +259,35 @@ if (typeof window !== 'undefined') {
 
   // Fonction globale pour arrêter tous les appels API intempestifs
   (window as any).stopApiSpam = () => {
-    console.log('🛑 [Global] Stopping all API spam...');
-    
+    logger.debug('🛑 [Global] Stopping all API spam...');
+
     // Arrêter le server detector
     serverDetector.stopMonitoring();
-    
+
     // Reset le proxy state dans Vite
     if ((window as any).resetProxyState) {
       (window as any).resetProxyState();
     }
-    
+
     // Reset le gestionnaire d'API
     if ((window as any).apiCallManager) {
       (window as any).apiCallManager.reset?.();
     }
-    
-    console.log('✅ [Global] All API monitoring stopped. To restart, use: window.restartApiMonitoring()');
+
+    logger.debug(
+      '✅ [Global] All API monitoring stopped. To restart, use: window.restartApiMonitoring()',
+    );
   };
 
   // Fonction globale pour redémarrer la surveillance
   (window as any).restartApiMonitoring = () => {
-    console.log('🔄 [Global] Restarting API monitoring...');
-    
+    logger.debug('🔄 [Global] Restarting API monitoring...');
+
     // Reset le server detector
     serverDetector.reset();
-    
-    console.log('✅ [Global] API monitoring restarted');
+
+    logger.debug('✅ [Global] API monitoring restarted');
   };
 }
 
-export type { ServerStatus }; 
+export type { ServerStatus };

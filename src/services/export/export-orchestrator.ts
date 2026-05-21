@@ -6,7 +6,30 @@ import { CSVExporter } from './formats/csv-exporter';
 import { PDFExporter } from './formats/pdf-exporter';
 import { ExcelExporter } from './formats/excel-exporter';
 import { contentDeduplicationService } from '../ContentDeduplicationService';
-import type { ExportOptions, ExportResult } from '../../types/BrandIntelligenceTypes';
+import type {
+  DeepResearchReport,
+  ExportOptions,
+  ExportResult,
+} from '../../types/BrandIntelligenceTypes';
+import { logger } from '../../lib/logger';
+
+type ReportPayload = Record<string, unknown> & {
+  brandName?: string;
+  confidenceScore?: number;
+  objectiveAnalysis?: unknown;
+  swotMetrics?: Record<string, unknown>;
+  competitiveMetrics?: unknown;
+  reputationKPIs?: unknown;
+  recommendations?: unknown[];
+  rawData?: { objectiveAnalysis?: unknown };
+};
+
+type RecommendationLike = Record<string, unknown> & {
+  title?: string;
+  description?: string;
+};
+
+type SwotItemLike = string | (Record<string, unknown> & { item?: string });
 
 export interface ExportHistoryItem {
   timestamp: Date;
@@ -17,7 +40,7 @@ export interface ExportHistoryItem {
 }
 
 export interface ReportExportServiceInterface {
-  exportReport(report: any, options: ExportOptions): Promise<ExportResult>;
+  exportReport(report: ReportPayload, options: ExportOptions): Promise<ExportResult>;
   validateExportOptions(options: ExportOptions): { isValid: boolean; errors: string[] };
   getSupportedFormats(): string[];
   getExportHistory(): ExportHistoryItem[];
@@ -38,9 +61,9 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
   /**
    * 🎯 EXPORT PRINCIPAL - Multi-formats
    */
-  async exportReport(report: any, options: ExportOptions): Promise<ExportResult> {
+  async exportReport(report: ReportPayload, options: ExportOptions): Promise<ExportResult> {
     const startTime = Date.now();
-    console.log(`🚀 Démarrage export ${options.format.toUpperCase()}...`);
+    logger.debug(`🚀 Démarrage export ${options.format.toUpperCase()}...`);
 
     try {
       // 1. Validation
@@ -52,18 +75,24 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
       // 2. 🧹 DÉDUPLICATION INTELLIGENTE (si activée)
       let processedReport = report;
       if (options.enableDeduplication !== false) {
-        console.log('🧹 Application déduplication intelligente...');
+        logger.debug('🧹 Application déduplication intelligente...');
         processedReport = await contentDeduplicationService.deduplicateReportContent(report);
-        
-        if (report.rawData?.objectiveAnalysis) {
-          const stats = contentDeduplicationService.getDeduplicationStats(report.rawData.objectiveAnalysis);
-          console.log(`📊 Déduplication stats: ${stats.duplications} duplicatas, ${stats.uniqueWords} mots uniques, ${(stats.repetitionRate*100).toFixed(1)}% répétition`);
+
+        const rawObjective =
+          typeof report.rawData?.objectiveAnalysis === 'string'
+            ? report.rawData.objectiveAnalysis
+            : undefined;
+        if (rawObjective) {
+          const stats = contentDeduplicationService.getDeduplicationStats(rawObjective);
+          logger.debug(
+            `Déduplication stats: ${stats.duplications} duplicatas, ${stats.uniqueWords} mots uniques, ${(stats.repetitionRate * 100).toFixed(1)}% répétition`,
+          );
         }
       }
 
       // 3. 🎨 AMÉLIORATION QUALITÉ (si activée)
       if (options.qualityEnhancement !== false) {
-        console.log('🎨 Application amélioration qualité...');
+        logger.debug('🎨 Application amélioration qualité...');
         processedReport = this.enhanceReportQuality(processedReport);
       }
 
@@ -71,21 +100,24 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
       let content: string | Uint8Array;
       let mimeType: string;
 
+      // Cast vers DeepResearchReport: les exporters attendent ce shape même si
+      // l'orchestrateur tolère une union plus large (BrandReport-like).
+      const reportForExport = processedReport as unknown as DeepResearchReport;
       switch (options.format) {
         case 'json':
-          content = this.jsonExporter.generate(processedReport, options);
+          content = this.jsonExporter.generate(reportForExport, options);
           mimeType = 'application/json';
           break;
         case 'csv':
-          content = this.csvExporter.generate(processedReport, options);
+          content = this.csvExporter.generate(reportForExport, options);
           mimeType = 'text/csv';
           break;
         case 'pdf':
-          content = this.pdfExporter.generate(processedReport, options);
+          content = this.pdfExporter.generate(reportForExport, options);
           mimeType = 'application/pdf';
           break;
         case 'excel':
-          content = this.excelExporter.generate(processedReport, options);
+          content = this.excelExporter.generate(reportForExport, options);
           mimeType = 'application/vnd.ms-excel';
           break;
         default:
@@ -93,7 +125,11 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
       }
 
       // 5. Compression (seulement pour les formats texte)
-      if (options.compressionLevel && options.compressionLevel !== 'none' && typeof content === 'string') {
+      if (
+        options.compressionLevel &&
+        options.compressionLevel !== 'none' &&
+        typeof content === 'string'
+      ) {
         content = this.compressContent(content, options.compressionLevel);
       }
 
@@ -118,7 +154,7 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
         fileName,
         format: options.format,
         fileSize: blob.size,
-        brandName: report.brandName || 'Unknown'
+        brandName: report.brandName || 'Unknown',
       };
 
       this.exportHistory.push(historyItem);
@@ -139,18 +175,19 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
           deduplicationApplied: options.enableDeduplication !== false,
           qualityEnhanced: options.qualityEnhancement !== false,
           originalReportSize: JSON.stringify(report).length,
-          processedReportSize: JSON.stringify(processedReport).length
-        }
+          processedReportSize: JSON.stringify(processedReport).length,
+        },
       };
 
       const duration = Date.now() - startTime;
-      console.log(`✅ Export ${options.format.toUpperCase()} réussi en ${duration}ms - Taille: ${blob.size} bytes`);
+      logger.debug(
+        `✅ Export ${options.format.toUpperCase()} réussi en ${duration}ms - Taille: ${blob.size} bytes`,
+      );
 
       return result;
-
     } catch (error) {
-      console.error(`❌ Erreur export ${options.format}:`, error);
-      
+      logger.error(`❌ Erreur export ${options.format}:`, error);
+
       return {
         success: false,
         fileName: '',
@@ -158,7 +195,7 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
         fileSize: 0,
         format: options.format,
         downloadUrl: '',
-        errors: [error instanceof Error ? error.message : 'Erreur inconnue']
+        errors: [error instanceof Error ? error.message : 'Erreur inconnue'],
       };
     }
   }
@@ -178,9 +215,16 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
       errors.push('Au moins une section requise si sections spécifiées');
     }
 
-    const validSections = ['objectiveAnalysis', 'strategicAnalysis', 'swotMetrics', 'competitiveMetrics', 'recommendations', 'alerts'];
+    const validSections = [
+      'objectiveAnalysis',
+      'strategicAnalysis',
+      'swotMetrics',
+      'competitiveMetrics',
+      'recommendations',
+      'alerts',
+    ];
     if (options.sections) {
-      const invalidSections = options.sections.filter(s => !validSections.includes(s));
+      const invalidSections = options.sections.filter((s) => !validSections.includes(s));
       if (invalidSections.length > 0) {
         errors.push(`Sections invalides: ${invalidSections.join(', ')}`);
       }
@@ -188,7 +232,7 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -205,12 +249,12 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - 30); // 30 jours
 
-    this.exportHistory = this.exportHistory.filter(item => item.timestamp > cutoffDate);
+    this.exportHistory = this.exportHistory.filter((item) => item.timestamp > cutoffDate);
     this.saveHistoryToStorage();
 
     const deletedCount = beforeCount - this.exportHistory.length;
-    console.log(`🧹 Nettoyage historique: ${deletedCount} exports supprimés`);
-    
+    logger.debug(`🧹 Nettoyage historique: ${deletedCount} exports supprimés`);
+
     return deletedCount;
   }
 
@@ -218,8 +262,8 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
 
   private compressContent(content: string, level: string): string {
     // Compression basique pour les navigateurs
-    console.log(`🗜️ Compression niveau ${level}...`);
-    
+    logger.debug(`🗜️ Compression niveau ${level}...`);
+
     switch (level) {
       case 'light':
         return content.replace(/\s{2,}/g, ' ').replace(/\n\s*\n/g, '\n');
@@ -237,29 +281,39 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
     return `brand-intelligence-${brandName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${timestamp}.${format}`;
   }
 
-  private enhanceReportQuality(report: any): any {
-    console.log('🎨 Amélioration qualité du rapport...');
-    
+  private enhanceReportQuality(report: ReportPayload): ReportPayload {
+    logger.debug('Enhancing report quality');
+
     try {
-      const enhanced = JSON.parse(JSON.stringify(report)); // Deep copy
-      
-      // Améliorer les textes dans les recommandations
+      const enhanced = JSON.parse(JSON.stringify(report)) as ReportPayload;
+
       if (enhanced.recommendations && Array.isArray(enhanced.recommendations)) {
-        enhanced.recommendations = enhanced.recommendations.map((rec: any) => ({
-          ...rec,
-          title: rec.title ? this.enhanceTextQuality(rec.title) : rec.title,
-          description: rec.description ? this.enhanceTextQuality(rec.description) : rec.description
-        }));
+        enhanced.recommendations = (enhanced.recommendations as RecommendationLike[]).map(
+          (rec) => ({
+            ...rec,
+            title: rec.title ? this.enhanceTextQuality(rec.title) : rec.title,
+            description: rec.description
+              ? this.enhanceTextQuality(rec.description)
+              : rec.description,
+          }),
+        );
       }
-      
-      // Améliorer les textes SWOT
+
       if (enhanced.swotMetrics) {
-        ['strengths', 'weaknesses', 'opportunities', 'threats'].forEach(key => {
-          if (enhanced.swotMetrics[key] && Array.isArray(enhanced.swotMetrics[key])) {
-            enhanced.swotMetrics[key] = enhanced.swotMetrics[key].map((item: any) => {
+        const swot = enhanced.swotMetrics as Record<string, unknown>;
+        (['strengths', 'weaknesses', 'opportunities', 'threats'] as const).forEach((key) => {
+          const arr = swot[key];
+          if (Array.isArray(arr)) {
+            swot[key] = (arr as SwotItemLike[]).map((item) => {
               if (typeof item === 'string') {
                 return this.enhanceTextQuality(item);
-              } else if (item.item) {
+              }
+              if (
+                item &&
+                typeof item === 'object' &&
+                'item' in item &&
+                typeof item.item === 'string'
+              ) {
                 return { ...item, item: this.enhanceTextQuality(item.item) };
               }
               return item;
@@ -267,33 +321,38 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
           }
         });
       }
-      
+
       return enhanced;
-      
     } catch (error) {
-      console.warn('Erreur amélioration qualité:', error);
+      logger.warn('Report quality enhancement failed', { error });
       return report;
     }
   }
 
   private enhanceTextQuality(text: string): string {
     if (!text || typeof text !== 'string') return text;
-    
-    return text
-      // Capitaliser la première lettre
-      .replace(/^[a-z]/, char => char.toUpperCase())
-      // Corriger les espaces multiples
-      .replace(/\s+/g, ' ')
-      // Nettoyer les caractères spéciaux en début/fin
-      .replace(/^[^\w]+|[^\w.!?]+$/g, '')
-      // S'assurer qu'il y a une ponctuation finale
-      .replace(/([^.!?])$/, '$1.')
-      .trim();
+
+    return (
+      text
+        // Capitaliser la première lettre
+        .replace(/^[a-z]/, (char) => char.toUpperCase())
+        // Corriger les espaces multiples
+        .replace(/\s+/g, ' ')
+        // Nettoyer les caractères spéciaux en début/fin
+        .replace(/^[^\w]+|[^\w.!?]+$/g, '')
+        // S'assurer qu'il y a une ponctuation finale
+        .replace(/([^.!?])$/, '$1.')
+        .trim()
+    );
   }
 
-  private generateEnhancedMetadata(report: any, options: ExportOptions, startTime: number): any {
+  private generateEnhancedMetadata(
+    report: ReportPayload,
+    options: ExportOptions,
+    startTime: number,
+  ): Record<string, unknown> {
     const duration = Date.now() - startTime;
-    
+
     return {
       exportTimestamp: new Date().toISOString(),
       exportDuration: duration,
@@ -305,23 +364,31 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
         hasSWOTMetrics: !!report.swotMetrics,
         hasCompetitiveMetrics: !!report.competitiveMetrics,
         hasReputationKPIs: !!report.reputationKPIs,
-        recommendationsCount: Array.isArray(report.recommendations) ? report.recommendations.length : 0,
-        confidenceScore: report.confidenceScore || 0
+        recommendationsCount: Array.isArray(report.recommendations)
+          ? report.recommendations.length
+          : 0,
+        confidenceScore: report.confidenceScore || 0,
       },
       qualityScore: this.calculateOverallQualityScore(report),
-      version: '2.0'
+      version: '2.0',
     };
   }
 
-  private calculateOverallQualityScore(report: any): number {
+  private calculateOverallQualityScore(report: ReportPayload): number {
     let score = 0;
     let maxScore = 0;
 
     // Score basé sur la complétude
-    const sections = ['objectiveAnalysis', 'swotMetrics', 'competitiveMetrics', 'reputationKPIs', 'recommendations'];
-    sections.forEach(section => {
+    const sections = [
+      'objectiveAnalysis',
+      'swotMetrics',
+      'competitiveMetrics',
+      'reputationKPIs',
+      'recommendations',
+    ];
+    sections.forEach((section) => {
       maxScore += 20;
-      if (report[section]) {
+      if ((report as Record<string, unknown>)[section]) {
         score += 20;
       }
     });
@@ -339,13 +406,13 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
     try {
       const stored = localStorage.getItem('kora-export-history');
       if (stored) {
-        this.exportHistory = JSON.parse(stored).map((item: any) => ({
+        this.exportHistory = (JSON.parse(stored) as ExportHistoryItem[]).map((item) => ({
           ...item,
-          timestamp: new Date(item.timestamp)
+          timestamp: new Date(item.timestamp),
         }));
       }
     } catch (error) {
-      console.warn('Erreur chargement historique export:', error);
+      logger.warn('Erreur chargement historique export:', error);
       this.exportHistory = [];
     }
   }
@@ -354,7 +421,7 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
     try {
       localStorage.setItem('kora-export-history', JSON.stringify(this.exportHistory));
     } catch (error) {
-      console.warn('Erreur sauvegarde historique export:', error);
+      logger.warn('Erreur sauvegarde historique export:', error);
     }
   }
 }
@@ -365,4 +432,4 @@ export function createReportExportService(): ReportExportOrchestrator {
 }
 
 // Export par défaut
-export default ReportExportOrchestrator; 
+export default ReportExportOrchestrator;

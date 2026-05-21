@@ -16,19 +16,25 @@
 
     /* Linting */
     "strict": false,
+    // noUnusedLocals/Parameters: 176 erreurs au TS (déjà couvertes par
+    // l'eslint-rule @typescript-eslint/no-unused-vars). Garder false pour ne
+    // pas dupliquer le bruit; la règle eslint reste active. Voir
+    // docs/audit/TS_STRICTNESS_NOTES.md.
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    // TODO(tech-debt): noImplicitAny:true exposes 51 errors (mostly in Analytics.tsx,
-    // Dashboard.tsx and BrandIntelligenceOrchestrator.ts). Reverting to false until
-    // the typing pass is scheduled. See docs/TECH_DEBT.md.
-    "noImplicitAny": false,
+    "noImplicitAny": true,
+    // strictNullChecks: voir docs/audit/TS_STRICTNESS_NOTES.md
+    // 55 erreurs résiduelles concentrées dans BrandIntelligenceDashboard.tsx (33),
+    // ReportGenerationService.ts (10), useBusinessIntelligence.ts (5).
+    // Au-dessus du seuil interne (50). À activer dans une itération dédiée.
+    "strictNullChecks": false,
     "noFallthroughCasesInSwitch": false,
 
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
-    
+
     /* Test Types */
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },

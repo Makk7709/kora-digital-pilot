@@ -1310,7 +1310,8 @@ class LinkedInAPI {
       },
     };
 
-    const data = fallbackData[period] || fallbackData['7d'];
+    const data =
+      (fallbackData as Record<string, (typeof fallbackData)['7d']>)[period] || fallbackData['7d'];
 
     return {
       ...data,

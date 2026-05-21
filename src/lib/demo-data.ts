@@ -435,8 +435,8 @@ export const DEMO_X_METRICS = {
  * documentée comme cible future). Reste un export typé pour permettre
  * un branchement EmptyState cohérent.
  */
-export const DEMO_FACEBOOK_METRICS = {
+export const DEMO_FACEBOOK_METRICS: Record<AnalyticsPeriod, DemoPlatformSnapshot | null> = {
   '7d': null,
   '30d': null,
   '90d': null,
-} as const satisfies Record<AnalyticsPeriod, DemoPlatformSnapshot | null>;
+};

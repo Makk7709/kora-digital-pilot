@@ -4,7 +4,7 @@
  * UX/UI Premium - Performance optimisée - TDD Ready
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -13,31 +13,20 @@ import { Progress } from './ui/progress';
 import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
 import { useToast } from '../hooks/use-toast';
-import { 
-  Search, 
-  Building2, 
-  TrendingUp, 
-  TrendingDown,
-  Eye,
+import {
+  Search,
+  Building2,
+  TrendingUp,
   Brain,
   Zap,
   FileText,
   Download,
-  Settings,
   Loader2,
-  CheckCircle,
   AlertCircle,
   Users,
-  BarChart3,
-  Calendar,
-  Target,
-  Lightbulb,
-  Shield,
   Award,
   Clock,
-  Globe,
   DollarSign,
-  Activity
 } from 'lucide-react';
 
 import { RealBrandIntelligenceService } from '../services/RealBrandIntelligenceService';
@@ -70,7 +59,7 @@ const ANALYSIS_MODES: AnalysisMode[] = [
     description: 'Analyse rapide avec données essentielles',
     duration: '30-60 sec',
     icon: Search,
-    premium: false
+    premium: false,
   },
   {
     id: 'deep',
@@ -78,8 +67,8 @@ const ANALYSIS_MODES: AnalysisMode[] = [
     description: 'Analyse approfondie avec métriques avancées',
     duration: '2-3 min',
     icon: Brain,
-    premium: true
-  }
+    premium: true,
+  },
 ];
 
 export const CompanyAnalysisWidget: React.FC = () => {
@@ -92,12 +81,12 @@ export const CompanyAnalysisWidget: React.FC = () => {
     report: null,
     error: null,
     searchHistory: [],
-    lastAnalysis: null
+    lastAnalysis: null,
   });
 
   const [validationError, setValidationError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [analysisSteps, setAnalysisSteps] = useState<string[]>([]);
+  const [, setAnalysisSteps] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState('');
 
   const { toast } = useToast();
@@ -106,29 +95,29 @@ export const CompanyAnalysisWidget: React.FC = () => {
   // === VALIDATION INTELLIGENTE ===
   const validateCompanyName = useCallback((name: string): boolean => {
     const trimmedName = name.trim();
-    
+
     if (!trimmedName) {
       setValidationError('Le nom de votre société est requis');
       return false;
     }
-    
+
     if (trimmedName.length < 2) {
       setValidationError('Le nom doit contenir au moins 2 caractères');
       return false;
     }
-    
+
     if (trimmedName.length > 100) {
       setValidationError('Le nom ne peut pas dépasser 100 caractères');
       return false;
     }
-    
+
     // Validation contre les caractères spéciaux malveillants
     const invalidChars = /[<>{}[\]|\\^~`]/;
     if (invalidChars.test(trimmedName)) {
       setValidationError('Caractères non autorisés détectés');
       return false;
     }
-    
+
     setValidationError(null);
     return true;
   }, []);
@@ -140,33 +129,38 @@ export const CompanyAnalysisWidget: React.FC = () => {
     }
 
     const companyName = searchState.query.trim();
-    
+
     try {
-      setSearchState(prev => ({ 
-        ...prev, 
-        isSearching: true, 
+      setSearchState((prev) => ({
+        ...prev,
+        isSearching: true,
         error: null,
-        hasResults: false
+        hasResults: false,
       }));
-      
+
       setProgress(0);
-      setCurrentStep('Initialisation de l\'analyse...');
-      setAnalysisSteps(['Connexion API Perplexity', 'Collecte des données', 'Analyse des métriques', 'Génération du rapport']);
+      setCurrentStep("Initialisation de l'analyse...");
+      setAnalysisSteps([
+        'Connexion API Perplexity',
+        'Collecte des données',
+        'Analyse des métriques',
+        'Génération du rapport',
+      ]);
 
       // Simulation progressive pour UX premium
       const progressSteps = [
         { step: 'Connexion API Perplexity...', progress: 20 },
         { step: 'Collecte des données publiques...', progress: 40 },
         { step: 'Analyse des métriques financières...', progress: 60 },
-        { step: 'Traitement de l\'intelligence concurrentielle...', progress: 80 },
-        { step: 'Finalisation du rapport...', progress: 90 }
+        { step: "Traitement de l'intelligence concurrentielle...", progress: 80 },
+        { step: 'Finalisation du rapport...', progress: 90 },
       ];
 
       // Exécution avec feedback visuel
       for (const { step, progress: stepProgress } of progressSteps) {
         setCurrentStep(step);
         setProgress(stepProgress);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
       let report: DeepResearchReport;
@@ -183,33 +177,35 @@ export const CompanyAnalysisWidget: React.FC = () => {
       setCurrentStep('Analyse terminée avec succès !');
 
       // Mise à jour de l'état avec succès
-      setSearchState(prev => ({
+      setSearchState((prev) => ({
         ...prev,
         isSearching: false,
         hasResults: true,
         report,
         lastAnalysis: new Date(),
-        searchHistory: [companyName, ...prev.searchHistory.filter(h => h !== companyName).slice(0, 4)]
+        searchHistory: [
+          companyName,
+          ...prev.searchHistory.filter((h) => h !== companyName).slice(0, 4),
+        ],
       }));
 
       toast({
-        title: "✅ Analyse terminée",
+        title: '✅ Analyse terminée',
         description: `Rapport complet généré pour ${companyName}`,
       });
-
     } catch (error) {
-      console.error('Erreur lors de l\'analyse:', error);
-      
-      setSearchState(prev => ({
+      console.error("Erreur lors de l'analyse:", error);
+
+      setSearchState((prev) => ({
         ...prev,
         isSearching: false,
-        error: error instanceof Error ? error.message : 'Erreur inconnue lors de l\'analyse'
+        error: error instanceof Error ? error.message : "Erreur inconnue lors de l'analyse",
       }));
 
       toast({
         title: "❌ Erreur d'analyse",
-        description: "Impossible de générer le rapport. Veuillez réessayer.",
-        variant: "destructive"
+        description: 'Impossible de générer le rapport. Veuillez réessayer.',
+        variant: 'destructive',
       });
     }
   };
@@ -225,25 +221,25 @@ export const CompanyAnalysisWidget: React.FC = () => {
           foundingYear: 2020,
           founders: ['Données non disponibles'],
           keyMilestones: [
-            { year: 2020, event: 'Création de l\'entreprise', impact: 'major' as const }
+            { year: 2020, event: "Création de l'entreprise", impact: 'major' as const },
           ],
-          evolution: ['Entreprise en développement']
+          evolution: ['Entreprise en développement'],
         },
         marketPosition: {
           sector: ['Secteur à identifier'],
           markets: ['Marché local'],
           employeeCount: undefined,
-          globalRank: undefined
+          globalRank: undefined,
         },
         financialHealth: {
           revenue: undefined,
           growth: undefined,
-          profitability: 'Non communiqué'
+          profitability: 'Non communiqué',
         },
         metrics: {
           innovationIndex: 50,
-          reputationScore: 60
-        }
+          reputationScore: 60,
+        },
       },
       recentActions: [],
       strategicAnalysis: {
@@ -251,42 +247,42 @@ export const CompanyAnalysisWidget: React.FC = () => {
           type: 'À analyser',
           revenueStreams: ['Modèle à identifier'],
           keyPartners: ['Partenaires à identifier'],
-          valueProposition: 'Proposition de valeur en cours d\'analyse'
+          valueProposition: "Proposition de valeur en cours d'analyse",
         },
         competitiveAdvantages: ['Avantages concurrentiels à évaluer'],
         strategicRisks: ['Risques stratégiques à identifier'],
-        priorities: []
+        priorities: [],
       },
       trendAnalysis: {
         sectorEvolution: {
-          currentTrends: ['Tendances sectorielles en cours d\'analyse'],
+          currentTrends: ["Tendances sectorielles en cours d'analyse"],
           futureProjections: ['Projections futures à définir'],
           disruptionPotential: 'medium' as const,
           growthRate: 0,
           maturity: 'growth' as const,
           keyPlayers: [],
           regulatoryChanges: [],
-          technologicalDisruptions: []
+          technologicalDisruptions: [],
         },
         emergingTrends: [],
         weakSignals: [],
         disruptiveThreats: [],
-        opportunities: []
+        opportunities: [],
       },
       swotMetrics: {
         strengthsScore: 60,
         weaknessesScore: 40,
         opportunitiesScore: 70,
         threatsScore: 30,
-        strategicHealthIndex: 65
+        strategicHealthIndex: 65,
       },
       contentMetrics: {
         overallSentiment: 0,
-        sentimentDistribution: { positive: 50, neutral: 30, negative: 20 }
+        sentimentDistribution: { positive: 50, neutral: 30, negative: 20 },
       },
       competitiveMetrics: {
         competitiveAdvantageIndex: 50,
-        threatLevel: 30
+        threatLevel: 30,
       },
       reputationKPIs: {
         overallScore: 60,
@@ -296,28 +292,28 @@ export const CompanyAnalysisWidget: React.FC = () => {
         publicPerception: {
           favorability: 60,
           awareness: 40,
-          consideration: 45
+          consideration: 45,
         },
         socialMediaMetrics: {
           followers: 1000,
           engagement: 2.5,
-          sentimentScore: 10
+          sentimentScore: 10,
         },
         crisisResilience: 65,
-        competitorComparison: []
+        competitorComparison: [],
       },
       recommendations: [],
       alerts: {
         critical: [],
         warnings: [],
-        opportunities: []
+        opportunities: [],
       },
       confidenceScore: 70,
       dataFreshness: {
         lastUpdated: new Date(),
         dataAge: 0,
         reliability: 'medium' as const,
-        sources: 1
+        sources: 1,
       },
       sources: [
         {
@@ -325,10 +321,13 @@ export const CompanyAnalysisWidget: React.FC = () => {
           reliability: 60,
           lastUpdated: new Date(),
           type: 'secondary' as const,
-          credibility: 'medium' as const
-        }
+          credibility: 'medium' as const,
+        },
       ],
-      limitations: ['Analyse rapide avec données limitées', 'Pour une analyse complète, utiliser Deep Research']
+      limitations: [
+        'Analyse rapide avec données limitées',
+        'Pour une analyse complète, utiliser Deep Research',
+      ],
     };
   };
 
@@ -337,8 +336,12 @@ export const CompanyAnalysisWidget: React.FC = () => {
     if (!searchState.report) return null;
 
     const { report } = searchState;
-    const confidenceColor = report.confidenceScore >= 80 ? 'text-green-600' : 
-                           report.confidenceScore >= 60 ? 'text-yellow-600' : 'text-red-600';
+    const confidenceColor =
+      report.confidenceScore >= 80
+        ? 'text-green-600'
+        : report.confidenceScore >= 60
+          ? 'text-yellow-600'
+          : 'text-red-600';
 
     return (
       <div className="space-y-6 mt-6" data-testid="company-report-summary">
@@ -347,13 +350,12 @@ export const CompanyAnalysisWidget: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{report.brandName}</h3>
             <p className="text-sm text-gray-600">
-              Analysé le {report.executionTimestamp.toLocaleDateString('fr-FR')} à {report.executionTimestamp.toLocaleTimeString('fr-FR')}
+              Analysé le {report.executionTimestamp.toLocaleDateString('fr-FR')} à{' '}
+              {report.executionTimestamp.toLocaleTimeString('fr-FR')}
             </p>
           </div>
           <div className="text-right">
-            <div className={`text-2xl font-bold ${confidenceColor}`}>
-              {report.confidenceScore}%
-            </div>
+            <div className={`text-2xl font-bold ${confidenceColor}`}>{report.confidenceScore}%</div>
             <p className="text-xs text-gray-500">Score de confiance</p>
           </div>
         </div>
@@ -421,15 +423,21 @@ export const CompanyAnalysisWidget: React.FC = () => {
             <CardContent className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Fondation:</span>
-                <span className="text-sm font-medium">{report.objectiveAnalysis.brandHistory.foundingYear}</span>
+                <span className="text-sm font-medium">
+                  {report.objectiveAnalysis.brandHistory.foundingYear}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Secteur:</span>
-                <span className="text-sm font-medium">{report.objectiveAnalysis.marketPosition.sector.join(', ')}</span>
+                <span className="text-sm font-medium">
+                  {report.objectiveAnalysis.marketPosition.sector.join(', ')}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Marchés:</span>
-                <span className="text-sm font-medium">{report.objectiveAnalysis.marketPosition.markets.join(', ')}</span>
+                <span className="text-sm font-medium">
+                  {report.objectiveAnalysis.marketPosition.markets.join(', ')}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -445,24 +453,24 @@ export const CompanyAnalysisWidget: React.FC = () => {
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Chiffre d'affaires:</span>
                 <span className="text-sm font-medium">
-                  {report.objectiveAnalysis.financialHealth.revenue 
+                  {report.objectiveAnalysis.financialHealth.revenue
                     ? `${(report.objectiveAnalysis.financialHealth.revenue / 1000000).toFixed(1)}M€`
-                    : 'Non communiqué'
-                  }
+                    : 'Non communiqué'}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Croissance:</span>
                 <span className="text-sm font-medium">
-                  {report.objectiveAnalysis.financialHealth.growth 
+                  {report.objectiveAnalysis.financialHealth.growth
                     ? `${report.objectiveAnalysis.financialHealth.growth}%`
-                    : 'N/A'
-                  }
+                    : 'N/A'}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Rentabilité:</span>
-                <span className="text-sm font-medium">{report.objectiveAnalysis.financialHealth.profitability}</span>
+                <span className="text-sm font-medium">
+                  {report.objectiveAnalysis.financialHealth.profitability}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -470,28 +478,32 @@ export const CompanyAnalysisWidget: React.FC = () => {
 
         {/* Actions rapides */}
         <div className="flex gap-2 flex-wrap">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
-            onClick={() => {/* Export PDF */}}
+            onClick={() => {
+              /* Export PDF */
+            }}
             className="flex items-center gap-2"
           >
             <Download className="h-4 w-4" />
             Exporter PDF
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
-            onClick={() => {/* Voir détails */}}
+            onClick={() => {
+              /* Voir détails */
+            }}
             className="flex items-center gap-2"
           >
             <FileText className="h-4 w-4" />
             Rapport complet
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
-            onClick={() => setSearchState(prev => ({ ...prev, hasResults: false, report: null }))}
+            onClick={() => setSearchState((prev) => ({ ...prev, hasResults: false, report: null }))}
             className="flex items-center gap-2"
           >
             <Search className="h-4 w-4" />
@@ -538,25 +550,32 @@ export const CompanyAnalysisWidget: React.FC = () => {
               <label className="text-sm font-medium text-gray-700">Mode d'analyse</label>
               <div className="grid md:grid-cols-2 gap-3">
                 {ANALYSIS_MODES.map((mode) => (
-                  <Card 
+                  <Card
                     key={mode.id}
                     className={`p-4 cursor-pointer transition-all hover:shadow-md border-2 ${
-                      searchState.analysisMode === mode.id 
-                        ? 'border-blue-500 bg-blue-50' 
+                      searchState.analysisMode === mode.id
+                        ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
-                    onClick={() => setSearchState(prev => ({ ...prev, analysisMode: mode.id }))}
+                    onClick={() => setSearchState((prev) => ({ ...prev, analysisMode: mode.id }))}
                     data-testid={`analysis-mode-${mode.id}`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-lg ${mode.premium ? 'bg-purple-100' : 'bg-gray-100'}`}>
-                        <mode.icon className={`h-5 w-5 ${mode.premium ? 'text-purple-600' : 'text-gray-600'}`} />
+                      <div
+                        className={`p-2 rounded-lg ${mode.premium ? 'bg-purple-100' : 'bg-gray-100'}`}
+                      >
+                        <mode.icon
+                          className={`h-5 w-5 ${mode.premium ? 'text-purple-600' : 'text-gray-600'}`}
+                        />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <h3 className="font-medium text-gray-900">{mode.label}</h3>
                           {mode.premium && (
-                            <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700">
+                            <Badge
+                              variant="secondary"
+                              className="text-xs bg-purple-100 text-purple-700"
+                            >
                               Premium
                             </Badge>
                           )}
@@ -584,8 +603,10 @@ export const CompanyAnalysisWidget: React.FC = () => {
                   type="text"
                   placeholder="Ex: Tesla, Apple, Microsoft..."
                   value={searchState.query}
-                  onChange={(e) => setSearchState(prev => ({ ...prev, query: e.target.value }))}
-                  onKeyPress={(e) => e.key === 'Enter' && !searchState.isSearching && handleSearch()}
+                  onChange={(e) => setSearchState((prev) => ({ ...prev, query: e.target.value }))}
+                  onKeyPress={(e) =>
+                    e.key === 'Enter' && !searchState.isSearching && handleSearch()
+                  }
                   className={`pl-10 pr-4 h-12 text-base ${validationError ? 'border-red-300 focus:border-red-500' : ''}`}
                   disabled={searchState.isSearching}
                   data-testid="company-name-input"
@@ -610,7 +631,7 @@ export const CompanyAnalysisWidget: React.FC = () => {
                       key={index}
                       variant="outline"
                       className="cursor-pointer hover:bg-gray-50"
-                      onClick={() => setSearchState(prev => ({ ...prev, query: company }))}
+                      onClick={() => setSearchState((prev) => ({ ...prev, query: company }))}
                     >
                       {company}
                     </Badge>
@@ -634,7 +655,9 @@ export const CompanyAnalysisWidget: React.FC = () => {
               ) : (
                 <>
                   <Brain className="h-5 w-5 mr-2" />
-                  {searchState.analysisMode === 'deep' ? 'Lancer Deep Research' : 'Analyser avec IA'}
+                  {searchState.analysisMode === 'deep'
+                    ? 'Lancer Deep Research'
+                    : 'Analyser avec IA'}
                 </>
               )}
             </Button>
@@ -653,7 +676,8 @@ export const CompanyAnalysisWidget: React.FC = () => {
             </div>
             <Progress value={progress} className="w-full" />
             <div className="text-xs text-gray-500">
-              {progress}% terminé • Mode: {searchState.analysisMode === 'deep' ? 'Deep Research' : 'Analyse rapide'}
+              {progress}% terminé • Mode:{' '}
+              {searchState.analysisMode === 'deep' ? 'Deep Research' : 'Analyse rapide'}
             </div>
           </div>
         )}
@@ -671,7 +695,7 @@ export const CompanyAnalysisWidget: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setSearchState(prev => ({ ...prev, error: null }))}
+              onClick={() => setSearchState((prev) => ({ ...prev, error: null }))}
               className="mt-3"
             >
               Réessayer
@@ -686,4 +710,4 @@ export const CompanyAnalysisWidget: React.FC = () => {
   );
 };
 
-export default CompanyAnalysisWidget; 
+export default CompanyAnalysisWidget;

@@ -1,22 +1,42 @@
 // Quality Enhancement Service
 // Extracted from monolithic ReportExportService.ts for better organization
 
-export class QualityEnhancementService {
+type AnyRecord = Record<string, unknown>;
 
+type RecommendationLike = {
+  title?: string;
+  description?: string;
+  implementation?: { steps?: unknown } & AnyRecord;
+} & AnyRecord;
+
+type QualityAssessableReport = {
+  objectiveAnalysis?: unknown;
+  swotMetrics?: unknown;
+  recommendations?: unknown[];
+  confidenceScore?: number;
+} & AnyRecord;
+
+export class QualityEnhancementService {
   /**
    * Améliore la qualité d'un rapport avant export
    */
-  enhanceReport(report: any): any {
-    const enhanced = { ...report };
+  enhanceReport(report: AnyRecord): AnyRecord {
+    const enhanced: AnyRecord = { ...report };
 
-    // Amélioration du contenu textuel
-    enhanced.objectiveAnalysis = this.enhanceObjectiveAnalysis(enhanced.objectiveAnalysis);
-    enhanced.strategicAnalysis = this.enhanceStrategicAnalysis(enhanced.strategicAnalysis);
-    enhanced.recommendations = this.enhanceRecommendations(enhanced.recommendations);
+    enhanced.objectiveAnalysis = this.enhanceObjectiveAnalysis(
+      enhanced.objectiveAnalysis as AnyRecord | undefined,
+    );
+    enhanced.strategicAnalysis = this.enhanceStrategicAnalysis(
+      enhanced.strategicAnalysis as AnyRecord | undefined,
+    );
+    enhanced.recommendations = this.enhanceRecommendations(
+      enhanced.recommendations as RecommendationLike[] | undefined,
+    );
 
-    // Nettoyage et normalisation des données
-    enhanced.swotMetrics = this.normalizeMetrics(enhanced.swotMetrics);
-    enhanced.competitiveMetrics = this.normalizeMetrics(enhanced.competitiveMetrics);
+    enhanced.swotMetrics = this.normalizeMetrics(enhanced.swotMetrics as AnyRecord | undefined);
+    enhanced.competitiveMetrics = this.normalizeMetrics(
+      enhanced.competitiveMetrics as AnyRecord | undefined,
+    );
 
     return enhanced;
   }
@@ -24,22 +44,19 @@ export class QualityEnhancementService {
   /**
    * Améliore l'analyse objective
    */
-  private enhanceObjectiveAnalysis(analysis: any): any {
+  private enhanceObjectiveAnalysis(analysis: AnyRecord | undefined): AnyRecord | undefined {
     if (!analysis) return analysis;
 
-    const enhanced = { ...analysis };
+    const enhanced: AnyRecord = { ...analysis };
 
-    // Amélioration de l'historique de marque
     if (typeof enhanced.brandHistory === 'string') {
       enhanced.brandHistory = this.enhanceText(enhanced.brandHistory);
     }
 
-    // Amélioration de la position marché
     if (typeof enhanced.marketPosition === 'string') {
       enhanced.marketPosition = this.enhanceText(enhanced.marketPosition);
     }
 
-    // Amélioration de la santé financière
     if (typeof enhanced.financialHealth === 'string') {
       enhanced.financialHealth = this.enhanceText(enhanced.financialHealth);
     }
@@ -50,20 +67,18 @@ export class QualityEnhancementService {
   /**
    * Améliore l'analyse stratégique
    */
-  private enhanceStrategicAnalysis(analysis: any): any {
+  private enhanceStrategicAnalysis(analysis: AnyRecord | undefined): AnyRecord | undefined {
     if (!analysis) return analysis;
 
-    const enhanced = { ...analysis };
+    const enhanced: AnyRecord = { ...analysis };
 
-    // Amélioration de la stratégie de base
-    if (enhanced.coreStrategy) {
+    if (typeof enhanced.coreStrategy === 'string') {
       enhanced.coreStrategy = this.enhanceText(enhanced.coreStrategy);
     }
 
-    // Amélioration des avantages concurrentiels
     if (Array.isArray(enhanced.competitiveAdvantage)) {
-      enhanced.competitiveAdvantage = enhanced.competitiveAdvantage.map((advantage: string) =>
-        this.enhanceText(advantage)
+      enhanced.competitiveAdvantage = (enhanced.competitiveAdvantage as string[]).map(
+        (advantage: string) => this.enhanceText(advantage),
       );
     }
 
@@ -73,34 +88,38 @@ export class QualityEnhancementService {
   /**
    * Améliore les recommandations
    */
-  private enhanceRecommendations(recommendations: any[]): any[] {
+  private enhanceRecommendations(
+    recommendations: RecommendationLike[] | undefined,
+  ): RecommendationLike[] | undefined {
     if (!Array.isArray(recommendations)) return recommendations;
 
-    return recommendations.map(rec => ({
+    return recommendations.map((rec) => ({
       ...rec,
       title: this.enhanceText(rec.title || ''),
       description: this.enhanceText(rec.description || ''),
-      implementation: rec.implementation ? {
-        ...rec.implementation,
-        steps: Array.isArray(rec.implementation.steps) 
-          ? rec.implementation.steps.map((step: string) => this.enhanceText(step))
-          : rec.implementation.steps
-      } : undefined
+      implementation: rec.implementation
+        ? {
+            ...rec.implementation,
+            steps: Array.isArray(rec.implementation.steps)
+              ? (rec.implementation.steps as string[]).map((step: string) => this.enhanceText(step))
+              : rec.implementation.steps,
+          }
+        : undefined,
     }));
   }
 
   /**
    * Normalise les métriques
    */
-  private normalizeMetrics(metrics: any): any {
+  private normalizeMetrics(metrics: AnyRecord | undefined): AnyRecord | undefined {
     if (!metrics) return metrics;
 
-    const normalized = { ...metrics };
+    const normalized: AnyRecord = { ...metrics };
 
-    // Normalisation des scores (0-100)
-    Object.keys(normalized).forEach(key => {
-      if (typeof normalized[key] === 'number' && key.includes('Score')) {
-        normalized[key] = Math.max(0, Math.min(100, normalized[key]));
+    Object.keys(normalized).forEach((key) => {
+      const value = normalized[key];
+      if (typeof value === 'number' && key.includes('Score')) {
+        normalized[key] = Math.max(0, Math.min(100, value));
       }
     });
 
@@ -115,22 +134,17 @@ export class QualityEnhancementService {
 
     let enhanced = text;
 
-    // Suppression des espaces multiples
     enhanced = enhanced.replace(/\s+/g, ' ');
-
-    // Suppression des espaces en début/fin
     enhanced = enhanced.trim();
 
-    // Correction des ponctuations
     enhanced = enhanced.replace(/\s+([,.!?;:])/g, '$1');
     enhanced = enhanced.replace(/([,.!?;:])\s*/g, '$1 ');
 
-    // Capitalisation après ponctuation
-    enhanced = enhanced.replace(/([.!?])\s+([a-z])/g, (match, punct, letter) => 
-      punct + ' ' + letter.toUpperCase()
+    enhanced = enhanced.replace(
+      /([.!?])\s+([a-z])/g,
+      (_match, punct, letter) => punct + ' ' + letter.toUpperCase(),
     );
 
-    // Capitalisation du début
     if (enhanced.length > 0) {
       enhanced = enhanced.charAt(0).toUpperCase() + enhanced.slice(1);
     }
@@ -141,7 +155,7 @@ export class QualityEnhancementService {
   /**
    * Évalue la qualité d'un rapport
    */
-  assessQuality(report: any): {
+  assessQuality(report: QualityAssessableReport): {
     score: number;
     issues: string[];
     suggestions: string[];
@@ -150,7 +164,6 @@ export class QualityEnhancementService {
     const suggestions: string[] = [];
     let score = 100;
 
-    // Vérification de la complétude
     if (!report.objectiveAnalysis) {
       issues.push('Analyse objective manquante');
       score -= 20;
@@ -166,9 +179,8 @@ export class QualityEnhancementService {
       score -= 15;
     }
 
-    // Suggestions d'amélioration
     if (report.recommendations && report.recommendations.length < 3) {
-      suggestions.push('Considérer d\'ajouter plus de recommandations (minimum 3)');
+      suggestions.push("Considérer d'ajouter plus de recommandations (minimum 3)");
     }
 
     if (report.confidenceScore && report.confidenceScore < 70) {
@@ -178,7 +190,7 @@ export class QualityEnhancementService {
     return {
       score: Math.max(0, score),
       issues,
-      suggestions
+      suggestions,
     };
   }
-} 
+}

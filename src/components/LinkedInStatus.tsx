@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useLinkedInAnalytics } from '@/hooks/useLinkedInAnalytics';
@@ -6,23 +6,18 @@ import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, AlertCircle, ExternalLink, RefreshCw } from 'lucide-react';
 
 const LinkedInStatus: React.FC = () => {
-  const {
-    isAuthenticated,
-    isLoading,
-    isConfigured,
-    authenticate,
-    testConnection
-  } = useLinkedInAnalytics();
-  
+  const { isAuthenticated, isLoading, isConfigured, authenticate, testConnection } =
+    useLinkedInAnalytics();
+
   const { toast } = useToast();
   const [isConnecting, setIsConnecting] = useState(false);
 
   const handleConnect = async () => {
     if (!isConfigured) {
       toast({
-        title: "Configuration manquante",
+        title: 'Configuration manquante',
         description: "LinkedIn n'est pas configuré dans les variables d'environnement",
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
@@ -33,9 +28,9 @@ const LinkedInStatus: React.FC = () => {
     } catch (error) {
       console.error('Erreur connexion LinkedIn:', error);
       toast({
-        title: "Erreur de connexion",
-        description: "Impossible de se connecter à LinkedIn",
-        variant: "destructive",
+        title: 'Erreur de connexion',
+        description: 'Impossible de se connecter à LinkedIn',
+        variant: 'destructive',
       });
     } finally {
       setIsConnecting(false);
@@ -44,17 +39,17 @@ const LinkedInStatus: React.FC = () => {
 
   const handleTestConnection = async () => {
     const isConnected = await testConnection();
-    
+
     if (isConnected) {
       toast({
-        title: "✅ LinkedIn connecté",
-        description: "La connexion LinkedIn est active et fonctionnelle",
+        title: '✅ LinkedIn connecté',
+        description: 'La connexion LinkedIn est active et fonctionnelle',
       });
     } else {
       toast({
-        title: "❌ LinkedIn déconnecté",
-        description: "Veuillez vous reconnecter à LinkedIn",
-        variant: "destructive",
+        title: '❌ LinkedIn déconnecté',
+        description: 'Veuillez vous reconnecter à LinkedIn',
+        variant: 'destructive',
       });
     }
   };
@@ -76,7 +71,7 @@ const LinkedInStatus: React.FC = () => {
           <CheckCircle className="w-3 h-3 text-green-600" />
           <span className="text-green-600 text-xs font-medium">LinkedIn connecté</span>
         </div>
-        
+
         <Button
           variant="ghost"
           size="sm"
@@ -95,7 +90,7 @@ const LinkedInStatus: React.FC = () => {
         <AlertCircle className="w-3 h-3 text-orange-600" />
         <span className="text-orange-600 text-xs font-medium">LinkedIn déconnecté</span>
       </div>
-      
+
       <Button
         variant="ghost"
         size="sm"
@@ -113,4 +108,4 @@ const LinkedInStatus: React.FC = () => {
   );
 };
 
-export default LinkedInStatus; 
+export default LinkedInStatus;

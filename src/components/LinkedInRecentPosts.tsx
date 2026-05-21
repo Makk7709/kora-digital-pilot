@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Heart, MessageCircle, Share2, MousePointer, TrendingUp, Calendar } from 'lucide-react';
+import { Eye, Heart, MessageCircle, MousePointer, TrendingUp, Calendar } from 'lucide-react';
 import type { LinkedInPost } from '@/lib/linkedin-api';
 
 interface LinkedInRecentPostsProps {
@@ -17,8 +17,10 @@ const formatPostContent = (content: string, maxLength: number = 100): string => 
 
 // Fonction de calcul des métriques selon les tests TDD
 const formatMetrics = (metrics: LinkedInPost['metrics']) => ({
-  engagement: ((metrics.likes + metrics.comments + metrics.shares) / metrics.impressions * 100).toFixed(1) + '%',
-  totalInteractions: metrics.likes + metrics.comments + metrics.shares
+  engagement:
+    (((metrics.likes + metrics.comments + metrics.shares) / metrics.impressions) * 100).toFixed(1) +
+    '%',
+  totalInteractions: metrics.likes + metrics.comments + metrics.shares,
 });
 
 // Fonction de formatage des dates
@@ -41,10 +43,10 @@ const formatNumber = (num: number): string => {
   return num.toString();
 };
 
-export const LinkedInRecentPosts: React.FC<LinkedInRecentPostsProps> = ({ 
-  posts, 
-  isLoading = false, 
-  maxPosts = 3 
+export const LinkedInRecentPosts: React.FC<LinkedInRecentPostsProps> = ({
+  posts,
+  isLoading = false,
+  maxPosts = 3,
 }) => {
   if (isLoading) {
     return (
@@ -114,8 +116,8 @@ export const LinkedInRecentPosts: React.FC<LinkedInRecentPostsProps> = ({
             const isTopPerformer = index === 0; // Le premier post est généralement le plus performant
 
             return (
-              <div 
-                key={post.id} 
+              <div
+                key={post.id}
                 className={`p-4 rounded-lg border transition-all hover:shadow-md ${
                   isTopPerformer ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'
                 }`}
@@ -124,13 +126,11 @@ export const LinkedInRecentPosts: React.FC<LinkedInRecentPostsProps> = ({
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <Badge variant={isTopPerformer ? "default" : "secondary"} className="text-xs">
+                      <Badge variant={isTopPerformer ? 'default' : 'secondary'} className="text-xs">
                         {isTopPerformer && <TrendingUp className="h-3 w-3 mr-1" />}
                         Post #{index + 1}
                       </Badge>
-                      <span className="text-xs text-gray-500">
-                        {formatDate(post.publishedAt)}
-                      </span>
+                      <span className="text-xs text-gray-500">{formatDate(post.publishedAt)}</span>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-xs">
@@ -151,7 +151,9 @@ export const LinkedInRecentPosts: React.FC<LinkedInRecentPostsProps> = ({
                     <Eye className="h-4 w-4 text-blue-500" />
                     <div>
                       <p className="text-xs text-gray-500">Portée</p>
-                      <p className="text-sm font-medium">{formatNumber(post.metrics.impressions)}</p>
+                      <p className="text-sm font-medium">
+                        {formatNumber(post.metrics.impressions)}
+                      </p>
                     </div>
                   </div>
 
@@ -185,7 +187,9 @@ export const LinkedInRecentPosts: React.FC<LinkedInRecentPostsProps> = ({
                   <div className="mt-3 pt-3 border-t border-green-200">
                     <div className="flex items-center gap-2 text-green-700">
                       <TrendingUp className="h-4 w-4" />
-                      <span className="text-xs font-medium">Meilleur post ({metrics.totalInteractions} interactions)</span>
+                      <span className="text-xs font-medium">
+                        Meilleur post ({metrics.totalInteractions} interactions)
+                      </span>
                     </div>
                   </div>
                 )}
@@ -205,4 +209,4 @@ export const LinkedInRecentPosts: React.FC<LinkedInRecentPostsProps> = ({
       </CardContent>
     </Card>
   );
-}; 
+};
