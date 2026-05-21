@@ -1,4 +1,5 @@
 // ✅ UTILISATION DU FETCH NATIF DU NAVIGATEUR
+import { logger } from './logger';
 // import fetch, { Response } from 'node-fetch'; // ❌ Retiré car incompatible navigateur
 
 export interface PerplexityConfig {
@@ -63,7 +64,7 @@ class PerplexityService {
 
   constructor(config: PerplexityConfig) {
     this.config = config;
-    console.log('🔧 [PerplexityService] Initialisation:', {
+    logger.debug('🔧 [PerplexityService] Initialisation:', {
       apiKey: config.apiKey ? `${config.apiKey.substring(0, 10)}...` : 'MANQUANTE',
       model: config.model,
       maxTokens: config.maxTokens,
@@ -80,7 +81,7 @@ class PerplexityService {
 
     try {
       const prompt = this.buildBusinessPrompt(request);
-      console.log(
+      logger.debug(
         '📡 [PerplexityService] Appel API avec prompt:',
         prompt.substring(0, 100) + '...',
       );
@@ -92,7 +93,7 @@ class PerplexityService {
 
       return response;
     } catch (error) {
-      console.error('❌ [PerplexityService] Erreur Business Insights:', error);
+      logger.error('❌ [PerplexityService] Erreur Business Insights:', error);
       throw new Error(
         `Impossible d'obtenir les insights: ${error instanceof Error ? error.message : 'Erreur inconnue'}`,
       );
@@ -187,8 +188,8 @@ class PerplexityService {
 
   // Méthodes privées
   private async makeRequest(prompt: string): Promise<PerplexityResponse> {
-    console.log('📡 [PerplexityService] Appel API avec prompt:', prompt.substring(0, 100) + '...');
-    console.log('🔄 [PerplexityService] makeRequest démarré');
+    logger.debug('📡 [PerplexityService] Appel API avec prompt:', prompt.substring(0, 100) + '...');
+    logger.debug('🔄 [PerplexityService] makeRequest démarré');
 
     // ✅ VALIDATIONS INITIALES
     if (!this.config.apiKey) {
@@ -217,7 +218,7 @@ class PerplexityService {
       stream: false,
     };
 
-    console.log('📡 [PerplexityService] Envoi requête:', {
+    logger.debug('📡 [PerplexityService] Envoi requête:', {
       url: this.baseURL,
       model: body.model,
       maxTokens: body.max_tokens,
@@ -234,13 +235,13 @@ class PerplexityService {
         body: JSON.stringify(body),
       });
 
-      console.log('📊 [PerplexityService] Réponse reçue:', {
+      logger.debug('📊 [PerplexityService] Réponse reçue:', {
         status: response.status,
         statusText: response.statusText,
         ok: response.ok,
       });
     } catch (error) {
-      console.error('❌ [PerplexityService] Erreur fetch:', error);
+      logger.error('❌ [PerplexityService] Erreur fetch:', error);
       throw new Error(
         `Erreur réseau: ${error instanceof Error ? error.message : 'Erreur inconnue'}`,
       );
@@ -254,7 +255,7 @@ class PerplexityService {
         errorData = { error: { message: 'Erreur inconnue' } };
       }
 
-      console.error('❌ [PerplexityService] Erreur API:', {
+      logger.error('❌ [PerplexityService] Erreur API:', {
         status: response.status,
         error: errorData,
       });
@@ -267,13 +268,13 @@ class PerplexityService {
     let data;
     try {
       data = await response.json();
-      console.log('✅ [PerplexityService] Données parsées:', {
+      logger.debug('✅ [PerplexityService] Données parsées:', {
         hasChoices: !!data.choices,
         choicesLength: data.choices?.length,
         hasContent: !!data.choices?.[0]?.message?.content,
       });
     } catch (error) {
-      console.error('❌ [PerplexityService] Erreur parsing JSON:', error);
+      logger.error('❌ [PerplexityService] Erreur parsing JSON:', error);
       throw new Error('Impossible de parser la réponse JSON');
     }
 
@@ -510,7 +511,7 @@ class PerplexityService {
 
     // Si le contenu a été trop nettoyé, retourner l'original avec un nettoyage minimal
     if (cleanedContent.length < content.length * 0.3) {
-      console.warn(
+      logger.warn(
         '⚠️ [PerplexityService] Nettoyage trop agressif, conservation du contenu original',
       );
       return content
@@ -522,7 +523,7 @@ class PerplexityService {
         .trim();
     }
 
-    console.log(
+    logger.debug(
       `🧹 [PerplexityService] Contenu nettoyé: ${content.length} → ${cleanedContent.length} caractères`,
     );
 

@@ -11,6 +11,7 @@ import {
   RealSWOT,
   RealAlert,
 } from '../../types/brand-analysis';
+import { logger } from '../../lib/logger';
 
 export class BrandAnalysisAPIService {
   private parser = new PerplexityResponseParser();
@@ -21,7 +22,7 @@ export class BrandAnalysisAPIService {
   }
 
   async getMentions(brandName: string): Promise<RealMention[]> {
-    console.log('🔍 Récupération des mentions pour:', brandName);
+    logger.debug('🔍 Récupération des mentions pour:', brandName);
 
     try {
       const { query, config } = getQueryWithConfig('mentions', brandName);
@@ -30,10 +31,10 @@ export class BrandAnalysisAPIService {
         context: config.context,
       });
 
-      console.log('📡 Réponse API mentions:', response.content.substring(0, 300));
+      logger.debug('📡 Réponse API mentions:', response.content.substring(0, 300));
       return this.parser.parseMentions(response.content, brandName);
     } catch (error) {
-      console.error('Erreur lors de la récupération des mentions:', error);
+      logger.error('Erreur lors de la récupération des mentions:', error);
       // Retourner des données de fallback
       return [
         {
@@ -50,7 +51,7 @@ export class BrandAnalysisAPIService {
   }
 
   async getCompetitors(brandName: string): Promise<RealCompetitor[]> {
-    console.log('🔍 Récupération des concurrents pour:', brandName);
+    logger.debug('🔍 Récupération des concurrents pour:', brandName);
 
     try {
       const { query, config } = getQueryWithConfig('competitors', brandName);
@@ -59,10 +60,10 @@ export class BrandAnalysisAPIService {
         context: config.context,
       });
 
-      console.log('📡 Réponse API concurrents:', response.content.substring(0, 300));
+      logger.debug('📡 Réponse API concurrents:', response.content.substring(0, 300));
       return this.parser.parseCompetitors(response.content);
     } catch (error) {
-      console.error('Erreur lors de la récupération des concurrents:', error);
+      logger.error('Erreur lors de la récupération des concurrents:', error);
       // Retourner des données de fallback
       return [
         {
@@ -77,7 +78,7 @@ export class BrandAnalysisAPIService {
   }
 
   async getSentimentFromAPI(brandName: string): Promise<RealSentiment> {
-    console.log('🔍 Récupération du sentiment pour:', brandName);
+    logger.debug('🔍 Récupération du sentiment pour:', brandName);
 
     try {
       const { query, config } = getQueryWithConfig('sentiment', brandName);
@@ -86,10 +87,10 @@ export class BrandAnalysisAPIService {
         context: config.context,
       });
 
-      console.log('📡 Réponse API sentiment:', response.content.substring(0, 300));
+      logger.debug('📡 Réponse API sentiment:', response.content.substring(0, 300));
       return this.parser.parseSentiment(response.content);
     } catch (error) {
-      console.error('Erreur lors de la récupération du sentiment:', error);
+      logger.error('Erreur lors de la récupération du sentiment:', error);
       // Retourner des données de fallback
       return {
         overallScore: 60,
@@ -103,7 +104,7 @@ export class BrandAnalysisAPIService {
   }
 
   async getKeywordsFromAPI(brandName: string): Promise<RealKeyword[]> {
-    console.log('🔍 Récupération des mots-clés pour:', brandName);
+    logger.debug('🔍 Récupération des mots-clés pour:', brandName);
 
     try {
       const { query, config } = getQueryWithConfig('keywords', brandName);
@@ -112,10 +113,10 @@ export class BrandAnalysisAPIService {
         context: config.context,
       });
 
-      console.log('📡 Réponse API mots-clés:', response.content.substring(0, 300));
+      logger.debug('📡 Réponse API mots-clés:', response.content.substring(0, 300));
       return this.parser.parseKeywords(response.content);
     } catch (error) {
-      console.error('Erreur lors de la récupération des mots-clés:', error);
+      logger.error('Erreur lors de la récupération des mots-clés:', error);
       // Retourner des données de fallback
       return [
         {
@@ -129,7 +130,7 @@ export class BrandAnalysisAPIService {
   }
 
   async getSWOTFromAPI(brandName: string): Promise<RealSWOT> {
-    console.log('🔍 Récupération SWOT pour:', brandName);
+    logger.debug('🔍 Récupération SWOT pour:', brandName);
 
     try {
       const { query, config } = getQueryWithConfig('swot', brandName);
@@ -138,10 +139,10 @@ export class BrandAnalysisAPIService {
         context: config.context,
       });
 
-      console.log('📡 Réponse API SWOT:', response.content.substring(0, 300));
+      logger.debug('📡 Réponse API SWOT:', response.content.substring(0, 300));
       return this.parser.parseSWOT(response.content);
     } catch (error) {
-      console.error('Erreur lors de la récupération SWOT:', error);
+      logger.error('Erreur lors de la récupération SWOT:', error);
       // Retourner des données de fallback
       return {
         strengths: ['Position établie sur le marché'],
@@ -154,7 +155,7 @@ export class BrandAnalysisAPIService {
   }
 
   async getAlertsFromAPI(brandName: string): Promise<RealAlert[]> {
-    console.log('🔍 Récupération des alertes pour:', brandName);
+    logger.debug('🔍 Récupération des alertes pour:', brandName);
 
     try {
       const { query, config } = getQueryWithConfig('alerts', brandName);
@@ -163,10 +164,10 @@ export class BrandAnalysisAPIService {
         context: config.context,
       });
 
-      console.log('📡 Réponse API alertes:', response.content.substring(0, 300));
+      logger.debug('📡 Réponse API alertes:', response.content.substring(0, 300));
       return this.parser.parseAlerts(response.content);
     } catch (error) {
-      console.error('Erreur lors de la récupération des alertes:', error);
+      logger.error('Erreur lors de la récupération des alertes:', error);
       // Retourner une alerte de fallback
       return [
         {
@@ -229,7 +230,7 @@ export class BrandAnalysisAPIService {
 
       return this.parser.parseKeywords(response.content);
     } catch (error) {
-      console.error("Erreur lors de l'extraction des mots-clés:", error);
+      logger.error("Erreur lors de l'extraction des mots-clés:", error);
 
       // Fallback : analyser directement le contenu
       const words = content

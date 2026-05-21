@@ -3,20 +3,21 @@
 
 import { BrandAnalysisAPIService } from './api-service';
 import { BrandReportGenerator } from './report-generator';
-import { 
+import {
   BrandAnalysisService,
-  BrandReport, 
-  PerplexityReport, 
-  RealMention, 
-  RealSentiment, 
-  RealCompetitor, 
-  RealKeyword 
+  BrandReport,
+  PerplexityReport,
+  RealMention,
+  RealSentiment,
+  RealCompetitor,
+  RealKeyword,
 } from '../../types/brand-analysis';
+import { logger } from '../../lib/logger';
 
 export class BrandAnalysisOrchestrator implements BrandAnalysisService {
   private apiService: BrandAnalysisAPIService;
   private reportGenerator: BrandReportGenerator;
-  
+
   constructor(perplexityService: any) {
     this.apiService = new BrandAnalysisAPIService(perplexityService);
     this.reportGenerator = new BrandReportGenerator();
@@ -24,17 +25,18 @@ export class BrandAnalysisOrchestrator implements BrandAnalysisService {
 
   async analyzeBrand(brandName: string): Promise<BrandReport> {
     try {
-      console.log('🎯 Début de l\'analyse complète pour:', brandName);
-      
+      logger.debug("🎯 Début de l'analyse complète pour:", brandName);
+
       // Lancer toutes les analyses en parallèle pour optimiser les performances
-      const [mentionsData, sentimentData, competitorsData, keywordsData, swotData, alertsData] = await Promise.all([
-        this.apiService.getMentions(brandName),
-        this.apiService.getSentimentFromAPI(brandName),
-        this.apiService.getCompetitors(brandName),
-        this.apiService.getKeywordsFromAPI(brandName),
-        this.apiService.getSWOTFromAPI(brandName),
-        this.apiService.getAlertsFromAPI(brandName)
-      ]);
+      const [mentionsData, sentimentData, competitorsData, keywordsData, swotData, alertsData] =
+        await Promise.all([
+          this.apiService.getMentions(brandName),
+          this.apiService.getSentimentFromAPI(brandName),
+          this.apiService.getCompetitors(brandName),
+          this.apiService.getKeywordsFromAPI(brandName),
+          this.apiService.getSWOTFromAPI(brandName),
+          this.apiService.getAlertsFromAPI(brandName),
+        ]);
 
       const brandReport: BrandReport = {
         mentions: mentionsData,
@@ -44,15 +46,17 @@ export class BrandAnalysisOrchestrator implements BrandAnalysisService {
         swot: swotData,
         alerts: alertsData,
         brandName,
-        analysisTimestamp: new Date()
+        analysisTimestamp: new Date(),
       };
 
-      console.log('✅ Analyse complète terminée pour:', brandName);
-      console.log(`📊 Résumé: ${mentionsData.length} mentions, ${competitorsData.length} concurrents, score: ${sentimentData.overallScore}/100`);
-      
+      logger.debug('✅ Analyse complète terminée pour:', brandName);
+      logger.debug(
+        `📊 Résumé: ${mentionsData.length} mentions, ${competitorsData.length} concurrents, score: ${sentimentData.overallScore}/100`,
+      );
+
       return brandReport;
     } catch (error) {
-      console.error('❌ Erreur lors de l\'analyse de marque:', error);
+      logger.error("❌ Erreur lors de l'analyse de marque:", error);
       throw new Error(`Impossible d'analyser la marque ${brandName}: ${error.message}`);
     }
   }
@@ -86,20 +90,20 @@ export class BrandAnalysisOrchestrator implements BrandAnalysisService {
     sentiment: RealSentiment;
     summary: string;
   }> {
-    console.log('⚡ Analyse rapide pour:', brandName);
-    
+    logger.debug('⚡ Analyse rapide pour:', brandName);
+
     try {
       // Analyse rapide avec seulement mentions et sentiment
       const [mentions, sentiment] = await Promise.all([
         this.apiService.getMentions(brandName),
-        this.apiService.getSentimentFromAPI(brandName)
+        this.apiService.getSentimentFromAPI(brandName),
       ]);
 
       const summary = `${brandName}: ${mentions.length} mentions, score ${sentiment.overallScore}/100 (${sentiment.trend})`;
-      
+
       return { mentions, sentiment, summary };
     } catch (error) {
-      console.error('Erreur analyse rapide:', error);
+      logger.error('Erreur analyse rapide:', error);
       throw error;
     }
   }
@@ -108,20 +112,20 @@ export class BrandAnalysisOrchestrator implements BrandAnalysisService {
     brandReport: BrandReport;
     perplexityReport: PerplexityReport;
   }> {
-    console.log('📋 Analyse complète avec rapport pour:', brandName);
-    
+    logger.debug('📋 Analyse complète avec rapport pour:', brandName);
+
     try {
       // Effectuer l'analyse complète
       const brandReport = await this.analyzeBrand(brandName);
-      
+
       // Générer le rapport Perplexity
       const perplexityReport = await this.generatePerplexityReport(brandReport);
-      
-      console.log('✅ Analyse complète avec rapport terminée');
-      
+
+      logger.debug('✅ Analyse complète avec rapport terminée');
+
       return { brandReport, perplexityReport };
     } catch (error) {
-      console.error('Erreur analyse complète avec rapport:', error);
+      logger.error('Erreur analyse complète avec rapport:', error);
       throw error;
     }
   }
@@ -132,26 +136,32 @@ export class BrandAnalysisOrchestrator implements BrandAnalysisService {
     quality: 'high' | 'medium' | 'low';
   }> {
     const issues: string[] = [];
-    
+
     // Validation des mentions
     if (brandReport.mentions.length === 0) {
       issues.push('Aucune mention trouvée');
     }
-    
+
     // Validation du sentiment
-    const sentimentTotal = brandReport.sentiment.positive + brandReport.sentiment.neutral + brandReport.sentiment.negative;
+    const sentimentTotal =
+      brandReport.sentiment.positive +
+      brandReport.sentiment.neutral +
+      brandReport.sentiment.negative;
     if (Math.abs(sentimentTotal - 100) > 5) {
       issues.push('Incohérence dans les pourcentages de sentiment');
     }
-    
+
     // Validation des concurrents
     if (brandReport.competitors.length === 0) {
       issues.push('Aucun concurrent identifié');
     }
-    
+
     // Validation SWOT
-    const swotTotal = brandReport.swot.strengths.length + brandReport.swot.weaknesses.length + 
-                     brandReport.swot.opportunities.length + brandReport.swot.threats.length;
+    const swotTotal =
+      brandReport.swot.strengths.length +
+      brandReport.swot.weaknesses.length +
+      brandReport.swot.opportunities.length +
+      brandReport.swot.threats.length;
     if (swotTotal < 4) {
       issues.push('Analyse SWOT incomplète');
     }
@@ -167,7 +177,7 @@ export class BrandAnalysisOrchestrator implements BrandAnalysisService {
     return {
       isValid: issues.length === 0,
       issues,
-      quality
+      quality,
     };
   }
 
@@ -179,31 +189,31 @@ export class BrandAnalysisOrchestrator implements BrandAnalysisService {
   }> {
     try {
       const apiHealth = await this.apiService.getAPIHealthStats();
-      
+
       return {
         status: 'healthy',
         apiHealth,
         lastAnalysis: new Date(),
-        uptime: Date.now()
+        uptime: Date.now(),
       };
     } catch (error) {
       return {
         status: 'unhealthy',
         apiHealth: null,
         lastAnalysis: null,
-        uptime: 0
+        uptime: 0,
       };
     }
   }
 
   // Méthode de compatibilité pour l'ancien code
   async getBusinessInsights(query: string, context?: string) {
-    console.log('⚠️ Méthode dépréciée getBusinessInsights appelée');
+    logger.debug('⚠️ Méthode dépréciée getBusinessInsights appelée');
     // Rediriger vers une analyse basique
     return {
       content: `Analyse demandée: ${query}`,
       context: context || 'general',
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 }
@@ -212,7 +222,7 @@ export class BrandAnalysisOrchestrator implements BrandAnalysisService {
 export class BrandAnalysisServiceImpl extends BrandAnalysisOrchestrator {
   constructor(perplexityService: any) {
     super(perplexityService);
-    console.log('⚠️ BrandAnalysisServiceImpl est déprécié, utilisez BrandAnalysisOrchestrator');
+    logger.debug('⚠️ BrandAnalysisServiceImpl est déprécié, utilisez BrandAnalysisOrchestrator');
   }
 }
 
@@ -222,4 +232,4 @@ export function createBrandAnalysisService(perplexityService: any): BrandAnalysi
 }
 
 // Export par défaut
-export default BrandAnalysisOrchestrator; 
+export default BrandAnalysisOrchestrator;
