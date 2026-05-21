@@ -63,7 +63,7 @@ Anthropic Key: ✅ VALIDE (sk-ant-api3-0n...)
 ## 📊 ÉTAT DES CLÉS API DÉTECTÉES
 
 D'après votre capture d'écran :
-- ✅ **OpenAI** : `sk-proj-zERJ5XYy-dAfdiMmX2v1x2bKdG42ypTx45GyBmGOHU87ZzL088mKjlk` - ✅ **Anthropic** : `sk-ant-api3-0nVH7AAca3B4L_NubPHtc-c12shyrVJoAlakT6I5P67ZVzD` Ces clés sont maintenant **correctement reconnues** par le système.
+- ✅ **OpenAI** : `sk-proj-[REDACTED]` - ✅ **Anthropic** : `sk-ant-api03-[REDACTED]` Ces clés sont maintenant **correctement reconnues** par le système.
 
 ## 🎯 RÉSULTAT ATTENDU
 
