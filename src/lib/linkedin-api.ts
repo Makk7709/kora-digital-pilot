@@ -230,13 +230,15 @@ class LinkedInAPI {
       }
 
       this.accessToken = data.access_token;
-      
-      // Stocker les tokens avec expiration
+
+      // SECURITY DEBT: les tokens LinkedIn sont actuellement persistés dans
+      // localStorage et sont donc lisibles par tout script s'exécutant dans
+      // l'origine (XSS). À migrer vers un cookie httpOnly posé par le proxy
+      // server.cjs. Voir docs/SECURITY.md (section "Stockage de tokens").
       const expiresAt = Date.now() + (data.expires_in || 3600) * 1000;
       localStorage.setItem('linkedin_access_token', data.access_token);
       localStorage.setItem('linkedin_token_expires', expiresAt.toString());
-      
-      // Stocker l'ID token si présent (OpenID Connect)
+
       if (data.id_token) {
         localStorage.setItem('linkedin_id_token', data.id_token);
         console.log('🆔 ID Token OpenID Connect stocké');
@@ -1242,8 +1244,8 @@ class LinkedInAPI {
       console.log('👤 Informations utilisateur depuis ID Token:', {
         subject: payload.sub,
         name: payload.name,
-        email: payload.email,
-        picture: payload.picture,
+        hasEmail: !!payload.email,
+        hasPicture: !!payload.picture,
         locale: payload.locale
       });
 

@@ -33,7 +33,7 @@ Si vous souhaitez utiliser de vraies données LinkedIn :
 
 1. **Créer le fichier `.env`** à la racine :
 ```env
-VITE_LINKEDIN_CLIENT_ID=771wyq0br5qhum
+VITE_LINKEDIN_CLIENT_ID=[REDACTED_CLIENT_ID]
 VITE_LINKEDIN_CLIENT_SECRET=VOTRE_CLIENT_SECRET_ICI
 VITE_LINKEDIN_REDIRECT_URI=http://localhost:8088/auth/linkedin/callback
 ```

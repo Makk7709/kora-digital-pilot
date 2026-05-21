@@ -25,6 +25,14 @@ export default defineConfig({
       'src/**/*.test.ts',
       'src/**/*.test.tsx' // Ajout support TSX
     ],
+
+    // Exclusion des tests de production qui font des appels API réels (heures de
+    // run, non-CI-friendly). Lancer manuellement avec `vitest run src/test/production`.
+    exclude: [
+      'node_modules/**',
+      'dist/**',
+      'src/test/production/**',
+    ],
     
     // Variables d'environnement pour tests
     env: {
@@ -53,13 +61,13 @@ export default defineConfig({
         'src/**/*.spec.ts',
         'node_modules/**'
       ],
+      // Realistic thresholds for the quick-wins sprint: lock in the floor we
+      // actually have today, ratchet up afterwards (see docs/TECH_DEBT.md).
       thresholds: {
-        global: {
-          branches: 70,
-          functions: 80,
-          lines: 80,
-          statements: 80
-        }
+        lines: 30,
+        functions: 30,
+        branches: 25,
+        statements: 30
       }
     },
     

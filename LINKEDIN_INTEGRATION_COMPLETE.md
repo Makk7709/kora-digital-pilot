@@ -3,7 +3,7 @@
 ## ✅ **Statut : INTÉGRATION RÉUSSIE**
 
 L'intégration LinkedIn API est maintenant **100% fonctionnelle** avec vos identifiants :
-- **Client ID** : `771wyq0br5qhum` - **Client Secret** : `WPL_AP1.OSkEq3inhy5qYt9Y.gOV8YQ==` ## 🚀 **Fonctionnalités Implémentées**
+- **Client ID** : `[REDACTED_CLIENT_ID]` - **Client Secret** : `WPL_AP1.[REDACTED]==` ## 🚀 **Fonctionnalités Implémentées**
 
 ### 1. **Service LinkedIn API** (`src/lib/linkedin-api.ts`)
 - ✅ **OAuth 2.0** : Authentification sécurisée
@@ -39,8 +39,8 @@ L'intégration LinkedIn API est maintenant **100% fonctionnelle** avec vos ident
 Créez un fichier `.env.local` avec :
 ```env
 # LinkedIn API Configuration
-VITE_LINKEDIN_CLIENT_ID=771wyq0br5qhum
-VITE_LINKEDIN_CLIENT_SECRET=WPL_AP1.OSkEq3inhy5qYt9Y.gOV8YQ==
+VITE_LINKEDIN_CLIENT_ID=[REDACTED_CLIENT_ID]
+VITE_LINKEDIN_CLIENT_SECRET=WPL_AP1.[REDACTED]==
 VITE_LINKEDIN_REDIRECT_URI=http://localhost:5173/auth/linkedin/callback
 ```
 

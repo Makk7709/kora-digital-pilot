@@ -12,6 +12,20 @@ dist
 dist-ssr
 *.local
 
+# Environment files (never commit secrets)
+.env
+.env.local
+.env.*.local
+
+# Test coverage reports
+coverage/
+
+# Generated valuation dossier
+dossier-valorisation/
+
+# TypeScript incremental build outputs
+*.tsbuildinfo
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

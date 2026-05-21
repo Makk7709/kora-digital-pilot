@@ -18,6 +18,9 @@
     "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    // TODO(tech-debt): noImplicitAny:true exposes 51 errors (mostly in Analytics.tsx,
+    // Dashboard.tsx and BrandIntelligenceOrchestrator.ts). Reverting to false until
+    // the typing pass is scheduled. See docs/TECH_DEBT.md.
     "noImplicitAny": false,
     "noFallthroughCasesInSwitch": false,
 
@@ -29,5 +32,13 @@
     /* Test Types */
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src", "**/*.test.ts", "**/*.test.tsx", "src/test/**/*", "src/tests/**/*"]
+  "include": ["src"],
+  "exclude": [
+    "src/test/**/*",
+    "src/tests/**/*",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx"
+  ]
 }

@@ -8,6 +8,10 @@
     "build": "tsc -b && vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "check": "npm run lint && npm run typecheck && npm run test:run && npm run build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "preview": "vite preview",
     "proxy": "node server.cjs",
     "proxy:staging": "NODE_ENV=staging node server.cjs",
@@ -36,7 +40,18 @@
     "markdown:fix-all": "node fix-markdown.cjs --all",
     "markdown:check": "node fix-markdown.cjs --all --dry-run",
     "markdown:clean": "node fix-markdown.cjs --clean",
-    "markdown:help": "node fix-markdown.cjs --help"
+    "markdown:help": "node fix-markdown.cjs --help",
+    "dossier": "bash scripts/build-valuation-dossier.sh",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -79,6 +94,9 @@
     "dotenv": "^16.5.0",
     "embla-carousel-react": "^8.3.0",
     "express": "^4.21.2",
+    "express-rate-limit": "^8.5.2",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.1.0",
     "input-otp": "^1.2.4",
     "jspdf": "^3.0.1",
     "lucide-react": "^0.462.0",
@@ -98,6 +116,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.5.3",
+    "@commitlint/config-conventional": "^20.5.3",
     "@eslint/js": "^9.13.0",
     "@tailwindcss/typography": "^0.5.15",
     "@testing-library/jest-dom": "^6.6.3",
@@ -111,14 +131,19 @@
     "@vitest/ui": "^2.1.9",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.13.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.11.0",
+    "husky": "^9.1.7",
     "jsdom": "^26.1.0",
+    "lint-staged": "^15.5.2",
     "lovable-tagger": "^1.1.7",
     "postcss": "^8.4.49",
+    "prettier": "^3.8.3",
     "tailwindcss": "^3.4.14",
     "typescript": "~5.6.2",
+    "typescript-eslint": "^8.59.4",
     "vite": "^5.4.10",
     "vitest": "^2.1.9"
   }

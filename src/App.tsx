@@ -9,8 +9,15 @@ import Landing from "./pages/Landing";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import LinkedInCallback from "./components/LinkedInCallback";
-import { TestAPI } from "./components/TestAPI";
-import DiagnosticTest from "./components/DiagnosticTest";
+
+// Routes de diagnostic uniquement disponibles en développement: tree-shaken en build prod.
+const DEV = import.meta.env.DEV;
+const TestAPI = DEV
+  ? React.lazy(() => import('./components/TestAPI').then((m) => ({ default: m.TestAPI })))
+  : null;
+const DiagnosticTest = DEV
+  ? React.lazy(() => import('./components/DiagnosticTest'))
+  : null;
 
 const queryClient = new QueryClient();
 
@@ -19,16 +26,18 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/app" element={<Index />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/test-api" element={<TestAPI />} />
-        <Route path="/diagnostic" element={<DiagnosticTest />} />
-        <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />
-        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <React.Suspense fallback={null}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/app" element={<Index />} />
+          <Route path="/settings" element={<Settings />} />
+          {DEV && TestAPI && <Route path="/test-api" element={<TestAPI />} />}
+          {DEV && DiagnosticTest && <Route path="/diagnostic" element={<DiagnosticTest />} />}
+          <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </React.Suspense>
     </TooltipProvider>
   </QueryClientProvider>
 );
