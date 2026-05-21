@@ -1,5 +1,9 @@
 require('dotenv').config();
 
+// SECURITY DEBT: les tokens LinkedIn sont stockés en localStorage côté client
+// (cf. src/lib/linkedin-api.ts:236-243). Migration prévue: poser ici un cookie
+// httpOnly + SameSite=Lax pour le couple access/id token, et laisser le proxy
+// faire les appels LinkedIn authentifiés en lisant le cookie. Hors scope sprint.
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
