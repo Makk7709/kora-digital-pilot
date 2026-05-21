@@ -2,7 +2,7 @@
 
 - **Date** : 2026-05-21
 - **Branche** : `feat/data-truth-mode`
-- **Commit HEAD au moment du rapport** : `6a7242b`
+- **Commit HEAD du report (refactor)** : `6a7242b` ; commit du rapport lui-même : `8f21899`
 - **Base** : `main` au tag `valuation-prep-merged` (snapshot de sécurité : tag `pre-agent4-snapshot`)
 - **Périmètre** : Agent 4 (Vérité produit / Données réelles) — Wave 1
 
@@ -163,6 +163,7 @@ Conformément aux règles d'ownership :
 ## 10. Commits (`feat/data-truth-mode`)
 
 ```
+8f21899 docs(data-truth): document demo/real data mode and audit results
 6a7242b refactor(library,app): mode-aware library + mount data-mode banner
 4ce86ef refactor(analytics): wire Analytics to demo-data + EmptyState
 813a1f0 refactor(dashboard): wire Dashboard to demo-data + EmptyState
