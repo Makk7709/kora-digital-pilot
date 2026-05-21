@@ -1,7 +1,10 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "kora-digital-pilot",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.2.0",
+  "description": "Plateforme interne Korev AI de communication digitale et de brand intelligence (SPA React + proxy Node).",
+  "author": "Korev AI",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
