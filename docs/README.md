@@ -13,15 +13,16 @@ Table des matières du dossier `docs/`. Ces documents sont opposables : ils déc
 | [OPERATIONS.md](./OPERATIONS.md) | Prérequis, variables d'environnement, commandes, ports, déploiement |
 | [LICENSES.md](./LICENSES.md) | Licence du projet et licences des dépendances |
 | [TECH_DEBT.md](./TECH_DEBT.md) | Dette technique assumée, datée et trajectoire de remédiation |
+| [TESTING.md](./TESTING.md) | Stratégie de test, suites en quarantaine, reproduction de la couverture |
 | [DEMO.md](./DEMO.md) | Parcours utilisateur clé pour démonstration |
 
 ## Sous-dossiers
 
 | Dossier | Contenu |
 | --- | --- |
-| [guides/](./guides/) | Guides utilisateurs ou opérationnels encore maintenus |
-| [archive/](./archive/) | Historique des rapports d'incidents, audits, refactorings et prompts de tests, conservés pour traçabilité mais non maintenus |
-| [audit/](./audit/) | Artefacts générés par les outils d'audit automatique (licences, dépendances, sécurité) |
+| [cabinet/](./cabinet/README.md) | Dossier consolidé pour cabinet d'évaluation (8 sections + annexes) — voir aussi `npm run dossier` |
+| [audit/](./audit/) | Artefacts d'audit (couverture HTML, rapports de remédiation sécurité / vérité produit, npm-audit, licenses) |
+| [archive/](./archive/) | Historique des rapports d'incidents, audits ponctuels, refactorings et prompts de tests, conservés pour traçabilité mais non maintenus |
 
 ## Conventions
 
