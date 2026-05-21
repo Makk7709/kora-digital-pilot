@@ -1,12 +1,11 @@
 require('dotenv').config();
 
-// SECURITY DEBT: les tokens LinkedIn sont stockés en localStorage côté client
-// (cf. src/lib/linkedin-api.ts:236-243). Migration prévue: poser ici un cookie
-// httpOnly + SameSite=Lax pour le couple access/id token, et laisser le proxy
-// faire les appels LinkedIn authentifiés en lisant le cookie. Hors scope sprint.
+const crypto = require('crypto');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
+const { serialize: serializeCookie } = require('cookie');
 const rateLimit = require('express-rate-limit');
 const fetch = require('node-fetch');
 const path = require('path');
@@ -15,13 +14,13 @@ const path = require('path');
 
 /**
  * 🚀 SERVEUR PROXY KORA - ARCHITECTURE ENTERPRISE
- * 
+ *
  * SERVICES CONFIGURÉS:
  * ├── LinkedIn OAuth API Proxy
- * ├── Anthropic Claude API Proxy  
+ * ├── Anthropic Claude API Proxy
  * ├── Health Check & Monitoring
  * └── CORS Security Headers
- * 
+ *
  * PORTS PAR ENVIRONNEMENT:
  * ├── DEV: 3001 (main), 3002 (fallback), 3003 (monitoring)
  * ├── STAGING: 4001
@@ -46,23 +45,17 @@ const PORT_CONFIG = {
     ALLOWED_ORIGINS: [
       'http://localhost:8088',
       'http://127.0.0.1:8088',
-      'http://localhost:8090' // Preview
-    ]
+      'http://localhost:8090', // Preview
+    ],
   },
   STAGING: {
     MAIN: parseInt(process.env.PROXY_PORT) || 4001,
-    ALLOWED_ORIGINS: [
-      'http://localhost:9088',
-      'http://127.0.0.1:9088'
-    ]
+    ALLOWED_ORIGINS: ['http://localhost:9088', 'http://127.0.0.1:9088'],
   },
   PRODUCTION: {
     MAIN: parseInt(process.env.PROXY_PORT) || 5001,
-    ALLOWED_ORIGINS: [
-      'http://localhost:10088',
-      'http://127.0.0.1:10088'
-    ]
-  }
+    ALLOWED_ORIGINS: ['http://localhost:10088', 'http://127.0.0.1:10088'],
+  },
 };
 
 const CONFIG = PORT_CONFIG[ENV];
@@ -75,28 +68,40 @@ const app = express();
 
 // === MIDDLEWARE ENTERPRISE ===
 
+// Le proxy de dev (Vite) et un éventuel reverse proxy (nginx, caddy) en STAGING/PROD
+// posent X-Forwarded-For; sans trust proxy express utiliserait l'IP de la loopback
+// et le rate-limiter par IP serait contourné par triangulation.
+app.set('trust proxy', 1);
+
 // CORS Configuration sécurisée
-app.use(cors({
-  origin: CONFIG.ALLOWED_ORIGINS,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'Accept',
-    'Origin',
-    'x-api-key',
-    'anthropic-version'
-  ],
-  preflightContinue: false,
-  optionsSuccessStatus: 204
-}));
+app.use(
+  cors({
+    origin: CONFIG.ALLOWED_ORIGINS,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+      'x-api-key',
+      'anthropic-version',
+    ],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  }),
+);
+
+app.use(cookieParser());
 
 // === HELMET (CSP + secure headers) ===
 // CSP minimale autorisant self + endpoints upstream utilisés par le proxy.
 // connectSrc autorise les domaines APIs externes appelées côté serveur uniquement;
 // le frontend n'appelle pas ces domaines directement.
+// scriptSrcAttr 'none' bloque les handlers inline (onclick="..."), styleSrc garde
+// 'unsafe-inline' parce que Radix/shadcn s'en sert pour le positionnement
+// dynamique (popovers, tooltips). Risque résiduel documenté dans docs/SECURITY.md.
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -104,6 +109,7 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
+        scriptSrcAttr: ["'none'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'https:'],
         connectSrc: [
@@ -124,57 +130,81 @@ app.use(
     crossOriginEmbedderPolicy: false,
     referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     hsts: ENV === 'PRODUCTION' ? { maxAge: 31536000, includeSubDomains: true } : false,
-  })
+  }),
 );
 
 // Body parsing avec limites de sécurité (1mb suffit largement pour nos payloads)
-app.use(express.json({
-  limit: '1mb',
-  strict: true,
-  verify: (req, res, buf) => {
-    try {
-      JSON.parse(buf);
-    } catch (e) {
-      res.status(400).json({ error: 'Invalid JSON payload' });
-      throw new Error('Invalid JSON');
-    }
-  }
-}));
+app.use(
+  express.json({
+    limit: '1mb',
+    strict: true,
+    verify: (req, res, buf) => {
+      try {
+        JSON.parse(buf);
+      } catch (e) {
+        res.status(400).json({ error: 'Invalid JSON payload' });
+        throw new Error('Invalid JSON');
+      }
+    },
+  }),
+);
 
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-// Logging minimal des requêtes (méthode + path + ip + status). Pas de body.
+// Logger structuré actif dans tous les environnements: method + path + status + ip + duration.
+// Aucun corps ni token n'est loggé (les endpoints applicatifs assurent eux-mêmes que les
+// payloads sensibles ne ressortent pas dans les logs).
 app.use((req, res, next) => {
-  if (ENV === 'DEV') {
-    res.on('finish', () => {
-      console.log(`📥 [${new Date().toISOString()}] ${req.method} ${req.path} ${res.statusCode} ${req.ip}`);
-    });
-  }
+  const startNs = process.hrtime.bigint();
+  res.on('finish', () => {
+    const durationMs = Number(process.hrtime.bigint() - startNs) / 1e6;
+    // En PROD on émet du JSON structuré pour faciliter l'ingestion par les agrégateurs
+    // (datadog, loki, etc.); en DEV on garde une ligne lisible pour le terminal local.
+    if (ENV === 'PRODUCTION') {
+      console.log(
+        JSON.stringify({
+          level: 'info',
+          ts: new Date().toISOString(),
+          method: req.method,
+          path: req.path,
+          status: res.statusCode,
+          ip: req.ip,
+          durationMs: Math.round(durationMs * 100) / 100,
+        }),
+      );
+    } else {
+      console.log(
+        `[${new Date().toISOString()}] ${req.method} ${req.path} ${res.statusCode} ip=${req.ip} ${durationMs.toFixed(1)}ms`,
+      );
+    }
+  });
   next();
 });
 
 // === MIDDLEWARE DE VALIDATION ===
-const validateApiKey = (keyName, required = true) => (req, res, next) => {
-  const apiKey = req.body[keyName];
-  
-  if (required && !apiKey) {
-    return res.status(400).json({
-      error: `${keyName} manquante`,
-      required: [keyName],
-      timestamp: new Date().toISOString()
-    });
-  }
-  
-  if (apiKey && (typeof apiKey !== 'string' || apiKey.length < 10)) {
-    return res.status(400).json({
-      error: `${keyName} invalide`,
-      details: 'La clé API doit contenir au moins 10 caractères',
-      timestamp: new Date().toISOString()
-    });
-  }
-  
-  next();
-};
+const validateApiKey =
+  (keyName, required = true) =>
+  (req, res, next) => {
+    const apiKey = req.body[keyName];
+
+    if (required && !apiKey) {
+      return res.status(400).json({
+        error: `${keyName} manquante`,
+        required: [keyName],
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    if (apiKey && (typeof apiKey !== 'string' || apiKey.length < 10)) {
+      return res.status(400).json({
+        error: `${keyName} invalide`,
+        details: 'La clé API doit contenir au moins 10 caractères',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    next();
+  };
 
 // Rate limiter basé sur express-rate-limit (mieux que l'implémentation maison)
 const rateLimiter = (maxRequests = 100, windowMs = 60000) =>
@@ -198,241 +228,241 @@ app.use('/api/', rateLimiter(300, 60_000));
 // === ENDPOINTS API ENTERPRISE ===
 
 // Proxy pour l'échange de token LinkedIn
-app.post('/api/linkedin/token', 
+app.post(
+  '/api/linkedin/token',
   rateLimiter(50, 60000), // 50 req/min max
   (req, res) => {
-  const startTime = Date.now();
-  
-  (async () => {
-    try {
-      console.log('🔄 [LinkedIn Token] Début échange token');
-      
-      const { code, client_id, client_secret, redirect_uri } = req.body;
-      
-      if (!code || !client_id || !client_secret || !redirect_uri) {
-        return res.status(400).json({
-          error: 'Paramètres manquants',
-          required: ['code', 'client_id', 'client_secret', 'redirect_uri'],
-          timestamp: new Date().toISOString()
-        });
-      }
+    const startTime = Date.now();
 
-      const requestBody = new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: code,
-        client_id: client_id,
-        client_secret: client_secret,
-        redirect_uri: redirect_uri,
-      });
-
-      console.log('📤 [LinkedIn Token] Requête vers LinkedIn API');
-
-      const response = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json',
-          'User-Agent': `KORA-Proxy/${ENV}-${PORT}`
-        },
-        body: requestBody,
-        timeout: 30000 // 30s timeout
-      });
-
-      const responseTime = Date.now() - startTime;
-      const data = await response.text();
-      
-      console.log(`📥 [LinkedIn Token] Réponse reçue: ${response.status} (${responseTime}ms)`);
-
-      if (!response.ok) {
-        console.error('❌ [LinkedIn Token] Erreur API:', {
-          status: response.status,
-          statusText: response.statusText,
-          data: data.substring(0, 200)
-        });
-        
-        return res.status(response.status).json({
-          error: 'LinkedIn OAuth error',
-          details: data,
-          responseTime,
-          timestamp: new Date().toISOString()
-        });
-      }
-
-      // Validation JSON
+    (async () => {
       try {
-        JSON.parse(data);
-      } catch (e) {
-        console.error('❌ [LinkedIn Token] Réponse non-JSON:', data.substring(0, 100));
-        return res.status(500).json({
-          error: 'Réponse API invalide',
-          details: 'LinkedIn a retourné une réponse non-JSON',
-          timestamp: new Date().toISOString()
+        console.log('🔄 [LinkedIn Token] Début échange token');
+
+        const { code, client_id, client_secret, redirect_uri } = req.body;
+
+        if (!code || !client_id || !client_secret || !redirect_uri) {
+          return res.status(400).json({
+            error: 'Paramètres manquants',
+            required: ['code', 'client_id', 'client_secret', 'redirect_uri'],
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        const requestBody = new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: code,
+          client_id: client_id,
+          client_secret: client_secret,
+          redirect_uri: redirect_uri,
+        });
+
+        console.log('📤 [LinkedIn Token] Requête vers LinkedIn API');
+
+        const response = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Accept: 'application/json',
+            'User-Agent': `KORA-Proxy/${ENV}-${PORT}`,
+          },
+          body: requestBody,
+          timeout: 30000, // 30s timeout
+        });
+
+        const responseTime = Date.now() - startTime;
+        const data = await response.text();
+
+        console.log(`📥 [LinkedIn Token] Réponse reçue: ${response.status} (${responseTime}ms)`);
+
+        if (!response.ok) {
+          console.error('❌ [LinkedIn Token] Erreur API:', {
+            status: response.status,
+            statusText: response.statusText,
+            data: data.substring(0, 200),
+          });
+
+          return res.status(response.status).json({
+            error: 'LinkedIn OAuth error',
+            details: data,
+            responseTime,
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        // Validation JSON
+        try {
+          JSON.parse(data);
+        } catch (e) {
+          console.error('❌ [LinkedIn Token] Réponse non-JSON:', data.substring(0, 100));
+          return res.status(500).json({
+            error: 'Réponse API invalide',
+            details: 'LinkedIn a retourné une réponse non-JSON',
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        console.log(`✅ [LinkedIn Token] Succès (${responseTime}ms)`);
+
+        // Retourner la réponse LinkedIn avec métadonnées
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('X-Response-Time', `${responseTime}ms`);
+        res.setHeader('X-Proxy-Version', 'KORA-Enterprise-v1.0');
+        res.send(data);
+      } catch (error) {
+        const responseTime = Date.now() - startTime;
+        console.error('💥 [LinkedIn Token] Erreur serveur:', {
+          message: error.message,
+          stack: ENV === 'DEV' ? error.stack : undefined,
+          responseTime,
+        });
+
+        res.status(500).json({
+          error: 'Erreur serveur proxy',
+          message: ENV === 'DEV' ? error.message : 'Erreur interne',
+          responseTime,
+          timestamp: new Date().toISOString(),
         });
       }
-
-      console.log(`✅ [LinkedIn Token] Succès (${responseTime}ms)`);
-      
-      // Retourner la réponse LinkedIn avec métadonnées
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('X-Response-Time', `${responseTime}ms`);
-      res.setHeader('X-Proxy-Version', 'KORA-Enterprise-v1.0');
-      res.send(data);
-
-    } catch (error) {
-      const responseTime = Date.now() - startTime;
-      console.error('💥 [LinkedIn Token] Erreur serveur:', {
-        message: error.message,
-        stack: ENV === 'DEV' ? error.stack : undefined,
-        responseTime
-      });
-      
-      res.status(500).json({
-        error: 'Erreur serveur proxy',
-        message: ENV === 'DEV' ? error.message : 'Erreur interne',
-        responseTime,
-        timestamp: new Date().toISOString()
-      });
-    }
-  })();
-});
+    })();
+  },
+);
 
 // Proxy pour Anthropic Claude (contournement CORS)
-app.post('/api/anthropic/messages', 
+app.post(
+  '/api/anthropic/messages',
   rateLimiter(30, 60000), // 30 req/min max pour IA
   validateApiKey('anthropic_key'),
   (req, res) => {
-  const startTime = Date.now();
-  
-  (async () => {
-    try {
-      console.log('🤖 [Claude API] Début requête IA');
-      
-      const { messages, model, max_tokens, system, temperature, anthropic_key } = req.body;
-      
-      if (!messages || !model) {
-        return res.status(400).json({
-          error: 'Paramètres manquants',
-          required: ['messages', 'model', 'anthropic_key'],
-          timestamp: new Date().toISOString()
+    const startTime = Date.now();
+
+    (async () => {
+      try {
+        console.log('🤖 [Claude API] Début requête IA');
+
+        const { messages, model, max_tokens, system, temperature, anthropic_key } = req.body;
+
+        if (!messages || !model) {
+          return res.status(400).json({
+            error: 'Paramètres manquants',
+            required: ['messages', 'model', 'anthropic_key'],
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        console.log(`📤 [Claude API] Requête vers Anthropic - Model: ${model}`);
+
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': anthropic_key,
+            'Content-Type': 'application/json',
+            'anthropic-version': '2023-06-01',
+            'User-Agent': `KORA-Proxy/${ENV}-${PORT}`,
+          },
+          body: JSON.stringify({
+            model,
+            max_tokens,
+            system,
+            messages,
+            temperature: temperature || 0.8,
+          }),
+          timeout: 120000, // 2min timeout pour IA
         });
-      }
 
-      console.log(`📤 [Claude API] Requête vers Anthropic - Model: ${model}`);
+        const responseTime = Date.now() - startTime;
+        const data = await response.text();
 
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'x-api-key': anthropic_key,
-          'Content-Type': 'application/json',
-          'anthropic-version': '2023-06-01',
-          'User-Agent': `KORA-Proxy/${ENV}-${PORT}`
-        },
-        body: JSON.stringify({
-          model,
-          max_tokens,
-          system,
-          messages,
-          temperature: temperature || 0.8,
-        }),
-        timeout: 120000 // 2min timeout pour IA
-      });
+        console.log(`📥 [Claude API] Réponse: ${response.status} (${responseTime}ms)`);
 
-      const responseTime = Date.now() - startTime;
-      const data = await response.text();
-      
-      console.log(`📥 [Claude API] Réponse: ${response.status} (${responseTime}ms)`);
+        if (!response.ok) {
+          console.error('❌ [Claude API] Erreur:', {
+            status: response.status,
+            data: data.substring(0, 200),
+          });
 
-      if (!response.ok) {
-        console.error('❌ [Claude API] Erreur:', {
-          status: response.status,
-          data: data.substring(0, 200)
-        });
-        
-        return res.status(response.status).json({
-          error: 'Anthropic Claude error',
-          details: data,
+          return res.status(response.status).json({
+            error: 'Anthropic Claude error',
+            details: data,
+            responseTime,
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        console.log(`✅ [Claude API] Succès (${responseTime}ms)`);
+
+        // Retourner la réponse Claude
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('X-Response-Time', `${responseTime}ms`);
+        res.setHeader('X-Proxy-Version', 'KORA-Enterprise-v1.0');
+        res.send(data);
+      } catch (error) {
+        const responseTime = Date.now() - startTime;
+        console.error('💥 [Claude API] Erreur serveur:', {
+          message: error.message,
           responseTime,
-          timestamp: new Date().toISOString()
+        });
+
+        res.status(500).json({
+          error: 'Erreur serveur proxy Claude',
+          message: ENV === 'DEV' ? error.message : 'Erreur interne',
+          responseTime,
+          timestamp: new Date().toISOString(),
         });
       }
-
-      console.log(`✅ [Claude API] Succès (${responseTime}ms)`);
-      
-      // Retourner la réponse Claude
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('X-Response-Time', `${responseTime}ms`);
-      res.setHeader('X-Proxy-Version', 'KORA-Enterprise-v1.0');
-      res.send(data);
-
-    } catch (error) {
-      const responseTime = Date.now() - startTime;
-      console.error('💥 [Claude API] Erreur serveur:', {
-        message: error.message,
-        responseTime
-      });
-      
-      res.status(500).json({
-        error: 'Erreur serveur proxy Claude',
-        message: ENV === 'DEV' ? error.message : 'Erreur interne',
-        responseTime,
-        timestamp: new Date().toISOString()
-      });
-    }
-  })();
-});
+    })();
+  },
+);
 
 // Proxy pour récupérer le profil LinkedIn via OpenID Connect
-app.post('/api/linkedin/profile', 
-  rateLimiter(100, 60000),
-  (req, res) => {
+app.post('/api/linkedin/profile', rateLimiter(100, 60000), (req, res) => {
   const startTime = Date.now();
-  
+
   (async () => {
     try {
       console.log('🔄 [LinkedIn Profile] Récupération profil OpenID Connect');
-      
+
       const { access_token, endpoint } = req.body;
-      
+
       if (!access_token) {
         return res.status(400).json({
           error: 'Access token manquant',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
 
       // Utiliser l'endpoint fourni ou par défaut userinfo OpenID Connect
       const profileEndpoint = endpoint || 'https://api.linkedin.com/v2/userinfo';
-      
+
       console.log(`📤 [LinkedIn Profile] Requête vers: ${profileEndpoint}`);
 
       const response = await fetch(profileEndpoint, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${access_token}`,
-          'Accept': 'application/json',
-          'User-Agent': `KORA-Proxy/${ENV}-${PORT}`
+          Authorization: `Bearer ${access_token}`,
+          Accept: 'application/json',
+          'User-Agent': `KORA-Proxy/${ENV}-${PORT}`,
         },
-        timeout: 30000
+        timeout: 30000,
       });
 
       const responseTime = Date.now() - startTime;
       const data = await response.text();
-      
+
       console.log(`📥 [LinkedIn Profile] Réponse: ${response.status} (${responseTime}ms)`);
 
       if (!response.ok) {
         console.error('❌ [LinkedIn Profile] Erreur:', {
           status: response.status,
           endpoint: profileEndpoint,
-          data: data.substring(0, 200)
+          data: data.substring(0, 200),
         });
-        
+
         return res.status(response.status).json({
           error: 'LinkedIn Profile error',
           details: data,
           endpoint: profileEndpoint,
           responseTime,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
 
@@ -451,7 +481,7 @@ app.post('/api/linkedin/profile',
         return res.status(500).json({
           error: 'Réponse API invalide',
           details: 'LinkedIn a retourné une réponse non-JSON',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
 
@@ -460,19 +490,18 @@ app.post('/api/linkedin/profile',
       res.setHeader('X-Response-Time', `${responseTime}ms`);
       res.setHeader('X-Proxy-Version', 'KORA-Enterprise-v1.0');
       res.send(data);
-
     } catch (error) {
       const responseTime = Date.now() - startTime;
       console.error('💥 [LinkedIn Profile] Erreur serveur:', {
         message: error.message,
-        responseTime
+        responseTime,
       });
-      
+
       res.status(500).json({
         error: 'Erreur serveur proxy profil',
         message: ENV === 'DEV' ? error.message : 'Erreur interne',
         responseTime,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     }
   })();
@@ -484,7 +513,7 @@ app.post('/api/linkedin/profile',
 app.get('/api/health', (req, res) => {
   const uptime = process.uptime();
   const memoryUsage = process.memoryUsage();
-  
+
   res.json({
     status: 'OK',
     service: 'KORA Proxy Server',
@@ -493,15 +522,15 @@ app.get('/api/health', (req, res) => {
     port: PORT,
     uptime: {
       seconds: Math.floor(uptime),
-      human: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m ${Math.floor(uptime % 60)}s`
+      human: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m ${Math.floor(uptime % 60)}s`,
     },
     memory: {
       used: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)}MB`,
       total: `${Math.round(memoryUsage.heapTotal / 1024 / 1024)}MB`,
-      external: `${Math.round(memoryUsage.external / 1024 / 1024)}MB`
+      external: `${Math.round(memoryUsage.external / 1024 / 1024)}MB`,
     },
     timestamp: new Date().toISOString(),
-    nodeVersion: process.version
+    nodeVersion: process.version,
   });
 });
 
@@ -514,14 +543,14 @@ if (ENV === 'DEV') {
       allowedOrigins: CONFIG.ALLOWED_ORIGINS,
       endpoints: [
         'POST /api/linkedin/token',
-        'POST /api/anthropic/messages', 
+        'POST /api/anthropic/messages',
         'POST /api/linkedin/profile',
         'GET /api/health',
-        'GET /api/metrics'
+        'GET /api/metrics',
       ],
       uptime: process.uptime(),
       memory: process.memoryUsage(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   });
 }
@@ -533,13 +562,13 @@ app.use((err, req, res, next) => {
     stack: ENV === 'DEV' ? err.stack : undefined,
     url: req.url,
     method: req.method,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
-  
+
   res.status(500).json({
     error: 'Erreur serveur interne',
-    message: ENV === 'DEV' ? err.message : 'Une erreur inattendue s\'est produite',
-    timestamp: new Date().toISOString()
+    message: ENV === 'DEV' ? err.message : "Une erreur inattendue s'est produite",
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -553,9 +582,9 @@ app.use('*', (req, res) => {
       'POST /api/linkedin/token',
       'POST /api/anthropic/messages',
       'POST /api/linkedin/profile',
-      'GET /api/health'
+      'GET /api/health',
     ],
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -596,4 +625,4 @@ process.on('SIGINT', () => {
   });
 });
 
-module.exports = app; 
+module.exports = app;
