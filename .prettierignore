@@ -1,0 +1,13 @@
+dist/
+node_modules/
+coverage/
+dossier-valorisation/
+public/
+package-lock.json
+*.tsbuildinfo
+
+# Markdown is owned by the docs worker -- do not let Prettier touch it for now
+*.md
+
+# Generated audit artefacts
+docs/audit/*.json
