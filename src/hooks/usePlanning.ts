@@ -1,15 +1,7 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { planningService, ScheduledPost, WeeklyPlan, PlanningFilters } from '@/lib/planning-service';
+import { useState, useEffect, useCallback } from 'react';
+import { planningService, ScheduledPost, PlanningFilters } from '@/lib/planning-service';
 import { useToast } from '@/hooks/use-toast';
-
-// Import conditionnel de useAI
-let useAI: any = null;
-try {
-  const aiModule = require('@/hooks/useAI');
-  useAI = aiModule.useAI;
-} catch (error) {
-  console.warn('Hook useAI non disponible, mode dégradé activé');
-}
+import { useAI } from '@/hooks/useAI';
 
 interface UsePlanningState {
   posts: ScheduledPost[];
@@ -31,28 +23,33 @@ interface UsePlanningReturn extends UsePlanningState {
   goToToday: () => void;
   setViewMode: (mode: 'week' | 'month') => void;
   setSelectedDate: (date: Date) => void;
-  
+
   // Gestion des posts
   addPost: (post: Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>) => Promise<ScheduledPost>;
   updatePost: (id: string, updates: Partial<ScheduledPost>) => Promise<ScheduledPost | null>;
   deletePost: (id: string) => Promise<boolean>;
   duplicatePost: (id: string, newDate?: Date) => Promise<ScheduledPost | null>;
-  
+
   // Génération IA
   generateWeeklyPlan: (prompt?: string) => Promise<void>;
-  generatePostFromAI: (prompt: string, date: Date, time: string, platform: string) => Promise<ScheduledPost>;
+  generatePostFromAI: (
+    prompt: string,
+    date: Date,
+    time: string,
+    platform: string,
+  ) => Promise<ScheduledPost>;
   optimizeSchedule: () => Promise<void>;
-  
+
   // Filtrage et recherche
   setFilters: (filters: Partial<PlanningFilters>) => void;
   clearFilters: () => void;
   getFilteredPosts: () => ScheduledPost[];
-  
+
   // Utilitaires
   refreshData: () => void;
   exportPlanning: () => string;
   importPlanning: (data: string) => Promise<boolean>;
-  
+
   // Statistiques
   getWeeklyStats: () => any;
   getPostsByDay: (date: Date) => ScheduledPost[];
@@ -73,40 +70,29 @@ export const usePlanning = (): UsePlanningReturn => {
     suggestions: [],
   });
 
-  // Hook IA avec gestion d'erreur
-  let generateContent: any = null;
-  let toast: any = null;
-
-  try {
-    if (useAI) {
-      const aiHook = useAI();
-      generateContent = aiHook.generateContent;
-    }
-    const toastHook = useToast();
-    toast = toastHook.toast;
-  } catch (error) {
-    console.warn('Services IA non disponibles:', error);
-    // Fonction toast de fallback
-    toast = (options: any) => {
-      console.log('Toast:', options.title, options.description);
-    };
-  }
+  // Hooks appelés inconditionnellement (Rules of Hooks). En cas d'échec,
+  // les méthodes restent disponibles via leur API normale; les erreurs
+  // d'exécution sont gérées dans les callbacks consommateurs ci-dessous.
+  const aiHook = useAI();
+  const toastHook = useToast();
+  const generateContent = aiHook.generateContent;
+  const toast = toastHook.toast;
 
   // Charger les données initiales
   const refreshData = useCallback(() => {
     try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
-      
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+
       const allPosts = planningService.loadPosts();
-      
-      setState(prev => ({
+
+      setState((prev) => ({
         ...prev,
         posts: allPosts,
         isLoading: false,
       }));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erreur de chargement';
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         error: errorMessage,
@@ -123,8 +109,8 @@ export const usePlanning = (): UsePlanningReturn => {
     try {
       const stats = planningService.getWeeklyStats(state.currentWeekStart);
       const suggestions = planningService.getOptimizationSuggestions(state.currentWeekStart);
-      
-      setState(prev => ({
+
+      setState((prev) => ({
         ...prev,
         weeklyStats: stats,
         suggestions,
@@ -136,7 +122,7 @@ export const usePlanning = (): UsePlanningReturn => {
 
   // Navigation
   const goToNextWeek = useCallback(() => {
-    setState(prev => {
+    setState((prev) => {
       const nextWeek = new Date(prev.currentWeekStart);
       nextWeek.setDate(nextWeek.getDate() + 7);
       return { ...prev, currentWeekStart: nextWeek };
@@ -144,7 +130,7 @@ export const usePlanning = (): UsePlanningReturn => {
   }, []);
 
   const goToPreviousWeek = useCallback(() => {
-    setState(prev => {
+    setState((prev) => {
       const prevWeek = new Date(prev.currentWeekStart);
       prevWeek.setDate(prevWeek.getDate() - 7);
       return { ...prev, currentWeekStart: prevWeek };
@@ -152,7 +138,7 @@ export const usePlanning = (): UsePlanningReturn => {
   }, []);
 
   const goToToday = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       currentWeekStart: getWeekStart(new Date()),
       selectedDate: new Date(),
@@ -160,11 +146,11 @@ export const usePlanning = (): UsePlanningReturn => {
   }, []);
 
   const setViewMode = useCallback((mode: 'week' | 'month') => {
-    setState(prev => ({ ...prev, viewMode: mode }));
+    setState((prev) => ({ ...prev, viewMode: mode }));
   }, []);
 
   const setSelectedDate = useCallback((date: Date) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       selectedDate: date,
       currentWeekStart: getWeekStart(date),
@@ -172,299 +158,319 @@ export const usePlanning = (): UsePlanningReturn => {
   }, []);
 
   // Gestion des posts
-  const addPost = useCallback(async (postData: Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>): Promise<ScheduledPost> => {
-    try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
-      
-      const newPost = planningService.addPost(postData);
-      
-      setState(prev => ({
-        ...prev,
-        posts: [...prev.posts, newPost],
-        isLoading: false,
-      }));
+  const addPost = useCallback(
+    async (
+      postData: Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>,
+    ): Promise<ScheduledPost> => {
+      try {
+        setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-      toast({
-        title: "Post ajouté !",
-        description: `Post programmé pour le ${newPost.scheduledDate.toLocaleDateString('fr-FR')} à ${newPost.scheduledTime}`,
-      });
+        const newPost = planningService.addPost(postData);
 
-      return newPost;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
-      setState(prev => ({ ...prev, isLoading: false, error: errorMessage }));
-      
-      toast({
-        title: "Erreur",
-        description: "Impossible d'ajouter le post",
-        variant: "destructive",
-      });
-      
-      throw error;
-    }
-  }, [toast]);
-
-  const updatePost = useCallback(async (id: string, updates: Partial<ScheduledPost>): Promise<ScheduledPost | null> => {
-    try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
-      
-      const updatedPost = planningService.updatePost(id, updates);
-      
-      if (updatedPost) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
-          posts: prev.posts.map(p => p.id === id ? updatedPost : p),
+          posts: [...prev.posts, newPost],
           isLoading: false,
         }));
 
         toast({
-          title: "Post mis à jour !",
-          description: "Les modifications ont été sauvegardées",
+          title: 'Post ajouté !',
+          description: `Post programmé pour le ${newPost.scheduledDate.toLocaleDateString('fr-FR')} à ${newPost.scheduledTime}`,
         });
-      }
 
-      return updatedPost;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
-      setState(prev => ({ ...prev, isLoading: false, error: errorMessage }));
-      
-      toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour le post",
-        variant: "destructive",
-      });
-      
-      return null;
-    }
-  }, [toast]);
-
-  const deletePost = useCallback(async (id: string): Promise<boolean> => {
-    try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
-      
-      const success = planningService.deletePost(id);
-      
-      if (success) {
-        setState(prev => ({
-          ...prev,
-          posts: prev.posts.filter(p => p.id !== id),
-          isLoading: false,
-        }));
+        return newPost;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+        setState((prev) => ({ ...prev, isLoading: false, error: errorMessage }));
 
         toast({
-          title: "Post supprimé !",
-          description: "Le post a été retiré du planning",
+          title: 'Erreur',
+          description: "Impossible d'ajouter le post",
+          variant: 'destructive',
         });
+
+        throw error;
       }
+    },
+    [toast],
+  );
 
-      return success;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
-      setState(prev => ({ ...prev, isLoading: false, error: errorMessage }));
-      
-      toast({
-        title: "Erreur",
-        description: "Impossible de supprimer le post",
-        variant: "destructive",
-      });
-      
-      return false;
-    }
-  }, [toast]);
+  const updatePost = useCallback(
+    async (id: string, updates: Partial<ScheduledPost>): Promise<ScheduledPost | null> => {
+      try {
+        setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-  const duplicatePost = useCallback(async (id: string, newDate?: Date): Promise<ScheduledPost | null> => {
-    const originalPost = state.posts.find(p => p.id === id);
-    if (!originalPost) return null;
+        const updatedPost = planningService.updatePost(id, updates);
 
-    const duplicatedPost = {
-      ...originalPost,
-      title: `${originalPost.title} (copie)`,
-      scheduledDate: newDate || new Date(originalPost.scheduledDate.getTime() + 24 * 60 * 60 * 1000), // +1 jour par défaut
-      status: 'draft' as const,
-      aiGenerated: false,
-    };
+        if (updatedPost) {
+          setState((prev) => ({
+            ...prev,
+            posts: prev.posts.map((p) => (p.id === id ? updatedPost : p)),
+            isLoading: false,
+          }));
 
-    // Retirer les propriétés qui seront générées automatiquement
-    const { id: _, createdAt: __, updatedAt: ___, ...postData } = duplicatedPost;
-    
-    return await addPost(postData);
-  }, [state.posts, addPost]);
+          toast({
+            title: 'Post mis à jour !',
+            description: 'Les modifications ont été sauvegardées',
+          });
+        }
+
+        return updatedPost;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+        setState((prev) => ({ ...prev, isLoading: false, error: errorMessage }));
+
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de mettre à jour le post',
+          variant: 'destructive',
+        });
+
+        return null;
+      }
+    },
+    [toast],
+  );
+
+  const deletePost = useCallback(
+    async (id: string): Promise<boolean> => {
+      try {
+        setState((prev) => ({ ...prev, isLoading: true, error: null }));
+
+        const success = planningService.deletePost(id);
+
+        if (success) {
+          setState((prev) => ({
+            ...prev,
+            posts: prev.posts.filter((p) => p.id !== id),
+            isLoading: false,
+          }));
+
+          toast({
+            title: 'Post supprimé !',
+            description: 'Le post a été retiré du planning',
+          });
+        }
+
+        return success;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+        setState((prev) => ({ ...prev, isLoading: false, error: errorMessage }));
+
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de supprimer le post',
+          variant: 'destructive',
+        });
+
+        return false;
+      }
+    },
+    [toast],
+  );
+
+  const duplicatePost = useCallback(
+    async (id: string, newDate?: Date): Promise<ScheduledPost | null> => {
+      const originalPost = state.posts.find((p) => p.id === id);
+      if (!originalPost) return null;
+
+      const duplicatedPost = {
+        ...originalPost,
+        title: `${originalPost.title} (copie)`,
+        scheduledDate:
+          newDate || new Date(originalPost.scheduledDate.getTime() + 24 * 60 * 60 * 1000), // +1 jour par défaut
+        status: 'draft' as const,
+        aiGenerated: false,
+      };
+
+      // Retirer les propriétés qui seront générées automatiquement
+      const { id: _, createdAt: __, updatedAt: ___, ...postData } = duplicatedPost;
+
+      return await addPost(postData);
+    },
+    [state.posts, addPost],
+  );
 
   // Génération IA avec fallback
-  const generateWeeklyPlan = useCallback(async (prompt?: string) => {
-    if (!generateContent) {
-      // Mode fallback sans IA
-      setState(prev => ({ ...prev, isGenerating: true, error: null }));
-      
-      try {
-        // Créer des posts d'exemple
-        const samplePosts = [
-          {
-            title: "L'IA transforme le marketing digital",
-            content: "Découvrez comment l'intelligence artificielle révolutionne les stratégies marketing...",
-            platform: 'LinkedIn' as const,
-            scheduledDate: new Date(state.currentWeekStart.getTime() + 1 * 24 * 60 * 60 * 1000),
-            scheduledTime: '09:00',
-            status: 'draft' as const,
-            contentType: 'post' as const,
-            tone: 'Professionnel & stratégique',
-            tags: ['IA', 'Marketing', 'Innovation'],
-            aiGenerated: false,
-          },
-          {
-            title: "Productivité : 5 outils IA incontournables",
-            content: "Boostez votre productivité avec ces 5 outils d'IA révolutionnaires...",
-            platform: 'Instagram' as const,
-            scheduledDate: new Date(state.currentWeekStart.getTime() + 3 * 24 * 60 * 60 * 1000),
-            scheduledTime: '14:00',
-            status: 'draft' as const,
-            contentType: 'post' as const,
-            tone: 'Inspirant & visionnaire',
-            tags: ['Productivité', 'Outils', 'IA'],
-            aiGenerated: false,
-          }
-        ];
+  const generateWeeklyPlan = useCallback(
+    async (prompt?: string) => {
+      if (!generateContent) {
+        // Mode fallback sans IA
+        setState((prev) => ({ ...prev, isGenerating: true, error: null }));
 
-        for (const postData of samplePosts) {
+        try {
+          // Créer des posts d'exemple
+          const samplePosts = [
+            {
+              title: "L'IA transforme le marketing digital",
+              content:
+                "Découvrez comment l'intelligence artificielle révolutionne les stratégies marketing...",
+              platform: 'LinkedIn' as const,
+              scheduledDate: new Date(state.currentWeekStart.getTime() + 1 * 24 * 60 * 60 * 1000),
+              scheduledTime: '09:00',
+              status: 'draft' as const,
+              contentType: 'post' as const,
+              tone: 'Professionnel & stratégique',
+              tags: ['IA', 'Marketing', 'Innovation'],
+              aiGenerated: false,
+            },
+            {
+              title: 'Productivité : 5 outils IA incontournables',
+              content: "Boostez votre productivité avec ces 5 outils d'IA révolutionnaires...",
+              platform: 'Instagram' as const,
+              scheduledDate: new Date(state.currentWeekStart.getTime() + 3 * 24 * 60 * 60 * 1000),
+              scheduledTime: '14:00',
+              status: 'draft' as const,
+              contentType: 'post' as const,
+              tone: 'Inspirant & visionnaire',
+              tags: ['Productivité', 'Outils', 'IA'],
+              aiGenerated: false,
+            },
+          ];
+
+          for (const postData of samplePosts) {
+            await addPost(postData);
+          }
+
+          toast({
+            title: "Planning d'exemple créé !",
+            description: `${samplePosts.length} posts d'exemple ont été ajoutés (IA non configurée)`,
+          });
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+          setState((prev) => ({ ...prev, error: errorMessage }));
+
+          toast({
+            title: 'Erreur de génération',
+            description: "Impossible de créer le planning d'exemple",
+            variant: 'destructive',
+          });
+        } finally {
+          setState((prev) => ({ ...prev, isGenerating: false }));
+        }
+        return;
+      }
+
+      // Mode normal avec IA
+      try {
+        setState((prev) => ({ ...prev, isGenerating: true, error: null }));
+
+        const defaultPrompt =
+          prompt ||
+          `Créer un planning éditorial complet pour la semaine du ${state.currentWeekStart.toLocaleDateString('fr-FR')}. 
+      Inclure 5-7 posts variés sur l'IA, la productivité et l'innovation, adaptés pour LinkedIn, Instagram et Twitter. 
+      Proposer des horaires optimaux et des types de contenu diversifiés (posts, threads, carrousels).`;
+
+        const response = await generateContent({
+          prompt: defaultPrompt,
+          platform: 'linkedin',
+          contentType: 'article',
+          tone: 'Professionnel & stratégique',
+          maxTokens: 1500,
+        });
+
+        // Parser la réponse IA pour créer des posts structurés
+        const generatedPosts = await parseAIResponseToPosts(
+          response.content,
+          state.currentWeekStart,
+        );
+
+        // Ajouter tous les posts générés
+        for (const postData of generatedPosts) {
           await addPost(postData);
         }
 
         toast({
-          title: "Planning d'exemple créé !",
-          description: `${samplePosts.length} posts d'exemple ont été ajoutés (IA non configurée)`,
+          title: 'Planning généré avec succès !',
+          description: `${generatedPosts.length} posts ont été ajoutés à votre planning`,
         });
-
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
-        setState(prev => ({ ...prev, error: errorMessage }));
-        
+        setState((prev) => ({ ...prev, error: errorMessage }));
+
         toast({
-          title: "Erreur de génération",
-          description: "Impossible de créer le planning d'exemple",
-          variant: "destructive",
+          title: 'Erreur de génération',
+          description: 'Impossible de générer le planning',
+          variant: 'destructive',
         });
       } finally {
-        setState(prev => ({ ...prev, isGenerating: false }));
+        setState((prev) => ({ ...prev, isGenerating: false }));
       }
-      return;
-    }
+    },
+    [state.currentWeekStart, generateContent, addPost, toast],
+  );
 
-    // Mode normal avec IA
-    try {
-      setState(prev => ({ ...prev, isGenerating: true, error: null }));
+  const generatePostFromAI = useCallback(
+    async (prompt: string, date: Date, time: string, platform: string): Promise<ScheduledPost> => {
+      if (!generateContent) {
+        // Mode fallback
+        const postData = {
+          title: 'Post généré (mode dégradé)',
+          content: `Contenu basé sur: ${prompt}`,
+          platform: platform as any,
+          scheduledDate: date,
+          scheduledTime: time,
+          status: 'draft' as const,
+          contentType: 'post' as const,
+          tone: 'Professionnel & engageant',
+          tags: ['Exemple'],
+          aiGenerated: false,
+          originalPrompt: prompt,
+        };
 
-      const defaultPrompt = prompt || `Créer un planning éditorial complet pour la semaine du ${state.currentWeekStart.toLocaleDateString('fr-FR')}. 
-      Inclure 5-7 posts variés sur l'IA, la productivité et l'innovation, adaptés pour LinkedIn, Instagram et Twitter. 
-      Proposer des horaires optimaux et des types de contenu diversifiés (posts, threads, carrousels).`;
-
-      const response = await generateContent({
-        prompt: defaultPrompt,
-        platform: "linkedin",
-        contentType: "article",
-        tone: "Professionnel & stratégique",
-        maxTokens: 1500,
-      });
-
-      // Parser la réponse IA pour créer des posts structurés
-      const generatedPosts = await parseAIResponseToPosts(response.content, state.currentWeekStart);
-      
-      // Ajouter tous les posts générés
-      for (const postData of generatedPosts) {
-        await addPost(postData);
+        return await addPost(postData);
       }
 
-      toast({
-        title: "Planning généré avec succès !",
-        description: `${generatedPosts.length} posts ont été ajoutés à votre planning`,
-      });
+      try {
+        setState((prev) => ({ ...prev, isGenerating: true, error: null }));
 
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
-      setState(prev => ({ ...prev, error: errorMessage }));
-      
-      toast({
-        title: "Erreur de génération",
-        description: "Impossible de générer le planning",
-        variant: "destructive",
-      });
-    } finally {
-      setState(prev => ({ ...prev, isGenerating: false }));
-    }
-  }, [state.currentWeekStart, generateContent, addPost, toast]);
+        const response = await generateContent({
+          prompt,
+          platform: platform.toLowerCase(),
+          contentType: 'post',
+          tone: 'Professionnel & engageant',
+          maxTokens: 800,
+        });
 
-  const generatePostFromAI = useCallback(async (
-    prompt: string, 
-    date: Date, 
-    time: string, 
-    platform: string
-  ): Promise<ScheduledPost> => {
-    if (!generateContent) {
-      // Mode fallback
-      const postData = {
-        title: "Post généré (mode dégradé)",
-        content: `Contenu basé sur: ${prompt}`,
-        platform: platform as any,
-        scheduledDate: date,
-        scheduledTime: time,
-        status: 'draft' as const,
-        contentType: 'post' as const,
-        tone: 'Professionnel & engageant',
-        tags: ['Exemple'],
-        aiGenerated: false,
-        originalPrompt: prompt,
-      };
+        const postData = {
+          title: extractTitleFromContent(response.content),
+          content: response.content,
+          platform: platform as any,
+          scheduledDate: date,
+          scheduledTime: time,
+          status: 'draft' as const,
+          contentType: 'post' as const,
+          tone: 'Professionnel & engageant',
+          tags: extractTagsFromContent(response.content),
+          aiGenerated: true,
+          originalPrompt: prompt,
+        };
 
-      return await addPost(postData);
-    }
+        const newPost = await addPost(postData);
 
-    try {
-      setState(prev => ({ ...prev, isGenerating: true, error: null }));
+        setState((prev) => ({ ...prev, isGenerating: false }));
 
-      const response = await generateContent({
-        prompt,
-        platform: platform.toLowerCase(),
-        contentType: "post",
-        tone: "Professionnel & engageant",
-        maxTokens: 800,
-      });
-
-      const postData = {
-        title: extractTitleFromContent(response.content),
-        content: response.content,
-        platform: platform as any,
-        scheduledDate: date,
-        scheduledTime: time,
-        status: 'draft' as const,
-        contentType: 'post' as const,
-        tone: 'Professionnel & engageant',
-        tags: extractTagsFromContent(response.content),
-        aiGenerated: true,
-        originalPrompt: prompt,
-      };
-
-      const newPost = await addPost(postData);
-      
-      setState(prev => ({ ...prev, isGenerating: false }));
-      
-      return newPost;
-    } catch (error) {
-      setState(prev => ({ ...prev, isGenerating: false }));
-      throw error;
-    }
-  }, [generateContent, addPost]);
+        return newPost;
+      } catch (error) {
+        setState((prev) => ({ ...prev, isGenerating: false }));
+        throw error;
+      }
+    },
+    [generateContent, addPost],
+  );
 
   const optimizeSchedule = useCallback(async () => {
     try {
-      setState(prev => ({ ...prev, isGenerating: true, error: null }));
+      setState((prev) => ({ ...prev, isGenerating: true, error: null }));
 
       if (!generateContent) {
         // Mode fallback
         toast({
-          title: "Optimisation simulée",
-          description: "Service IA non configuré - suggestions basiques disponibles",
+          title: 'Optimisation simulée',
+          description: 'Service IA non configuré - suggestions basiques disponibles',
         });
-        
-        setState(prev => ({ ...prev, isGenerating: false }));
+
+        setState((prev) => ({ ...prev, isGenerating: false }));
         return;
       }
 
@@ -472,48 +478,47 @@ export const usePlanning = (): UsePlanningReturn => {
       const optimizationPrompt = `Analyser ce planning éditorial et proposer des optimisations d'horaires pour maximiser l'engagement :
       
       Posts actuels :
-      ${weekPosts.map(p => `- ${p.platform} : ${p.title} (${p.scheduledTime})`).join('\n')}
+      ${weekPosts.map((p) => `- ${p.platform} : ${p.title} (${p.scheduledTime})`).join('\n')}
       
       Donner des recommandations précises d'horaires optimaux pour chaque plateforme.`;
 
       const response = await generateContent({
         prompt: optimizationPrompt,
-        platform: "linkedin",
-        contentType: "post",
-        tone: "Professionnel & analytique",
+        platform: 'linkedin',
+        contentType: 'post',
+        tone: 'Professionnel & analytique',
         maxTokens: 800,
       });
 
       toast({
-        title: "Optimisation terminée !",
-        description: "Consultez les suggestions pour améliorer vos horaires",
+        title: 'Optimisation terminée !',
+        description: 'Consultez les suggestions pour améliorer vos horaires',
       });
 
       // Mettre à jour les suggestions avec les recommandations IA
       const suggestions = planningService.getOptimizationSuggestions(state.currentWeekStart);
-      setState(prev => ({ ...prev, suggestions, isGenerating: false }));
-
+      setState((prev) => ({ ...prev, suggestions, isGenerating: false }));
     } catch (error) {
-      setState(prev => ({ ...prev, isGenerating: false }));
-      
+      setState((prev) => ({ ...prev, isGenerating: false }));
+
       toast({
         title: "Erreur d'optimisation",
         description: "Impossible d'optimiser le planning",
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
   }, [state.currentWeekStart, generateContent, toast]);
 
   // Filtrage
   const setFilters = useCallback((newFilters: Partial<PlanningFilters>) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       filters: { ...prev.filters, ...newFilters },
     }));
   }, []);
 
   const clearFilters = useCallback(() => {
-    setState(prev => ({ ...prev, filters: {} }));
+    setState((prev) => ({ ...prev, filters: {} }));
   }, []);
 
   const getFilteredPosts = useCallback(() => {
@@ -535,34 +540,37 @@ export const usePlanning = (): UsePlanningReturn => {
     }
   }, [state.posts]);
 
-  const importPlanning = useCallback(async (data: string): Promise<boolean> => {
-    try {
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
-      
-      const result = planningService.importData(data);
-      
-      if (result.success) {
-        refreshData();
+  const importPlanning = useCallback(
+    async (data: string): Promise<boolean> => {
+      try {
+        setState((prev) => ({ ...prev, isLoading: true, error: null }));
+
+        const result = planningService.importData(data);
+
+        if (result.success) {
+          refreshData();
+          toast({
+            title: 'Import réussi !',
+            description: 'Le planning a été importé avec succès',
+          });
+        }
+
+        return result.success;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+        setState((prev) => ({ ...prev, isLoading: false, error: errorMessage }));
+
         toast({
-          title: "Import réussi !",
-          description: "Le planning a été importé avec succès",
+          title: "Erreur d'import",
+          description: "Impossible d'importer le planning",
+          variant: 'destructive',
         });
+
+        return false;
       }
-      
-      return result.success;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
-      setState(prev => ({ ...prev, isLoading: false, error: errorMessage }));
-      
-      toast({
-        title: "Erreur d'import",
-        description: "Impossible d'importer le planning",
-        variant: "destructive",
-      });
-      
-      return false;
-    }
-  }, [refreshData, toast]);
+    },
+    [refreshData, toast],
+  );
 
   // Statistiques
   const getWeeklyStats = useCallback(() => {
@@ -574,12 +582,15 @@ export const usePlanning = (): UsePlanningReturn => {
     }
   }, [state.currentWeekStart]);
 
-  const getPostsByDay = useCallback((date: Date) => {
-    return state.posts.filter(post => {
-      const postDate = new Date(post.scheduledDate);
-      return postDate.toDateString() === date.toDateString();
-    });
-  }, [state.posts]);
+  const getPostsByDay = useCallback(
+    (date: Date) => {
+      return state.posts.filter((post) => {
+        const postDate = new Date(post.scheduledDate);
+        return postDate.toDateString() === date.toDateString();
+      });
+    },
+    [state.posts],
+  );
 
   const getPostsByWeek = useCallback((weekStart: Date) => {
     try {
@@ -624,15 +635,19 @@ function getWeekStart(date: Date): Date {
   return new Date(d.setDate(diff));
 }
 
-async function parseAIResponseToPosts(content: string, weekStart: Date): Promise<Array<Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>>> {
+async function parseAIResponseToPosts(
+  content: string,
+  weekStart: Date,
+): Promise<Array<Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>>> {
   const posts: Array<Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>> = [];
-  
+
   // Parser simple pour extraire des posts du contenu IA
-  const lines = content.split('\n').filter(line => line.trim());
-  
+  const lines = content.split('\n').filter((line) => line.trim());
+
   for (let i = 0; i < Math.min(5, lines.length); i++) {
     const line = lines[i];
-    if (line.length > 20) { // Ligne suffisamment longue pour être un post
+    if (line.length > 20) {
+      // Ligne suffisamment longue pour être un post
       posts.push({
         title: extractTitleFromContent(line),
         content: line,
@@ -647,14 +662,15 @@ async function parseAIResponseToPosts(content: string, weekStart: Date): Promise
       });
     }
   }
-  
+
   return posts;
 }
 
 function detectPlatform(content: string): 'LinkedIn' | 'Instagram' | 'X (Twitter)' {
   const lower = content.toLowerCase();
   if (lower.includes('linkedin') || lower.includes('professionnel')) return 'LinkedIn';
-  if (lower.includes('instagram') || lower.includes('photo') || lower.includes('visuel')) return 'Instagram';
+  if (lower.includes('instagram') || lower.includes('photo') || lower.includes('visuel'))
+    return 'Instagram';
   if (lower.includes('twitter') || lower.includes('thread')) return 'X (Twitter)';
   return 'LinkedIn'; // Par défaut
 }
@@ -674,8 +690,16 @@ function extractTitleFromContent(content: string): string {
 
 function extractTagsFromContent(content: string): string[] {
   const words = content.toLowerCase().split(/\s+/);
-  const commonTags = ['ia', 'ai', 'marketing', 'digital', 'innovation', 'productivité', 'technologie'];
-  return commonTags.filter(tag => words.some(word => word.includes(tag))).slice(0, 3);
+  const commonTags = [
+    'ia',
+    'ai',
+    'marketing',
+    'digital',
+    'innovation',
+    'productivité',
+    'technologie',
+  ];
+  return commonTags.filter((tag) => words.some((word) => word.includes(tag))).slice(0, 3);
 }
 
 function getRandomDateInWeek(weekStart: Date): Date {
@@ -687,10 +711,10 @@ function getRandomDateInWeek(weekStart: Date): Date {
 
 function getOptimalTime(platform: string): string {
   const times = {
-    'LinkedIn': ['09:00', '12:00', '17:00'],
-    'Instagram': ['11:00', '14:00', '19:00'],
+    LinkedIn: ['09:00', '12:00', '17:00'],
+    Instagram: ['11:00', '14:00', '19:00'],
     'X (Twitter)': ['08:00', '12:00', '18:00'],
   };
   const platformTimes = times[platform as keyof typeof times] || times['LinkedIn'];
   return platformTimes[Math.floor(Math.random() * platformTimes.length)];
-} 
+}
