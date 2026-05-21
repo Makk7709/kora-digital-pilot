@@ -20,6 +20,7 @@ import {
   generateSWOTPriorities,
 } from './pdf/data-generators';
 import { addPageDeGarde as addPageDeGardeImpl } from './pdf/cover';
+import { logger } from '../../../lib/logger';
 
 export class PDFExporter {
   private sectionsHandler: PDFExporterSections;
@@ -31,8 +32,8 @@ export class PDFExporter {
   private readonly brandColors = BRAND_COLORS;
   private readonly dimensions = PDF_DIMENSIONS;
 
-  generate(report: any, options: ExportOptions): Uint8Array {
-    console.log('🏆 GÉNÉRATION PDF ULTRA-EXIGEANT - Standards McKinsey/BCG Premium...');
+  generate(report: any, _options: ExportOptions): Uint8Array {
+    logger.debug('Generating ultra-premium PDF (McKinsey/BCG standards)');
 
     try {
       const pdf = new jsPDF();
@@ -976,7 +977,7 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
       };
 
       // Key Insights McKinsey
-      const generateKeyInsights = (report: any): string[] => {
+      const generateKeyInsights = (_report: unknown): string[] => {
         return [
           'Position concurrentielle renforcée avec 3 avantages durables identifiés',
           'Opportunités de croissance évaluées à +15-25% sur 18 mois',
@@ -1023,13 +1024,12 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
         addPremiumFooter();
       }
 
-      console.log(
-        `✅ PDF ULTRA-EXIGEANT McKinsey généré - ${totalPages} pages - Standards Bureau d'Études`,
-      );
+      logger.debug(`Premium PDF generated: ${totalPages} pages`);
       return pdf.output('arraybuffer') as Uint8Array;
     } catch (error) {
-      console.error('❌ Erreur génération PDF Ultra-Exigeant:', error);
-      throw new Error(`Erreur génération PDF McKinsey Premium: ${error.message}`);
+      logger.error('PDF generation failed', { error });
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Erreur génération PDF McKinsey Premium: ${message}`);
     }
   }
 
@@ -1037,9 +1037,7 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
 
   private addMarketPositioning(pdf: jsPDF, report: any) {
     const pageHeight = pdf.internal.pageSize.height;
-    const pageWidth = pdf.internal.pageSize.width;
     const margin = this.dimensions.margin;
-    const contentWidth = pageWidth - margin * 2;
     let currentY = this.dimensions.margin;
 
     // Utiliser les méthodes utilitaires existantes
@@ -1137,13 +1135,6 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
   }
 
   private addSectorialAnalysis(pdf: jsPDF, report: any) {
-    // Même pattern pour Sectorial Analysis
-    const pageHeight = pdf.internal.pageSize.height;
-    const pageWidth = pdf.internal.pageSize.width;
-    const margin = this.dimensions.margin;
-    const contentWidth = pageWidth - margin * 2;
-    const currentY = this.dimensions.margin;
-
     // Réutiliser les utilitaires
     const addTextPremium = this.getTextPremiumFunction(pdf);
     const addPremiumBox = this.getPremiumBoxFunction(pdf);
@@ -1183,7 +1174,6 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
 
   private addCompetitiveIntelligence(pdf: jsPDF, report: any) {
     // Pages 10-11: Competitive Intelligence McKinsey
-    const pageHeight = pdf.internal.pageSize.height;
     const pageWidth = pdf.internal.pageSize.width;
     const margin = this.dimensions.margin;
     const contentWidth = pageWidth - margin * 2;
@@ -1384,7 +1374,6 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
 
   private addSWOTAdvancedMatrix(pdf: jsPDF, report: any) {
     // Pages 12-13: SWOT Advanced Matrix McKinsey
-    const pageHeight = pdf.internal.pageSize.height;
     const pageWidth = pdf.internal.pageSize.width;
     const margin = this.dimensions.margin;
     const contentWidth = pageWidth - margin * 2;
@@ -1675,7 +1664,6 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
 
   private addScenarioPlanning(pdf: jsPDF, report: any) {
     // Pages 14-15: Scenario Planning McKinsey
-    const pageHeight = pdf.internal.pageSize.height;
     const pageWidth = pdf.internal.pageSize.width;
     const margin = this.dimensions.margin;
     const contentWidth = pageWidth - margin * 2;
@@ -1892,52 +1880,25 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
     });
   }
 
-  private addStrategicRecommendations(pdf: jsPDF, report: any) {
-    // Pages 16-17: Strategic Recommendations McKinsey
-    const pageHeight = pdf.internal.pageSize.height;
-    const pageWidth = pdf.internal.pageSize.width;
-    const margin = this.dimensions.margin;
-    const contentWidth = pageWidth - margin * 2;
-    let currentY = this.dimensions.margin;
-
+  private addStrategicRecommendations(pdf: jsPDF, _report: unknown) {
+    // Pages 16-17: Strategic Recommendations McKinsey (stub: scaffolding only)
     pdf.addPage();
-    currentY = this.dimensions.margin;
     this.addPremiumPageHeaderForSection();
-
-    // Implementation Recommandations avec ROI et timeline détaillés
-    console.log('💡 Generating Strategic Recommendations...');
+    logger.debug('Generating Strategic Recommendations');
   }
 
-  private addImplementationFramework(pdf: jsPDF, report: any) {
-    // Pages 18-19: Implementation Framework McKinsey
-    const pageHeight = pdf.internal.pageSize.height;
-    const pageWidth = pdf.internal.pageSize.width;
-    const margin = this.dimensions.margin;
-    const contentWidth = pageWidth - margin * 2;
-    let currentY = this.dimensions.margin;
-
+  private addImplementationFramework(pdf: jsPDF, _report: unknown) {
+    // Pages 18-19: Implementation Framework McKinsey (stub: scaffolding only)
     pdf.addPage();
-    currentY = this.dimensions.margin;
     this.addPremiumPageHeaderForSection();
-
-    // Implementation Governance model et success metrics
-    console.log('⚙️ Generating Implementation Framework...');
+    logger.debug('Generating Implementation Framework');
   }
 
-  private addAppendices(pdf: jsPDF, report: any) {
-    // Page 20: Appendices McKinsey
-    const pageHeight = pdf.internal.pageSize.height;
-    const pageWidth = pdf.internal.pageSize.width;
-    const margin = this.dimensions.margin;
-    const contentWidth = pageWidth - margin * 2;
-    let currentY = this.dimensions.margin;
-
+  private addAppendices(pdf: jsPDF, _report: unknown) {
+    // Page 20: Appendices McKinsey (stub: scaffolding only)
     pdf.addPage();
-    currentY = this.dimensions.margin;
     this.addPremiumPageHeaderForSection();
-
-    // Implementation Sources, méthodologie P.R.I.S.M détaillée
-    console.log('📚 Generating Appendices...');
+    logger.debug('Generating Appendices');
   }
 
   // === MÉTHODES UTILITAIRES POUR RÉUTILISATION ===
