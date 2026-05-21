@@ -11,13 +11,15 @@ import Analytics from '../components/Analytics';
 import Library from '../components/Library';
 import { BrandMonitoring } from '../components/BrandMonitoring';
 import { BrandIntelligenceDashboard } from '../components/enhanced/BrandIntelligenceDashboard';
+import DataModeBanner from '../components/DataModeBanner';
 import { usePerplexity } from '../hooks/usePerplexity';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [brandNameForTDD, setBrandNameForTDD] = useState('');
-  
-  const { isInitialized, initializeService, getBusinessInsights, getCompetitorAnalysis } = usePerplexity();
+
+  const { isInitialized, initializeService, getBusinessInsights, getCompetitorAnalysis } =
+    usePerplexity();
 
   // === INITIALISATION DU SERVICE PERPLEXITY ===
   React.useEffect(() => {
@@ -28,7 +30,7 @@ const Index = () => {
           apiKey,
           model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-small-128k-online',
           maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 1000,
-          temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2
+          temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
         });
       }
     }
@@ -76,18 +78,19 @@ const Index = () => {
               {!isInitialized && (
                 <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                   <p className="text-sm text-yellow-800">
-                    ⚠️ Service Perplexity en cours d'initialisation... Assurez-vous que votre clé API est configurée.
+                    ⚠️ Service Perplexity en cours d'initialisation... Assurez-vous que votre clé
+                    API est configurée.
                   </p>
                 </div>
               )}
             </div>
-            
+
             {brandNameForTDD && isInitialized && (
-              <BrandIntelligenceDashboard 
+              <BrandIntelligenceDashboard
                 brandName={brandNameForTDD}
                 perplexityService={{
                   getBusinessInsights,
-                  getCompetitorAnalysis
+                  getCompetitorAnalysis,
                 }}
               />
             )}
@@ -110,16 +113,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <DataModeBanner />
       <Header />
       <div className="flex h-[calc(100vh-80px)]">
-        <Sidebar 
-          activeSection={activeSection} 
-          onSectionChange={setActiveSection} 
-        />
+        <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
         <main className="flex-1 overflow-auto">
-          <div className="p-6">
-            {renderContent()}
-          </div>
+          <div className="p-6">{renderContent()}</div>
         </main>
       </div>
     </div>

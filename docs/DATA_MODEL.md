@@ -72,22 +72,47 @@ Les structures LinkedIn (profil, métriques, posts récents) sont définies inli
 
 `src/services/export/` modélise un historique d'export (timestamp, format, statut, métadonnées du rapport), exploité par les exports PDF (`src/lib/pdf-exporter.ts`, ≈1640 lignes) et CSV / Excel.
 
-## 4. Données réelles vs données simulées
+## 4. Sources de données et mode démo / réel
 
-Point d'attention important pour la valorisation : certaines vues présentent des **valeurs hardcodées d'illustration** et non des données réellement collectées. Ces valeurs sont étiquetées dans le code et doivent être remplacées par des données réelles avant toute commercialisation.
+Depuis la branche `feat/data-truth-mode`, l'application sépare explicitement les sources réelles des données simulées via deux mécanismes :
 
-| Vue | Statut | Source |
+- `src/lib/data-mode.ts` expose `getDataMode()`, `isDemoMode()` et `isRealMode()`. La valeur est lue à partir de `import.meta.env.VITE_DATA_MODE` (`'real'` par défaut). Un override DEV-only est disponible via le `DataModeContext` (toggle de la bannière) et persisté dans `localStorage` sous la clé `kora_data_mode_override`.
+- `src/lib/demo-data.ts` centralise toutes les valeurs Instagram / X / Facebook précédemment éparpillées dans les composants (`DEMO_DASHBOARD_PLATFORMS`, `DEMO_ANALYTICS_BY_PERIOD`, `DEMO_TOP_POSTS`, `DEMO_INSIGHTS`, `DEMO_LIBRARY_ITEMS`, etc.). Chaque export est typé et préfixé `DEMO_` pour rendre tout usage non ambigu en relecture.
+- `src/components/DataModeBanner.tsx` affiche un bandeau sticky « Mode démo » visible sur toute la coque `/app` lorsque le mode démo est actif.
+- `src/components/EmptyState.tsx` remplace les blocs simulés (Instagram, X, suggestions IA, top posts) en mode réel par un placeholder « Non connecté » avec CTA vers la connexion.
+
+### 4.1 Tableau récapitulatif
+
+| Source | Statut | Réel ou démo | Persistance |
+| --- | --- | --- | --- |
+| LinkedIn (`src/lib/linkedin-api.ts`, `useLinkedInAnalytics`, `useLinkedInStats`) | Implémenté | **Réel** via OAuth + proxy `/api/linkedin/*` | `localStorage` (`linkedin_*`) |
+| Perplexity (`src/lib/perplexity-service.ts`, `usePerplexity`) | Implémenté | **Réel** si `VITE_PERPLEXITY_API_KEY` valide, sinon mode simulation `'kora-simulation-v1'` | `localStorage` (`perplexity_*`) |
+| OpenAI / Anthropic (`src/lib/ai-service.ts`, `useAI`, `useHybridAI`) | Implémenté | **Réel** si clés API valides | Aucune persistance |
+| Dashboard multi-plateforme (`Dashboard.tsx`) | Démo en mode `demo`, EmptyState en mode `real` | **Démo** (LinkedIn widget reste réel si token présent) | Aucune |
+| Analytics (`Analytics.tsx`) | Hybride : LinkedIn réel + Instagram/X démo en mode `demo`, EmptyState en mode `real` | **Hybride** | Aucune |
+| Library (`Library.tsx`) | 4 contenus d'exemple en mode `demo`, vide en mode `real` | **Démo** | Aucune |
+| BrandMonitoring / BrandIntelligenceDashboard | Réel via Perplexity, fallback simulé documenté côté service | **Hybride** | `localStorage` (rapports) |
+| Instagram Graph API | Non implémenté | **Démo uniquement** | – |
+| X (Twitter) API | Non implémenté | **Démo uniquement** | – |
+| Facebook / Meta Business API | Non implémenté | **Démo uniquement** (export typé `DEMO_FACEBOOK_METRICS` à `null`) | – |
+| Export PDF / Excel | Reflet de la donnée affichée dans l'UI | Hérite du mode actif | `localStorage` (historique) |
+
+### 4.2 Variables d'environnement liées
+
+| Variable | Valeurs | Effet |
 | --- | --- | --- |
-| `src/components/Dashboard.tsx` (`calculateDashboardMetrics`) | Valeurs illustratives codées en dur (LinkedIn 45 200, Instagram 28 700, etc.) | Commentaire `CORRECTION TDD : Données calculées dynamiquement` mais les entrées de base restent fictives |
-| `src/components/Dashboard.tsx` (`generateRealisticPosts`) | Posts d'exemple générés à partir des chiffres ci-dessus | Idem |
-| `src/components/Analytics.tsx` | Métriques de référence partiellement simulées | À auditer ligne à ligne |
-| `src/hooks/usePerplexity.ts` | Mode de simulation possible (`model: 'kora-simulation-v1'`) | Activé lorsque aucune clé Perplexity valide n'est fournie |
-| `src/components/BrandMonitoring.tsx`, `BrandIntelligenceDashboard.tsx` | Données réelles via Perplexity quand la clé est configurée, fallback simulé sinon | `RealBrandIntelligenceService` |
-| `src/hooks/useLinkedInAnalytics.ts`, `useLinkedInStats.ts` | Données réelles via API LinkedIn quand le token est valide | Proxy `/api/linkedin/*` |
-| Export PDF / Excel | Reflet de la donnée affichée dans l'UI (réelle ou simulée selon la vue) | – |
+| `VITE_DATA_MODE` | `'real'` (défaut) \| `'demo'` | Active l'affichage des données simulées (Instagram, X, Facebook, Library) et la bannière `DataModeBanner`. En mode `'real'`, les composants concernés affichent un `EmptyState`. |
+| `VITE_LINKEDIN_CLIENT_ID` / `_SECRET` / `_REDIRECT_URI` | Strings | Active la source réelle LinkedIn. Sans token, le widget LinkedIn affiche un état déconnecté indépendamment de `VITE_DATA_MODE`. |
+| `VITE_PERPLEXITY_API_KEY` | String | Active la source réelle Perplexity. Sans clé, `usePerplexity` bascule sur le modèle de simulation `'kora-simulation-v1'` (clairement étiqueté dans les logs et les badges). |
 
-Recommandation pour la valorisation : tout chiffre affiché dans le dashboard doit, à terme, provenir soit d'une API tierce (LinkedIn, Perplexity), soit d'un saisi utilisateur, soit d'un calcul dérivé. Le périmètre actuel doit être présenté comme un POC fonctionnel sur Perplexity + LinkedIn, complété d'illustrations sur les autres plateformes.
+### 4.3 Garanties pour un évaluateur externe
+
+- Aucune métrique Instagram, X (Twitter) ou Facebook n'est affichée comme « réelle » : chaque carte porte un badge `Données simulées` (amber) en mode démo, ou un `EmptyState` (gris) en mode réel.
+- En mode réel par défaut (`VITE_DATA_MODE=real`), les sections sans source réelle n'affichent **aucun chiffre maquillé**.
+- Aucun mélange réel/démo sur la même vue n'est possible sans différenciation visuelle : LinkedIn temps réel porte un badge `Données réelles` (vert), Instagram/X portent `Données simulées` ou un EmptyState selon le mode.
+- Le toggle de mode est strictement DEV-only ; en production, seule `VITE_DATA_MODE` au build fait foi.
 
 ---
 
 Dernière mise à jour : 2026-05-21.
+
