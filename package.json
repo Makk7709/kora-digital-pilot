@@ -41,6 +41,7 @@
     "markdown:check": "node fix-markdown.cjs --all --dry-run",
     "markdown:clean": "node fix-markdown.cjs --clean",
     "markdown:help": "node fix-markdown.cjs --help",
+    "dossier": "bash scripts/build-valuation-dossier.sh",
     "prepare": "husky"
   },
   "lint-staged": {
