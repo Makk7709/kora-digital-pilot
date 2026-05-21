@@ -32,6 +32,7 @@ import {
 import type { PerplexityReport, BrandReport } from '../types/brand-analysis';
 import { PerplexityReportViewer } from './PerplexityReportViewer';
 import { BrandAnalysisOrchestrator } from '../services/brand/brand-analysis-orchestrator';
+import { logger } from '../lib/logger';
 
 // Données de test mockées pour le mode test
 const mockBrandReport: BrandReport = {
@@ -153,7 +154,7 @@ export const BrandMonitoring: React.FC = () => {
   // Ajout d'un effet pour logger les données du rapport
   useEffect(() => {
     if (perplexityReport) {
-      console.log('🎨 [BrandMonitoring] État perplexityReport mis à jour:', {
+      logger.debug('🎨 [BrandMonitoring] État perplexityReport mis à jour:', {
         reportExists: !!perplexityReport,
         reportId: perplexityReport?.id,
         brandName: perplexityReport?.brandName,
@@ -182,7 +183,7 @@ export const BrandMonitoring: React.FC = () => {
 
       if (apiKey === 'pplx-your-real-api-key' || apiKey === 'demo-key') {
         // Mode démo - afficher des données simulées immédiatement
-        console.log('🎯 Mode démo - affichage données simulées pour:', targetName);
+        logger.debug('🎯 Mode démo - affichage données simulées pour:', targetName);
         const demoReport = createDemoReport(targetName);
         setRealBrandReport(demoReport);
         setLastUpdate(new Date());
@@ -238,10 +239,10 @@ export const BrandMonitoring: React.FC = () => {
         description: `Données réelles récupérées pour ${targetName}`,
       });
     } catch (err) {
-      console.error('Erreur Perplexity:', err);
+      logger.error('Erreur Perplexity:', err);
 
       // En cas d'erreur, afficher quand même des données démo
-      console.log('🔄 Fallback vers données démo suite à erreur:', err.message);
+      logger.debug('🔄 Fallback vers données démo suite à erreur:', err.message);
       const fallbackReport = createDemoReport(targetName + ' (Fallback)');
       setRealBrandReport(fallbackReport);
       setLastUpdate(new Date());
@@ -422,7 +423,7 @@ export const BrandMonitoring: React.FC = () => {
     }
 
     try {
-      console.log('📄 Génération PDF en cours avec données IA...');
+      logger.debug('📄 Génération PDF en cours avec données IA...');
 
       // Import du service d'export
       const { createReportExportService } = await import('../services/export');
@@ -475,12 +476,12 @@ export const BrandMonitoring: React.FC = () => {
           description: `Fichier téléchargé: ${result.fileName} (${result.fileSize} bytes)`,
         });
 
-        console.log(`✅ Export PDF réussi: ${result.fileName}`);
+        logger.debug(`✅ Export PDF réussi: ${result.fileName}`);
       } else {
         throw new Error(result.errors?.join(', ') || 'Erreur export PDF');
       }
     } catch (error) {
-      console.error('❌ Erreur export PDF:', error);
+      logger.error('❌ Erreur export PDF:', error);
       toast({
         title: '❌ Erreur export PDF',
         description: error.message || 'Impossible de générer le PDF',
@@ -500,7 +501,7 @@ export const BrandMonitoring: React.FC = () => {
     }
 
     try {
-      console.log('📊 Génération Excel en cours...');
+      logger.debug('📊 Génération Excel en cours...');
 
       // Import du service d'export
       const { createReportExportService } = await import('../services/export');
@@ -548,12 +549,12 @@ export const BrandMonitoring: React.FC = () => {
           description: `Fichier téléchargé: ${result.fileName}`,
         });
 
-        console.log(`✅ Export Excel réussi: ${result.fileName}`);
+        logger.debug(`✅ Export Excel réussi: ${result.fileName}`);
       } else {
         throw new Error(result.errors?.join(', ') || 'Erreur export Excel');
       }
     } catch (error) {
-      console.error('❌ Erreur export Excel:', error);
+      logger.error('❌ Erreur export Excel:', error);
       toast({
         title: '❌ Erreur export Excel',
         description: error.message || 'Impossible de générer le fichier Excel',
@@ -563,10 +564,10 @@ export const BrandMonitoring: React.FC = () => {
   };
 
   const handleGenerateReport = async () => {
-    console.log('🚀 [DEBUG] handleGenerateReport - Début');
+    logger.debug('🚀 [DEBUG] handleGenerateReport - Début');
 
     if (!realBrandReport) {
-      console.log('❌ [DEBUG] Aucune donnée - realBrandReport est null');
+      logger.debug('❌ [DEBUG] Aucune donnée - realBrandReport est null');
       toast({
         title: 'Aucune donnée',
         description: "Veuillez d'abord analyser une marque",
@@ -576,7 +577,7 @@ export const BrandMonitoring: React.FC = () => {
     }
 
     if (!brandService) {
-      console.log('❌ [DEBUG] Service non initialisé - brandService est null');
+      logger.debug('❌ [DEBUG] Service non initialisé - brandService est null');
       toast({
         title: 'Service non initialisé',
         description: "Le service d'analyse n'est pas disponible",
@@ -585,7 +586,7 @@ export const BrandMonitoring: React.FC = () => {
       return;
     }
 
-    console.log('📊 [DEBUG] Données disponibles:', {
+    logger.debug('📊 [DEBUG] Données disponibles:', {
       brandName: realBrandReport.brandName,
       mentionsCount: realBrandReport.mentions.length,
       competitorsCount: realBrandReport.competitors.length,
@@ -597,10 +598,10 @@ export const BrandMonitoring: React.FC = () => {
     setIsGeneratingReport(true);
 
     try {
-      console.log('⚙️ [DEBUG] Appel du service generatePerplexityReport...');
+      logger.debug('⚙️ [DEBUG] Appel du service generatePerplexityReport...');
       const report = await brandService.generatePerplexityReport(realBrandReport);
 
-      console.log('✅ [DEBUG] Rapport généré avec succès:', {
+      logger.debug('✅ [DEBUG] Rapport généré avec succès:', {
         reportId: report.id,
         brandName: report.brandName,
         reputationScore: report.reputationScore,
@@ -610,19 +611,19 @@ export const BrandMonitoring: React.FC = () => {
         generatedAt: report.generatedAt,
       });
 
-      console.log('📝 [DEBUG] Contenu des insights:', report.keyInsights);
-      console.log('🎯 [DEBUG] Contenu des actions:', report.recommendedActions);
+      logger.debug('📝 [DEBUG] Contenu des insights:', report.keyInsights);
+      logger.debug('🎯 [DEBUG] Contenu des actions:', report.recommendedActions);
 
-      console.log("🔄 [DEBUG] Mise à jour de l'état perplexityReport...");
+      logger.debug("🔄 [DEBUG] Mise à jour de l'état perplexityReport...");
       setPerplexityReport(report);
-      console.log('✅ [DEBUG] État mis à jour');
+      logger.debug('✅ [DEBUG] État mis à jour');
 
       toast({
         title: 'Rapport généré avec succès !',
         description: `Rapport IA créé pour ${realBrandReport.brandName}`,
       });
     } catch (error) {
-      console.error('❌ [DEBUG] Erreur lors de la génération du rapport:', error);
+      logger.error('❌ [DEBUG] Erreur lors de la génération du rapport:', error);
       toast({
         title: 'Erreur de génération',
         description: 'Impossible de générer le rapport IA',
@@ -630,7 +631,7 @@ export const BrandMonitoring: React.FC = () => {
       });
     } finally {
       setIsGeneratingReport(false);
-      console.log('🏁 [DEBUG] handleGenerateReport - Fin');
+      logger.debug('🏁 [DEBUG] handleGenerateReport - Fin');
     }
   };
 
@@ -685,7 +686,7 @@ export const BrandMonitoring: React.FC = () => {
       });
     } catch (err) {
       setAnalysisError('Erreur lors du test API: ' + (err as Error).message);
-      console.error('Test API error:', err);
+      logger.error('Test API error:', err);
     } finally {
       setIsAnalyzing(false);
     }
