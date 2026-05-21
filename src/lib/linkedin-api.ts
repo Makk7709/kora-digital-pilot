@@ -1242,8 +1242,8 @@ class LinkedInAPI {
       console.log('👤 Informations utilisateur depuis ID Token:', {
         subject: payload.sub,
         name: payload.name,
-        email: payload.email,
-        picture: payload.picture,
+        hasEmail: !!payload.email,
+        hasPicture: !!payload.picture,
         locale: payload.locale
       });
 

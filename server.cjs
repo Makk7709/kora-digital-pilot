@@ -1,5 +1,9 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const fetch = require('node-fetch');
 const path = require('path');
 
@@ -85,9 +89,43 @@ app.use(cors({
   optionsSuccessStatus: 204
 }));
 
-// Body parsing avec limites de sécurité
-app.use(express.json({ 
-  limit: '10mb',
+// === HELMET (CSP + secure headers) ===
+// CSP minimale autorisant self + endpoints upstream utilisés par le proxy.
+// connectSrc autorise les domaines APIs externes appelées côté serveur uniquement;
+// le frontend n'appelle pas ces domaines directement.
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: [
+          "'self'",
+          'https://api.linkedin.com',
+          'https://www.linkedin.com',
+          'https://api.anthropic.com',
+          'https://api.openai.com',
+          'https://api.perplexity.ai',
+        ],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        upgradeInsecureRequests: ENV === 'PRODUCTION' ? [] : null,
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    hsts: ENV === 'PRODUCTION' ? { maxAge: 31536000, includeSubDomains: true } : false,
+  })
+);
+
+// Body parsing avec limites de sécurité (1mb suffit largement pour nos payloads)
+app.use(express.json({
+  limit: '1mb',
   strict: true,
   verify: (req, res, buf) => {
     try {
@@ -101,25 +139,13 @@ app.use(express.json({
 
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-// Headers de sécurité enterprise
+// Logging minimal des requêtes (méthode + path + ip + status). Pas de body.
 app.use((req, res, next) => {
-  // Headers sécurisés
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
-  // Sécurité production additionnelle
-  if (ENV === 'PRODUCTION') {
-    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-    res.setHeader('Content-Security-Policy', "default-src 'self'");
-  }
-  
-  // Logging des requêtes (développement uniquement)
   if (ENV === 'DEV') {
-    console.log(`📥 [${new Date().toISOString()}] ${req.method} ${req.url} from ${req.ip}`);
+    res.on('finish', () => {
+      console.log(`📥 [${new Date().toISOString()}] ${req.method} ${req.path} ${res.statusCode} ${req.ip}`);
+    });
   }
-  
   next();
 });
 
@@ -146,38 +172,24 @@ const validateApiKey = (keyName, required = true) => (req, res, next) => {
   next();
 };
 
-const rateLimiter = (maxRequests = 100, windowMs = 60000) => {
-  const clients = new Map();
-  
-  return (req, res, next) => {
-    const clientId = req.ip;
-    const now = Date.now();
-    
-    if (!clients.has(clientId)) {
-      clients.set(clientId, { count: 1, resetTime: now + windowMs });
-      return next();
-    }
-    
-    const client = clients.get(clientId);
-    
-    if (now > client.resetTime) {
-      client.count = 1;
-      client.resetTime = now + windowMs;
-      return next();
-    }
-    
-    if (client.count >= maxRequests) {
-      return res.status(429).json({
+// Rate limiter basé sur express-rate-limit (mieux que l'implémentation maison)
+const rateLimiter = (maxRequests = 100, windowMs = 60000) =>
+  rateLimit({
+    windowMs,
+    max: maxRequests,
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+      res.status(429).json({
         error: 'Trop de requêtes',
-        retryAfter: Math.ceil((client.resetTime - now) / 1000),
-        timestamp: new Date().toISOString()
+        retryAfter: Math.ceil(windowMs / 1000),
+        timestamp: new Date().toISOString(),
       });
-    }
-    
-    client.count++;
-    next();
-  };
-};
+    },
+  });
+
+// Limiteur global plus permissif appliqué à toute l'API.
+app.use('/api/', rateLimiter(300, 60_000));
 
 // === ENDPOINTS API ENTERPRISE ===
 
@@ -420,15 +432,15 @@ app.post('/api/linkedin/profile',
         });
       }
 
-      // Valider que la réponse est du JSON valide
+      // Valider que la réponse est du JSON valide (sans logger d'email en clair)
       try {
         const jsonData = JSON.parse(data);
-        console.log('✅ [LinkedIn Profile] Données OpenID Connect valides:', {
+        console.log('✅ [LinkedIn Profile] OpenID Connect réponse OK', {
           hasId: !!jsonData.sub,
           hasName: !!jsonData.given_name,
           hasEmail: !!jsonData.email,
-          claims: Object.keys(jsonData),
-          responseTime
+          claimsCount: Object.keys(jsonData).length,
+          responseTime,
         });
       } catch (parseError) {
         console.error('❌ [LinkedIn Profile] Réponse non-JSON:', data.substring(0, 100));
