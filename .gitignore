@@ -17,8 +17,10 @@ dist-ssr
 .env.local
 .env.*.local
 
-# Test coverage reports
+# Test coverage reports (raw output, regenerated locally / in CI)
 coverage/
+# But keep the versioned audit snapshot of the HTML report
+!docs/audit/coverage/
 
 # Generated valuation dossier
 dossier-valorisation/
