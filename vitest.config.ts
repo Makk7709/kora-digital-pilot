@@ -25,6 +25,14 @@ export default defineConfig({
       'src/**/*.test.ts',
       'src/**/*.test.tsx' // Ajout support TSX
     ],
+
+    // Exclusion des tests de production qui font des appels API réels (heures de
+    // run, non-CI-friendly). Lancer manuellement avec `vitest run src/test/production`.
+    exclude: [
+      'node_modules/**',
+      'dist/**',
+      'src/test/production/**',
+    ],
     
     // Variables d'environnement pour tests
     env: {
