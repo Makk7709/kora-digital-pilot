@@ -296,7 +296,6 @@ export default defineConfig(({ mode }) => ({
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
           'vendor-charts': ['recharts'],
-          'enhanced-services': ['./src/services/EnhancedReportExportService.ts'],
           'pdf-utils': ['jspdf'],
           'brand-intelligence': ['./src/services/RealBrandIntelligenceService.ts']
         },

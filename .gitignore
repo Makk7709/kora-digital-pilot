@@ -23,6 +23,9 @@ coverage/
 # Generated valuation dossier
 dossier-valorisation/
 
+# TypeScript incremental build outputs
+*.tsbuildinfo
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
