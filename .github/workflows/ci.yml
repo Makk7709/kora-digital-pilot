@@ -36,14 +36,14 @@ jobs:
         run: npm run typecheck
 
       - name: Tests with coverage
-        run: npm run test:coverage -- --reporter=default
+        run: npm run test:coverage
         env:
           CI: 'true'
 
       - name: Build
         run: npm run build
 
-      - name: Upload coverage report
+      - name: Upload coverage report (raw)
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -51,3 +51,12 @@ jobs:
           path: coverage/
           if-no-files-found: ignore
           retention-days: 14
+
+      - name: Upload coverage report (audit bundle)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-audit-${{ github.sha }}
+          path: docs/audit/coverage/
+          if-no-files-found: ignore
+          retention-days: 30

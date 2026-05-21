@@ -1,58 +1,71 @@
 /**
- * 🧪 SETUP TESTS PRODUCTION - KORA PRISM
- * Configuration globale pour tests avec données réelles Perplexity
+ * Global test setup for the CI suite.
+ *
+ * IMPORTANT: This setup is shared by every test that runs through the
+ * default `vitest` config (i.e. the CI suite). Production tests that
+ * actually hit Perplexity live under `src/test/production/**` and are
+ * excluded from the default run via `vitest.config.ts`.
+ *
+ * The previous version of this file used a `beforeAll` that threw when
+ * `VITE_PERPLEXITY_API_KEY` was missing, which broke every CI run and
+ * caused most of the suites to hang or fail on environments without
+ * secrets. We keep the validation, but scoped: it only runs when the
+ * caller explicitly opted in via `RUN_PRODUCTION_TESTS=1` or when the
+ * test file path lives under `src/test/production/`.
  */
 
-import '@testing-library/jest-dom'
-import { vi, beforeAll, beforeEach, afterAll, afterEach } from 'vitest'
+import '@testing-library/jest-dom';
+import { afterEach, beforeAll, beforeEach, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
 
-// Configuration globale des tests
+const REQUIRED_PROD_ENV = ['VITE_PERPLEXITY_API_KEY'] as const;
+
+const isProductionRun = () => {
+  if (process.env.RUN_PRODUCTION_TESTS === '1') return true;
+  const taskFilePath =
+    // @ts-expect-error vitest task globals can be present in some workers
+    (typeof globalThis !== 'undefined' &&
+      globalThis.__vitest_worker__?.state?.current?.file?.filepath) ||
+    '';
+  return typeof taskFilePath === 'string' && taskFilePath.includes('/test/production/');
+};
+
 beforeAll(() => {
-  console.log('🚀 DÉMARRAGE SUITE TESTS PRODUCTION - PRISM & PERPLEXITY');
-  console.log('📊 Mode: Production-ready, données réelles uniquement');
-  
-  // Validation environment variables obligatoires
-  const requiredEnvVars = [
-    'VITE_PERPLEXITY_API_KEY'
-  ];
-  
-  const missingVars = requiredEnvVars.filter(varName => {
-    const value = process.env[varName] || import.meta.env[varName];
-    return !value || value.includes('your_') || value.includes('demo');
+  if (!isProductionRun()) return;
+
+  const missing = REQUIRED_PROD_ENV.filter((name) => {
+    const value = process.env[name] || (import.meta as any).env?.[name];
+    return !value || /your_|demo/i.test(String(value));
   });
-  
-  if (missingVars.length > 0) {
-    throw new Error(`❌ VARIABLES D'ENVIRONNEMENT MANQUANTES: ${missingVars.join(', ')}`);
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Production tests require: ${missing.join(', ')}. ` +
+        `Set them in .env.local or export them before running.`,
+    );
   }
-  
-  console.log('✅ Variables d\'environnement validées');
 });
 
 beforeEach(() => {
-  // Reset des mocks avant chaque test
-  if (typeof vi !== 'undefined') {
-    vi.clearAllMocks();
-  }
+  vi.clearAllMocks();
 });
 
 afterEach(() => {
-  // Nettoyage après chaque test
-  console.log('🧹 Test terminé, nettoyage effectué');
+  cleanup();
+  vi.useRealTimers();
 });
 
-afterAll(() => {
-  console.log('🏁 SUITE TESTS PRODUCTION TERMINÉE');
-  console.log('📊 Rapport détaillé disponible en format JSON et HTML');
-});
-
-// Configuration globale pour fetch (si nécessaire)
-if (typeof global !== 'undefined' && !global.fetch) {
-  global.fetch = fetch;
+// jsdom on Node 20+ already exposes a global `fetch`. We only need a guard
+// against future regressions, so we leave a no-op stub if it is missing.
+if (typeof globalThis.fetch === 'undefined') {
+  globalThis.fetch = (() => {
+    throw new Error('global fetch is missing — tests should mock fetch explicitly');
+  }) as unknown as typeof fetch;
 }
 
-// Types globaux pour tests
 declare global {
+  // eslint-disable-next-line no-var
   var __TEST_MODE__: boolean;
 }
 
-globalThis.__TEST_MODE__ = true; 
+(globalThis as unknown as { __TEST_MODE__: boolean }).__TEST_MODE__ = true;

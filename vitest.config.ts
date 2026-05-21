@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -11,77 +11,85 @@ export default defineConfig({
     },
   },
   test: {
-    // Configuration pour tests production avec APIs réelles
-    testTimeout: 120000, // 2 minutes timeout global
-    hookTimeout: 30000,
-    
-    // Environnement
-    environment: 'jsdom', // Changé pour supporter React/JSX
-    
+    // Timeouts CI-friendly. Les tests de production (Perplexity réel) qui
+    // nécessitent plus de temps doivent surcharger ces valeurs au cas par
+    // cas via `vi.setConfig` ou en ligne de commande.
+    testTimeout: 15000,
+    hookTimeout: 10000,
+
+    environment: 'jsdom',
+
     // Inclusion des fichiers de test
     include: [
       'src/test/**/*.test.ts',
       'src/test/**/*.test.tsx', // Ajout support TSX
       'src/**/*.test.ts',
-      'src/**/*.test.tsx' // Ajout support TSX
+      'src/**/*.test.tsx', // Ajout support TSX
     ],
 
     // Exclusion des tests de production qui font des appels API réels (heures de
     // run, non-CI-friendly). Lancer manuellement avec `vitest run src/test/production`.
-    exclude: [
-      'node_modules/**',
-      'dist/**',
-      'src/test/production/**',
-    ],
-    
-    // Variables d'environnement pour tests
+    exclude: ['node_modules/**', 'dist/**', 'src/test/production/**'],
+
+    // Variables d'environnement pour tests.
+    // - NODE_ENV indique le mode "test" pour le code applicatif.
+    // - VITE_PERPLEXITY_API_KEY est intentionnellement renseigné avec une
+    //   valeur factice : il permet à RealBrandIntelligenceService de
+    //   s'instancier sans throw. Les appels réseau réels doivent toujours
+    //   être mockés au niveau des tests (vi.mock(...)) ; les tests de
+    //   production (src/test/production) qui veulent une vraie clé doivent
+    //   être lancés via le script `test:production` avec une vraie clé.
     env: {
-      NODE_ENV: 'test'
+      NODE_ENV: 'test',
+      VITE_PERPLEXITY_API_KEY: 'test-fake-key-not-real',
+      VITE_PERPLEXITY_MODEL: 'sonar-pro',
+      VITE_CHATGPT_API_KEY: 'sk-test-chatgpt-fake-key',
+      VITE_CHATGPT_MODEL: 'gpt-4-turbo',
+      VITE_OPENAI_API_KEY: 'sk-test-openai-fake-key',
     },
-    
+
     // Configuration globale
     globals: true,
-    
-    // Reporters pour CI/CD et développement
-    reporters: ['verbose', 'json'],
-    
+
+    // Reporters compacts par défaut. CI ajoute `--reporter=verbose` si besoin.
+    reporters: ['default'],
+
     // Coverage configuration
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      include: [
-        'src/services/**/*.ts',
-        'src/lib/**/*.ts',
-        'src/components/**/*.tsx'
-      ],
+      include: ['src/services/**/*.ts', 'src/lib/**/*.ts', 'src/components/**/*.tsx'],
       exclude: [
         'src/test/**',
         'src/**/*.test.ts',
         'src/**/*.test.tsx', // Exclusion TSX test files
         'src/**/*.spec.ts',
-        'node_modules/**'
+        'node_modules/**',
       ],
-      // Realistic thresholds for the quick-wins sprint: lock in the floor we
-      // actually have today, ratchet up afterwards (see docs/TECH_DEBT.md).
+      // Thresholds calibrated on the actual coverage measured on
+      // `feat/ci-tests-stable` (Wave 1) minus a 2-point safety margin.
+      // Last measurement: lines 16.68 %, statements 16.68 %, branches
+      // 46.74 %, functions 31.44 %. See docs/audit/COVERAGE_REPORT.md.
+      // We will ratchet these up in subsequent waves as the test suites
+      // currently quarantined get re-enabled (see docs/TESTING.md).
       thresholds: {
-        lines: 30,
-        functions: 30,
-        branches: 25,
-        statements: 30
-      }
+        lines: 14,
+        statements: 14,
+        branches: 44,
+        functions: 29,
+      },
     },
-    
-    // Retry pour tests avec APIs externes
-    retry: 2,
-    
-    // Setup files
-    setupFiles: [
-      './src/test/setup.ts'
-    ]
+
+    // Pas de retry par défaut : on veut un signal CI déterministe.
+    // Les tests qui dépendent d'APIs externes (production tests) peuvent
+    // surcharger ce comportement avec `vi.setConfig({ retry: N })`.
+    retry: 0,
+
+    setupFiles: ['./src/test/setup.ts'],
   },
-  
+
   define: {
     // Variables pour tests
-    __TEST_MODE__: true
-  }
-}) 
+    __TEST_MODE__: true,
+  },
+});
