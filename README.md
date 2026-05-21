@@ -2,9 +2,11 @@
 
 Plateforme de communication digitale et de brand intelligence éditée par Korev AI.
 
+<!-- TODO: replace <OWNER>/<REPO> when the GitHub organisation hosting the repo is decided -->
 [![CI](https://github.com/<OWNER>/<REPO>/actions/workflows/ci.yml/badge.svg)](https://github.com/<OWNER>/<REPO>/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-vitest-blue)](./docs/OPERATIONS.md#4-commandes-principales)
+[![Coverage](https://img.shields.io/badge/coverage-vitest-blue)](./docs/audit/COVERAGE_REPORT.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![Version](https://img.shields.io/badge/version-0.2.0-blueviolet)](./CHANGELOG.md)
 
 Kora Digital Pilot regroupe en un seul outil interne la veille concurrentielle (Perplexity), le pilotage de community management, l'analytics LinkedIn, la génération de contenu assistée par IA (OpenAI, Anthropic), le planning éditorial multi-plateformes et l'export PDF/Excel. L'application est une SPA React adossée à un proxy Node.js minimal pour les appels nécessitant un secret serveur.
 
@@ -32,6 +34,11 @@ Toute la documentation opposable est dans [`docs/`](./docs/README.md).
 | [docs/LICENSES.md](./docs/LICENSES.md) | Licence du projet et licences des dépendances |
 | [docs/TECH_DEBT.md](./docs/TECH_DEBT.md) | Dette technique assumée et trajectoire |
 | [docs/DEMO.md](./docs/DEMO.md) | Parcours utilisateur de démonstration |
+| [docs/TESTING.md](./docs/TESTING.md) | Stratégie de test, suites en quarantaine, reproduction de la couverture |
+
+### Dossier de valorisation
+
+Le dossier consolidé destiné à un cabinet d'évaluation est dans [`docs/cabinet/`](./docs/cabinet/README.md) : périmètre, modules propriétaires, preuves d'usage, preuves de tests, sécurité, limites assumées, plan de remédiation daté, conclusion. Les pièces générées (audit npm, licences, couverture HTML, historique Git) sont produites à plat par `npm run dossier` dans `dossier-valorisation/` (gitignoré).
 
 L'historique des post-mortems, audits ponctuels et plans de refactoring est conservé dans [`docs/archive/`](./docs/archive/README.md).
 
