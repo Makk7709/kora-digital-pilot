@@ -27,21 +27,41 @@ export class RealBrandIntelligenceService {
   private perplexityService: PerplexityService;
   private isInitialized = false;
 
-  constructor() {
-    // Initialisation avec clé API réelle
-    const apiKey = import.meta.env.VITE_PERPLEXITY_API_KEY;
-    if (!apiKey) {
-      throw new Error('VITE_PERPLEXITY_API_KEY manquante dans .env');
+  constructor(perplexityService?: PerplexityService) {
+    if (perplexityService) {
+      // Utiliser le service fourni (depuis les props)
+      this.perplexityService = perplexityService;
+      this.isInitialized = true;
+      console.log('🔧 [RealBrandIntelligenceService] Utilisation du service Perplexity fourni');
+    } else {
+      // Fallback: Créer un nouveau service (pour compatibilité)
+      try {
+        const apiKey = import.meta.env.VITE_PERPLEXITY_API_KEY;
+        if (!apiKey) {
+          throw new Error('VITE_PERPLEXITY_API_KEY manquante dans .env');
+        }
+
+        this.perplexityService = createPerplexityService({
+          apiKey,
+          model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-large-128k-online',
+          maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 8000,
+          temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2
+        });
+
+        this.isInitialized = true;
+        console.log('🔧 [RealBrandIntelligenceService] Service Perplexity créé depuis .env');
+      } catch (error) {
+        console.error('❌ [RealBrandIntelligenceService] Erreur initialisation:', error);
+        throw new Error(`Impossible d'initialiser RealBrandIntelligenceService: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+      }
     }
+  }
 
-    this.perplexityService = createPerplexityService({
-      apiKey,
-      model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-large-128k-online',
-      maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 8000,
-      temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2
-    });
-
-    this.isInitialized = true;
+  /**
+   * 🏭 FACTORY METHOD - Créer avec service Perplexity existant
+   */
+  static withPerplexityService(perplexityService: PerplexityService): RealBrandIntelligenceService {
+    return new RealBrandIntelligenceService(perplexityService);
   }
 
   /**

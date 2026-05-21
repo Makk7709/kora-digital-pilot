@@ -17,12 +17,14 @@ L'application effectuait des appels répétés à `/api/health` toutes les 3 sec
 
 ### 1. **Configuration Proxy Vite Améliorée** (`vite.config.ts`)
 
-#### Avant :
+#### Avant
+
 - Logs d'erreur infinis
 - Pas de gestion gracieuse des erreurs
 - Aucun throttling des appels
 
-#### Après :
+#### Après
+
 ```typescript
 // Proxy avec gestion intelligente d'erreur
 proxy: {
@@ -75,7 +77,8 @@ proxy: {
 }
 ```
 
-* *Avantages :**
+**Avantages :**
+
 - ✅ Arrêt automatique des logs d'erreur après 3 tentatives
 - ✅ Réponse gracieuse 503 avec CORS pour l'API
 - ✅ Reset automatique toutes les minutes pour retry
@@ -116,7 +119,8 @@ class ApiCallManager {
 }
 ```
 
-* *Fonctionnalités :**
+**Fonctionnalités :**
+
 - ✅ **Déduplication** : Une seule requête par endpoint à la fois
 - ✅ **Cache intelligent** : TTL configurable par endpoint
 - ✅ **Backoff exponentiel** : 1s → 2s → 4s → 8s → ... max 5min
@@ -126,7 +130,8 @@ class ApiCallManager {
 
 ### 3. **Hook LinkedIn Optimisé** (`src/hooks/useLinkedInAnalytics.ts`)
 
-#### Avant :
+#### Avant l'optimisation
+
 ```typescript
 // Surveillance agressive toutes les 3 secondes
 setInterval(async () => {
@@ -135,7 +140,8 @@ setInterval(async () => {
 }, 3000);
 ```
 
-#### Après :
+#### Après l'optimisation
+
 ```typescript
 // Utilisation du gestionnaire d'API avec cache
 const checkProxyHealth = useCallback(async (): Promise<boolean> => {
@@ -161,7 +167,8 @@ const startProxyMonitoring = useCallback(() => {
 }, [checkProxyHealth, loadCachedMetrics]);
 ```
 
-* *Améliorations :**
+**Améliorations :**
+
 - ✅ **Cache 5s** : Évite les appels répétés à `/api/health` - ✅ **Intervalle 10s** : Au lieu de 3s agressif
 - ✅ **Max 8 retries** : Au lieu de 12
 - ✅ **Gestion d'erreur** : Via le gestionnaire centralisé
@@ -198,7 +205,8 @@ export const ApiHealthDashboard: React.FC = () => {
 };
 ```
 
-* *Fonctionnalités :**
+**Fonctionnalités :**
+
 - ✅ **Monitoring temps réel** : Refresh auto toutes les 3s
 - ✅ **Statut détaillé** : Par endpoint avec erreurs/retry
 - ✅ **Actions manuelles** : Mark as Up, Reset stats
@@ -207,6 +215,7 @@ export const ApiHealthDashboard: React.FC = () => {
 ## 🚀 DÉMARRAGE SÉCURISÉ
 
 ### Option 1 : Mode Frontend Seul (Recommandé pour développement)
+
 ```bash
 # Démarrer uniquement le frontend
 npm run dev
@@ -216,6 +225,7 @@ npm run dev
 ```
 
 ### Option 2 : Mode Full-Stack
+
 ```bash
 # Terminal 1 : Démarrer le backend
 npm run proxy
@@ -228,6 +238,7 @@ npm run start # = npm run dev:full
 ```
 
 ### Vérification Health Check
+
 ```bash
 # Vérifier si le backend est up
 npm run health-check
@@ -241,13 +252,15 @@ npm run ports:reset
 
 ## 📊 MÉTRIQUES DE PERFORMANCE
 
-### Avant les corrections :
+### Avant les corrections
+
 - ❌ **Appels /api/health** : Toutes les 3 secondes en continu
 - ❌ **Logs d'erreur** : Infinis (1 erreur toutes les 3s)
 - ❌ **Performance** : Dégradée par les appels répétés
 - ❌ **UX** : Console polluée d'erreurs
 
-### Après les corrections :
+### Après les corrections
+
 - ✅ **Appels /api/health** : Cachés 5s, max 8 retries, puis stop
 - ✅ **Logs d'erreur** : Max 3 par endpoint, puis silence intelligent
 - ✅ **Performance** : Optimisée avec cache et déduplication
@@ -255,7 +268,8 @@ npm run ports:reset
 
 ## 🔧 CONFIGURATION AVANCÉE
 
-### Variables d'environnement importantes :
+### Variables d'environnement importantes
+
 ```bash
 # Backend proxy port (défaut: 3001)
 PROXY_PORT=3001
@@ -265,7 +279,8 @@ NODE_ENV=development
 VITE_ENV=development
 ```
 
-### Ports configurés :
+### Ports configurés
+
 - **8088** : Frontend Vite dev server
 - **3001** : Backend proxy server (dev)
 - **4001** : Backend proxy server (staging)
@@ -274,7 +289,9 @@ VITE_ENV=development
 ## 🛠️ DÉPANNAGE
 
 ### Problème : Appels API répétés
-* *Solution :** Vérifier que le gestionnaire d'API est utilisé :
+
+**Solution :** Vérifier que le gestionnaire d'API est utilisé :
+
 ```typescript
 import { useApiCallManager } from '@/lib/api-call-manager';
 
@@ -286,14 +303,18 @@ const result = await makeCall({
 ```
 
 ### Problème : Backend non démarré
-* *Solution :** Messages clairs dans la console :
+
+**Solution :** Messages clairs dans la console :
+
 ```bash
 🚨 [Vite Proxy] Server down detected. Suppressing further error logs.
 🔧 [Vite Proxy] Run 'npm run proxy' to start backend server
 ```
 
 ### Problème : Logs de debug
-* *Solution :** Utiliser le tableau de bord API Health :
+
+**Solution :** Utiliser le tableau de bord API Health :
+
 ```typescript
 import ApiHealthDashboard from '@/components/ApiHealthDashboard';
 
@@ -312,9 +333,11 @@ Pour un monitoring continu en production, le gestionnaire d'API fournit :
 
 ## ✅ VALIDATION DES CORRECTIONS
 
-Pour vérifier que les corrections fonctionnent :
+Pour vérifier que les corrections fonctionnent
 
-1. **Démarrer le frontend seul** : `npm run dev` 2. **Ouvrir la console** : Doit voir max 3 erreurs puis silence
+1. **Démarrer le frontend seul** : `npm run dev`
+
+2. **Ouvrir la console** : Doit voir max 3 erreurs puis silence
 3. **Vérifier le proxy** : Réponses 503 avec CORS au lieu d'erreurs réseau
 4. **Utiliser l'app** : Fonctionne en mode dégradé sans crash
 5. **Dashboard API** : Affiche l'état des endpoints

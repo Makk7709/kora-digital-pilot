@@ -212,6 +212,8 @@ class PerplexityService {
 
     let response: Response;
     try {
+      // 🔧 FIX: Simplification pour éviter les problèmes de contexte avec l'interception
+      // Utiliser directement fetch car window.fetch est intercepté et sécurisé
       response = await fetch(this.baseURL, {
         method: 'POST',
         headers,

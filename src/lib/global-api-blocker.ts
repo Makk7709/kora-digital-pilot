@@ -39,6 +39,9 @@ class GlobalApiBlocker {
    * Intercepter tous les appels fetch
    */
   private interceptFetch(): void {
+    // 🔧 FIX: Préserver le bon contexte pour éviter "Illegal invocation"
+    const originalFetch = this.originalFetch.bind(window);
+    
     window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
       const url = typeof input === 'string' ? input : input.toString();
       
@@ -67,9 +70,9 @@ class GlobalApiBlocker {
         }
       }
 
-      // Laisser passer les autres appels normalement
+      // 🔧 FIX: Utiliser originalFetch avec le bon contexte
       try {
-        const response = await this.originalFetch(input, init);
+        const response = await originalFetch(input, init);
         
         // Si l'appel vers /api réussit, reset le bloqueur
         if (url.includes('/api/') && response.ok) {
@@ -90,6 +93,15 @@ class GlobalApiBlocker {
         throw error;
       }
     };
+    
+    // 🔧 FIX CRITIQUE: Préserver le binding correct pour window.fetch
+    Object.defineProperty(window.fetch, 'bind', {
+      value: function(thisArg: any) {
+        return window.fetch;
+      },
+      writable: false,
+      configurable: false
+    });
   }
 
   /**

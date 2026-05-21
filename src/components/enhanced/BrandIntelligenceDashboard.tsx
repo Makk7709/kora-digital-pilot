@@ -81,7 +81,9 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
   const [rawPerplexityData, setRawPerplexityData] = useState<PerplexityRawData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('rapport-kora');
-  const [service] = useState(() => new RealBrandIntelligenceService());
+  
+  // 🔧 FIX: Utiliser le service Perplexity configuré au lieu de créer un nouveau
+  const [service] = useState(() => RealBrandIntelligenceService.withPerplexityService(perplexityService));
   const [exportService] = useState(() => createReportExportService());
 
   // === GÉNÉRATION DU RAPPORT ===
@@ -107,10 +109,7 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
           query: `Analyse stratégique approfondie de ${brandName}: stratégie principale, marchés cibles, avantages concurrentiels, direction future, risques majeurs, priorités stratégiques, modèle économique.`,
           context: 'Analyse stratégique approfondie'
         }),
-        perplexityService.getCompetitorAnalysis({
-          query: `Analyse concurrentielle pour ${brandName}: principaux concurrents, parts de marché, positionnement concurrentiel, forces et faiblesses relatives, dynamiques du marché, barrières à l'entrée.`,
-          context: 'Analyse concurrentielle détaillée'
-        }),
+        perplexityService.getCompetitorAnalysis([brandName], `marché de ${brandName}`),
         perplexityService.getBusinessInsights({
           query: `Tendances émergentes et signaux faibles affectant ${brandName}: disruptions sectorielles, nouvelles opportunités, menaces émergentes, évolutions technologiques, changements réglementaires.`,
           context: 'Détection tendances et signaux'

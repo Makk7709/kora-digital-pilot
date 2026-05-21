@@ -62,10 +62,16 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
   // ✅ AMÉLIORATION: Vérifier la disponibilité du proxy avec le gestionnaire d'API
   const checkProxyHealth = useCallback(async (): Promise<boolean> => {
     try {
+      // Ne pas faire de health check si déjà marqué comme down
+      if (!isProxyReady) {
+        console.debug('🔄 [LinkedIn] Skipping health check - proxy marked as down');
+        return false;
+      }
+
       const healthData = await makeCall({
         endpoint: '/api/health',
         timeout: 2000,
-        cacheDuration: 5000 // Cache 5 secondes pour éviter les appels répétés
+        cacheDuration: 30000 // Cache 30 secondes pour réduire drastiquement les appels
       });
       
       const isReady = healthData && (healthData as any).status !== 'DOWN';
