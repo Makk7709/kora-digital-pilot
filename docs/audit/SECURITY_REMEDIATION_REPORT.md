@@ -31,7 +31,7 @@ La purge réelle de l'historique git via `git filter-repo` n'est **pas exécuté
 | Logger HTTP | `console.log` en DEV uniquement, format ad-hoc | JSON-style structuré : `method path status ip durationMs`, jamais de body ni de token, actif dans tous les ENV |
 | Gestion erreurs | Stack trace renvoyée tel quel en JSON dans certains chemins | Stack trace réservée au log serveur en `DEV`, message générique uniformisé en production |
 | `trust proxy` | Non défini | `app.set('trust proxy', 1)` pour respecter `X-Forwarded-For` derrière un reverse proxy |
-| Vulnérabilités jspdf | 1× critique + 4× high + 2× moderate (range `<=4.0.0`) | Bump vers la dernière mineure ≥ 3.0.4 / 4.x si la suite de build l'absorbe sans casse mesurable (cf. §6) |
+| Vulnérabilités jspdf | 1× critique au niveau package (composé de 1 critical + 3 high + 2 moderate advisories internes) | Bump `^3.0.1` → `^4.2.1` ; toutes les CVEs jspdf résolues. Audit total : 10 → 9 (uniquement modérées devDeps) |
 | Historique git | `pre-quickwins-snapshot`, `pre-docs-cleanup-snapshot`, `pre-merge-snapshot` contiennent encore les secrets historiques | Patterns `git filter-repo` prêts dans `scripts/filter-repo-patterns.txt` ; procédure documentée (§5) ; exécution déléguée |
 
 ## 3. Actions effectuées dans cette PR (Agent 1)
@@ -40,10 +40,10 @@ La purge réelle de l'historique git via `git filter-repo` n'est **pas exécuté
 | --- | --- | --- | --- |
 | 1 | Redaction du client ID LinkedIn littéral | `src/lib/linkedin-api.ts` | `chore(security): redact residual LinkedIn client ID literal` |
 | 2 | Préparation patterns purge historique | `scripts/filter-repo-patterns.txt` (nouveau) | `chore(security): add filter-repo replace-text patterns` |
-| 3 | Endpoints session httpOnly + refactor client | `server.cjs`, `src/lib/linkedin-api.ts`, `src/hooks/useLinkedInAnalytics.ts`, `package.json` | `feat(security): migrate LinkedIn tokens to httpOnly cookie session` |
-| 4 | Durcissement proxy (trust proxy, logger, erreurs génériques) | `server.cjs` | `feat(security): harden proxy logging, error envelope and trust proxy` |
-| 5 | Bump `jspdf` pour patcher les CVE | `package.json`, `package-lock.json`, `src/services/export/formats/pdf-exporter.ts` (si breaking) | `chore(deps): bump jspdf to patched release` |
-| 6 | Régénération audit transitif + licences | `docs/audit/npm-audit.json`, `docs/audit/licenses.json` | `chore(audit): refresh npm-audit and license inventory` |
+| 3 | Durcissement proxy (cookie-parser, trust proxy, logger structuré, CSP) | `server.cjs`, `package.json` | `feat(security): harden proxy logging, error envelope and trust proxy` |
+| 4 | Endpoints session httpOnly + refactor client | `server.cjs`, `src/lib/linkedin-api.ts`, `src/hooks/useLinkedInAnalytics.ts` | `feat(security): migrate LinkedIn tokens to httpOnly cookie session` |
+| 5 | Bump `jspdf` pour patcher les CVE | `package.json`, `package-lock.json` (aucune adaptation de `pdf-exporter.ts` requise) | `chore(deps): bump jspdf to 4.2.1 to patch critical CVEs` |
+| 6 | Régénération audit transitif + licences | `docs/audit/npm-audit.json`, `docs/audit/licenses.json` | `chore(audit): refresh npm-audit and license inventory after jspdf bump` |
 | 7 | Mise à jour documentation sécurité | `docs/SECURITY.md`, `docs/audit/SECURITY_REMEDIATION_REPORT.md` | `docs(security): document httpOnly session and remediation status` |
 
 ## 4. Actions volontairement reportées
@@ -148,7 +148,36 @@ APIs `jspdf` utilisées par `src/services/export/formats/pdf-exporter.ts` :
 
 `text`, `setFontSize`, `setTextColor`, `setFont`, `setFillColor`, `rect`, `circle`, `line`, `setDrawColor`, `setLineWidth`, `addPage`, `splitTextToSize`, `internal.pageSize`, `getCurrentPageInfo`, `getTextWidth`, `getNumberOfPages`, `setPage`, `output('arraybuffer')`.
 
-Toutes sont stables depuis jspdf 2.x. Le bump n'introduit aucune cassure mesurée sur la suite de build (cf. journal `npm run build` du commit `chore(deps): bump jspdf to patched release`). Aucun `autoTable` ni plugin externe n'est utilisé.
+Toutes sont stables depuis jspdf 2.x. Bump effectif : **`^3.0.1` → `^4.2.1`** (au-dessus du range `<=4.0.0` affecté). Le `npm run build` et `npx tsc --noEmit -p tsconfig.app.json` passent sans modification de `pdf-exporter.ts`. Aucun `autoTable` ni plugin externe n'est utilisé.
+
+État `npm audit` post-bump :
+
+| | Critical | High | Moderate | Total |
+| --- | --- | --- | --- | --- |
+| Avant | 1 | 0 | 9 | 10 |
+| Après | 0 | 0 | 9 | 9 |
+
+Les 9 vulnérabilités modérées restantes sont toutes dans la branche `devDependencies` (vitest 2.x et son écosystème, lovable-tagger, brace-expansion). Elles sont hors scope Agent 1 et devraient être traitées par Agent 2 (`@vitest/*` → 3.x) puisqu'elles ne touchent pas le bundle livré.
+
+## 6b. Smoke test des endpoints session
+
+Exécuté sur un proxy lancé en local sur le port 3099 :
+
+```text
+GET  /api/health                                        -> 200 { status: "OK", ... }
+GET  /api/auth/linkedin/me           (sans cookie)      -> 401 { authenticated: false }
+POST /api/auth/linkedin/session      (token factice)    -> 201 + Set-Cookie kora_linkedin_session
+GET  /api/auth/linkedin/me           (avec cookie)      -> 401 + cookie purgé
+                                                           (LinkedIn upstream rejette le token factice,
+                                                            la session locale est invalidée comme attendu)
+POST /api/auth/linkedin/logout       (avec cookie)      -> 204 + Set-Cookie Max-Age=0
+```
+
+Le contrat d'API est conforme à la spec :
+
+- cookie posé httpOnly + SameSite=Lax + path `/api/auth`,
+- expiration calée sur `expires_in`,
+- destruction locale + purge cookie sur `401` upstream LinkedIn.
 
 ## 7. Risques résiduels assumés à l'issue d'Agent 1
 
