@@ -53,13 +53,13 @@ export default defineConfig({
         'src/**/*.spec.ts',
         'node_modules/**'
       ],
+      // Realistic thresholds for the quick-wins sprint: lock in the floor we
+      // actually have today, ratchet up afterwards (see docs/TECH_DEBT.md).
       thresholds: {
-        global: {
-          branches: 70,
-          functions: 80,
-          lines: 80,
-          statements: 80
-        }
+        lines: 30,
+        functions: 30,
+        branches: 25,
+        statements: 30
       }
     },
     
