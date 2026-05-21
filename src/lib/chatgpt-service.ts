@@ -66,7 +66,7 @@ export class ChatGPTService {
       maxTokens: 2000,
       temperature: 0.7,
       timeout: 30000,
-      ...config
+      ...config,
     };
   }
 
@@ -77,12 +77,12 @@ export class ChatGPTService {
   public isConfigured(): boolean {
     const apiKey = this.config.apiKey;
     if (!apiKey || apiKey.length < 10) return false;
-    
+
     // En environnement de test, accepter les clés de test
     if (import.meta.env.MODE === 'test' || import.meta.env.NODE_ENV === 'test') {
       return apiKey.startsWith('sk-test-') || apiKey.startsWith('sk-');
     }
-    
+
     // En production, validation stricte
     if (!apiKey.startsWith('sk-')) return false;
     if (apiKey.length < 20) return false;
@@ -97,7 +97,7 @@ export class ChatGPTService {
   public getCacheStats(): { size: number; keys: string[] } {
     return {
       size: this.cache.size,
-      keys: Array.from(this.cache.keys())
+      keys: Array.from(this.cache.keys()),
     };
   }
 
@@ -111,7 +111,7 @@ export class ChatGPTService {
 
   public async generateContent(
     request: ContentGenerationRequest,
-    signal?: AbortSignal
+    signal?: AbortSignal,
   ): Promise<ChatGPTResponse> {
     try {
       // Validation
@@ -128,21 +128,23 @@ export class ChatGPTService {
 
       // Build system prompt
       const systemPrompt = this.buildContentSystemPrompt(request);
-      
+
       // API Call
-      const response = await this.makeAPICall({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: request.prompt }
-        ],
-        max_tokens: request.maxTokens || this.config.maxTokens,
-        temperature: this.config.temperature,
-      }, signal);
+      const response = await this.makeAPICall(
+        {
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: request.prompt },
+          ],
+          max_tokens: request.maxTokens || this.config.maxTokens,
+          temperature: this.config.temperature,
+        },
+        signal,
+      );
 
       // Cache and return
       this.setCache(cacheKey, response);
       return response;
-
     } catch (error) {
       return this.handleError(error);
     }
@@ -154,7 +156,7 @@ export class ChatGPTService {
 
   public async summarizeText(
     request: SummarizationRequest,
-    signal?: AbortSignal
+    signal?: AbortSignal,
   ): Promise<ChatGPTResponse> {
     try {
       // Validation de la longueur
@@ -175,21 +177,23 @@ export class ChatGPTService {
 
       // Build system prompt
       const systemPrompt = this.buildSummarySystemPrompt(request);
-      
+
       // API Call
-      const response = await this.makeAPICall({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Texte à résumer :\n\n${request.text}` }
-        ],
-        max_tokens: this.getMaxTokensForSummary(request.maxLength),
-        temperature: 0.3, // Plus déterministe pour les résumés
-      }, signal);
+      const response = await this.makeAPICall(
+        {
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: `Texte à résumer :\n\n${request.text}` },
+          ],
+          max_tokens: this.getMaxTokensForSummary(request.maxLength),
+          temperature: 0.3, // Plus déterministe pour les résumés
+        },
+        signal,
+      );
 
       // Cache and return
       this.setCache(cacheKey, response);
       return response;
-
     } catch (error) {
       return this.handleError(error);
     }
@@ -201,7 +205,7 @@ export class ChatGPTService {
 
   public async rewriteContent(
     request: RewriteRequest,
-    signal?: AbortSignal
+    signal?: AbortSignal,
   ): Promise<ChatGPTResponse> {
     try {
       if (!this.isConfigured()) {
@@ -217,21 +221,23 @@ export class ChatGPTService {
 
       // Build system prompt
       const systemPrompt = this.buildRewriteSystemPrompt(request);
-      
+
       // API Call
-      const response = await this.makeAPICall({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Contenu à réécrire :\n\n${request.originalContent}` }
-        ],
-        max_tokens: Math.max(request.originalContent.length * 1.5, 500),
-        temperature: 0.7,
-      }, signal);
+      const response = await this.makeAPICall(
+        {
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: `Contenu à réécrire :\n\n${request.originalContent}` },
+          ],
+          max_tokens: Math.max(request.originalContent.length * 1.5, 500),
+          temperature: 0.7,
+        },
+        signal,
+      );
 
       // Cache and return
       this.setCache(cacheKey, response);
       return response;
-
     } catch (error) {
       return this.handleError(error);
     }
@@ -241,14 +247,11 @@ export class ChatGPTService {
   // 🔧 MÉTHODES PRIVÉES
   // ========================================
 
-  private async makeAPICall(
-    requestBody: any,
-    signal?: AbortSignal
-  ): Promise<ChatGPTResponse> {
+  private async makeAPICall(requestBody: any, signal?: AbortSignal): Promise<ChatGPTResponse> {
     const response = await fetch(this.baseURL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.config.apiKey}`,
+        Authorization: `Bearer ${this.config.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -260,11 +263,13 @@ export class ChatGPTService {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`ChatGPT API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+      throw new Error(
+        `ChatGPT API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`,
+      );
     }
 
     const data = await response.json();
-    
+
     return {
       success: true,
       content: data.choices[0]?.message?.content || '',
@@ -285,11 +290,14 @@ export class ChatGPTService {
         article: `Tu es un rédacteur expert. Écris un article ${tone} de qualité pour ${audience}. Structure claire, informations précises, style fluide.`,
         email: `Tu es un expert en rédaction d'emails. Crée un email ${tone} pour ${audience}. Objet clair, contenu concis, appel à l'action efficace.`,
         blog_post: `Tu es un rédacteur de blog expérimenté. Écris un article ${tone} pour ${audience}. SEO-friendly, informatif, engageant.`,
-        thread: `Tu es un expert en threads Twitter/X. Crée un thread ${tone} pour ${audience}. Format: numérotation, contenu découpé, engagement maximal.`
-      }
+        thread: `Tu es un expert en threads Twitter/X. Crée un thread ${tone} pour ${audience}. Format: numérotation, contenu découpé, engagement maximal.`,
+      },
     };
 
-    return prompts[language]?.[request.type] || prompts.fr[request.type];
+    return (
+      (prompts as Record<string, Record<string, string>>)[language]?.[request.type] ||
+      prompts.fr[request.type as keyof typeof prompts.fr]
+    );
   }
 
   private buildSummarySystemPrompt(request: SummarizationRequest): string {
@@ -301,11 +309,14 @@ export class ChatGPTService {
       fr: {
         paragraph: `Tu es un expert en résumé. Crée un résumé ${length} en format paragraphe. Préserve les idées clés.`,
         bullet_points: `Tu es un expert en résumé. Crée un résumé ${length} en points clés. Format bullet points lisible.`,
-        key_points: `Tu es un expert en résumé. Extrais les points essentiels. Format: points clés numérotés.`
-      }
+        key_points: `Tu es un expert en résumé. Extrais les points essentiels. Format: points clés numérotés.`,
+      },
     };
 
-    return instructions[language]?.[format] || instructions.fr.paragraph;
+    return (
+      (instructions as Record<string, Record<string, string>>)[language]?.[format] ||
+      instructions.fr.paragraph
+    );
   }
 
   private buildRewriteSystemPrompt(request: RewriteRequest): string {
@@ -320,7 +331,7 @@ export class ChatGPTService {
     const limits = {
       short: 150,
       medium: 300,
-      long: 600
+      long: 600,
     };
     return limits[length as keyof typeof limits] || 300;
   }
@@ -345,7 +356,7 @@ export class ChatGPTService {
   private setCache(key: string, response: ChatGPTResponse): void {
     this.cache.set(key, {
       response,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -355,13 +366,13 @@ export class ChatGPTService {
       content: '',
       model: `ChatGPT ${this.config.model}`,
       error,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
   private handleError(error: any): ChatGPTResponse {
     let errorMessage = 'Erreur inconnue';
-    
+
     if (error.name === 'AbortError') {
       errorMessage = 'Requête interrompue (aborted)';
     } else if (error.message) {
@@ -370,4 +381,4 @@ export class ChatGPTService {
 
     return this.createErrorResponse(errorMessage);
   }
-} 
+}

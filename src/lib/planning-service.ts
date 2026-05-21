@@ -70,7 +70,7 @@ class PlanningService {
     try {
       const data = localStorage.getItem(this.STORAGE_KEY);
       if (!data) return [];
-      
+
       const posts = JSON.parse(data);
       return posts.map((post: any) => ({
         ...post,
@@ -96,39 +96,39 @@ class PlanningService {
     const posts = this.loadPosts();
     posts.push(newPost);
     this.savePosts(posts);
-    
+
     return newPost;
   }
 
   updatePost(id: string, updates: Partial<ScheduledPost>): ScheduledPost | null {
     const posts = this.loadPosts();
-    const index = posts.findIndex(p => p.id === id);
-    
+    const index = posts.findIndex((p) => p.id === id);
+
     if (index === -1) return null;
-    
+
     posts[index] = {
       ...posts[index],
       ...updates,
       updatedAt: new Date(),
     };
-    
+
     this.savePosts(posts);
     return posts[index];
   }
 
   deletePost(id: string): boolean {
     const posts = this.loadPosts();
-    const filteredPosts = posts.filter(p => p.id !== id);
-    
+    const filteredPosts = posts.filter((p) => p.id !== id);
+
     if (filteredPosts.length === posts.length) return false;
-    
+
     this.savePosts(filteredPosts);
     return true;
   }
 
   getPostsByDateRange(start: Date, end: Date): ScheduledPost[] {
     const posts = this.loadPosts();
-    return posts.filter(post => {
+    return posts.filter((post) => {
       const postDate = new Date(post.scheduledDate);
       return postDate >= start && postDate <= end;
     });
@@ -144,14 +144,14 @@ class PlanningService {
   saveWeeklyPlan(plan: WeeklyPlan): void {
     try {
       const plans = this.loadWeeklyPlans();
-      const existingIndex = plans.findIndex(p => p.id === plan.id);
-      
+      const existingIndex = plans.findIndex((p) => p.id === plan.id);
+
       if (existingIndex >= 0) {
         plans[existingIndex] = { ...plan, updatedAt: new Date() };
       } else {
         plans.push(plan);
       }
-      
+
       localStorage.setItem(this.PLANS_KEY, JSON.stringify(plans));
     } catch (error) {
       console.error('Erreur sauvegarde plan:', error);
@@ -163,7 +163,7 @@ class PlanningService {
     try {
       const data = localStorage.getItem(this.PLANS_KEY);
       if (!data) return [];
-      
+
       const plans = JSON.parse(data);
       return plans.map((plan: any) => ({
         ...plan,
@@ -208,22 +208,22 @@ class PlanningService {
     let posts = this.loadPosts();
 
     if (filters.platforms?.length) {
-      posts = posts.filter(post => filters.platforms!.includes(post.platform));
+      posts = posts.filter((post) => filters.platforms!.includes(post.platform));
     }
 
     if (filters.status?.length) {
-      posts = posts.filter(post => filters.status!.includes(post.status));
+      posts = posts.filter((post) => filters.status!.includes(post.status));
     }
 
     if (filters.dateRange) {
-      posts = posts.filter(post => {
+      posts = posts.filter((post) => {
         const postDate = new Date(post.scheduledDate);
         return postDate >= filters.dateRange!.start && postDate <= filters.dateRange!.end;
       });
     }
 
     if (filters.contentTypes?.length) {
-      posts = posts.filter(post => filters.contentTypes!.includes(post.contentType));
+      posts = posts.filter((post) => filters.contentTypes!.includes(post.contentType));
     }
 
     return posts;
@@ -232,24 +232,30 @@ class PlanningService {
   // Statistiques et analytics
   getWeeklyStats(weekStart: Date) {
     const posts = this.getPostsByWeek(weekStart);
-    
-    const platformDistribution = posts.reduce((acc, post) => {
-      acc[post.platform] = (acc[post.platform] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
 
-    const statusDistribution = posts.reduce((acc, post) => {
-      acc[post.status] = (acc[post.status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const platformDistribution = posts.reduce(
+      (acc, post) => {
+        acc[post.platform] = (acc[post.platform] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    const statusDistribution = posts.reduce(
+      (acc, post) => {
+        acc[post.status] = (acc[post.status] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     return {
       totalPosts: posts.length,
       platformDistribution,
       statusDistribution,
-      scheduledPosts: posts.filter(p => p.status === 'scheduled').length,
-      draftPosts: posts.filter(p => p.status === 'draft').length,
-      publishedPosts: posts.filter(p => p.status === 'published').length,
+      scheduledPosts: posts.filter((p) => p.status === 'scheduled').length,
+      draftPosts: posts.filter((p) => p.status === 'draft').length,
+      publishedPosts: posts.filter((p) => p.status === 'published').length,
     };
   }
 
@@ -263,29 +269,42 @@ class PlanningService {
     impact: string;
   }> {
     const posts = this.getPostsByWeek(weekStart);
-    const suggestions = [];
+    type Suggestion = {
+      type: 'content' | 'timing' | 'platform' | 'frequency';
+      priority: 'high' | 'low' | 'medium';
+      title: string;
+      description: string;
+      action: string;
+      impact: string;
+    };
+    const suggestions: Suggestion[] = [];
 
     // Vérifier la distribution des plateformes
-    const platforms = [...new Set(posts.map(p => p.platform))];
+    const platforms = [...new Set(posts.map((p) => p.platform))];
     if (platforms.length < 2) {
       suggestions.push({
         type: 'platform',
         priority: 'high' as const,
         title: 'Diversifier les plateformes',
         description: 'Vous ne publiez que sur une plateforme cette semaine',
-        action: 'Ajouter des posts sur d\'autres réseaux',
+        action: "Ajouter des posts sur d'autres réseaux",
         impact: '+30% de portée potentielle',
       });
     }
 
     // Vérifier la fréquence de publication
-    const dailyDistribution = posts.reduce((acc, post) => {
-      const day = post.scheduledDate.getDay();
-      acc[day] = (acc[day] || 0) + 1;
-      return acc;
-    }, {} as Record<number, number>);
+    const dailyDistribution = posts.reduce(
+      (acc, post) => {
+        const day = post.scheduledDate.getDay();
+        acc[day] = (acc[day] || 0) + 1;
+        return acc;
+      },
+      {} as Record<number, number>,
+    );
 
-    const emptyDays = Array.from({ length: 7 }, (_, i) => i).filter(day => !dailyDistribution[day]);
+    const emptyDays = Array.from({ length: 7 }, (_, i) => i).filter(
+      (day) => !dailyDistribution[day],
+    );
     if (emptyDays.length > 3) {
       suggestions.push({
         type: 'frequency',
@@ -293,12 +312,12 @@ class PlanningService {
         title: 'Augmenter la fréquence',
         description: `${emptyDays.length} jours sans publication cette semaine`,
         action: 'Ajouter du contenu pour les jours vides',
-        impact: '+15% d\'engagement régulier',
+        impact: "+15% d'engagement régulier",
       });
     }
 
     // Suggestions d'horaires optimaux
-    const morningPosts = posts.filter(p => {
+    const morningPosts = posts.filter((p) => {
       const hour = parseInt(p.scheduledTime.split(':')[0]);
       return hour >= 8 && hour <= 11;
     });
@@ -310,7 +329,7 @@ class PlanningService {
         title: 'Optimiser les horaires',
         description: 'Peu de posts programmés aux heures de pointe (8h-11h)',
         action: 'Décaler certains posts vers le matin',
-        impact: '+20% d\'engagement moyen',
+        impact: "+20% d'engagement moyen",
       });
     }
 
@@ -323,15 +342,21 @@ class PlanningService {
   }
 
   private calculateGoals(posts: ScheduledPost[]) {
-    const platformDistribution = posts.reduce((acc, post) => {
-      acc[post.platform] = (acc[post.platform] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const platformDistribution = posts.reduce(
+      (acc, post) => {
+        acc[post.platform] = (acc[post.platform] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
-    const contentTypeDistribution = posts.reduce((acc, post) => {
-      acc[post.contentType] = (acc[post.contentType] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const contentTypeDistribution = posts.reduce(
+      (acc, post) => {
+        acc[post.contentType] = (acc[post.contentType] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     return {
       totalPosts: posts.length,
@@ -344,32 +369,36 @@ class PlanningService {
   exportData(): string {
     const posts = this.loadPosts();
     const plans = this.loadWeeklyPlans();
-    
-    return JSON.stringify({
-      posts,
-      plans,
-      exportDate: new Date(),
-      version: '1.0',
-    }, null, 2);
+
+    return JSON.stringify(
+      {
+        posts,
+        plans,
+        exportDate: new Date(),
+        version: '1.0',
+      },
+      null,
+      2,
+    );
   }
 
   importData(jsonData: string): { success: boolean; message: string } {
     try {
       const data = JSON.parse(jsonData);
-      
+
       if (data.posts) {
         this.savePosts(data.posts);
       }
-      
+
       if (data.plans) {
         localStorage.setItem(this.PLANS_KEY, JSON.stringify(data.plans));
       }
-      
+
       return { success: true, message: 'Données importées avec succès' };
     } catch (error) {
-      return { success: false, message: 'Erreur lors de l\'import des données' };
+      return { success: false, message: "Erreur lors de l'import des données" };
     }
   }
 }
 
-export const planningService = new PlanningService(); 
+export const planningService = new PlanningService();
