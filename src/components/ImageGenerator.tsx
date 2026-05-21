@@ -2,60 +2,87 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAI } from '@/hooks/useAI';
 import { ImageRequest } from '@/lib/ai-service';
-import { RefreshCw, Download, Copy, Sparkles, Image as ImageIcon, Palette, Briefcase, Users, Lightbulb, Building, TrendingUp, Heart, GraduationCap, ShoppingCart, CheckCircle, AlertCircle } from 'lucide-react';
-import { optimizePromptForBrand, validateBrandConsistency, INDUSTRY_TEMPLATES } from '@/lib/brand-prompts';
+import {
+  RefreshCw,
+  Download,
+  Copy,
+  Sparkles,
+  Image as ImageIcon,
+  Palette,
+  Briefcase,
+  Users,
+  Lightbulb,
+  Building,
+  TrendingUp,
+  Heart,
+  GraduationCap,
+  ShoppingCart,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
+import {
+  optimizePromptForBrand,
+  validateBrandConsistency,
+  INDUSTRY_TEMPLATES,
+} from '@/lib/brand-prompts';
 
 // Templates de prompts premium pour Kora
 const PREMIUM_PROMPT_TEMPLATES = {
   business: {
     icon: <Briefcase className="w-4 h-4" />,
-    label: "Business Premium",
-    color: "bg-blue-50 border-blue-200 text-blue-700",
+    label: 'Business Premium',
+    color: 'bg-blue-50 border-blue-200 text-blue-700',
     prompts: [
       "Réunion d'affaires professionnelle dans une salle de conférence moderne en verre, équipe diversifiée de dirigeants discutant de stratégie IA, éclairage naturel, photographie ultra-réaliste, prise avec Canon EOS R5, objectif 85mm, faible profondeur de champ, élégance corporative",
-      "Espace de bureau de startup sophistiqué avec baies vitrées du sol au plafond, design minimaliste, jeunes professionnels travaillant sur ordinateurs portables, lumière naturelle du jour, style photographie architecturale, lignes épurées, matériaux premium, ultra-haute résolution",
+      'Espace de bureau de startup sophistiqué avec baies vitrées du sol au plafond, design minimaliste, jeunes professionnels travaillant sur ordinateurs portables, lumière naturelle du jour, style photographie architecturale, lignes épurées, matériaux premium, ultra-haute résolution',
       "Portrait exécutif d'un leader d'entreprise confiant dans un bureau moderne, tenue professionnelle, éclairage naturel, prise avec appareil moyen format, faible profondeur de champ, style portrait corporatif, qualité premium",
-      "Espace de coworking moderne avec design innovant, professionnels collaborant, lumière naturelle traversant de grandes fenêtres, photographie architecturale, esthétique épurée, détail ultra-réaliste, atmosphère professionnelle"
-    ]
+      'Espace de coworking moderne avec design innovant, professionnels collaborant, lumière naturelle traversant de grandes fenêtres, photographie architecturale, esthétique épurée, détail ultra-réaliste, atmosphère professionnelle',
+    ],
   },
   tech: {
     icon: <Lightbulb className="w-4 h-4" />,
-    label: "Innovation Tech",
-    color: "bg-purple-50 border-purple-200 text-purple-700",
+    label: 'Innovation Tech',
+    color: 'bg-purple-50 border-purple-200 text-purple-700',
     prompts: [
-      "Laboratoire de recherche IA futuriste avec écrans holographiques, scientifiques travaillant avec technologie avancée, éclairage cinématographique, photographie sci-fi ultra-réaliste, prise avec Sony A7R IV, objectif grand angle, atmosphère high-tech",
-      "Centre de données moderne avec serveurs et éclairage LED bleu, environnement technologique propre, photographie professionnelle, ultra-haute résolution, esthétique design industriel, atmosphère tech premium",
+      'Laboratoire de recherche IA futuriste avec écrans holographiques, scientifiques travaillant avec technologie avancée, éclairage cinématographique, photographie sci-fi ultra-réaliste, prise avec Sony A7R IV, objectif grand angle, atmosphère high-tech',
+      'Centre de données moderne avec serveurs et éclairage LED bleu, environnement technologique propre, photographie professionnelle, ultra-haute résolution, esthétique design industriel, atmosphère tech premium',
       "Atelier d'innovation avec prototypes et écrans numériques, professionnels créatifs en brainstorming, mélange éclairage naturel et artificiel, style photographie documentaire, détail ultra-réaliste, technologie de pointe",
-      "Bureau de startup tech élégant avec plusieurs moniteurs, environnement de codage, mobilier moderne, éclairage naturel, photographie d'espace de travail professionnel, qualité ultra-réaliste, atmosphère innovante"
-    ]
+      "Bureau de startup tech élégant avec plusieurs moniteurs, environnement de codage, mobilier moderne, éclairage naturel, photographie d'espace de travail professionnel, qualité ultra-réaliste, atmosphère innovante",
+    ],
   },
   lifestyle: {
     icon: <Users className="w-4 h-4" />,
-    label: "Lifestyle Premium",
-    color: "bg-emerald-50 border-emerald-200 text-emerald-700",
+    label: 'Lifestyle Premium',
+    color: 'bg-emerald-50 border-emerald-200 text-emerald-700',
     prompts: [
-      "Professionnel élégant travaillant depuis un bureau à domicile de luxe, éclairage naturel, photographie lifestyle, prise avec Leica Q2, design intérieur premium, détail ultra-réaliste, atmosphère sophistiquée",
-      "Café moderne avec professionnels en networking, éclairage naturel, photographie documentaire lifestyle, interactions authentiques, qualité ultra-haute, environnement social premium",
+      'Professionnel élégant travaillant depuis un bureau à domicile de luxe, éclairage naturel, photographie lifestyle, prise avec Leica Q2, design intérieur premium, détail ultra-réaliste, atmosphère sophistiquée',
+      'Café moderne avec professionnels en networking, éclairage naturel, photographie documentaire lifestyle, interactions authentiques, qualité ultra-haute, environnement social premium',
       "Déjeuner d'affaires haut de gamme dans un restaurant moderne, professionnels discutant d'affaires, éclairage naturel, photographie lifestyle, détail ultra-réaliste, atmosphère de restauration sophistiquée",
-      "Espace de coworking premium avec professionnels diversifiés, design moderne, éclairage naturel, photographie lifestyle, environnement de travail authentique, ultra-haute résolution"
-    ]
+      'Espace de coworking premium avec professionnels diversifiés, design moderne, éclairage naturel, photographie lifestyle, environnement de travail authentique, ultra-haute résolution',
+    ],
   },
   creative: {
     icon: <Palette className="w-4 h-4" />,
-    label: "Créatif Premium",
-    color: "bg-pink-50 border-pink-200 text-pink-700",
+    label: 'Créatif Premium',
+    color: 'bg-pink-50 border-pink-200 text-pink-700',
     prompts: [
       "Session de brainstorming d'agence créative, espace studio moderne, éclairage naturel, style photographie documentaire, processus créatif authentique, détail ultra-réaliste, atmosphère artistique",
       "Designer travaillant sur projets numériques, plusieurs écrans, espace de travail moderne, éclairage naturel et d'écran, photographie professionnelle, qualité ultra-haute, environnement créatif",
-      "Directeur artistique présentant concepts dans studio moderne, configuration de présentation professionnelle, éclairage naturel, style photographie corporative, détail ultra-réaliste, leadership créatif",
-      "Laboratoire d'innovation avec prototypes créatifs, espace de design thinking moderne, éclairage naturel, photographie architecturale, ultra-haute résolution, environnement créatif premium"
-    ]
-  }
+      'Directeur artistique présentant concepts dans studio moderne, configuration de présentation professionnelle, éclairage naturel, style photographie corporative, détail ultra-réaliste, leadership créatif',
+      "Laboratoire d'innovation avec prototypes créatifs, espace de design thinking moderne, éclairage naturel, photographie architecturale, ultra-haute résolution, environnement créatif premium",
+    ],
+  },
 };
 
 const ImageGenerator = () => {
@@ -64,16 +91,16 @@ const ImageGenerator = () => {
   const [quality, setQuality] = useState<'standard' | 'hd'>('hd'); // HD par défaut pour premium
   const [style, setStyle] = useState<'vivid' | 'natural'>('natural'); // Natural par défaut pour réalisme
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedIndustry, setSelectedIndustry] = useState<string>('');
-  
+  const [, setSelectedIndustry] = useState<string>('');
+
   const { toast } = useToast();
-  const { 
-    generateImage, 
-    isGeneratingImage, 
-    lastImageResponse, 
-    imageError, 
+  const {
+    generateImage,
+    isGeneratingImage,
+    lastImageResponse,
+    imageError,
     imageHistory,
-    clearImageHistory 
+    clearImageHistory,
   } = useAI();
 
   // Validation de la cohérence de marque en temps réel
@@ -82,16 +109,16 @@ const ImageGenerator = () => {
   const handleGenerate = async () => {
     if (!prompt.trim()) {
       toast({
-        title: "Description requise",
+        title: 'Description requise',
         description: "Veuillez décrire l'image que vous souhaitez créer",
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
 
     try {
-      console.log('🎨 Génération d\'image demandée:', { prompt, size, quality, style });
-      
+      console.log("🎨 Génération d'image demandée:", { prompt, size, quality, style });
+
       const request: ImageRequest = {
         prompt: prompt.trim(),
         size,
@@ -100,16 +127,16 @@ const ImageGenerator = () => {
       };
 
       await generateImage(request);
-      
+
       toast({
-        title: "Image générée avec succès !",
-        description: "Votre image premium a été créée par DALL-E 3",
+        title: 'Image générée avec succès !',
+        description: 'Votre image premium a été créée par DALL-E 3',
       });
     } catch (error) {
       toast({
-        title: "Erreur de génération",
-        description: error instanceof Error ? error.message : "Une erreur est survenue",
-        variant: "destructive",
+        title: 'Erreur de génération',
+        description: error instanceof Error ? error.message : 'Une erreur est survenue',
+        variant: 'destructive',
       });
     }
   };
@@ -126,16 +153,16 @@ const ImageGenerator = () => {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      
+
       toast({
-        title: "Image téléchargée",
+        title: 'Image téléchargée',
         description: "L'image premium a été sauvegardée sur votre appareil",
       });
     } catch (error) {
       toast({
-        title: "Erreur de téléchargement",
+        title: 'Erreur de téléchargement',
         description: "Impossible de télécharger l'image",
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
   };
@@ -143,7 +170,7 @@ const ImageGenerator = () => {
   const handleCopyUrl = (imageUrl: string) => {
     navigator.clipboard.writeText(imageUrl);
     toast({
-      title: "URL copiée",
+      title: 'URL copiée',
       description: "L'URL de l'image a été copiée dans le presse-papiers",
     });
   };
@@ -151,9 +178,9 @@ const ImageGenerator = () => {
   const handleUseTemplate = (templatePrompt: string, category: string) => {
     setPrompt(templatePrompt);
     setSelectedCategory(category);
-    
+
     toast({
-      title: "Modèle appliqué",
+      title: 'Modèle appliqué',
       description: `Prompt premium ${PREMIUM_PROMPT_TEMPLATES[category as keyof typeof PREMIUM_PROMPT_TEMPLATES].label} chargé`,
     });
   };
@@ -161,9 +188,9 @@ const ImageGenerator = () => {
   const handleUseIndustryTemplate = (industryPrompt: string, industry: string) => {
     setPrompt(industryPrompt);
     setSelectedIndustry(industry);
-    
+
     toast({
-      title: "Modèle secteur appliqué",
+      title: 'Modèle secteur appliqué',
       description: `Prompt ${INDUSTRY_TEMPLATES[industry as keyof typeof INDUSTRY_TEMPLATES].name} chargé`,
     });
   };
@@ -171,9 +198,9 @@ const ImageGenerator = () => {
   const handleOptimizeForBrand = () => {
     if (!prompt.trim()) {
       toast({
-        title: "Description requise",
+        title: 'Description requise',
         description: "Ajoutez d'abord une description de base",
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
@@ -182,10 +209,10 @@ const ImageGenerator = () => {
     setPrompt(optimizedPrompt);
     setQuality('hd');
     setStyle('natural');
-    
+
     toast({
-      title: "Prompt optimisé pour Kora",
-      description: "Paramètres premium appliqués pour un rendu professionnel",
+      title: 'Prompt optimisé pour Kora',
+      description: 'Paramètres premium appliqués pour un rendu professionnel',
     });
   };
 
@@ -209,9 +236,11 @@ const ImageGenerator = () => {
               <span className="text-white font-bold text-sm">K</span>
             </div>
             <div className="flex-1">
-              <p className="text-purple-600 font-medium text-sm">Kora - Créatrice d'Images Premium</p>
+              <p className="text-purple-600 font-medium text-sm">
+                Kora - Créatrice d'Images Premium
+              </p>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Je crée des visuels ultra-réalistes qui reflètent l'excellence de votre marque. 
+                Je crée des visuels ultra-réalistes qui reflètent l'excellence de votre marque.
                 Utilisez nos modèles premium ou décrivez votre vision !
               </p>
               {imageError && (
@@ -230,7 +259,10 @@ const ImageGenerator = () => {
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {Object.entries(INDUSTRY_TEMPLATES).map(([key, industry]) => (
-                <div key={key} className="p-3 rounded-lg border bg-blue-50 border-blue-200 text-blue-700 hover:shadow-md transition-all duration-200">
+                <div
+                  key={key}
+                  className="p-3 rounded-lg border bg-blue-50 border-blue-200 text-blue-700 hover:shadow-md transition-all duration-200"
+                >
                   <div className="flex items-center space-x-2 mb-2">
                     {key === 'consulting' && <Briefcase className="w-4 h-4" />}
                     {key === 'fintech' && <TrendingUp className="w-4 h-4" />}
@@ -263,7 +295,10 @@ const ImageGenerator = () => {
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {Object.entries(PREMIUM_PROMPT_TEMPLATES).map(([key, category]) => (
-                <div key={key} className={`p-3 rounded-lg border ${category.color} hover:shadow-md transition-all duration-200`}>
+                <div
+                  key={key}
+                  className={`p-3 rounded-lg border ${category.color} hover:shadow-md transition-all duration-200`}
+                >
                   <div className="flex items-center space-x-2 mb-2">
                     {category.icon}
                     <span className="font-medium text-sm">{category.label}</span>
@@ -296,7 +331,7 @@ const ImageGenerator = () => {
               className="min-h-[120px] resize-none"
               maxLength={1000}
             />
-            
+
             {/* Validation de la cohérence de marque */}
             {prompt && (
               <div className="flex items-center space-x-2 text-xs">
@@ -308,12 +343,14 @@ const ImageGenerator = () => {
                 ) : (
                   <div className="flex items-center space-x-1 text-orange-600">
                     <AlertCircle className="w-3 h-3" />
-                    <span>Cohérence: {brandValidation.score.toFixed(0)}% - Optimisation recommandée</span>
+                    <span>
+                      Cohérence: {brandValidation.score.toFixed(0)}% - Optimisation recommandée
+                    </span>
                   </div>
                 )}
               </div>
             )}
-            
+
             <div className="flex justify-between items-center text-xs text-slate-500">
               <span>{prompt.length}/1000 caractères</span>
               <div className="flex space-x-2">
@@ -375,7 +412,7 @@ const ImageGenerator = () => {
 
           {/* Boutons d'action */}
           <div className="flex space-x-2">
-            <Button 
+            <Button
               onClick={handleGenerate}
               disabled={isGeneratingImage || !prompt.trim()}
               className="bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 disabled:opacity-50 flex-1"
@@ -392,13 +429,9 @@ const ImageGenerator = () => {
                 </>
               )}
             </Button>
-            
+
             {imageHistory.length > 0 && (
-              <Button
-                onClick={clearImageHistory}
-                variant="outline"
-                className="border-slate-300"
-              >
+              <Button onClick={clearImageHistory} variant="outline" className="border-slate-300">
                 Effacer
               </Button>
             )}
@@ -435,7 +468,7 @@ const ImageGenerator = () => {
                     className="w-full rounded-lg shadow-lg"
                     style={{ maxHeight: '512px', objectFit: 'contain' }}
                   />
-                  
+
                   {/* Overlay avec actions */}
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <div className="flex space-x-2">
@@ -476,10 +509,12 @@ const ImageGenerator = () => {
                       {new Date(lastImageResponse.timestamp).toLocaleString('fr-FR')}
                     </span>
                   </div>
-                  
+
                   {lastImageResponse.revisedPrompt && (
                     <div className="space-y-1">
-                      <span className="text-slate-600 text-sm">Description optimisée par DALL-E 3:</span>
+                      <span className="text-slate-600 text-sm">
+                        Description optimisée par DALL-E 3:
+                      </span>
                       <p className="text-slate-800 text-sm bg-white p-2 rounded border">
                         {lastImageResponse.revisedPrompt}
                       </p>
@@ -514,7 +549,9 @@ const ImageGenerator = () => {
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <div className="flex space-x-1">
                       <Button
-                        onClick={() => handleDownload(image.imageUrl, `kora-image-${index + 1}.png`)}
+                        onClick={() =>
+                          handleDownload(image.imageUrl, `kora-image-${index + 1}.png`)
+                        }
                         size="sm"
                         className="bg-white text-slate-700 hover:bg-slate-100"
                       >
@@ -545,4 +582,4 @@ const ImageGenerator = () => {
   );
 };
 
-export default ImageGenerator; 
+export default ImageGenerator;

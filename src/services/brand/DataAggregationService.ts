@@ -668,7 +668,7 @@ Utilise des données mesurables et des sources fiables.`;
     const years = ['2022', '2023', '2024'];
     const baseShare = this.extractMarketShare(content);
 
-    years.forEach((year, index) => {
+    years.forEach((year) => {
       historicalData.push({
         period: year,
         share: baseShare + (Math.random() * 6 - 3), // Variation de ±3%

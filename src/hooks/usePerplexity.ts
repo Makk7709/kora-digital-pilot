@@ -45,7 +45,7 @@ interface UsePerplexityReturn extends UsePerplexityState {
 }
 
 // Données de simulation pour le mode démo
-const generateSimulatedResponse = (topic: string, contentType: string): PerplexityResponse => {
+const generateSimulatedResponse = (topic: string, _query?: string): PerplexityResponse => {
   const simulatedContent = {
     'Tendances IA 2025': `🚀 **Tendances IA 2025 : Ce qui va révolutionner votre business**
 

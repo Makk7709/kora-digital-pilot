@@ -4,7 +4,7 @@
  * UX Premium - Recherche Perplexity masquée - Ready Production
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -35,13 +35,9 @@ import {
   Heart,
   BookOpen,
   Sparkles,
-  Filter,
-  SortDesc,
-  ExternalLink,
-  RefreshCw
 } from 'lucide-react';
 
-import { useBusinessIntelligence, DomainSearchResult, DomainTrend } from '../hooks/useBusinessIntelligence';
+import { useBusinessIntelligence, DomainTrend } from '../hooks/useBusinessIntelligence';
 import { useToast } from '../hooks/use-toast';
 
 // === SUGGESTIONS DE DOMAINES POPULAIRES ===
@@ -53,7 +49,7 @@ const POPULAR_DOMAINS = [
   { name: 'EdTech', icon: BookOpen, color: 'from-orange-500 to-yellow-500' },
   { name: 'FoodTech', icon: Sparkles, color: 'from-green-500 to-lime-500' },
   { name: 'PropTech', icon: Target, color: 'from-indigo-500 to-purple-500' },
-  { name: 'GreenTech', icon: Eye, color: 'from-emerald-500 to-green-500' }
+  { name: 'GreenTech', icon: Eye, color: 'from-emerald-500 to-green-500' },
 ];
 
 export const CommunityManagerDomainDashboard: React.FC = () => {
@@ -71,17 +67,17 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
   // === VALIDATION RECHERCHE ===
   const validateSearch = (query: string): boolean => {
     const trimmedQuery = query.trim();
-    
+
     if (!trimmedQuery) {
-      setValidationError('Le domaine d\'activité est requis');
+      setValidationError("Le domaine d'activité est requis");
       return false;
     }
-    
+
     if (trimmedQuery.length < 3) {
       setValidationError('Le domaine doit contenir au moins 3 caractères');
       return false;
     }
-    
+
     setValidationError(null);
     return true;
   };
@@ -93,14 +89,14 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
     try {
       setSearchProgress(0);
       const progressInterval = setInterval(() => {
-        setSearchProgress(prev => Math.min(prev + 10, 90));
+        setSearchProgress((prev) => Math.min(prev + 10, 90));
       }, 200);
 
       await businessIntel.searchByDomain(searchQuery);
-      
+
       clearInterval(progressInterval);
       setSearchProgress(100);
-      
+
       setTimeout(() => setSearchProgress(0), 1000);
     } catch (error) {
       console.error('Erreur de recherche:', error);
@@ -123,17 +119,20 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
   // === FILTRAGE DES TENDANCES ===
   const getFilteredTrends = () => {
     if (!businessIntel.currentResult) return [];
-    
+
     const trends = businessIntel.currentResult.trends;
     if (filterType === 'all') return trends;
-    return trends.filter(trend => trend.impact === filterType);
+    return trends.filter((trend) => trend.impact === filterType);
   };
 
   // === COMPOSANTS UI ===
   const LoaderOverlay = () => (
     <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
       <div className="text-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-3" data-testid="search-loader" />
+        <Loader2
+          className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-3"
+          data-testid="search-loader"
+        />
         <p className="text-sm font-medium text-slate-700">Notre IA carbure à fond ! ⚡</p>
         <p className="text-xs text-slate-500 mt-1">🧠 Décryptage sectoriel en cours...</p>
         {searchProgress > 0 && (
@@ -160,7 +159,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
           </div>
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {/* Zone de recherche principale */}
         <div className="space-y-3">
@@ -176,8 +175,8 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
               }}
               onKeyPress={(e) => e.key === 'Enter' && !businessIntel.isLoading && handleSearch()}
               className={`pl-12 pr-4 h-14 text-base bg-white border-2 transition-all duration-300 mobile-optimized ${
-                validationError 
-                  ? 'border-red-300 focus:border-red-500' 
+                validationError
+                  ? 'border-red-300 focus:border-red-500'
                   : 'border-slate-200 focus:border-blue-500 hover:border-slate-300'
               }`}
               disabled={businessIntel.isLoading}
@@ -199,7 +198,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
               )}
             </Button>
           </div>
-          
+
           {validationError && (
             <p className="text-sm text-red-600 flex items-center gap-2 bg-red-50 p-3 rounded-lg border border-red-200">
               <AlertCircle className="h-4 w-4" />
@@ -221,7 +220,9 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
                   onClick={() => handleSuggestionClick(domain.name)}
                   className="h-auto p-4 flex flex-col items-center gap-2 hover:shadow-md transition-all duration-300 border-2 hover:border-blue-200"
                 >
-                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${domain.color} flex items-center justify-center`}>
+                  <div
+                    className={`w-8 h-8 rounded-lg bg-gradient-to-br ${domain.color} flex items-center justify-center`}
+                  >
                     <IconComponent className="h-4 w-4 text-white" />
                   </div>
                   <span className="text-xs font-medium text-center">{domain.name}</span>
@@ -260,7 +261,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
           </div>
         )}
       </CardContent>
-      
+
       {businessIntel.isLoading && <LoaderOverlay />}
     </Card>
   );
@@ -329,14 +330,20 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
         {/* Grille de cartes principales */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 grid-cols-1">
           {/* Carte Vue d'ensemble */}
-          <Card data-testid="domain-overview-card" className="hover:shadow-lg transition-shadow duration-300">
+          <Card
+            data-testid="domain-overview-card"
+            className="hover:shadow-lg transition-shadow duration-300"
+          >
             <CardHeader className="pb-4 border-b border-slate-100">
               <CardTitle className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
                   <BarChart3 className="h-5 w-5 text-blue-600" />
                 </div>
                 <span>Vue d'ensemble</span>
-                <Badge variant="outline" className="ml-auto border-blue-200 text-blue-700 bg-blue-50">
+                <Badge
+                  variant="outline"
+                  className="ml-auto border-blue-200 text-blue-700 bg-blue-50"
+                >
                   Marché
                 </Badge>
               </CardTitle>
@@ -352,7 +359,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
                   <p className="text-sm text-slate-600">Croissance</p>
                 </div>
               </div>
-              
+
               <div>
                 <p className="text-sm font-medium text-slate-700 mb-2">Acteurs principaux</p>
                 <div className="flex flex-wrap gap-2">
@@ -366,7 +373,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
 
               <div>
                 <p className="text-sm font-medium text-slate-700 mb-2">Maturité du secteur</p>
-                <Badge 
+                <Badge
                   variant={result.overview.maturity === 'growth' ? 'default' : 'secondary'}
                   className="capitalize"
                 >
@@ -377,7 +384,10 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
           </Card>
 
           {/* Carte Tendances */}
-          <Card data-testid="trends-card" className="hover:shadow-lg transition-shadow duration-300">
+          <Card
+            data-testid="trends-card"
+            className="hover:shadow-lg transition-shadow duration-300"
+          >
             <CardHeader className="pb-4 border-b border-slate-100">
               <CardTitle className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center">
@@ -395,7 +405,10 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
                     <option value="medium">Impact moyen</option>
                     <option value="low">Impact faible</option>
                   </select>
-                  <Badge variant="outline" className="border-purple-200 text-purple-700 bg-purple-50">
+                  <Badge
+                    variant="outline"
+                    className="border-purple-200 text-purple-700 bg-purple-50"
+                  >
                     {filteredTrends.length}
                   </Badge>
                 </div>
@@ -426,10 +439,20 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
                             {trend.title}
                           </h4>
                           <Badge
-                            variant={trend.impact === 'high' ? 'destructive' : trend.impact === 'medium' ? 'default' : 'secondary'}
+                            variant={
+                              trend.impact === 'high'
+                                ? 'destructive'
+                                : trend.impact === 'medium'
+                                  ? 'default'
+                                  : 'secondary'
+                            }
                             className="text-xs shrink-0"
                           >
-                            {trend.impact === 'high' ? 'Élevé' : trend.impact === 'medium' ? 'Moyen' : 'Faible'}
+                            {trend.impact === 'high'
+                              ? 'Élevé'
+                              : trend.impact === 'medium'
+                                ? 'Moyen'
+                                : 'Faible'}
                           </Badge>
                         </div>
                         {trend.description && (
@@ -453,14 +476,20 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
           </Card>
 
           {/* Carte Opportunités */}
-          <Card data-testid="opportunities-card" className="hover:shadow-lg transition-shadow duration-300">
+          <Card
+            data-testid="opportunities-card"
+            className="hover:shadow-lg transition-shadow duration-300"
+          >
             <CardHeader className="pb-4 border-b border-slate-100">
               <CardTitle className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center">
                   <Target className="h-5 w-5 text-green-600" />
                 </div>
                 <span>Opportunités</span>
-                <Badge variant="outline" className="ml-auto border-green-200 text-green-700 bg-green-50">
+                <Badge
+                  variant="outline"
+                  className="ml-auto border-green-200 text-green-700 bg-green-50"
+                >
                   {result.opportunities.length}
                 </Badge>
               </CardTitle>
@@ -478,20 +507,28 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
                           {opportunity.title}
                         </h4>
                         <Badge
-                          variant={opportunity.difficulty === 'easy' ? 'default' : opportunity.difficulty === 'medium' ? 'secondary' : 'destructive'}
+                          variant={
+                            opportunity.difficulty === 'easy'
+                              ? 'default'
+                              : opportunity.difficulty === 'medium'
+                                ? 'secondary'
+                                : 'destructive'
+                          }
                           className="text-xs"
                         >
-                          {opportunity.difficulty === 'easy' ? 'Facile' : opportunity.difficulty === 'medium' ? 'Moyen' : 'Difficile'}
+                          {opportunity.difficulty === 'easy'
+                            ? 'Facile'
+                            : opportunity.difficulty === 'medium'
+                              ? 'Moyen'
+                              : 'Difficile'}
                         </Badge>
                       </div>
-                      <p className="text-sm text-slate-600 mb-3">
-                        {opportunity.description}
-                      </p>
+                      <p className="text-sm text-slate-600 mb-3">{opportunity.description}</p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-slate-500">Potentiel:</span>
                           <div className="w-16 bg-slate-200 rounded-full h-2">
-                            <div 
+                            <div
                               className="bg-green-500 h-2 rounded-full"
                               style={{ width: `${opportunity.potential}%` }}
                             />
@@ -508,14 +545,20 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
           </Card>
 
           {/* Carte Insights */}
-          <Card data-testid="insights-card" className="hover:shadow-lg transition-shadow duration-300">
+          <Card
+            data-testid="insights-card"
+            className="hover:shadow-lg transition-shadow duration-300"
+          >
             <CardHeader className="pb-4 border-b border-slate-100">
               <CardTitle className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center">
                   <Lightbulb className="h-5 w-5 text-orange-600" />
                 </div>
                 <span>Insights</span>
-                <Badge variant="outline" className="ml-auto border-orange-200 text-orange-700 bg-orange-50">
+                <Badge
+                  variant="outline"
+                  className="ml-auto border-orange-200 text-orange-700 bg-orange-50"
+                >
                   {result.insights.length}
                 </Badge>
               </CardTitle>
@@ -529,16 +572,17 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
                       className="border border-slate-200 rounded-xl p-4 hover:border-orange-300 hover:shadow-md transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50"
                     >
                       <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold text-slate-900 text-sm">
-                          {insight.title}
-                        </h4>
+                        <h4 className="font-semibold text-slate-900 text-sm">{insight.title}</h4>
                         <Badge
                           variant="outline"
                           className={`text-xs ${
-                            insight.type === 'market' ? 'border-blue-200 text-blue-700 bg-blue-50' :
-                            insight.type === 'technology' ? 'border-purple-200 text-purple-700 bg-purple-50' :
-                            insight.type === 'regulation' ? 'border-red-200 text-red-700 bg-red-50' :
-                            'border-green-200 text-green-700 bg-green-50'
+                            insight.type === 'market'
+                              ? 'border-blue-200 text-blue-700 bg-blue-50'
+                              : insight.type === 'technology'
+                                ? 'border-purple-200 text-purple-700 bg-purple-50'
+                                : insight.type === 'regulation'
+                                  ? 'border-red-200 text-red-700 bg-red-50'
+                                  : 'border-green-200 text-green-700 bg-green-50'
                           }`}
                         >
                           {insight.type}
@@ -571,7 +615,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <h3 className="font-semibold text-red-900 mb-2">Erreur d'analyse</h3>
           <p className="text-red-700 mb-4">Impossible d'analyser ce domaine</p>
-          
+
           {/* Suggestions de domaines similaires */}
           <div data-testid="similar-domains">
             <p className="text-sm text-red-600 mb-3">Domaines similaires suggérés:</p>
@@ -607,23 +651,29 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
         {selectedTrend && (
           <div className="space-y-4">
             <div>
-              <h3 className="font-semibold text-lg text-slate-900 mb-2">
-                {selectedTrend.title}
-              </h3>
-              <p className="text-slate-600 leading-relaxed">
-                {selectedTrend.description}
-              </p>
+              <h3 className="font-semibold text-lg text-slate-900 mb-2">{selectedTrend.title}</h3>
+              <p className="text-slate-600 leading-relaxed">{selectedTrend.description}</p>
             </div>
-            
+
             <Separator />
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm font-medium text-slate-700 mb-1">Impact</p>
                 <Badge
-                  variant={selectedTrend.impact === 'high' ? 'destructive' : selectedTrend.impact === 'medium' ? 'default' : 'secondary'}
+                  variant={
+                    selectedTrend.impact === 'high'
+                      ? 'destructive'
+                      : selectedTrend.impact === 'medium'
+                        ? 'default'
+                        : 'secondary'
+                  }
                 >
-                  {selectedTrend.impact === 'high' ? 'Élevé' : selectedTrend.impact === 'medium' ? 'Moyen' : 'Faible'}
+                  {selectedTrend.impact === 'high'
+                    ? 'Élevé'
+                    : selectedTrend.impact === 'medium'
+                      ? 'Moyen'
+                      : 'Faible'}
                 </Badge>
               </div>
               <div>
@@ -634,7 +684,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
                 <p className="text-sm font-medium text-slate-700 mb-1">Confiance</p>
                 <div className="flex items-center gap-2">
                   <div className="w-20 bg-slate-200 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-blue-500 h-2 rounded-full"
                       style={{ width: `${selectedTrend.confidence}%` }}
                     />
@@ -662,8 +712,8 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
             Intelligence Sectorielle
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Analysez n'importe quel domaine d'activité et découvrez les tendances, 
-            opportunités et insights qui comptent pour votre stratégie.
+            Analysez n'importe quel domaine d'activité et découvrez les tendances, opportunités et
+            insights qui comptent pour votre stratégie.
           </p>
         </div>
 
@@ -679,4 +729,4 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
       </div>
     </div>
   );
-}; 
+};

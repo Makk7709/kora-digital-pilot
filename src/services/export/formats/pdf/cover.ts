@@ -2,7 +2,7 @@
 // Extraite du module principal pour réduire sa taille.
 
 import type jsPDF from 'jspdf';
-import { BRAND_COLORS, PDF_DIMENSIONS } from './styles';
+import { BRAND_COLORS } from './styles';
 import { addGradientToPDF } from './utils';
 
 interface CoverReport {
@@ -12,7 +12,6 @@ interface CoverReport {
 export function addPageDeGarde(pdf: jsPDF, report: CoverReport): void {
   const pageWidth = pdf.internal.pageSize.width;
   const pageHeight = pdf.internal.pageSize.height;
-  const margin = PDF_DIMENSIONS.margin;
   let currentY = 50;
 
   addGradientToPDF(

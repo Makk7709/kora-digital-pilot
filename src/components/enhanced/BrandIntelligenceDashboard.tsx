@@ -4,7 +4,7 @@
  * Respect total des exigences TDD - Interface optimisée pour l'utilité
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -12,17 +12,16 @@ import { Progress } from '../ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  AlertTriangle, 
+import {
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
   CheckCircle,
   Target,
   BarChart3,
   Users,
   MessageSquare,
   Lightbulb,
-  Zap,
   Shield,
   Clock,
   DollarSign,
@@ -35,29 +34,23 @@ import {
   Sparkles,
   Star,
   Globe,
-  TrendingDown as TrendDown,
-  Download,
-  Loader2
+  TrendingDown as Download,
+  Loader2,
 } from 'lucide-react';
 
 import { RealBrandIntelligenceService } from '../../services/RealBrandIntelligenceService';
-import type { 
+import type {
   DeepResearchReport,
   SWOTMetrics,
   ContentMetrics,
   CompetitiveMetrics,
-  ReputationKPIs,
   ActionableRecommendation,
   SmartAlerts,
-  ExportOptions
+  ExportOptions,
 } from '../../types/BrandIntelligenceTypes';
 
 // ✅ SERVICES D'EXPORT - Version réelle
-import { 
-  ReportExportOrchestrator,
-  ExportHistoryItem,
-  createReportExportService 
-} from '../../services/export';
+import { createReportExportService } from '../../services/export';
 
 interface Props {
   brandName: string;
@@ -81,9 +74,11 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
   const [rawPerplexityData, setRawPerplexityData] = useState<PerplexityRawData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('rapport-kora');
-  
+
   // 🔧 FIX: Utiliser le service Perplexity configuré au lieu de créer un nouveau
-  const [service] = useState(() => RealBrandIntelligenceService.withPerplexityService(perplexityService));
+  const [service] = useState(() =>
+    RealBrandIntelligenceService.withPerplexityService(perplexityService),
+  );
   const [exportService] = useState(() => createReportExportService());
 
   // === GÉNÉRATION DU RAPPORT ===
@@ -99,22 +94,23 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
     try {
       // 1. Appels directs à Perplexity pour capturer le contenu brut
       console.log('🚀 Génération Rapport Kora pour:', brandName);
-      
-      const [objectiveResponse, strategicResponse, competitiveResponse, trendResponse] = await Promise.all([
-        perplexityService.getBusinessInsights({
-          query: `Analyse objective complète de ${brandName}: histoire de l'entreprise, position sur le marché, santé financière récente, indices d'innovation, réputation. Incluez des données factuelles avec sources vérifiables.`,
-          context: 'Analyse factuelle et objective'
-        }),
-        perplexityService.getBusinessInsights({
-          query: `Analyse stratégique approfondie de ${brandName}: stratégie principale, marchés cibles, avantages concurrentiels, direction future, risques majeurs, priorités stratégiques, modèle économique.`,
-          context: 'Analyse stratégique approfondie'
-        }),
-        perplexityService.getCompetitorAnalysis([brandName], `marché de ${brandName}`),
-        perplexityService.getBusinessInsights({
-          query: `Tendances émergentes et signaux faibles affectant ${brandName}: disruptions sectorielles, nouvelles opportunités, menaces émergentes, évolutions technologiques, changements réglementaires.`,
-          context: 'Détection tendances et signaux'
-        })
-      ]);
+
+      const [objectiveResponse, strategicResponse, competitiveResponse, trendResponse] =
+        await Promise.all([
+          perplexityService.getBusinessInsights({
+            query: `Analyse objective complète de ${brandName}: histoire de l'entreprise, position sur le marché, santé financière récente, indices d'innovation, réputation. Incluez des données factuelles avec sources vérifiables.`,
+            context: 'Analyse factuelle et objective',
+          }),
+          perplexityService.getBusinessInsights({
+            query: `Analyse stratégique approfondie de ${brandName}: stratégie principale, marchés cibles, avantages concurrentiels, direction future, risques majeurs, priorités stratégiques, modèle économique.`,
+            context: 'Analyse stratégique approfondie',
+          }),
+          perplexityService.getCompetitorAnalysis([brandName], `marché de ${brandName}`),
+          perplexityService.getBusinessInsights({
+            query: `Tendances émergentes et signaux faibles affectant ${brandName}: disruptions sectorielles, nouvelles opportunités, menaces émergentes, évolutions technologiques, changements réglementaires.`,
+            context: 'Détection tendances et signaux',
+          }),
+        ]);
 
       // 2. Stocker les données brutes pour le Rapport Kora
       const rawData: PerplexityRawData = {
@@ -126,16 +122,16 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
           ...(objectiveResponse?.sources || []),
           ...(strategicResponse?.sources || []),
           ...(competitiveResponse?.sources || []),
-          ...(trendResponse?.sources || [])
-        ]
+          ...(trendResponse?.sources || []),
+        ],
       };
-      
+
       setRawPerplexityData(rawData);
 
       // 3. Générer le rapport structuré pour les autres onglets
       const newReport = await service.generateRealDeepResearchReport(brandName);
       setReport(newReport);
-      
+
       console.log('✅ Rapport Kora généré avec succès:', { report: newReport, rawData });
     } catch (err: any) {
       setError(err.message);
@@ -148,9 +144,9 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
   // === EXPORT DU RAPPORT PREMIUM ===
   const exportReport = async (format: 'json' | 'csv' | 'excel' | 'pdf') => {
     const dataToExport = report || rawPerplexityData;
-    
+
     if (!dataToExport) {
-      setError('Aucun rapport à exporter. Générez d\'abord un rapport.');
+      setError("Aucun rapport à exporter. Générez d'abord un rapport.");
       return;
     }
 
@@ -159,7 +155,7 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
 
     try {
       console.log(`🚀 Export du rapport en format ${format.toUpperCase()}...`);
-      
+
       // Préparation des données d'export enrichies
       let exportData: any = dataToExport;
       if (rawPerplexityData && !report) {
@@ -172,40 +168,42 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
           strategicAnalysis: rawPerplexityData.strategicAnalysis,
           competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
           trendAnalysis: rawPerplexityData.trendAnalysis,
-          sources: rawPerplexityData.sources
+          sources: rawPerplexityData.sources,
         };
       }
-      
+
       let result;
-      
+
       // === GESTION PRODUCTION POUR PDF ===
       if (format === 'pdf') {
         console.log('📄 Export PDF P.R.I.S.M - Version Production...');
-        
+
         try {
           // 🎯 PRODUCTION EXPORT SERVICE - Service réel uniquement
           console.log('🎯 Initialisation Production Export Service...');
           const productionExportService = createReportExportService();
-          
+
           // 🔥 ENRICHISSEMENT DONNÉES PRODUCTION
           const enrichedData = {
             ...exportData,
             brandName: brandName || 'Marque analysée',
-            fullContent: rawPerplexityData ? {
-              objectiveAnalysis: rawPerplexityData.objectiveAnalysis,
-              strategicAnalysis: rawPerplexityData.strategicAnalysis,
-              competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
-              trendAnalysis: rawPerplexityData.trendAnalysis
-            } : null,
+            fullContent: rawPerplexityData
+              ? {
+                  objectiveAnalysis: rawPerplexityData.objectiveAnalysis,
+                  strategicAnalysis: rawPerplexityData.strategicAnalysis,
+                  competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
+                  trendAnalysis: rawPerplexityData.trendAnalysis,
+                }
+              : null,
             metadata: {
               generatedBy: 'Kora P.R.I.S.M Production',
               analysisDepth: 'Professional',
               dataSource: 'Perplexity AI + Kora Processing',
               timestamp: new Date().toISOString(),
-              qualityAssurance: 'Production Grade'
-            }
+              qualityAssurance: 'Production Grade',
+            },
           };
-          
+
           // 🚀 CONFIGURATION PRODUCTION OPTIMISÉE
           const productionOptions: ExportOptions = {
             format: 'pdf',
@@ -213,26 +211,27 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
             includeCharts: true,
             includeRawData: true,
             branding: {
-              companyName: 'Kora P.R.I.S.M Analysis'
-            }
+              companyName: 'Kora P.R.I.S.M Analysis',
+            },
           };
-          
+
           console.log('🔥 Lancement export Production avec configuration optimale...');
           result = await productionExportService.exportReport(enrichedData, productionOptions);
-          
+
           if (result.success) {
             console.log('✅ Export Production réussi !');
           } else {
             throw new Error('Export Production échoué');
           }
-          
         } catch (productionError) {
-          console.warn('⚠️ Export Production indisponible, utilisation export basique:', productionError.message);
-          
+          console.warn(
+            '⚠️ Export Production indisponible, utilisation export basique:',
+            productionError.message,
+          );
+
           // === FALLBACK PDF SIMPLE GARANTI ===
           result = await exportSimplePDF(exportData, brandName);
         }
-        
       } else {
         // === UTILISER SERVICE PRODUCTION POUR AUTRES FORMATS ===
         const exportOptions: ExportOptions = {
@@ -244,8 +243,8 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
             includeRawData: true,
             includeExecutiveSummary: true,
             includeRecommendations: true,
-            includeAlerts: true
-          }
+            includeAlerts: true,
+          },
         };
 
         result = await exportService.exportReport(exportData, exportOptions);
@@ -259,12 +258,11 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         console.log(`✅ Export ${format.toUpperCase()} réussi:`, result.fileName);
       } else {
-        throw new Error('Erreur lors de l\'export');
+        throw new Error("Erreur lors de l'export");
       }
-
     } catch (err: any) {
       setError(`Erreur export ${format.toUpperCase()}: ${err.message}`);
       console.error(`❌ Erreur export ${format.toUpperCase()}:`, err);
@@ -276,50 +274,51 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
   // === FONCTION PDF SIMPLE GARANTIE ===
   const exportSimplePDF = async (data: any, brandName: string) => {
     console.log('📄 Génération PDF simple...');
-    
+
     try {
       // Import local de jsPDF
       const { default: jsPDF } = await import('jspdf');
-      
+
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const margin = 20;
       let yPosition = margin;
-      
+
       // En-tête
       doc.setFontSize(20);
       doc.text(`Rapport Kora - ${brandName}`, margin, yPosition);
       yPosition += 15;
-      
+
       doc.setFontSize(12);
       doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, margin, yPosition);
       yPosition += 20;
-      
+
       // Contenu des analyses
       const sections = [
         { title: 'Analyse Objective', content: data.objectiveAnalysis },
         { title: 'Analyse Stratégique', content: data.strategicAnalysis },
         { title: 'Analyse Concurrentielle', content: data.competitiveAnalysis },
-        { title: 'Tendances & Signaux', content: data.trendAnalysis }
+        { title: 'Tendances & Signaux', content: data.trendAnalysis },
       ];
-      
-      sections.forEach(section => {
+
+      sections.forEach((section) => {
         if (section.content) {
           // Titre de section
           doc.setFontSize(14);
           doc.text(section.title, margin, yPosition);
           yPosition += 10;
-          
+
           // Contenu (limité pour éviter overflow)
           doc.setFontSize(10);
-          const text = typeof section.content === 'string' 
-            ? section.content.substring(0, 500) + '...'
-            : JSON.stringify(section.content).substring(0, 500) + '...';
-          
+          const text =
+            typeof section.content === 'string'
+              ? section.content.substring(0, 500) + '...'
+              : JSON.stringify(section.content).substring(0, 500) + '...';
+
           const splitText = doc.splitTextToSize(text, pageWidth - 2 * margin);
           doc.text(splitText, margin, yPosition);
           yPosition += splitText.length * 5 + 10;
-          
+
           // Nouvelle page si nécessaire
           if (yPosition > 250) {
             doc.addPage();
@@ -327,12 +326,12 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
           }
         }
       });
-      
+
       // Génération du blob
       const pdfBlob = doc.output('blob');
       const fileName = `${brandName.replace(/[^a-zA-Z0-9]/g, '_')}_Kora_Report_${new Date().toISOString().slice(0, 16).replace(/[:]/g, '-')}.pdf`;
       const downloadUrl = URL.createObjectURL(pdfBlob);
-      
+
       return {
         success: true,
         fileName,
@@ -344,10 +343,9 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
         metadata: {
           exportedBy: 'Kora Simple PDF Export',
           version: '1.0.0',
-          generationTime: Date.now()
-        }
+          generationTime: Date.now(),
+        },
       };
-      
     } catch (error) {
       console.error('❌ Erreur PDF simple:', error);
       throw new Error(`Impossible de générer le PDF: ${error.message}`);
@@ -357,7 +355,6 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
   // === RENDU ===
   return (
     <div className="space-y-6" data-testid="brand-intelligence-dashboard">
-      
       {/* En-tête avec contrôles */}
       <Card className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 text-white border-0">
         <CardHeader>
@@ -379,7 +376,7 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
               {/* Bouton Export avec dropdown */}
               {(report || rawPerplexityData) && (
                 <div className="relative group">
-                  <Button 
+                  <Button
                     disabled={isExporting}
                     className="bg-green-600 hover:bg-green-700 text-white border-0 backdrop-blur-sm px-6 py-3"
                     data-testid="export-dropdown-button"
@@ -401,7 +398,9 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
                       <div className="space-y-3">
                         {/* Export Standard */}
                         <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-2">Export Standard</h4>
+                          <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                            Export Standard
+                          </h4>
                           <div className="grid grid-cols-2 gap-2">
                             <button
                               onClick={() => exportReport('json')}
@@ -443,7 +442,9 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
 
                         {/* Export Premium */}
                         <div>
-                          <h4 className="text-sm font-semibold text-purple-700 mb-2">Export Premium ✨</h4>
+                          <h4 className="text-sm font-semibold text-purple-700 mb-2">
+                            Export Premium ✨
+                          </h4>
                           <button
                             onClick={() => exportReport('pdf')}
                             disabled={isExporting}
@@ -471,9 +472,9 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
                   </div>
                 </div>
               )}
-              
+
               {/* Bouton Générer Rapport */}
-              <Button 
+              <Button
                 onClick={generateReport}
                 disabled={isGenerating || !brandName}
                 className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-8 py-3"
@@ -525,7 +526,9 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
 
           {/* Onglet Rapport Kora Premium */}
           <TabsContent value="rapport-kora" className="space-y-6">
-            {rawPerplexityData && <KoraReportDisplay brandName={brandName} data={rawPerplexityData} />}
+            {rawPerplexityData && (
+              <KoraReportDisplay brandName={brandName} data={rawPerplexityData} />
+            )}
           </TabsContent>
 
           {/* Onglet Vue d'ensemble */}
@@ -551,10 +554,7 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
           {/* Onglet Actions & Alertes */}
           <TabsContent value="actions" className="space-y-6">
             {report && (
-              <ActionsDashboard 
-                recommendations={report.recommendations}
-                alerts={report.alerts}
-              />
+              <ActionsDashboard recommendations={report.recommendations} alerts={report.alerts} />
             )}
           </TabsContent>
         </Tabs>
@@ -565,9 +565,11 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
 
 // === NOUVEAU COMPOSANT RAPPORT KORA PREMIUM ===
 
-const KoraReportDisplay: React.FC<{ brandName: string; data: PerplexityRawData }> = ({ brandName, data }) => (
+const KoraReportDisplay: React.FC<{ brandName: string; data: PerplexityRawData }> = ({
+  brandName,
+  data,
+}) => (
   <div className="space-y-8">
-    
     {/* En-tête du rapport */}
     <Card className="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white border-0">
       <CardHeader className="pb-8">
@@ -590,11 +592,11 @@ const KoraReportDisplay: React.FC<{ brandName: string; data: PerplexityRawData }
               <div className="flex items-center gap-4 mt-4 text-sm text-blue-200">
                 <span className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  {new Date().toLocaleDateString('fr-FR', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+                  {new Date().toLocaleDateString('fr-FR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
                   })}
                 </span>
                 <span className="flex items-center gap-1">
@@ -704,9 +706,9 @@ const KoraReportDisplay: React.FC<{ brandName: string; data: PerplexityRawData }
                   <h4 className="font-semibold text-slate-900 mb-1">{source.title}</h4>
                   <p className="text-slate-600 text-sm mb-2">{source.snippet}</p>
                   {source.url && (
-                    <a 
-                      href={source.url} 
-                      target="_blank" 
+                    <a
+                      href={source.url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
                     >
@@ -742,7 +744,6 @@ const KoraReportDisplay: React.FC<{ brandName: string; data: PerplexityRawData }
 
 const OverviewCards: React.FC<{ report: DeepResearchReport }> = ({ report }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    
     {/* Score de confiance */}
     <Card className="border-green-200 bg-gradient-to-br from-green-50 to-white">
       <CardHeader className="pb-3">
@@ -764,7 +765,9 @@ const OverviewCards: React.FC<{ report: DeepResearchReport }> = ({ report }) => 
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
-          <span className="text-3xl font-bold text-blue-900">{report.reputationKPIs.overallReputationScore}/100</span>
+          <span className="text-3xl font-bold text-blue-900">
+            {report.reputationKPIs.overallReputationScore}/100
+          </span>
           <Award className="w-8 h-8 text-blue-500" />
         </div>
         <Progress value={report.reputationKPIs.overallReputationScore} className="mt-3 h-2" />
@@ -778,7 +781,9 @@ const OverviewCards: React.FC<{ report: DeepResearchReport }> = ({ report }) => 
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
-          <span className="text-3xl font-bold text-purple-900">{report.swotMetrics.strategicHealthIndex}/100</span>
+          <span className="text-3xl font-bold text-purple-900">
+            {report.swotMetrics.strategicHealthIndex}/100
+          </span>
           <Target className="w-8 h-8 text-purple-500" />
         </div>
         <Progress value={report.swotMetrics.strategicHealthIndex} className="mt-3 h-2" />
@@ -788,14 +793,21 @@ const OverviewCards: React.FC<{ report: DeepResearchReport }> = ({ report }) => 
     {/* Position concurrentielle */}
     <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-white">
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium text-orange-700">Avantage Concurrentiel</CardTitle>
+        <CardTitle className="text-sm font-medium text-orange-700">
+          Avantage Concurrentiel
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
-          <span className="text-3xl font-bold text-orange-900">{report.competitiveMetrics.competitiveAdvantageIndex}/100</span>
+          <span className="text-3xl font-bold text-orange-900">
+            {report.competitiveMetrics.competitiveAdvantageIndex}/100
+          </span>
           <Briefcase className="w-8 h-8 text-orange-500" />
         </div>
-        <Progress value={report.competitiveMetrics.competitiveAdvantageIndex} className="mt-3 h-2" />
+        <Progress
+          value={report.competitiveMetrics.competitiveAdvantageIndex}
+          className="mt-3 h-2"
+        />
       </CardContent>
     </Card>
 
@@ -811,7 +823,9 @@ const OverviewCards: React.FC<{ report: DeepResearchReport }> = ({ report }) => 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm text-slate-600">Dernière mise à jour</p>
-            <p className="font-semibold">{new Date(report.dataFreshness.lastUpdateTime).toLocaleString()}</p>
+            <p className="font-semibold">
+              {new Date(report.dataFreshness.lastUpdateTime).toLocaleString()}
+            </p>
           </div>
           <div>
             <p className="text-sm text-slate-600">Qualité des données</p>
@@ -835,12 +849,23 @@ const OverviewCards: React.FC<{ report: DeepResearchReport }> = ({ report }) => 
       <CardContent>
         <div className="space-y-3">
           {report.recommendations.slice(0, 3).map((action, index) => (
-            <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+            <div
+              key={index}
+              className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
+            >
               <div className="flex-1">
                 <p className="font-medium text-sm">{action.title}</p>
                 <p className="text-xs text-slate-600">{action.timeline}</p>
               </div>
-              <Badge variant={action.priority === 'high' ? 'destructive' : action.priority === 'medium' ? 'default' : 'secondary'}>
+              <Badge
+                variant={
+                  action.priority === 'high'
+                    ? 'destructive'
+                    : action.priority === 'medium'
+                      ? 'default'
+                      : 'secondary'
+                }
+              >
                 {action.priority}
               </Badge>
             </div>
@@ -853,7 +878,6 @@ const OverviewCards: React.FC<{ report: DeepResearchReport }> = ({ report }) => 
 
 const SWOTDashboard: React.FC<{ swotMetrics: SWOTMetrics }> = ({ swotMetrics }) => (
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    
     {/* Forces */}
     <Card className="border-green-200">
       <CardHeader>
@@ -972,9 +996,10 @@ const SWOTDashboard: React.FC<{ swotMetrics: SWOTMetrics }> = ({ swotMetrics }) 
   </div>
 );
 
-const CompetitiveDashboard: React.FC<{ competitiveMetrics: CompetitiveMetrics }> = ({ competitiveMetrics }) => (
+const CompetitiveDashboard: React.FC<{ competitiveMetrics: CompetitiveMetrics }> = ({
+  competitiveMetrics,
+}) => (
   <div className="space-y-6">
-    
     {/* Évolution parts de marché */}
     <Card>
       <CardHeader>
@@ -986,17 +1011,23 @@ const CompetitiveDashboard: React.FC<{ competitiveMetrics: CompetitiveMetrics }>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
-            <p className="text-2xl font-bold text-blue-600">{competitiveMetrics.marketShareEvolution.currentShare}%</p>
+            <p className="text-2xl font-bold text-blue-600">
+              {competitiveMetrics.marketShareEvolution.currentShare}%
+            </p>
             <p className="text-sm text-slate-600">Part Actuelle</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-green-600">{competitiveMetrics.marketShareEvolution.projectedShare}%</p>
+            <p className="text-2xl font-bold text-green-600">
+              {competitiveMetrics.marketShareEvolution.projectedShare}%
+            </p>
             <p className="text-sm text-slate-600">Projection</p>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-2">
               <TrendingUp className="w-5 h-5 text-green-500" />
-              <span className="text-xl font-bold text-green-600">#{competitiveMetrics.marketShareEvolution.benchmarkPosition.rank}</span>
+              <span className="text-xl font-bold text-green-600">
+                #{competitiveMetrics.marketShareEvolution.benchmarkPosition.rank}
+              </span>
             </div>
             <p className="text-sm text-slate-600">Position</p>
           </div>
@@ -1018,7 +1049,15 @@ const CompetitiveDashboard: React.FC<{ competitiveMetrics: CompetitiveMetrics }>
             <div key={index} className="p-4 border rounded-lg">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="font-semibold">{competitor.name}</h4>
-                <Badge variant={competitor.threatLevel > 7 ? 'destructive' : competitor.threatLevel > 4 ? 'default' : 'secondary'}>
+                <Badge
+                  variant={
+                    competitor.threatLevel > 7
+                      ? 'destructive'
+                      : competitor.threatLevel > 4
+                        ? 'default'
+                        : 'secondary'
+                  }
+                >
                   Menace: {competitor.threatLevel}/10
                 </Badge>
               </div>
@@ -1042,7 +1081,6 @@ const CompetitiveDashboard: React.FC<{ competitiveMetrics: CompetitiveMetrics }>
 
 const ContentDashboard: React.FC<{ contentMetrics: ContentMetrics }> = ({ contentMetrics }) => (
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    
     {/* Métriques d'engagement */}
     <Card>
       <CardHeader>
@@ -1060,7 +1098,7 @@ const ContentDashboard: React.FC<{ contentMetrics: ContentMetrics }> = ({ conten
             </div>
             <Progress value={contentMetrics.viralityIndex} className="h-2" />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-slate-600">Volume Total</p>
@@ -1068,21 +1106,29 @@ const ContentDashboard: React.FC<{ contentMetrics: ContentMetrics }> = ({ conten
             </div>
             <div>
               <p className="text-slate-600">Taux Conversion</p>
-              <p className="text-xl font-bold">{contentMetrics.engagementMetrics.conversionRate}%</p>
+              <p className="text-xl font-bold">
+                {contentMetrics.engagementMetrics.conversionRate}%
+              </p>
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-xs">
             <div className="text-center p-2 bg-blue-50 rounded">
-              <p className="font-bold text-blue-600">{contentMetrics.engagementMetrics.likes.toLocaleString()}</p>
+              <p className="font-bold text-blue-600">
+                {contentMetrics.engagementMetrics.likes.toLocaleString()}
+              </p>
               <p className="text-slate-600">Likes</p>
             </div>
             <div className="text-center p-2 bg-green-50 rounded">
-              <p className="font-bold text-green-600">{contentMetrics.engagementMetrics.shares.toLocaleString()}</p>
+              <p className="font-bold text-green-600">
+                {contentMetrics.engagementMetrics.shares.toLocaleString()}
+              </p>
               <p className="text-slate-600">Partages</p>
             </div>
             <div className="text-center p-2 bg-purple-50 rounded">
-              <p className="font-bold text-purple-600">{contentMetrics.engagementMetrics.comments.toLocaleString()}</p>
+              <p className="font-bold text-purple-600">
+                {contentMetrics.engagementMetrics.comments.toLocaleString()}
+              </p>
               <p className="text-slate-600">Commentaires</p>
             </div>
           </div>
@@ -1101,10 +1147,26 @@ const ContentDashboard: React.FC<{ contentMetrics: ContentMetrics }> = ({ conten
       <CardContent>
         <div className="space-y-4">
           {[
-            { label: 'Score d\'Autorité', value: contentMetrics.contentQuality.authorityScore, color: 'blue' },
-            { label: 'Index Crédibilité', value: contentMetrics.contentQuality.credibilityIndex, color: 'green' },
-            { label: 'Précision Factuelle', value: contentMetrics.contentQuality.factualAccuracy, color: 'purple' },
-            { label: 'Fiabilité Sources', value: contentMetrics.contentQuality.sourceReliability, color: 'orange' }
+            {
+              label: "Score d'Autorité",
+              value: contentMetrics.contentQuality.authorityScore,
+              color: 'blue',
+            },
+            {
+              label: 'Index Crédibilité',
+              value: contentMetrics.contentQuality.credibilityIndex,
+              color: 'green',
+            },
+            {
+              label: 'Précision Factuelle',
+              value: contentMetrics.contentQuality.factualAccuracy,
+              color: 'purple',
+            },
+            {
+              label: 'Fiabilité Sources',
+              value: contentMetrics.contentQuality.sourceReliability,
+              color: 'orange',
+            },
           ].map((metric, index) => (
             <div key={index}>
               <div className="flex items-center justify-between mb-1">
@@ -1120,12 +1182,11 @@ const ContentDashboard: React.FC<{ contentMetrics: ContentMetrics }> = ({ conten
   </div>
 );
 
-const ActionsDashboard: React.FC<{ 
+const ActionsDashboard: React.FC<{
   recommendations: ActionableRecommendation[];
   alerts: SmartAlerts;
 }> = ({ recommendations, alerts }) => (
   <div className="space-y-6">
-    
     {/* Actions recommandées */}
     <Card>
       <CardHeader>
@@ -1144,15 +1205,21 @@ const ActionsDashboard: React.FC<{
                   <p className="text-slate-600 text-sm mt-1">{action.description}</p>
                 </div>
                 <div className="flex items-center gap-2 ml-4">
-                  <Badge variant={action.priority === 'critical' ? 'destructive' : action.priority === 'high' ? 'default' : 'secondary'}>
+                  <Badge
+                    variant={
+                      action.priority === 'critical'
+                        ? 'destructive'
+                        : action.priority === 'high'
+                          ? 'default'
+                          : 'secondary'
+                    }
+                  >
                     {action.priority}
                   </Badge>
-                  <Badge variant="outline">
-                    {action.category}
-                  </Badge>
+                  <Badge variant="outline">{action.category}</Badge>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
                   <p className="text-slate-600 flex items-center gap-1">
@@ -1174,7 +1241,8 @@ const ActionsDashboard: React.FC<{
                     Budget
                   </p>
                   <p className="font-medium">
-                    {action.budget.min.toLocaleString()} - {action.budget.max.toLocaleString()} {action.budget.currency}
+                    {action.budget.min.toLocaleString()} - {action.budget.max.toLocaleString()}{' '}
+                    {action.budget.currency}
                   </p>
                 </div>
               </div>
@@ -1225,4 +1293,4 @@ const ActionsDashboard: React.FC<{
       </CardContent>
     </Card>
   </div>
-); 
+);

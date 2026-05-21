@@ -4,19 +4,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useLinkedInStats } from '@/hooks/useLinkedInStats';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Eye, 
-  MousePointer, 
-  Users, 
-  RefreshCw, 
-  AlertTriangle, 
-  CheckCircle2, 
-  Wifi, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Eye,
+  MousePointer,
+  Users,
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle2,
+  Wifi,
   WifiOff,
   Clock,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 interface StatsCardProps {
@@ -32,26 +32,25 @@ const StatsCard: React.FC<StatsCardProps> = ({
   autoRefresh = true,
   refreshInterval = 300000, // 5 minutes
   showPosts = true,
-  className = ''
+  className = '',
 }) => {
   const [selectedPeriod, setSelectedPeriod] = useState(period);
   const [showDetails, setShowDetails] = useState(false);
   const [previousMetrics, setPreviousMetrics] = useState<any>(null);
-  
+
   const {
     metrics,
     isLoading,
     isRefreshing,
     error,
     lastUpdate,
-    isAuthenticated,
     refreshStats,
     clearError,
     clearCache,
     formattedMetrics,
     topPosts,
     connectionStatus,
-    cacheInfo
+    cacheInfo,
   } = useLinkedInStats(autoRefresh, refreshInterval);
 
   const { toast } = useToast();
@@ -67,14 +66,14 @@ const StatsCard: React.FC<StatsCardProps> = ({
     try {
       await refreshStats(selectedPeriod);
       toast({
-        title: "Données mises à jour",
-        description: "Les statistiques LinkedIn ont été actualisées",
+        title: 'Données mises à jour',
+        description: 'Les statistiques LinkedIn ont été actualisées',
       });
     } catch (error) {
       toast({
-        title: "Erreur de mise à jour",
-        description: "Impossible de récupérer les dernières données",
-        variant: "destructive",
+        title: 'Erreur de mise à jour',
+        description: 'Impossible de récupérer les dernières données',
+        variant: 'destructive',
       });
     }
   };
@@ -83,9 +82,9 @@ const StatsCard: React.FC<StatsCardProps> = ({
   useEffect(() => {
     if (error) {
       toast({
-        title: "Erreur LinkedIn",
+        title: 'Erreur LinkedIn',
         description: error,
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
   }, [error, toast]);
@@ -95,18 +94,18 @@ const StatsCard: React.FC<StatsCardProps> = ({
     if (metrics && previousMetrics && formattedMetrics) {
       const currentReach = parseInt(formattedMetrics.reach.value.replace(/[^\d]/g, ''));
       const previousReach = parseInt(previousMetrics.reach?.value?.replace(/[^\d]/g, '') || '0');
-      
+
       const reachIncrease = ((currentReach - previousReach) / previousReach) * 100;
-      
+
       if (reachIncrease > 20) {
         toast({
-          title: "🚀 Forte croissance détectée !",
+          title: '🚀 Forte croissance détectée !',
           description: `Votre portée a augmenté de ${reachIncrease.toFixed(0)}%`,
           duration: 5000,
         });
       }
     }
-    
+
     if (metrics) {
       setPreviousMetrics(formattedMetrics);
     }
@@ -115,17 +114,17 @@ const StatsCard: React.FC<StatsCardProps> = ({
   // Formater la date de dernière mise à jour
   const formatLastUpdate = (date: Date | null) => {
     if (!date) return 'Jamais';
-    
+
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
-    
-    if (diffMins < 1) return 'À l\'instant';
+
+    if (diffMins < 1) return "À l'instant";
     if (diffMins < 60) return `Il y a ${diffMins} min`;
-    
+
     const diffHours = Math.floor(diffMins / 60);
     if (diffHours < 24) return `Il y a ${diffHours}h`;
-    
+
     const diffDays = Math.floor(diffHours / 24);
     return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
   };
@@ -157,9 +156,9 @@ const StatsCard: React.FC<StatsCardProps> = ({
             bgColor: 'bg-green-50',
             borderColor: 'border-green-200',
             text: 'Connecté',
-            description: cacheInfo.isFromCache 
-              ? `Cache (${cacheInfo.cacheAge}min)` 
-              : 'Données en temps réel'
+            description: cacheInfo.isFromCache
+              ? `Cache (${cacheInfo.cacheAge}min)`
+              : 'Données en temps réel',
           };
         case 'disconnected':
           return {
@@ -168,7 +167,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
             bgColor: 'bg-orange-50',
             borderColor: 'border-orange-200',
             text: 'Déconnecté',
-            description: 'Données simulées'
+            description: 'Données simulées',
           };
         case 'error':
           return {
@@ -177,7 +176,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
             bgColor: 'bg-red-50',
             borderColor: 'border-red-200',
             text: 'Erreur',
-            description: 'Problème de connexion'
+            description: 'Problème de connexion',
           };
         default:
           return {
@@ -186,7 +185,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
             bgColor: 'bg-blue-50',
             borderColor: 'border-blue-200',
             text: 'Vérification...',
-            description: 'Test de connexion'
+            description: 'Test de connexion',
           };
       }
     };
@@ -195,7 +194,9 @@ const StatsCard: React.FC<StatsCardProps> = ({
     const Icon = config.icon;
 
     return (
-      <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg border ${config.bgColor} ${config.borderColor}`}>
+      <div
+        className={`flex items-center space-x-2 px-3 py-2 rounded-lg border ${config.bgColor} ${config.borderColor}`}
+      >
         <Icon className={`w-4 h-4 ${config.color}`} />
         <div>
           <span className={`text-sm font-medium ${config.color}`}>{config.text}</span>
@@ -211,13 +212,13 @@ const StatsCard: React.FC<StatsCardProps> = ({
   };
 
   // Composant de métrique individuelle
-  const MetricCard = ({ 
-    title, 
-    value, 
-    trend, 
-    isPositive, 
-    icon: Icon, 
-    color 
+  const MetricCard = ({
+    title,
+    value,
+    trend,
+    isPositive,
+    icon: Icon,
+    color,
   }: {
     title: string;
     value: string;
@@ -257,7 +258,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
             </div>
             <span>Statistiques LinkedIn</span>
           </CardTitle>
-          
+
           <div className="flex items-center space-x-2">
             <Button
               onClick={handleRefresh}
@@ -269,7 +270,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
               <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
               {isRefreshing ? 'Mise à jour...' : 'Actualiser'}
             </Button>
-            
+
             {cacheInfo.isFromCache && (
               <Button
                 onClick={clearCache}
@@ -282,10 +283,10 @@ const StatsCard: React.FC<StatsCardProps> = ({
             )}
           </div>
         </div>
-        
+
         <div className="flex items-center justify-between mt-4">
           <StatusIndicator />
-          
+
           <div className="flex items-center space-x-1 text-xs text-slate-500">
             <Clock className="w-3 h-3" />
             <span>Dernière MAJ : {formatLastUpdate(lastUpdate)}</span>
@@ -300,10 +301,10 @@ const StatsCard: React.FC<StatsCardProps> = ({
             <Button
               key={p}
               onClick={() => handlePeriodChange(p)}
-              variant={selectedPeriod === p ? "default" : "outline"}
+              variant={selectedPeriod === p ? 'default' : 'outline'}
               size="sm"
               disabled={isLoading}
-              className={selectedPeriod === p ? "bg-blue-600 text-white" : ""}
+              className={selectedPeriod === p ? 'bg-blue-600 text-white' : ''}
             >
               {p === '7d' ? '7 jours' : p === '30d' ? '30 jours' : '90 jours'}
             </Button>
@@ -385,24 +386,18 @@ const StatsCard: React.FC<StatsCardProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h4 className="font-semibold text-slate-900">Posts les plus performants</h4>
-                  <Button
-                    onClick={() => setShowDetails(!showDetails)}
-                    variant="ghost"
-                    size="sm"
-                  >
+                  <Button onClick={() => setShowDetails(!showDetails)} variant="ghost" size="sm">
                     {showDetails ? 'Masquer' : 'Voir détails'}
                   </Button>
                 </div>
-                
+
                 {showDetails && (
                   <div className="space-y-3">
                     {topPosts.slice(0, 3).map((post, index) => (
                       <div key={post.id} className="bg-slate-50 rounded-lg p-4">
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
-                            <p className="text-sm text-slate-900 line-clamp-2">
-                              {post.content}
-                            </p>
+                            <p className="text-sm text-slate-900 line-clamp-2">{post.content}</p>
                             <p className="text-xs text-slate-500 mt-1">
                               {new Date(post.publishedAt).toLocaleDateString('fr-FR')}
                             </p>
@@ -419,9 +414,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
                             <div className="text-slate-500">Vues</div>
                           </div>
                           <div className="text-center">
-                            <div className="font-medium text-slate-900">
-                              {post.metrics.likes}
-                            </div>
+                            <div className="font-medium text-slate-900">{post.metrics.likes}</div>
                             <div className="text-slate-500">Likes</div>
                           </div>
                           <div className="text-center">
@@ -431,9 +424,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
                             <div className="text-slate-500">Commentaires</div>
                           </div>
                           <div className="text-center">
-                            <div className="font-medium text-slate-900">
-                              {post.metrics.shares}
-                            </div>
+                            <div className="font-medium text-slate-900">{post.metrics.shares}</div>
                             <div className="text-slate-500">Partages</div>
                           </div>
                         </div>
@@ -481,4 +472,4 @@ const StatsCard: React.FC<StatsCardProps> = ({
   );
 };
 
-export default StatsCard; 
+export default StatsCard;

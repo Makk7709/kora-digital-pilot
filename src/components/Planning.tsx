@@ -2,7 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Zap, TrendingUp, Plus, Edit, Trash2, Copy, Filter, Download, Upload, Brain, Lightbulb, AlertCircle } from 'lucide-react';
+import {
+  Calendar,
+  Zap,
+  TrendingUp,
+  Plus,
+  Edit,
+  Filter,
+  Download,
+  Brain,
+  Lightbulb,
+} from 'lucide-react';
 import { usePlanning } from '@/hooks/usePlanning';
 import { usePerplexity } from '@/hooks/usePerplexity';
 import { ScheduledPost } from '@/lib/planning-service';
@@ -12,7 +22,7 @@ import { PerplexityInsights } from './PerplexityInsights';
 
 const Planning = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   // Simulation de chargement
   useEffect(() => {
@@ -34,9 +44,7 @@ const Planning = () => {
               </div>
               <span>Planning éditorial</span>
             </h2>
-            <p className="text-slate-600">
-              Chargement en cours...
-            </p>
+            <p className="text-slate-600">Chargement en cours...</p>
           </div>
         </div>
         <Card className="premium-card">
@@ -143,9 +151,7 @@ const Planning = () => {
       <Card className="premium-card">
         <CardHeader className="border-b border-slate-100">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-slate-900">
-              Planning de la semaine
-            </CardTitle>
+            <CardTitle className="text-slate-900">Planning de la semaine</CardTitle>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm">
                 <Filter className="w-4 h-4 mr-2" />
@@ -168,27 +174,33 @@ const Planning = () => {
                     {new Date().getDate() + index - new Date().getDay() + 1}
                   </p>
                 </div>
-                
+
                 <div className="space-y-3 min-h-[200px]">
                   {index < 3 && (
                     <div className="p-4 rounded-xl border border-slate-200 bg-white hover:shadow-md transition-shadow">
                       <div className="flex items-center justify-between mb-2">
-                        <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+                        <Badge
+                          variant="outline"
+                          className="bg-blue-50 text-blue-600 border-blue-200"
+                        >
                           LinkedIn
                         </Badge>
-                        <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
+                        <Badge
+                          variant="outline"
+                          className="bg-green-50 text-green-600 border-green-200"
+                        >
                           Programmé
                         </Badge>
                       </div>
                       <p className="text-sm text-slate-700 font-medium mb-2">
-                        {index === 0 && "Les tendances IA en 2025"}
-                        {index === 1 && "Marketing digital : nouvelles stratégies"}
-                        {index === 2 && "Automatisation des processus"}
+                        {index === 0 && 'Les tendances IA en 2025'}
+                        {index === 1 && 'Marketing digital : nouvelles stratégies'}
+                        {index === 2 && 'Automatisation des processus'}
                       </p>
                       <p className="text-xs text-slate-500">09:00</p>
                     </div>
                   )}
-                  
+
                   <button className="w-full p-4 border-2 border-dashed border-slate-200 rounded-xl text-slate-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 flex items-center justify-center space-x-2">
                     <Plus className="w-4 h-4" />
                     <span className="text-sm font-medium">Ajouter un post</span>
@@ -219,7 +231,7 @@ const Planning = () => {
                 Appliquer
               </Button>
             </div>
-            
+
             <div className="p-4 rounded-xl bg-gradient-to-br from-green-50 to-green-25 border border-green-100">
               <h4 className="font-semibold text-green-900 mb-2">Contenu tendance</h4>
               <p className="text-green-700 text-sm mb-3">

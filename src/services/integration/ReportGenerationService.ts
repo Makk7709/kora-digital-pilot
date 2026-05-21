@@ -6,12 +6,11 @@
 
 import { PerplexityService, createPerplexityService } from '../../lib/perplexity-service';
 import { contentDeduplicationService } from '../ContentDeduplicationService';
-import type { 
+import type {
   ActionableRecommendation,
   SmartAlerts,
   DeepResearchReport,
   DataFreshness,
-  SourceVerification,
   ObjectiveAnalysis,
   RecentAction,
   StrategicAnalysis,
@@ -19,7 +18,7 @@ import type {
   SWOTMetrics,
   ContentMetrics,
   CompetitiveMetrics,
-  ReputationKPIs
+  ReputationKPIs,
 } from '../../types/BrandIntelligenceTypes';
 
 export class ReportGenerationService {
@@ -37,7 +36,7 @@ export class ReportGenerationService {
       apiKey,
       model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-large-128k-online',
       maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 8000,
-      temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2
+      temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
     });
 
     this.isInitialized = true;
@@ -46,17 +45,20 @@ export class ReportGenerationService {
   /**
    * 🎯 RECOMMANDATIONS ACTIONABLES RÉELLES
    */
-  async generateRealRecommendations(brandName: string, metrics: {
-    swotMetrics: SWOTMetrics;
-    contentMetrics: ContentMetrics;
-    competitiveMetrics: CompetitiveMetrics;
-    reputationKPIs: ReputationKPIs;
-  }): Promise<ActionableRecommendation[]> {
+  async generateRealRecommendations(
+    brandName: string,
+    metrics: {
+      swotMetrics: SWOTMetrics;
+      contentMetrics: ContentMetrics;
+      competitiveMetrics: CompetitiveMetrics;
+      reputationKPIs: ReputationKPIs;
+    },
+  ): Promise<ActionableRecommendation[]> {
     await this.ensureInitialized();
-    
+
     // Synthèse des métriques pour le contexte
     const metricsContext = this.synthesizeMetricsContext(metrics);
-    
+
     const query = `RECOMMANDATIONS STRATÉGIQUES PRIORITAIRES - ${brandName}
 
 CONTEXTE MÉTRIQUES ACTUELLES:
@@ -100,25 +102,28 @@ Priorise selon l'urgence et l'impact potentiel pour ${brandName}.`;
       context: 'Recommandations stratégiques actionables',
       industry: 'business',
       depth: 'comprehensive',
-      language: 'fr'
+      language: 'fr',
     });
-    
+
     return this.parseRealRecommendations(response.content);
   }
 
   /**
    * 🚨 ALERTES INTELLIGENTES RÉELLES
    */
-  async generateRealAlerts(brandName: string, metrics: {
-    swotMetrics: SWOTMetrics;
-    contentMetrics: ContentMetrics;
-    competitiveMetrics: CompetitiveMetrics;
-    reputationKPIs: ReputationKPIs;
-  }): Promise<SmartAlerts> {
+  async generateRealAlerts(
+    brandName: string,
+    metrics: {
+      swotMetrics: SWOTMetrics;
+      contentMetrics: ContentMetrics;
+      competitiveMetrics: CompetitiveMetrics;
+      reputationKPIs: ReputationKPIs;
+    },
+  ): Promise<SmartAlerts> {
     await this.ensureInitialized();
-    
+
     const metricsContext = this.synthesizeMetricsContext(metrics);
-    
+
     const query = `ALERTES STRATÉGIQUES INTELLIGENTES - ${brandName}
 
 CONTEXTE MÉTRIQUES ACTUELLES:
@@ -161,9 +166,9 @@ Focus sur des alertes ACTIONABLES et MESURABLES pour ${brandName}.`;
       context: 'Alertes stratégiques intelligentes',
       industry: 'business',
       depth: 'comprehensive',
-      language: 'fr'
+      language: 'fr',
     });
-    
+
     return this.parseRealAlerts(response.content);
   }
 
@@ -172,7 +177,7 @@ Focus sur des alertes ACTIONABLES et MESURABLES pour ${brandName}.`;
    */
   validateRealDataFreshness(recentActions: RecentAction[]): DataFreshness {
     const now = new Date();
-    
+
     if (recentActions.length === 0) {
       return {
         lastUpdated: now,
@@ -183,12 +188,12 @@ Focus sur des alertes ACTIONABLES et MESURABLES pour ${brandName}.`;
         dataQualityScore: 30,
         isDataFresh: false,
         averageDataAge: 48,
-        oldestDataAge: 168 // 1 semaine
+        oldestDataAge: 168, // 1 semaine
       };
     }
 
     // Calculer l'âge moyen des données
-    const actionAges = recentActions.map(action => {
+    const actionAges = recentActions.map((action) => {
       const ageMs = now.getTime() - action.date.getTime();
       return ageMs / (1000 * 60 * 60); // Convertir en heures
     });
@@ -208,7 +213,7 @@ Focus sur des alertes ACTIONABLES et MESURABLES pour ${brandName}.`;
     // Calculer le score de qualité des données
     let qualityScore = 100;
     if (averageAge > 168) qualityScore -= 30; // -30 si > 1 semaine
-    if (averageAge > 72) qualityScore -= 20;  // -20 si > 3 jours
+    if (averageAge > 72) qualityScore -= 20; // -20 si > 3 jours
     if (recentActions.length < 3) qualityScore -= 20; // -20 si peu d'actions
     qualityScore = Math.max(0, qualityScore);
 
@@ -221,7 +226,7 @@ Focus sur des alertes ACTIONABLES et MESURABLES pour ${brandName}.`;
       dataQualityScore: qualityScore,
       isDataFresh: mostRecentAge <= 48,
       averageDataAge: averageAge,
-      oldestDataAge: oldestAge
+      oldestDataAge: oldestAge,
     };
   }
 
@@ -240,22 +245,22 @@ Focus sur des alertes ACTIONABLES et MESURABLES pour ${brandName}.`;
       competitiveMetrics: CompetitiveMetrics;
       reputationKPIs: ReputationKPIs;
     },
-    confidenceScore: number
+    confidenceScore: number,
   ): Promise<DeepResearchReport> {
     console.log(`🔍 Assemblage rapport recherche approfondie pour: ${brandName}`);
-    
+
     try {
       // 1. Génération des recommandations et alertes
       const metrics = {
         swotMetrics: components.swotMetrics,
         contentMetrics: components.contentMetrics,
         competitiveMetrics: components.competitiveMetrics,
-        reputationKPIs: components.reputationKPIs
+        reputationKPIs: components.reputationKPIs,
       };
 
       const [recommendations, alerts] = await Promise.all([
         this.generateRealRecommendations(brandName, metrics),
-        this.generateRealAlerts(brandName, metrics)
+        this.generateRealAlerts(brandName, metrics),
       ]);
 
       // 2. Validation fraîcheur des données
@@ -283,22 +288,27 @@ Focus sur des alertes ACTIONABLES et MESURABLES pour ${brandName}.`;
             reliability: 85,
             lastUpdated: new Date(),
             type: 'primary',
-            credibility: 'high'
-          }
+            credibility: 'high',
+          },
         ],
-        limitations: ['Données basées sur sources publiques', 'Analyse en temps réel limitée']
+        limitations: ['Données basées sur sources publiques', 'Analyse en temps réel limitée'],
       };
 
       // 4. 🧹 APPLICATION DE LA DÉDUPLICATION INTELLIGENTE
       console.log('🧹 Application déduplication intelligente au rapport...');
-      const deduplicatedReport = await contentDeduplicationService.deduplicateReportContent(initialReport);
+      const deduplicatedReport =
+        await contentDeduplicationService.deduplicateReportContent(initialReport);
 
       // 5. Statistiques de déduplication
       if (deduplicatedReport.objectiveAnalysis?.brandHistory) {
-        const stats = contentDeduplicationService.getDeduplicationStats(deduplicatedReport.objectiveAnalysis.brandHistory);
-        console.log(`📊 Stats déduplication: ${stats.duplications} duplicatas supprimés, ${stats.uniqueWords} mots uniques, ${(stats.repetitionRate*100).toFixed(1)}% répétition`);
-        
-        // Ajouter les stats comme métadonnées  
+        const stats = contentDeduplicationService.getDeduplicationStats(
+          deduplicatedReport.objectiveAnalysis.brandHistory,
+        );
+        console.log(
+          `📊 Stats déduplication: ${stats.duplications} duplicatas supprimés, ${stats.uniqueWords} mots uniques, ${(stats.repetitionRate * 100).toFixed(1)}% répétition`,
+        );
+
+        // Ajouter les stats comme métadonnées
         (deduplicatedReport as any).deduplicationStats = stats;
       }
 
@@ -306,12 +316,15 @@ Focus sur des alertes ACTIONABLES et MESURABLES pour ${brandName}.`;
       (deduplicatedReport as any).qualityOptimized = true;
       (deduplicatedReport as any).optimizationTimestamp = new Date().toISOString();
 
-      console.log(`✅ Rapport recherche approfondie assemblé avec succès pour ${brandName} (optimisé)`);
+      console.log(
+        `✅ Rapport recherche approfondie assemblé avec succès pour ${brandName} (optimisé)`,
+      );
       return deduplicatedReport;
-
     } catch (error) {
       console.error(`❌ Erreur assemblage rapport pour ${brandName}:`, error);
-      throw new Error(`Impossible d'assembler le rapport pour ${brandName}: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+      throw new Error(
+        `Impossible d'assembler le rapport pour ${brandName}: ${error instanceof Error ? error.message : 'Erreur inconnue'}`,
+      );
     }
   }
 
@@ -360,10 +373,12 @@ Réputation:
   private parseRealRecommendations(content: string): ActionableRecommendation[] {
     const cleanedContent = this.cleanRawContent(content);
     const recommendations: ActionableRecommendation[] = [];
-    
+
     // Diviser le contenu en sections de recommandations
-    const sections = cleanedContent.split(/(?:\d+\.|[-•*])\s*/).filter(section => section.trim().length > 30);
-    
+    const sections = cleanedContent
+      .split(/(?:\d+\.|[-•*])\s*/)
+      .filter((section) => section.trim().length > 30);
+
     sections.forEach((section, index) => {
       if (section.trim().length > 50) {
         const recommendation = this.parseRecommendationSection(section, index);
@@ -372,12 +387,15 @@ Réputation:
         }
       }
     });
-    
+
     return recommendations.slice(0, 10); // Limiter à 10 recommandations
   }
 
-  private parseRecommendationSection(section: string, index: number): ActionableRecommendation | null {
-    const lines = section.split('\n').filter(line => line.trim().length > 0);
+  private parseRecommendationSection(
+    section: string,
+    index: number,
+  ): ActionableRecommendation | null {
+    const lines = section.split('\n').filter((line) => line.trim().length > 0);
     if (lines.length === 0) return null;
 
     const description = lines[0].trim();
@@ -389,44 +407,47 @@ Réputation:
       description,
       category: this.classifyRecommendationCategory(description),
       priority: this.assessRecommendationPriority(description),
-      
+
       implementation: {
         timeline: this.extractRecommendationTimeline(description),
         estimatedBudget: this.estimateRecommendationBudget(description),
         requiredResources: this.extractRequiredResources(description),
-        responsibleDepartment: this.identifyResponsibleDepartment(description)
+        responsibleDepartment: this.identifyResponsibleDepartment(description),
       },
-      
+
       expectedImpact: this.estimateRecommendationImpact(description),
       successMetrics: this.extractSuccessMetrics(description),
       risks: this.assessRecommendationRisk(description),
-      dependencies: this.extractDependencies(description)
+      dependencies: this.extractDependencies(description),
     };
   }
 
   private parseRealAlerts(content: string): SmartAlerts {
     const cleanedContent = this.cleanRawContent(content);
-    
+
     return {
       critical: this.extractAlertsByType(cleanedContent, 'critical'),
       warnings: this.extractAlertsByType(cleanedContent, 'warning'),
-      opportunities: this.extractAlertsByType(cleanedContent, 'opportunity')
+      opportunities: this.extractAlertsByType(cleanedContent, 'opportunity'),
     };
   }
 
-  private extractAlertsByType(content: string, type: 'critical' | 'warning' | 'opportunity'): any[] {
+  private extractAlertsByType(
+    content: string,
+    type: 'critical' | 'warning' | 'opportunity',
+  ): any[] {
     const alerts: any[] = [];
     const keywords = {
       critical: ['critique', 'urgent', 'immédiat', 'danger', 'menace majeure'],
       warning: ['avertissement', 'attention', 'surveillance', 'risque', 'tendance négative'],
-      opportunity: ['opportunité', 'potentiel', 'avantage', 'chance', 'ouverture']
+      opportunity: ['opportunité', 'potentiel', 'avantage', 'chance', 'ouverture'],
     };
-    
-    const patterns = keywords[type].map(keyword => 
-      new RegExp(`${keyword}[\\s\\S]*?(?=\\n\\n|${keywords[type].join('|')}|$)`, 'gi')
+
+    const patterns = keywords[type].map(
+      (keyword) => new RegExp(`${keyword}[\\s\\S]*?(?=\\n\\n|${keywords[type].join('|')}|$)`, 'gi'),
     );
-    
-    patterns.forEach(pattern => {
+
+    patterns.forEach((pattern) => {
       let match;
       while ((match = pattern.exec(content)) !== null) {
         const alertText = match[0].trim();
@@ -438,16 +459,20 @@ Réputation:
         }
       }
     });
-    
+
     // Fallback: générer des alertes basées sur le contenu général
     if (alerts.length === 0) {
       alerts.push(...this.generateAlertsFromMetrics(content, type));
     }
-    
+
     return alerts.slice(0, 5); // Limiter à 5 alertes par type
   }
 
-  private createAlert(description: string, type: 'critical' | 'warning' | 'opportunity', content: string): any | null {
+  private createAlert(
+    description: string,
+    type: 'critical' | 'warning' | 'opportunity',
+    _content?: string,
+  ): any | null {
     if (description.length < 20) return null;
 
     return {
@@ -461,44 +486,47 @@ Réputation:
           metric: this.extractMetricFromDescription(description),
           currentValue: this.extractCurrentValue(description),
           threshold: this.extractThreshold(description),
-          deviation: this.calculateDeviation(description)
+          deviation: this.calculateDeviation(description),
         },
-        historicalComparison: this.extractHistoricalComparison(description)
-      })
+        historicalComparison: this.extractHistoricalComparison(description),
+      }),
     };
   }
 
-  private generateAlertsFromMetrics(content: string, type: 'critical' | 'warning' | 'opportunity'): any[] {
+  private generateAlertsFromMetrics(
+    content: string,
+    type: 'critical' | 'warning' | 'opportunity',
+  ): any[] {
     const alerts: any[] = [];
-    
+
     const templates = {
       critical: [
-        "Baisse significative de la part de marché détectée",
-        "Dégradation du score de réputation observée",
-        "Menace concurrentielle majeure identifiée"
+        'Baisse significative de la part de marché détectée',
+        'Dégradation du score de réputation observée',
+        'Menace concurrentielle majeure identifiée',
       ],
       warning: [
-        "Tendance négative du sentiment client",
-        "Ralentissement de la croissance du contenu",
-        "Pression concurrentielle en augmentation"
+        'Tendance négative du sentiment client',
+        'Ralentissement de la croissance du contenu',
+        'Pression concurrentielle en augmentation',
       ],
       opportunity: [
-        "Nouvelle opportunité de marché détectée",
-        "Faiblesse concurrentielle exploitable",
-        "Tendance favorable émergente"
-      ]
+        'Nouvelle opportunité de marché détectée',
+        'Faiblesse concurrentielle exploitable',
+        'Tendance favorable émergente',
+      ],
     };
-    
+
     templates[type].forEach((template, index) => {
       alerts.push({
         id: `alert_${type}_gen_${index}`,
         message: template,
-        context: "Analyse automatique des métriques",
-        timeline: type === 'critical' ? "Immédiat" : type === 'warning' ? "1-3 mois" : "3-6 mois",
-        suggestedAction: `Analyser en détail et définir un plan d'action pour: ${template.toLowerCase()}`
+        context: 'Analyse automatique des métriques',
+        timeline: type === 'critical' ? 'Immédiat' : type === 'warning' ? '1-3 mois' : '3-6 mois',
+        suggestedAction: `Analyser en détail et définir un plan d'action pour: ${template.toLowerCase()}`,
       });
     });
-    
+
     return alerts;
   }
 
@@ -514,11 +542,11 @@ Réputation:
       /SYNTHÈSE STRATÉGIQUE:[\s\S]*$/gi,
       /RECOMMANDATIONS OPÉRATIONNELLES:[\s\S]*$/gi,
       /selon les instructions|conformément aux directives|comme demandé/gi,
-      /^\s*[=-]{3,}\s*$/gm
+      /^\s*[=-]{3,}\s*$/gm,
     ];
 
     let cleanedContent = content;
-    cleanupPatterns.forEach(pattern => {
+    cleanupPatterns.forEach((pattern) => {
       cleanedContent = cleanedContent.replace(pattern, '');
     });
 
@@ -531,53 +559,81 @@ Réputation:
   private generateRecommendationTitle(description: string): string {
     const words = description.split(' ').slice(0, 8);
     let title = words.join(' ');
-    
+
     if (title.length > 80) {
       title = title.substring(0, 77) + '...';
     }
-    
+
     return title;
   }
 
-  private classifyRecommendationCategory(description: string): 'immediate' | 'short-term' | 'medium-term' | 'long-term' {
+  private classifyRecommendationCategory(
+    description: string,
+  ): 'immediate' | 'short-term' | 'medium-term' | 'long-term' {
     const lowerDesc = description.toLowerCase();
-    
-    if (lowerDesc.includes('immédiat') || lowerDesc.includes('urgent') || lowerDesc.includes('rapidement')) {
+
+    if (
+      lowerDesc.includes('immédiat') ||
+      lowerDesc.includes('urgent') ||
+      lowerDesc.includes('rapidement')
+    ) {
       return 'immediate';
-    } else if (lowerDesc.includes('court terme') || lowerDesc.includes('prochains mois') || lowerDesc.includes('3 mois')) {
+    } else if (
+      lowerDesc.includes('court terme') ||
+      lowerDesc.includes('prochains mois') ||
+      lowerDesc.includes('3 mois')
+    ) {
       return 'short-term';
-    } else if (lowerDesc.includes('moyen terme') || lowerDesc.includes('6 mois') || lowerDesc.includes('année')) {
+    } else if (
+      lowerDesc.includes('moyen terme') ||
+      lowerDesc.includes('6 mois') ||
+      lowerDesc.includes('année')
+    ) {
       return 'medium-term';
     }
-    
+
     return 'long-term';
   }
 
-  private assessRecommendationPriority(description: string): 'critical' | 'high' | 'medium' | 'low' {
+  private assessRecommendationPriority(
+    description: string,
+  ): 'critical' | 'high' | 'medium' | 'low' {
     const lowerDesc = description.toLowerCase();
-    
-    if (lowerDesc.includes('critique') || lowerDesc.includes('essentiel') || lowerDesc.includes('vital')) {
+
+    if (
+      lowerDesc.includes('critique') ||
+      lowerDesc.includes('essentiel') ||
+      lowerDesc.includes('vital')
+    ) {
       return 'critical';
-    } else if (lowerDesc.includes('important') || lowerDesc.includes('prioritaire') || lowerDesc.includes('majeur')) {
+    } else if (
+      lowerDesc.includes('important') ||
+      lowerDesc.includes('prioritaire') ||
+      lowerDesc.includes('majeur')
+    ) {
       return 'high';
     } else if (lowerDesc.includes('modéré') || lowerDesc.includes('significatif')) {
       return 'medium';
     }
-    
+
     return 'low';
   }
 
   private estimateRecommendationImpact(description: string): number {
     const lowerDesc = description.toLowerCase();
-    
-    if (lowerDesc.includes('transformation') || lowerDesc.includes('révolution') || lowerDesc.includes('disruption')) {
+
+    if (
+      lowerDesc.includes('transformation') ||
+      lowerDesc.includes('révolution') ||
+      lowerDesc.includes('disruption')
+    ) {
       return 90;
     } else if (lowerDesc.includes('amélioration majeure') || lowerDesc.includes('fort impact')) {
       return 75;
     } else if (lowerDesc.includes('optimisation') || lowerDesc.includes('amélioration')) {
       return 60;
     }
-    
+
     return 45; // Impact moyen par défaut
   }
 
@@ -586,150 +642,250 @@ Réputation:
     if (timelineMatch) {
       return `${timelineMatch[1]} ${timelineMatch[2]}`;
     }
-    
+
     const category = this.classifyRecommendationCategory(description);
     const timelines = {
-      'immediate': '1-3 mois',
+      immediate: '1-3 mois',
       'short-term': '3-6 mois',
       'medium-term': '6-12 mois',
-      'long-term': '12+ mois'
+      'long-term': '12+ mois',
     };
-    
+
     return timelines[category];
   }
 
   private estimateRecommendationBudget(description: string): any {
     const budgetMatch = description.match(/(\d+(?:,\d{3})*)\s*(?:€|euros?)/i);
-    
+
     if (budgetMatch) {
       const amount = parseInt(budgetMatch[1].replace(',', ''));
       return {
         min: amount * 0.8,
         max: amount * 1.2,
-        currency: 'EUR'
+        currency: 'EUR',
       };
     }
-    
+
     // Estimation basée sur le type de recommandation
     const lowerDesc = description.toLowerCase();
-    
-    if (lowerDesc.includes('technologie') || lowerDesc.includes('système') || lowerDesc.includes('plateforme')) {
+
+    if (
+      lowerDesc.includes('technologie') ||
+      lowerDesc.includes('système') ||
+      lowerDesc.includes('plateforme')
+    ) {
       return { min: 50000, max: 200000, currency: 'EUR' };
-    } else if (lowerDesc.includes('marketing') || lowerDesc.includes('communication') || lowerDesc.includes('campagne')) {
+    } else if (
+      lowerDesc.includes('marketing') ||
+      lowerDesc.includes('communication') ||
+      lowerDesc.includes('campagne')
+    ) {
       return { min: 20000, max: 100000, currency: 'EUR' };
-    } else if (lowerDesc.includes('formation') || lowerDesc.includes('développement') || lowerDesc.includes('compétences')) {
+    } else if (
+      lowerDesc.includes('formation') ||
+      lowerDesc.includes('développement') ||
+      lowerDesc.includes('compétences')
+    ) {
       return { min: 10000, max: 50000, currency: 'EUR' };
     }
-    
+
     return { min: 5000, max: 25000, currency: 'EUR' };
   }
 
   private extractRequiredResources(description: string): string[] {
     const resources: string[] = [];
     const lowerDesc = description.toLowerCase();
-    
-    if (lowerDesc.includes('équipe') || lowerDesc.includes('personnel') || lowerDesc.includes('ressources humaines')) {
+
+    if (
+      lowerDesc.includes('équipe') ||
+      lowerDesc.includes('personnel') ||
+      lowerDesc.includes('ressources humaines')
+    ) {
       resources.push('Ressources humaines');
     }
-    if (lowerDesc.includes('technologie') || lowerDesc.includes('système') || lowerDesc.includes('logiciel')) {
+    if (
+      lowerDesc.includes('technologie') ||
+      lowerDesc.includes('système') ||
+      lowerDesc.includes('logiciel')
+    ) {
       resources.push('Infrastructure technique');
     }
-    if (lowerDesc.includes('budget') || lowerDesc.includes('financement') || lowerDesc.includes('investissement')) {
+    if (
+      lowerDesc.includes('budget') ||
+      lowerDesc.includes('financement') ||
+      lowerDesc.includes('investissement')
+    ) {
       resources.push('Budget');
     }
-    if (lowerDesc.includes('formation') || lowerDesc.includes('compétences') || lowerDesc.includes('expertise')) {
+    if (
+      lowerDesc.includes('formation') ||
+      lowerDesc.includes('compétences') ||
+      lowerDesc.includes('expertise')
+    ) {
       resources.push('Formation et expertise');
     }
-    if (lowerDesc.includes('temps') || lowerDesc.includes('délai') || lowerDesc.includes('planning')) {
+    if (
+      lowerDesc.includes('temps') ||
+      lowerDesc.includes('délai') ||
+      lowerDesc.includes('planning')
+    ) {
       resources.push('Temps et planification');
     }
-    
+
     return resources.length > 0 ? resources : ['Ressources à définir'];
   }
 
   private identifyResponsibleDepartment(description: string): string {
     const lowerDesc = description.toLowerCase();
-    
-    if (lowerDesc.includes('marketing') || lowerDesc.includes('communication') || lowerDesc.includes('publicité')) {
+
+    if (
+      lowerDesc.includes('marketing') ||
+      lowerDesc.includes('communication') ||
+      lowerDesc.includes('publicité')
+    ) {
       return 'Marketing';
-    } else if (lowerDesc.includes('technologie') || lowerDesc.includes('système') || lowerDesc.includes('digital')) {
+    } else if (
+      lowerDesc.includes('technologie') ||
+      lowerDesc.includes('système') ||
+      lowerDesc.includes('digital')
+    ) {
       return 'IT/Digital';
-    } else if (lowerDesc.includes('vente') || lowerDesc.includes('commercial') || lowerDesc.includes('client')) {
+    } else if (
+      lowerDesc.includes('vente') ||
+      lowerDesc.includes('commercial') ||
+      lowerDesc.includes('client')
+    ) {
       return 'Commercial';
-    } else if (lowerDesc.includes('finance') || lowerDesc.includes('budget') || lowerDesc.includes('coût')) {
+    } else if (
+      lowerDesc.includes('finance') ||
+      lowerDesc.includes('budget') ||
+      lowerDesc.includes('coût')
+    ) {
       return 'Finance';
-    } else if (lowerDesc.includes('ressources humaines') || lowerDesc.includes('formation') || lowerDesc.includes('personnel')) {
+    } else if (
+      lowerDesc.includes('ressources humaines') ||
+      lowerDesc.includes('formation') ||
+      lowerDesc.includes('personnel')
+    ) {
       return 'RH';
-    } else if (lowerDesc.includes('stratégie') || lowerDesc.includes('direction') || lowerDesc.includes('gouvernance')) {
+    } else if (
+      lowerDesc.includes('stratégie') ||
+      lowerDesc.includes('direction') ||
+      lowerDesc.includes('gouvernance')
+    ) {
       return 'Direction générale';
     }
-    
+
     return 'À définir';
   }
 
   private extractSuccessMetrics(description: string): string[] {
     const metrics: string[] = [];
     const lowerDesc = description.toLowerCase();
-    
+
     if (lowerDesc.includes('part de marché') || lowerDesc.includes('market share')) {
       metrics.push('Part de marché');
     }
-    if (lowerDesc.includes('chiffre d\'affaires') || lowerDesc.includes('revenus') || lowerDesc.includes('ventes')) {
-      metrics.push('Chiffre d\'affaires');
+    if (
+      lowerDesc.includes("chiffre d'affaires") ||
+      lowerDesc.includes('revenus') ||
+      lowerDesc.includes('ventes')
+    ) {
+      metrics.push("Chiffre d'affaires");
     }
-    if (lowerDesc.includes('satisfaction') || lowerDesc.includes('nps') || lowerDesc.includes('client')) {
+    if (
+      lowerDesc.includes('satisfaction') ||
+      lowerDesc.includes('nps') ||
+      lowerDesc.includes('client')
+    ) {
       metrics.push('Satisfaction client');
     }
-    if (lowerDesc.includes('engagement') || lowerDesc.includes('social') || lowerDesc.includes('audience')) {
+    if (
+      lowerDesc.includes('engagement') ||
+      lowerDesc.includes('social') ||
+      lowerDesc.includes('audience')
+    ) {
       metrics.push('Engagement digital');
     }
-    if (lowerDesc.includes('réputation') || lowerDesc.includes('image') || lowerDesc.includes('notoriété')) {
+    if (
+      lowerDesc.includes('réputation') ||
+      lowerDesc.includes('image') ||
+      lowerDesc.includes('notoriété')
+    ) {
       metrics.push('Score de réputation');
     }
-    if (lowerDesc.includes('efficacité') || lowerDesc.includes('productivité') || lowerDesc.includes('performance')) {
+    if (
+      lowerDesc.includes('efficacité') ||
+      lowerDesc.includes('productivité') ||
+      lowerDesc.includes('performance')
+    ) {
       metrics.push('Indicateurs de performance');
     }
-    
+
     return metrics.length > 0 ? metrics : ['KPIs à définir'];
   }
 
   private assessRecommendationRisk(description: string): 'low' | 'medium' | 'high' {
     const lowerDesc = description.toLowerCase();
-    
-    if (lowerDesc.includes('risque élevé') || lowerDesc.includes('incertain') || lowerDesc.includes('complexe')) {
+
+    if (
+      lowerDesc.includes('risque élevé') ||
+      lowerDesc.includes('incertain') ||
+      lowerDesc.includes('complexe')
+    ) {
       return 'high';
-    } else if (lowerDesc.includes('risque modéré') || lowerDesc.includes('attention') || lowerDesc.includes('surveillance')) {
+    } else if (
+      lowerDesc.includes('risque modéré') ||
+      lowerDesc.includes('attention') ||
+      lowerDesc.includes('surveillance')
+    ) {
       return 'medium';
     }
-    
+
     return 'low';
   }
 
   private extractDependencies(description: string): string[] {
     const dependencies: string[] = [];
     const lowerDesc = description.toLowerCase();
-    
+
     if (lowerDesc.includes('budget') || lowerDesc.includes('financement')) {
       dependencies.push('Validation budgétaire');
     }
-    if (lowerDesc.includes('équipe') || lowerDesc.includes('ressources') || lowerDesc.includes('personnel')) {
+    if (
+      lowerDesc.includes('équipe') ||
+      lowerDesc.includes('ressources') ||
+      lowerDesc.includes('personnel')
+    ) {
       dependencies.push('Disponibilité des ressources');
     }
-    if (lowerDesc.includes('technologie') || lowerDesc.includes('système') || lowerDesc.includes('plateforme')) {
+    if (
+      lowerDesc.includes('technologie') ||
+      lowerDesc.includes('système') ||
+      lowerDesc.includes('plateforme')
+    ) {
       dependencies.push('Infrastructure technique');
     }
-    if (lowerDesc.includes('partenaire') || lowerDesc.includes('externe') || lowerDesc.includes('fournisseur')) {
+    if (
+      lowerDesc.includes('partenaire') ||
+      lowerDesc.includes('externe') ||
+      lowerDesc.includes('fournisseur')
+    ) {
       dependencies.push('Partenaires externes');
     }
-    if (lowerDesc.includes('réglement') || lowerDesc.includes('conformité') || lowerDesc.includes('légal')) {
+    if (
+      lowerDesc.includes('réglement') ||
+      lowerDesc.includes('conformité') ||
+      lowerDesc.includes('légal')
+    ) {
       dependencies.push('Conformité réglementaire');
     }
-    
+
     return dependencies.length > 0 ? dependencies : ['Aucune dépendance critique'];
   }
 
   private extractAlertContext(description: string): string {
-    const sentences = description.split('.').filter(s => s.trim().length > 10);
+    const sentences = description.split('.').filter((s) => s.trim().length > 10);
     return sentences.length > 1 ? sentences[1].trim() : 'Contexte à analyser';
   }
 
@@ -738,38 +894,44 @@ Réputation:
     if (timelineMatch) {
       return `${timelineMatch[1]} ${timelineMatch[2]}`;
     }
-    
-    if (description.toLowerCase().includes('immédiat') || description.toLowerCase().includes('urgent')) {
+
+    if (
+      description.toLowerCase().includes('immédiat') ||
+      description.toLowerCase().includes('urgent')
+    ) {
       return 'Immédiat';
     } else if (description.toLowerCase().includes('court terme')) {
       return '1-3 mois';
     }
-    
+
     return '3-6 mois';
   }
 
-  private generateAlertAction(description: string, type: 'critical' | 'warning' | 'opportunity'): string {
+  private generateAlertAction(
+    description: string,
+    type: 'critical' | 'warning' | 'opportunity',
+  ): string {
     const actionTemplates = {
       critical: [
-        'Mettre en place un plan d\'action immédiat',
+        "Mettre en place un plan d'action immédiat",
         'Convoquer une réunion de crise',
-        'Activer les procédures d\'urgence',
-        'Communiquer avec les parties prenantes'
+        "Activer les procédures d'urgence",
+        'Communiquer avec les parties prenantes',
       ],
       warning: [
         'Renforcer la surveillance des indicateurs',
         'Analyser les causes profondes',
         'Préparer un plan de contingence',
-        'Consulter les experts sectoriels'
+        'Consulter les experts sectoriels',
       ],
       opportunity: [
-        'Analyser la faisabilité et l\'impact',
-        'Développer une stratégie d\'exploitation',
+        "Analyser la faisabilité et l'impact",
+        "Développer une stratégie d'exploitation",
         'Allouer les ressources nécessaires',
-        'Définir un calendrier de mise en œuvre'
-      ]
+        'Définir un calendrier de mise en œuvre',
+      ],
     };
-    
+
     const templates = actionTemplates[type];
     return templates[Math.floor(Math.random() * templates.length)];
   }
@@ -800,11 +962,14 @@ Réputation:
   }
 
   private extractHistoricalComparison(description: string): string {
-    if (description.toLowerCase().includes('historique') || description.toLowerCase().includes('précédent')) {
+    if (
+      description.toLowerCase().includes('historique') ||
+      description.toLowerCase().includes('précédent')
+    ) {
       return 'Performance inférieure aux périodes précédentes';
     }
     return 'Données historiques à analyser';
   }
 }
 
-export const reportGenerationService = new ReportGenerationService(); 
+export const reportGenerationService = new ReportGenerationService();

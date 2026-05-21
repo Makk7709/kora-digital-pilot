@@ -7,48 +7,30 @@ import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { ScrollArea } from './ui/scroll-area';
-import { Separator } from './ui/separator';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Eye, 
-  AlertTriangle, 
-  RefreshCw, 
-  Download, 
-  Settings, 
+import {
+  TrendingUp,
+  Eye,
+  AlertTriangle,
+  RefreshCw,
+  Download,
+  Settings,
   Users,
-  MessageSquare,
   BarChart3,
   Hash,
-  Cloud,
   Brain,
   Target,
-  Lightbulb,
   CheckCircle,
   XCircle,
   Loader2,
-  Plus,
-  ExternalLink,
   Zap,
   Bot,
   Search,
   Activity,
-  FileText
+  FileText,
 } from 'lucide-react';
 
-// Import des nouveaux types et services
-import { 
-  RealMention, 
-  RealSentiment, 
-  RealCompetitor, 
-  RealKeyword, 
-  RealSWOT, 
-  RealAlert, 
-  PerplexityReport,
-  BrandReport
-} from '../types/brand-analysis';
+import type { PerplexityReport, BrandReport } from '../types/brand-analysis';
 import { PerplexityReportViewer } from './PerplexityReportViewer';
-import { RealBrandIntelligenceService } from '../services/RealBrandIntelligenceService';
 import { BrandAnalysisOrchestrator } from '../services/brand/brand-analysis-orchestrator';
 
 // Données de test mockées pour le mode test
@@ -60,7 +42,7 @@ const mockBrandReport: BrandReport = {
     neutral: 25,
     negative: 10,
     trend: 'positive' as const,
-    isCalculatedFromReal: true
+    isCalculatedFromReal: true,
   },
   mentions: [
     {
@@ -70,17 +52,17 @@ const mockBrandReport: BrandReport = {
       sentiment: 'positive' as const,
       date: new Date(),
       reach: 2500,
-      isReal: true
+      isReal: true,
     },
     {
-      id: '2', 
+      id: '2',
       content: 'Quelques critiques sur les prix de Nike mais qualité reconnue',
       source: 'Reddit',
       sentiment: 'neutral' as const,
       date: new Date(),
       reach: 800,
-      isReal: true
-    }
+      isReal: true,
+    },
   ],
   competitors: [
     {
@@ -88,20 +70,20 @@ const mockBrandReport: BrandReport = {
       mentions: 450,
       sentiment: 72,
       marketShare: 35,
-      isFromPerplexity: true
-    }
+      isFromPerplexity: true,
+    },
   ],
   keywords: [
     { word: 'innovation', count: 45, trend: 'stable' as const, isFromContent: true },
     { word: 'qualité', count: 35, trend: 'stable' as const, isFromContent: true },
-    { word: 'design', count: 28, trend: 'stable' as const, isFromContent: true }
+    { word: 'design', count: 28, trend: 'stable' as const, isFromContent: true },
   ],
   swot: {
     strengths: ['Innovation continue', 'Brand recognition forte'],
-    weaknesses: ['Prix premium', 'Distribution limitée'], 
+    weaknesses: ['Prix premium', 'Distribution limitée'],
     opportunities: ['Marchés émergents', 'E-commerce'],
     threats: ['Concurrence accrue', 'Changement comportement'],
-    isAIGenerated: true
+    isAIGenerated: true,
   },
   alerts: [
     {
@@ -109,10 +91,10 @@ const mockBrandReport: BrandReport = {
       message: 'Données de test générées pour Nike',
       timestamp: new Date(),
       source: 'Test Mode',
-      isReal: true
-    }
+      isReal: true,
+    },
   ],
-  analysisTimestamp: new Date()
+  analysisTimestamp: new Date(),
 };
 
 export const BrandMonitoring: React.FC = () => {
@@ -131,7 +113,8 @@ export const BrandMonitoring: React.FC = () => {
   // MODE TEST - À activer pour diagnostiquer
   const [testMode, setTestMode] = useState(false);
 
-  const { getBusinessInsights, getCompetitorAnalysis, isInitialized, initializeService } = usePerplexity();
+  const { getBusinessInsights, getCompetitorAnalysis, isInitialized, initializeService } =
+    usePerplexity();
   const { toast } = useToast();
 
   // Service d'analyse de marque
@@ -139,9 +122,6 @@ export const BrandMonitoring: React.FC = () => {
 
   // === NOUVEAU ÉTAT POUR MIGRATION TDD ===
   const [showTDDMigration, setShowTDDMigration] = useState(true);
-
-  // Service TDD RÉEL
-  const realService = new RealBrandIntelligenceService();
 
   // Initialiser le service Perplexity
   useEffect(() => {
@@ -152,7 +132,7 @@ export const BrandMonitoring: React.FC = () => {
           apiKey,
           model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-small-128k-online',
           maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 1000,
-          temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2
+          temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
         });
       }
     }
@@ -163,7 +143,7 @@ export const BrandMonitoring: React.FC = () => {
     if (isInitialized && !brandService) {
       const mockPerplexityService = {
         getBusinessInsights: getBusinessInsights,
-        getCompetitorAnalysis: getCompetitorAnalysis
+        getCompetitorAnalysis: getCompetitorAnalysis,
       };
       const service = new BrandAnalysisOrchestrator(mockPerplexityService);
       setBrandService(service);
@@ -179,7 +159,7 @@ export const BrandMonitoring: React.FC = () => {
         brandName: perplexityReport?.brandName,
         insightsCount: perplexityReport?.keyInsights?.length,
         actionsCount: perplexityReport?.recommendedActions?.length,
-        hasDetailedAnalysis: !!perplexityReport?.detailedAnalysis
+        hasDetailedAnalysis: !!perplexityReport?.detailedAnalysis,
       });
     }
   }, [perplexityReport]);
@@ -199,16 +179,16 @@ export const BrandMonitoring: React.FC = () => {
     try {
       // APPEL DIRECT à Perplexity - SIMPLE ET EFFICACE
       const apiKey = import.meta.env.VITE_PERPLEXITY_API_KEY || 'demo-key';
-      
+
       if (apiKey === 'pplx-your-real-api-key' || apiKey === 'demo-key') {
         // Mode démo - afficher des données simulées immédiatement
         console.log('🎯 Mode démo - affichage données simulées pour:', targetName);
         const demoReport = createDemoReport(targetName);
         setRealBrandReport(demoReport);
         setLastUpdate(new Date());
-        
+
         toast({
-          title: "✅ Analyse terminée (Mode Démo)",
+          title: '✅ Analyse terminée (Mode Démo)',
           description: `Données simulées générées pour ${targetName}`,
         });
         return;
@@ -218,25 +198,27 @@ export const BrandMonitoring: React.FC = () => {
       const response = await fetch('https://api.perplexity.ai/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           model: 'llama-3.1-sonar-small-128k-online',
-          messages: [{
-            role: 'user',
-            content: `Analyse complète de la marque "${targetName}":
+          messages: [
+            {
+              role: 'user',
+              content: `Analyse complète de la marque "${targetName}":
             1. Score de réputation sur 100
             2. 3 mentions récentes (positives/négatives) 
             3. 2 concurrents principaux avec scores sentiment
             4. 3 mots-clés importants
             5. SWOT rapide (2 points par catégorie)
             6. 2 alertes importantes
-            Réponse en format structuré lisible.`
-          }],
+            Réponse en format structuré lisible.`,
+            },
+          ],
           max_tokens: 1000,
-          temperature: 0.3
-        })
+          temperature: 0.3,
+        }),
       });
 
       if (!response.ok) {
@@ -245,30 +227,29 @@ export const BrandMonitoring: React.FC = () => {
 
       const data = await response.json();
       const content = data.choices[0].message.content;
-      
+
       // PARSER SIMPLE des résultats
       const parsedReport = parsePerplexityResponse(content, targetName);
       setRealBrandReport(parsedReport);
       setLastUpdate(new Date());
-      
+
       toast({
-        title: "✅ Analyse IA terminée",
+        title: '✅ Analyse IA terminée',
         description: `Données réelles récupérées pour ${targetName}`,
       });
-
     } catch (err) {
       console.error('Erreur Perplexity:', err);
-      
+
       // En cas d'erreur, afficher quand même des données démo
       console.log('🔄 Fallback vers données démo suite à erreur:', err.message);
       const fallbackReport = createDemoReport(targetName + ' (Fallback)');
       setRealBrandReport(fallbackReport);
       setLastUpdate(new Date());
-      
+
       setAnalysisError(`Mode démo activé - ${err.message}`);
-      
+
       toast({
-        title: "⚠️ Mode démo activé",
+        title: '⚠️ Mode démo activé',
         description: `Erreur API - Affichage de données simulées pour ${targetName}`,
       });
     } finally {
@@ -284,7 +265,7 @@ export const BrandMonitoring: React.FC = () => {
       return {
         ...parsed,
         brandName: brandName + ' (Analysé IA)',
-        analysisTimestamp: new Date()
+        analysisTimestamp: new Date(),
       };
     } catch {
       // Fallback : créer rapport basé sur le contenu texte
@@ -296,46 +277,65 @@ export const BrandMonitoring: React.FC = () => {
           neutral: 20 + Math.floor(Math.random() * 10),
           negative: 10 + Math.floor(Math.random() * 15),
           trend: 'positive' as const,
-          isCalculatedFromReal: true
+          isCalculatedFromReal: true,
         },
-        mentions: [{
-          id: '1',
-          content: content.substring(0, 150) + '...',
-          source: 'Intelligence Artificielle',
-          sentiment: 'positive' as const,
-          date: new Date(),
-          reach: 1000 + Math.floor(Math.random() * 5000),
-          isReal: true
-        }],
+        mentions: [
+          {
+            id: '1',
+            content: content.substring(0, 150) + '...',
+            source: 'Intelligence Artificielle',
+            sentiment: 'positive' as const,
+            date: new Date(),
+            reach: 1000 + Math.floor(Math.random() * 5000),
+            isReal: true,
+          },
+        ],
         competitors: [
-          { 
-            name: 'Concurrent Principal', 
-            mentions: 300 + Math.floor(Math.random() * 200), 
+          {
+            name: 'Concurrent Principal',
+            mentions: 300 + Math.floor(Math.random() * 200),
             sentiment: 65 + Math.floor(Math.random() * 20),
             marketShare: 30 + Math.floor(Math.random() * 20),
-            isFromPerplexity: true
-          }
+            isFromPerplexity: true,
+          },
         ],
         keywords: [
-          { word: 'innovation', count: 25 + Math.floor(Math.random() * 20), trend: 'stable' as const, isFromContent: true },
-          { word: 'qualité', count: 20 + Math.floor(Math.random() * 15), trend: 'stable' as const, isFromContent: true },
-          { word: 'service', count: 15 + Math.floor(Math.random() * 10), trend: 'stable' as const, isFromContent: true }
+          {
+            word: 'innovation',
+            count: 25 + Math.floor(Math.random() * 20),
+            trend: 'stable' as const,
+            isFromContent: true,
+          },
+          {
+            word: 'qualité',
+            count: 20 + Math.floor(Math.random() * 15),
+            trend: 'stable' as const,
+            isFromContent: true,
+          },
+          {
+            word: 'service',
+            count: 15 + Math.floor(Math.random() * 10),
+            trend: 'stable' as const,
+            isFromContent: true,
+          },
         ],
         swot: {
           strengths: ['Innovation reconnue par IA', 'Position marché solide'],
           weaknesses: ['Prix premium', 'Concurrence accrue'],
           opportunities: ['Expansion digitale', 'Nouveaux marchés'],
           threats: ['Volatilité économique', 'Disruption technologique'],
-          isAIGenerated: true
+          isAIGenerated: true,
         },
-        alerts: [{
-          type: 'info' as const,
-          message: 'Analyse IA complétée avec succès',
-          timestamp: new Date(),
-          source: 'IA Analysis',
-          isReal: true
-        }],
-        analysisTimestamp: new Date()
+        alerts: [
+          {
+            type: 'info' as const,
+            message: 'Analyse IA complétée avec succès',
+            timestamp: new Date(),
+            source: 'IA Analysis',
+            isReal: true,
+          },
+        ],
+        analysisTimestamp: new Date(),
       };
     }
   };
@@ -350,7 +350,7 @@ export const BrandMonitoring: React.FC = () => {
         neutral: 25,
         negative: 10,
         trend: 'positive' as const,
-        isCalculatedFromReal: true
+        isCalculatedFromReal: true,
       },
       mentions: [
         {
@@ -360,17 +360,17 @@ export const BrandMonitoring: React.FC = () => {
           sentiment: 'positive' as const,
           date: new Date(),
           reach: 2500,
-          isReal: true
+          isReal: true,
         },
         {
-          id: '2', 
+          id: '2',
           content: `Quelques critiques sur les prix de ${brandName} mais qualité reconnue`,
           source: 'Reddit',
           sentiment: 'neutral' as const,
           date: new Date(),
           reach: 800,
-          isReal: true
-        }
+          isReal: true,
+        },
       ],
       competitors: [
         {
@@ -378,20 +378,20 @@ export const BrandMonitoring: React.FC = () => {
           mentions: 450,
           sentiment: 72,
           marketShare: 35,
-          isFromPerplexity: true
-        }
+          isFromPerplexity: true,
+        },
       ],
       keywords: [
         { word: 'innovation', count: 45, trend: 'stable' as const, isFromContent: true },
         { word: 'qualité', count: 35, trend: 'stable' as const, isFromContent: true },
-        { word: 'design', count: 28, trend: 'stable' as const, isFromContent: true }
+        { word: 'design', count: 28, trend: 'stable' as const, isFromContent: true },
       ],
       swot: {
         strengths: ['Innovation continue', 'Brand recognition forte'],
-        weaknesses: ['Prix premium', 'Distribution limitée'], 
+        weaknesses: ['Prix premium', 'Distribution limitée'],
         opportunities: ['Marchés émergents', 'E-commerce'],
         threats: ['Concurrence accrue', 'Changement comportement'],
-        isAIGenerated: true
+        isAIGenerated: true,
       },
       alerts: [
         {
@@ -399,10 +399,10 @@ export const BrandMonitoring: React.FC = () => {
           message: `Données démo générées pour ${brandName}`,
           timestamp: new Date(),
           source: 'Demo Mode',
-          isReal: true
-        }
+          isReal: true,
+        },
       ],
-      analysisTimestamp: new Date()
+      analysisTimestamp: new Date(),
     };
   };
 
@@ -414,20 +414,20 @@ export const BrandMonitoring: React.FC = () => {
   const handleExportPDF = async () => {
     if (!realBrandReport) {
       toast({
-        title: "Aucune donnée",
+        title: 'Aucune donnée',
         description: "Veuillez d'abord analyser une marque",
-        variant: "destructive"
+        variant: 'destructive',
       });
       return;
     }
 
     try {
       console.log('📄 Génération PDF en cours avec données IA...');
-      
+
       // Import du service d'export
-      const { createReportExportService } = await import("../services/export");
+      const { createReportExportService } = await import('../services/export');
       const exportService = createReportExportService();
-      
+
       // Préparer les données pour l'export
       const exportData = {
         brandName: realBrandReport.brandName,
@@ -442,10 +442,10 @@ export const BrandMonitoring: React.FC = () => {
         metadata: {
           source: 'Intelligence Artificielle + Kora Processing',
           exportedAt: new Date(),
-          reportType: 'Brand Monitoring'
-        }
+          reportType: 'Brand Monitoring',
+        },
       };
-      
+
       const options = {
         format: 'pdf' as const,
         includeMetadata: true,
@@ -455,12 +455,12 @@ export const BrandMonitoring: React.FC = () => {
           includeRawData: true,
           includeExecutiveSummary: true,
           includeRecommendations: true,
-          includeAlerts: true
-        }
+          includeAlerts: true,
+        },
       };
-      
+
       const result = await exportService.exportReport(exportData, options);
-      
+
       if (result.success) {
         // Déclencher le téléchargement
         const link = document.createElement('a');
@@ -469,23 +469,22 @@ export const BrandMonitoring: React.FC = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         toast({
-          title: "✅ Export PDF réussi",
-          description: `Fichier téléchargé: ${result.fileName} (${result.fileSize} bytes)`
+          title: '✅ Export PDF réussi',
+          description: `Fichier téléchargé: ${result.fileName} (${result.fileSize} bytes)`,
         });
-        
+
         console.log(`✅ Export PDF réussi: ${result.fileName}`);
       } else {
         throw new Error(result.errors?.join(', ') || 'Erreur export PDF');
       }
-      
     } catch (error) {
       console.error('❌ Erreur export PDF:', error);
       toast({
-        title: "❌ Erreur export PDF", 
+        title: '❌ Erreur export PDF',
         description: error.message || 'Impossible de générer le PDF',
-        variant: "destructive"
+        variant: 'destructive',
       });
     }
   };
@@ -493,20 +492,20 @@ export const BrandMonitoring: React.FC = () => {
   const handleExportExcel = async () => {
     if (!realBrandReport) {
       toast({
-        title: "Aucune donnée",
+        title: 'Aucune donnée',
         description: "Veuillez d'abord analyser une marque",
-        variant: "destructive"
+        variant: 'destructive',
       });
       return;
     }
 
     try {
       console.log('📊 Génération Excel en cours...');
-      
+
       // Import du service d'export
-      const { createReportExportService } = await import("../services/export");
+      const { createReportExportService } = await import('../services/export');
       const exportService = createReportExportService();
-      
+
       // Préparer les données pour l'export Excel
       const exportData = {
         brandName: realBrandReport.brandName,
@@ -517,9 +516,9 @@ export const BrandMonitoring: React.FC = () => {
         keywords: realBrandReport.keywords,
         swot: realBrandReport.swot,
         alerts: realBrandReport.alerts,
-        analysisTimestamp: realBrandReport.analysisTimestamp
+        analysisTimestamp: realBrandReport.analysisTimestamp,
       };
-      
+
       const options = {
         format: 'excel' as const,
         includeMetadata: true,
@@ -529,12 +528,12 @@ export const BrandMonitoring: React.FC = () => {
           includeRawData: true,
           includeExecutiveSummary: true,
           includeRecommendations: true,
-          includeAlerts: true
-        }
+          includeAlerts: true,
+        },
       };
-      
+
       const result = await exportService.exportReport(exportData, options);
-      
+
       if (result.success) {
         // Déclencher le téléchargement
         const link = document.createElement('a');
@@ -543,36 +542,35 @@ export const BrandMonitoring: React.FC = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         toast({
-          title: "✅ Export Excel réussi",
-          description: `Fichier téléchargé: ${result.fileName}`
+          title: '✅ Export Excel réussi',
+          description: `Fichier téléchargé: ${result.fileName}`,
         });
-        
+
         console.log(`✅ Export Excel réussi: ${result.fileName}`);
       } else {
         throw new Error(result.errors?.join(', ') || 'Erreur export Excel');
       }
-      
     } catch (error) {
       console.error('❌ Erreur export Excel:', error);
       toast({
-        title: "❌ Erreur export Excel",
+        title: '❌ Erreur export Excel',
         description: error.message || 'Impossible de générer le fichier Excel',
-        variant: "destructive"
+        variant: 'destructive',
       });
     }
   };
 
   const handleGenerateReport = async () => {
     console.log('🚀 [DEBUG] handleGenerateReport - Début');
-    
+
     if (!realBrandReport) {
       console.log('❌ [DEBUG] Aucune donnée - realBrandReport est null');
       toast({
-        title: "Aucune donnée",
+        title: 'Aucune donnée',
         description: "Veuillez d'abord analyser une marque",
-        variant: "destructive"
+        variant: 'destructive',
       });
       return;
     }
@@ -580,9 +578,9 @@ export const BrandMonitoring: React.FC = () => {
     if (!brandService) {
       console.log('❌ [DEBUG] Service non initialisé - brandService est null');
       toast({
-        title: "Service non initialisé",
+        title: 'Service non initialisé',
         description: "Le service d'analyse n'est pas disponible",
-        variant: "destructive"
+        variant: 'destructive',
       });
       return;
     }
@@ -593,15 +591,15 @@ export const BrandMonitoring: React.FC = () => {
       competitorsCount: realBrandReport.competitors.length,
       keywordsCount: realBrandReport.keywords.length,
       swotStrengths: realBrandReport.swot.strengths.length,
-      alertsCount: realBrandReport.alerts.length
+      alertsCount: realBrandReport.alerts.length,
     });
 
     setIsGeneratingReport(true);
-    
+
     try {
       console.log('⚙️ [DEBUG] Appel du service generatePerplexityReport...');
       const report = await brandService.generatePerplexityReport(realBrandReport);
-      
+
       console.log('✅ [DEBUG] Rapport généré avec succès:', {
         reportId: report.id,
         brandName: report.brandName,
@@ -609,26 +607,26 @@ export const BrandMonitoring: React.FC = () => {
         keyInsightsCount: report.keyInsights.length,
         recommendedActionsCount: report.recommendedActions.length,
         hasDetailedAnalysis: !!report.detailedAnalysis,
-        generatedAt: report.generatedAt
+        generatedAt: report.generatedAt,
       });
 
       console.log('📝 [DEBUG] Contenu des insights:', report.keyInsights);
       console.log('🎯 [DEBUG] Contenu des actions:', report.recommendedActions);
-      
-      console.log('🔄 [DEBUG] Mise à jour de l\'état perplexityReport...');
+
+      console.log("🔄 [DEBUG] Mise à jour de l'état perplexityReport...");
       setPerplexityReport(report);
       console.log('✅ [DEBUG] État mis à jour');
-      
+
       toast({
-        title: "Rapport généré avec succès !",
+        title: 'Rapport généré avec succès !',
         description: `Rapport IA créé pour ${realBrandReport.brandName}`,
       });
     } catch (error) {
       console.error('❌ [DEBUG] Erreur lors de la génération du rapport:', error);
       toast({
-        title: "Erreur de génération",
-        description: "Impossible de générer le rapport IA",
-        variant: "destructive"
+        title: 'Erreur de génération',
+        description: 'Impossible de générer le rapport IA',
+        variant: 'destructive',
       });
     } finally {
       setIsGeneratingReport(false);
@@ -637,7 +635,8 @@ export const BrandMonitoring: React.FC = () => {
   };
 
   // === FONCTIONS DE TEST ===
-  const handleTestMode = () => {
+  // (préfixées _ car non câblées dans le rendu actuel)
+  const _handleTestMode = () => {
     if (testMode) {
       // Désactiver le mode test
       setTestMode(false);
@@ -645,8 +644,8 @@ export const BrandMonitoring: React.FC = () => {
       setLastUpdate(null);
       setTargetName('');
       toast({
-        title: "Mode test désactivé",
-        description: "Retour au mode normal"
+        title: 'Mode test désactivé',
+        description: 'Retour au mode normal',
       });
     } else {
       // Activer le mode test avec données mockées
@@ -655,18 +654,18 @@ export const BrandMonitoring: React.FC = () => {
       setLastUpdate(new Date());
       setTargetName('Nike (Test)');
       toast({
-        title: "Mode test activé",
-        description: "Affichage des données de test pour diagnostiquer l'interface"
+        title: 'Mode test activé',
+        description: "Affichage des données de test pour diagnostiquer l'interface",
       });
     }
   };
 
-  const handleTestWithRealAPI = async () => {
+  const _handleTestWithRealAPI = async () => {
     if (!isInitialized || !brandService) {
       toast({
-        title: "API non configurée",
+        title: 'API non configurée',
         description: "Perplexity n'est pas configuré",
-        variant: "destructive"
+        variant: 'destructive',
       });
       return;
     }
@@ -679,10 +678,10 @@ export const BrandMonitoring: React.FC = () => {
       const brandReport = await brandService.analyzeBrand('Nike');
       setRealBrandReport(brandReport);
       setLastUpdate(new Date());
-      
+
       toast({
-        title: "Test API réussi",
-        description: "Analyse réelle effectuée avec IA"
+        title: 'Test API réussi',
+        description: 'Analyse réelle effectuée avec IA',
       });
     } catch (err) {
       setAnalysisError('Erreur lors du test API: ' + (err as Error).message);
@@ -694,7 +693,6 @@ export const BrandMonitoring: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1 gap-6" data-testid="brand-monitoring-container">
-      
       {/* === MIGRATION TDD ENHANCED === */}
       {showTDDMigration && (
         <Card className="border-green-200 bg-gradient-to-r from-green-50 to-blue-50">
@@ -706,15 +704,17 @@ export const BrandMonitoring: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-slate-900">🚀 Nouveau : P.R.I.S.M Report</h3>
-                  <p className="text-sm text-slate-600">Deep Research complet avec métriques quantifiées et actions concrètes</p>
+                  <p className="text-sm text-slate-600">
+                    Deep Research complet avec métriques quantifiées et actions concrètes
+                  </p>
                 </div>
               </div>
               <div className="flex gap-2">
                 <Button
                   onClick={() => {
                     // Cette fonction sera connectée à la navigation parent
-                    const event = new CustomEvent('navigate-to-tdd', { 
-                      detail: { section: 'brand-intelligence-tdd' } 
+                    const event = new CustomEvent('navigate-to-tdd', {
+                      detail: { section: 'brand-intelligence-tdd' },
                     });
                     window.dispatchEvent(event);
                   }}
@@ -723,11 +723,7 @@ export const BrandMonitoring: React.FC = () => {
                   <Target className="w-4 h-4 mr-2" />
                   Accéder au P.R.I.S.M
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowTDDMigration(false)}
-                >
+                <Button variant="ghost" size="sm" onClick={() => setShowTDDMigration(false)}>
                   ✕
                 </Button>
               </div>
@@ -741,8 +737,11 @@ export const BrandMonitoring: React.FC = () => {
         <CardHeader className="pb-6">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-3 text-2xl text-slate-900" data-testid="title">
-                <div 
+              <CardTitle
+                className="flex items-center gap-3 text-2xl text-slate-900"
+                data-testid="title"
+              >
+                <div
                   className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center"
                   data-testid="header-icon-container"
                 >
@@ -771,14 +770,14 @@ export const BrandMonitoring: React.FC = () => {
                 )}
               </p>
             </div>
-            
+
             <div className="flex items-center gap-4">
               {realBrandReport && lastUpdate && (
                 <div className="text-sm text-slate-500" data-testid="secondary-text">
                   Dernière mise à jour: {lastUpdate.toLocaleTimeString()}
                 </div>
               )}
-              
+
               {/* Bouton refresh data pour les tests */}
               {realBrandReport && (
                 <Button
@@ -792,7 +791,7 @@ export const BrandMonitoring: React.FC = () => {
                   Actualiser
                 </Button>
               )}
-              
+
               {/* Indicateur de statut IA */}
               {!isInitialized && (
                 <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50">
@@ -815,7 +814,9 @@ export const BrandMonitoring: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-slate-900">Analyse de Marque avec IA</h3>
-                <p className="text-sm text-slate-600 font-normal">Analyse complète alimentée par Intelligence Artificielle</p>
+                <p className="text-sm text-slate-600 font-normal">
+                  Analyse complète alimentée par Intelligence Artificielle
+                </p>
               </div>
             </CardTitle>
             <Badge className="bg-purple-100 text-purple-700 border-purple-200">
@@ -824,7 +825,7 @@ export const BrandMonitoring: React.FC = () => {
             </Badge>
           </div>
         </CardHeader>
-        
+
         <CardContent className="p-8 space-y-6">
           {/* Section d'entrée principale */}
           <div className="space-y-4">
@@ -846,7 +847,10 @@ export const BrandMonitoring: React.FC = () => {
                   className="enhanced-input h-12 text-base"
                 />
                 {validationError && (
-                  <p className="text-sm text-red-600 flex items-center gap-1" data-testid="validation-error">
+                  <p
+                    className="text-sm text-red-600 flex items-center gap-1"
+                    data-testid="validation-error"
+                  >
                     <AlertTriangle className="w-4 h-4" />
                     {validationError}
                   </p>
@@ -855,9 +859,7 @@ export const BrandMonitoring: React.FC = () => {
 
               {/* Bouton d'analyse principal */}
               <div className="space-y-3">
-                <label className="section-title">
-                  🚀 Action
-                </label>
+                <label className="section-title">🚀 Action</label>
                 <Button
                   data-testid="analyze-brand-button"
                   onClick={handleAnalyzeWithAI}
@@ -866,7 +868,10 @@ export const BrandMonitoring: React.FC = () => {
                 >
                   {isAnalyzing ? (
                     <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" data-testid="analysis-loader" />
+                      <Loader2
+                        className="w-5 h-5 mr-2 animate-spin"
+                        data-testid="analysis-loader"
+                      />
                       <span data-testid="streaming-indicator">Analyse en cours...</span>
                     </>
                   ) : (
@@ -878,7 +883,7 @@ export const BrandMonitoring: React.FC = () => {
                 </Button>
               </div>
             </div>
-            
+
             {/* Bouton de réessai si erreur */}
             {analysisError && (
               <div className="flex justify-center">
@@ -952,7 +957,10 @@ export const BrandMonitoring: React.FC = () => {
       {realBrandReport ? (
         <>
           {/* SECTION 1: SCORE DE RÉPUTATION ET SENTIMENT - DONNÉES RÉELLES */}
-          <Card className="premium-card result-card border-blue-200/60 bg-gradient-to-br from-blue-50/30 to-white" data-testid="reputation-score-card">
+          <Card
+            className="premium-card result-card border-blue-200/60 bg-gradient-to-br from-blue-50/30 to-white"
+            data-testid="reputation-score-card"
+          >
             <CardHeader className="border-b border-blue-100 bg-gradient-to-r from-blue-50/50 to-indigo-50/30">
               <CardTitle className="flex items-center gap-3 text-slate-900">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm animated-icon">
@@ -974,10 +982,12 @@ export const BrandMonitoring: React.FC = () => {
                 <div className="metric-value text-7xl mb-3 pulse-glow">
                   {realBrandReport.sentiment.overallScore}
                 </div>
-                <p className="metric-label text-base" aria-label="Score de réputation">Score de réputation global</p>
+                <p className="metric-label text-base" aria-label="Score de réputation">
+                  Score de réputation global
+                </p>
                 <div className="mt-6">
-                  <Progress 
-                    value={realBrandReport.sentiment.overallScore} 
+                  <Progress
+                    value={realBrandReport.sentiment.overallScore}
                     className="enhanced-progress h-4"
                     aria-label="Graphique de sentiment"
                   />
@@ -987,30 +997,48 @@ export const BrandMonitoring: React.FC = () => {
               {/* Répartition sentiment avec cartes métriques */}
               <div className="responsive-grid">
                 <div className="metric-card text-center">
-                  <div className="text-4xl font-bold text-green-600 mb-2" data-testid="sentiment-positive">
+                  <div
+                    className="text-4xl font-bold text-green-600 mb-2"
+                    data-testid="sentiment-positive"
+                  >
                     {realBrandReport.sentiment.positive}%
                   </div>
                   <div className="metric-label">Positif</div>
                   <div className="mt-3">
-                    <Progress value={realBrandReport.sentiment.positive} className="enhanced-progress h-3" />
+                    <Progress
+                      value={realBrandReport.sentiment.positive}
+                      className="enhanced-progress h-3"
+                    />
                   </div>
                 </div>
                 <div className="metric-card text-center">
-                  <div className="text-4xl font-bold text-slate-600 mb-2" data-testid="sentiment-neutral">
+                  <div
+                    className="text-4xl font-bold text-slate-600 mb-2"
+                    data-testid="sentiment-neutral"
+                  >
                     {realBrandReport.sentiment.neutral}%
                   </div>
                   <div className="metric-label">Neutre</div>
                   <div className="mt-3">
-                    <Progress value={realBrandReport.sentiment.neutral} className="enhanced-progress h-3" />
+                    <Progress
+                      value={realBrandReport.sentiment.neutral}
+                      className="enhanced-progress h-3"
+                    />
                   </div>
                 </div>
                 <div className="metric-card text-center">
-                  <div className="text-4xl font-bold text-red-600 mb-2" data-testid="sentiment-negative">
+                  <div
+                    className="text-4xl font-bold text-red-600 mb-2"
+                    data-testid="sentiment-negative"
+                  >
                     {realBrandReport.sentiment.negative}%
                   </div>
                   <div className="metric-label">Négatif</div>
                   <div className="mt-3">
-                    <Progress value={realBrandReport.sentiment.negative} className="enhanced-progress h-3" />
+                    <Progress
+                      value={realBrandReport.sentiment.negative}
+                      className="enhanced-progress h-3"
+                    />
                   </div>
                 </div>
               </div>
@@ -1021,16 +1049,25 @@ export const BrandMonitoring: React.FC = () => {
                   <h4 className="section-title">💬 Mentions analysées par IA</h4>
                   <div className="space-y-3 custom-scrollbar max-h-64 overflow-y-auto">
                     {realBrandReport.mentions.slice(0, 3).map((mention) => (
-                      <div key={mention.id} className="result-card p-4 bg-gradient-to-r from-slate-50 to-white">
-                        <p className="text-sm text-slate-700 mb-3 leading-relaxed">{mention.content}</p>
+                      <div
+                        key={mention.id}
+                        className="result-card p-4 bg-gradient-to-r from-slate-50 to-white"
+                      >
+                        <p className="text-sm text-slate-700 mb-3 leading-relaxed">
+                          {mention.content}
+                        </p>
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-slate-500 font-medium">{mention.source}</span>
-                          <Badge 
-                            variant="outline" 
+                          <span className="text-xs text-slate-500 font-medium">
+                            {mention.source}
+                          </span>
+                          <Badge
+                            variant="outline"
                             className={`text-xs font-medium ${
-                              mention.sentiment === 'positive' ? 'text-green-700 border-green-300 bg-green-50' :
-                              mention.sentiment === 'negative' ? 'text-red-700 border-red-300 bg-red-50' :
-                              'text-slate-700 border-slate-300 bg-slate-50'
+                              mention.sentiment === 'positive'
+                                ? 'text-green-700 border-green-300 bg-green-50'
+                                : mention.sentiment === 'negative'
+                                  ? 'text-red-700 border-red-300 bg-red-50'
+                                  : 'text-slate-700 border-slate-300 bg-slate-50'
                             }`}
                           >
                             {mention.sentiment}
@@ -1046,7 +1083,10 @@ export const BrandMonitoring: React.FC = () => {
         </>
       ) : (
         /* PLACEHOLDERS POUR LES TESTS - AMÉLIORÉS */
-        <Card className="premium-card result-card border-slate-200/60 bg-gradient-to-br from-slate-50/30 to-white" data-testid="reputation-score-card">
+        <Card
+          className="premium-card result-card border-slate-200/60 bg-gradient-to-br from-slate-50/30 to-white"
+          data-testid="reputation-score-card"
+        >
           <CardHeader className="border-b border-slate-100">
             <CardTitle className="flex items-center gap-3 text-slate-700">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
@@ -1061,10 +1101,12 @@ export const BrandMonitoring: React.FC = () => {
           <CardContent className="p-8 space-y-8">
             <div className="text-center" data-testid="reputation-score">
               <div className="text-7xl font-bold text-slate-300 mb-3">--</div>
-              <p className="text-slate-400 text-base" aria-label="Score de réputation">Saisissez une marque pour analyser</p>
+              <p className="text-slate-400 text-base" aria-label="Score de réputation">
+                Saisissez une marque pour analyser
+              </p>
               <div className="mt-6">
-                <Progress 
-                  value={0} 
+                <Progress
+                  value={0}
                   className="enhanced-progress h-4"
                   aria-label="Graphique de sentiment"
                 />
@@ -1072,15 +1114,30 @@ export const BrandMonitoring: React.FC = () => {
             </div>
             <div className="responsive-grid">
               <div className="metric-card text-center opacity-50">
-                <div className="text-4xl font-bold text-slate-300 mb-2" data-testid="sentiment-positive">--%</div>
+                <div
+                  className="text-4xl font-bold text-slate-300 mb-2"
+                  data-testid="sentiment-positive"
+                >
+                  --%
+                </div>
                 <div className="metric-label">Positif</div>
               </div>
               <div className="metric-card text-center opacity-50">
-                <div className="text-4xl font-bold text-slate-300 mb-2" data-testid="sentiment-neutral">--%</div>
+                <div
+                  className="text-4xl font-bold text-slate-300 mb-2"
+                  data-testid="sentiment-neutral"
+                >
+                  --%
+                </div>
                 <div className="metric-label">Neutre</div>
               </div>
               <div className="metric-card text-center opacity-50">
-                <div className="text-4xl font-bold text-slate-300 mb-2" data-testid="sentiment-negative">--%</div>
+                <div
+                  className="text-4xl font-bold text-slate-300 mb-2"
+                  data-testid="sentiment-negative"
+                >
+                  --%
+                </div>
                 <div className="metric-label">Négatif</div>
               </div>
             </div>
@@ -1092,7 +1149,10 @@ export const BrandMonitoring: React.FC = () => {
       {!realBrandReport && (
         <>
           {/* Placeholder Surveillance concurrentielle */}
-          <Card className="premium-card border-slate-200/60" data-testid="competitive-surveillance-card">
+          <Card
+            className="premium-card border-slate-200/60"
+            data-testid="competitive-surveillance-card"
+          >
             <CardHeader className="border-b border-slate-100">
               <CardTitle className="flex items-center gap-2 text-slate-700" data-testid="title">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
@@ -1143,12 +1203,13 @@ export const BrandMonitoring: React.FC = () => {
           <CardContent className="p-6 space-y-4" data-testid="voice-share-chart">
             <ScrollArea className="h-48">
               {realBrandReport.competitors.map((competitor, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border-b border-slate-100 last:border-0">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 border-b border-slate-100 last:border-0"
+                >
                   <div>
                     <div className="font-medium text-slate-900">{competitor.name}</div>
-                    <div className="text-sm text-slate-500">
-                      {competitor.mentions} mentions
-                    </div>
+                    <div className="text-sm text-slate-500">{competitor.mentions} mentions</div>
                   </div>
                   <Badge variant="outline" className="border-blue-200 text-blue-700">
                     {competitor.sentiment}% sentiment
@@ -1177,16 +1238,18 @@ export const BrandMonitoring: React.FC = () => {
           </CardHeader>
           <CardContent className="p-6 space-y-6">
             <div>
-              <div className="text-sm font-medium mb-2 text-slate-700">Mots-clés identifiés par l'IA</div>
-              <div 
-                className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl" 
+              <div className="text-sm font-medium mb-2 text-slate-700">
+                Mots-clés identifiés par l'IA
+              </div>
+              <div
+                className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl"
                 data-testid="keywords-cloud"
               >
                 <div className="flex flex-wrap gap-2">
                   {realBrandReport.keywords.map((keyword, index) => (
-                    <Badge 
-                      key={index} 
-                      variant="outline" 
+                    <Badge
+                      key={index}
+                      variant="outline"
                       className="border-green-300 text-green-700 bg-green-50"
                       style={{ fontSize: `${Math.min(16, 10 + keyword.count / 10)}px` }}
                     >
@@ -1202,7 +1265,10 @@ export const BrandMonitoring: React.FC = () => {
 
       {/* SECTION 4: ANALYSE SWOT RÉELLE */}
       {realBrandReport && (
-        <Card className="premium-card border-indigo-200/60 bg-gradient-to-br from-indigo-50/20 to-white" data-testid="swot-analysis-card">
+        <Card
+          className="premium-card border-indigo-200/60 bg-gradient-to-br from-indigo-50/20 to-white"
+          data-testid="swot-analysis-card"
+        >
           <CardHeader className="border-b border-indigo-100">
             <CardTitle className="flex items-center gap-2 text-slate-900">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center">
@@ -1282,10 +1348,13 @@ export const BrandMonitoring: React.FC = () => {
             <div className="mt-6 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
               <div className="flex items-center gap-2">
                 <Brain className="w-5 h-5 text-indigo-600" />
-                <span className="font-medium text-indigo-800">Analyse générée par Intelligence Artificielle</span>
+                <span className="font-medium text-indigo-800">
+                  Analyse générée par Intelligence Artificielle
+                </span>
               </div>
               <p className="text-sm text-indigo-700 mt-2">
-                Cette analyse SWOT a été générée en temps réel à partir des données de marché actuelles pour {realBrandReport.brandName}.
+                Cette analyse SWOT a été générée en temps réel à partir des données de marché
+                actuelles pour {realBrandReport.brandName}.
               </p>
             </div>
           </CardContent>
@@ -1318,8 +1387,8 @@ export const BrandMonitoring: React.FC = () => {
         <CardContent className="p-6">
           <div className="flex flex-wrap gap-4 justify-between items-center">
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleExportPDF}
                 className="flex items-center gap-2 transition-all duration-300 hover:bg-blue-50 hover:border-blue-300 focus:ring-2 focus:ring-blue-500"
                 data-testid="export-pdf"
@@ -1327,8 +1396,8 @@ export const BrandMonitoring: React.FC = () => {
                 <Download className="w-4 h-4" />
                 Exporter PDF
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleExportExcel}
                 className="flex items-center gap-2 transition-all duration-300 hover:bg-green-50 hover:border-green-300 focus:ring-2 focus:ring-green-500"
                 data-testid="export-excel"
@@ -1336,8 +1405,8 @@ export const BrandMonitoring: React.FC = () => {
                 <Download className="w-4 h-4" />
                 Exporter Excel
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleGenerateReport}
                 disabled={!realBrandReport || isGeneratingReport}
                 className="flex items-center gap-2 transition-all duration-300 hover:bg-purple-50 hover:border-purple-300 focus:ring-2 focus:ring-purple-500"
@@ -1358,10 +1427,9 @@ export const BrandMonitoring: React.FC = () => {
             </div>
 
             <div className="text-sm text-slate-500">
-              {realBrandReport ? 
-                `Rapport basé sur l'analyse IA de ${realBrandReport.brandName}` :
-                "Aucune analyse disponible"
-              }
+              {realBrandReport
+                ? `Rapport basé sur l'analyse IA de ${realBrandReport.brandName}`
+                : 'Aucune analyse disponible'}
             </div>
           </div>
         </CardContent>
@@ -1377,7 +1445,8 @@ export const BrandMonitoring: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-slate-900">Aucune analyse en cours</h3>
               <p className="text-slate-600">
-                Saisissez le nom d'une marque ci-dessus et lancez l'analyse pour voir les résultats de veille IA en temps réel.
+                Saisissez le nom d'une marque ci-dessus et lancez l'analyse pour voir les résultats
+                de veille IA en temps réel.
               </p>
               <div className="pt-4">
                 <Badge className="bg-blue-50 text-blue-700 border-blue-200">
@@ -1391,4 +1460,4 @@ export const BrandMonitoring: React.FC = () => {
       )}
     </div>
   );
-}; 
+};

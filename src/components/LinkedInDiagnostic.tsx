@@ -4,15 +4,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useLinkedInStats } from '@/hooks/useLinkedInStats';
 import { useErrorHandler } from '@/lib/error-handler';
-import { 
-  CheckCircle2, 
-  AlertTriangle, 
-  XCircle, 
-  Info, 
+import {
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  Info,
   ExternalLink,
   RefreshCw,
   Database,
-  Wifi
+  Wifi,
 } from 'lucide-react';
 
 interface LinkedInDiagnosticProps {
@@ -20,18 +20,12 @@ interface LinkedInDiagnosticProps {
   compact?: boolean;
 }
 
-const LinkedInDiagnostic: React.FC<LinkedInDiagnosticProps> = ({ 
-  className = '', 
-  compact = false 
+const LinkedInDiagnostic: React.FC<LinkedInDiagnosticProps> = ({
+  className = '',
+  compact = false,
 }) => {
-  const { 
-    connectionStatus, 
-    isAuthenticated, 
-    metrics, 
-    cacheInfo,
-    error 
-  } = useLinkedInStats(false);
-  
+  const { connectionStatus, isAuthenticated, cacheInfo, error } = useLinkedInStats(false);
+
   const { getHealthStatus } = useErrorHandler();
   const healthStatus = getHealthStatus();
 
@@ -98,19 +92,21 @@ const LinkedInDiagnostic: React.FC<LinkedInDiagnosticProps> = ({
           Diagnostic LinkedIn
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {/* Statut de connexion */}
         <div className="space-y-2">
           <h4 className="font-medium text-slate-700">Statut de connexion</h4>
-          <div className={`flex items-center justify-between p-3 rounded-lg border ${getStatusColor(connectionStatus)}`}>
+          <div
+            className={`flex items-center justify-between p-3 rounded-lg border ${getStatusColor(connectionStatus)}`}
+          >
             <div className="flex items-center space-x-2">
               {getStatusIcon(connectionStatus)}
               <span className="font-medium">{getStatusText(connectionStatus)}</span>
             </div>
             {connectionStatus === 'disconnected' && (
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 variant="outline"
                 onClick={() => window.open('/linkedin-test', '_blank')}
               >
@@ -136,15 +132,13 @@ const LinkedInDiagnostic: React.FC<LinkedInDiagnosticProps> = ({
                 </div>
               </div>
             </div>
-            
+
             {cacheInfo.isFromCache && (
               <div className="flex items-center space-x-2 p-2 bg-blue-50 rounded">
                 <Database className="w-4 h-4 text-blue-500" />
                 <div>
                   <div className="text-sm font-medium">Cache</div>
-                  <div className="text-xs text-slate-500">
-                    {cacheInfo.cacheAge} min
-                  </div>
+                  <div className="text-xs text-slate-500">{cacheInfo.cacheAge} min</div>
                 </div>
               </div>
             )}
@@ -159,12 +153,8 @@ const LinkedInDiagnostic: React.FC<LinkedInDiagnosticProps> = ({
               <div className="flex items-start space-x-2">
                 <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5" />
                 <div>
-                  <div className="text-sm font-medium text-red-800">
-                    Erreur de connexion
-                  </div>
-                  <div className="text-xs text-red-600 mt-1">
-                    {error}
-                  </div>
+                  <div className="text-sm font-medium text-red-800">Erreur de connexion</div>
+                  <div className="text-xs text-red-600 mt-1">{error}</div>
                 </div>
               </div>
             </div>
@@ -175,24 +165,32 @@ const LinkedInDiagnostic: React.FC<LinkedInDiagnosticProps> = ({
         {healthStatus.status !== 'healthy' && (
           <div className="space-y-2">
             <h4 className="font-medium text-slate-700">État de l'application</h4>
-            <div className={`p-3 rounded-lg border ${
-              healthStatus.status === 'warning' 
-                ? 'bg-orange-50 border-orange-200' 
-                : 'bg-red-50 border-red-200'
-            }`}>
+            <div
+              className={`p-3 rounded-lg border ${
+                healthStatus.status === 'warning'
+                  ? 'bg-orange-50 border-orange-200'
+                  : 'bg-red-50 border-red-200'
+              }`}
+            >
               <div className="flex items-start space-x-2">
-                <AlertTriangle className={`w-4 h-4 mt-0.5 ${
-                  healthStatus.status === 'warning' ? 'text-orange-500' : 'text-red-500'
-                }`} />
+                <AlertTriangle
+                  className={`w-4 h-4 mt-0.5 ${
+                    healthStatus.status === 'warning' ? 'text-orange-500' : 'text-red-500'
+                  }`}
+                />
                 <div>
-                  <div className={`text-sm font-medium ${
-                    healthStatus.status === 'warning' ? 'text-orange-800' : 'text-red-800'
-                  }`}>
+                  <div
+                    className={`text-sm font-medium ${
+                      healthStatus.status === 'warning' ? 'text-orange-800' : 'text-red-800'
+                    }`}
+                  >
                     {healthStatus.status === 'warning' ? 'Avertissements' : 'Erreurs détectées'}
                   </div>
-                  <ul className={`text-xs mt-1 space-y-1 ${
-                    healthStatus.status === 'warning' ? 'text-orange-600' : 'text-red-600'
-                  }`}>
+                  <ul
+                    className={`text-xs mt-1 space-y-1 ${
+                      healthStatus.status === 'warning' ? 'text-orange-600' : 'text-red-600'
+                    }`}
+                  >
                     {healthStatus.issues.slice(0, 3).map((issue, index) => (
                       <li key={index}>• {issue}</li>
                     ))}
@@ -208,14 +206,11 @@ const LinkedInDiagnostic: React.FC<LinkedInDiagnosticProps> = ({
           <div className="flex items-start space-x-2">
             <Info className="w-4 h-4 text-blue-500 mt-0.5" />
             <div>
-              <div className="text-sm font-medium text-blue-800">
-                Mode démonstration actif
-              </div>
+              <div className="text-sm font-medium text-blue-800">Mode démonstration actif</div>
               <div className="text-xs text-blue-600 mt-1">
-                {isAuthenticated 
+                {isAuthenticated
                   ? 'Vous voyez vos vraies données LinkedIn'
-                  : 'Connectez LinkedIn pour voir vos vraies statistiques. Les données actuelles sont simulées pour la démonstration.'
-                }
+                  : 'Connectez LinkedIn pour voir vos vraies statistiques. Les données actuelles sont simulées pour la démonstration.'}
               </div>
             </div>
           </div>
@@ -225,4 +220,4 @@ const LinkedInDiagnostic: React.FC<LinkedInDiagnosticProps> = ({
   );
 };
 
-export default LinkedInDiagnostic; 
+export default LinkedInDiagnostic;

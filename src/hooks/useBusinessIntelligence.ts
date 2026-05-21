@@ -279,7 +279,7 @@ export const useBusinessIntelligence = () => {
 
 // === UTILITAIRES DE PARSING ===
 
-function parseOverview(content: string, domain: string): DomainOverview {
+function parseOverview(content: string, _domain?: string): DomainOverview {
   // Extraction intelligente des données de marché
   const sizeRegex =
     /marché.*?(\d+(?:,\d+)?(?:\.\d+)?)\s*(milliard|million|Md|M)\s*(euros?|dollars?|\$|€)/i;

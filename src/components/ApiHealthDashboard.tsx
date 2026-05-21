@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { RefreshCw, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { useApiCallManager } from '@/lib/api-call-manager';
 
 export const ApiHealthDashboard: React.FC = () => {
@@ -26,7 +26,7 @@ export const ApiHealthDashboard: React.FC = () => {
 
   const refreshStats = () => {
     setStats(getStats());
-    setRefreshCount(prev => prev + 1);
+    setRefreshCount((prev) => prev + 1);
   };
 
   const resetAllStats = () => {
@@ -68,12 +68,8 @@ export const ApiHealthDashboard: React.FC = () => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div>
-            <CardTitle className="text-base font-medium">
-              🔍 API Health Dashboard
-            </CardTitle>
-            <CardDescription>
-              Monitor API endpoints and prevent excessive calls
-            </CardDescription>
+            <CardTitle className="text-base font-medium">🔍 API Health Dashboard</CardTitle>
+            <CardDescription>Monitor API endpoints and prevent excessive calls</CardDescription>
           </div>
           <div className="flex space-x-2">
             <Button
@@ -121,10 +117,7 @@ export const ApiHealthDashboard: React.FC = () => {
             <div className="space-y-3">
               <h4 className="font-medium text-gray-900">Endpoint Status</h4>
               {stats.endpoints.map((endpoint, index) => (
-                <div
-                  key={index}
-                  className="border rounded-lg p-3 bg-white"
-                >
+                <div key={index} className="border rounded-lg p-3 bg-white">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       {getStatusIcon(endpoint)}
@@ -149,21 +142,19 @@ export const ApiHealthDashboard: React.FC = () => {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="mt-2 grid grid-cols-2 gap-4 text-xs text-gray-600">
                     <div>
                       <strong>Last Error:</strong>{' '}
-                      {endpoint.status.lastError 
+                      {endpoint.status.lastError
                         ? new Date(endpoint.status.lastError).toLocaleTimeString()
-                        : 'None'
-                      }
+                        : 'None'}
                     </div>
                     <div>
-                      <strong>Next Retry:</strong>{' '}
-                      {formatNextRetry(endpoint.status.nextRetryTime)}
+                      <strong>Next Retry:</strong> {formatNextRetry(endpoint.status.nextRetryTime)}
                     </div>
                   </div>
-                  
+
                   {endpoint.status.isServerDown && (
                     <div className="mt-2 p-2 bg-red-50 rounded text-xs text-red-700">
                       <div className="flex items-center gap-1">
@@ -179,7 +170,7 @@ export const ApiHealthDashboard: React.FC = () => {
           )}
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-medium">Protection Features</CardTitle>
@@ -211,4 +202,4 @@ export const ApiHealthDashboard: React.FC = () => {
   );
 };
 
-export default ApiHealthDashboard; 
+export default ApiHealthDashboard;

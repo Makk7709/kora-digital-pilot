@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Brain, TrendingUp, Calendar, Lightbulb, Target, Clock, Users } from 'lucide-react';
+import { Brain, TrendingUp, Calendar, Lightbulb, Clock } from 'lucide-react';
 import { usePerplexity } from '@/hooks/usePerplexity';
 
 interface PlanningInsightsProps {
@@ -19,15 +19,10 @@ interface PlanningInsightsProps {
 export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
   currentWeek,
   weeklyStats,
-  onInsightApplied
+  onInsightApplied,
 }) => {
-  const { 
-    getMarketingTrends, 
-    generateContentWithResearch,
-    getBusinessInsights,
-    isLoading,
-    error 
-  } = usePerplexity();
+  const { getMarketingTrends, generateContentWithResearch, getBusinessInsights, isLoading, error } =
+    usePerplexity();
 
   const [activeInsight, setActiveInsight] = useState<'trends' | 'content' | 'timing' | null>(null);
   const [insights, setInsights] = useState<any>(null);
@@ -47,10 +42,10 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
     try {
       const weekStart = currentWeek[0].toLocaleDateString('fr-FR');
       const weekEnd = currentWeek[6].toLocaleDateString('fr-FR');
-      
+
       const result = await generateContentWithResearch(
         `Contenu marketing digital pour la semaine du ${weekStart} au ${weekEnd}`,
-        'post'
+        'post',
       );
       setInsights(result);
     } catch (err) {
@@ -62,10 +57,11 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
     setActiveInsight('timing');
     try {
       const result = await getBusinessInsights({
-        query: 'Meilleurs moments pour publier sur les réseaux sociaux en 2024 - horaires optimaux par plateforme',
+        query:
+          'Meilleurs moments pour publier sur les réseaux sociaux en 2024 - horaires optimaux par plateforme',
         industry: 'digital-marketing',
         depth: 'detailed',
-        language: 'fr'
+        language: 'fr',
       });
       setInsights(result);
     } catch (err) {
@@ -84,34 +80,33 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
               <TrendingUp className="w-5 h-5 text-blue-600" />
               <h3 className="font-semibold text-slate-900">Tendances Marketing</h3>
             </div>
-            
-            {insights.insights && insights.insights.map((insight: any, index: number) => (
-              <div key={index} className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h4 className="font-medium text-blue-900 mb-2">{insight.trend}</h4>
-                <p className="text-blue-800 text-sm mb-3">{insight.description}</p>
-                <div className="flex items-center justify-between">
-                  <Badge className="bg-blue-100 text-blue-700">
-                    Impact: {insight.impact}
-                  </Badge>
-                  <Button 
-                    size="sm" 
-                    onClick={() => onInsightApplied?.(insight)}
-                    className="bg-blue-600 text-white hover:bg-blue-700"
-                  >
-                    Appliquer
-                  </Button>
+
+            {insights.insights &&
+              insights.insights.map((insight: any, index: number) => (
+                <div key={index} className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <h4 className="font-medium text-blue-900 mb-2">{insight.trend}</h4>
+                  <p className="text-blue-800 text-sm mb-3">{insight.description}</p>
+                  <div className="flex items-center justify-between">
+                    <Badge className="bg-blue-100 text-blue-700">Impact: {insight.impact}</Badge>
+                    <Button
+                      size="sm"
+                      onClick={() => onInsightApplied?.(insight)}
+                      className="bg-blue-600 text-white hover:bg-blue-700"
+                    >
+                      Appliquer
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
-            
+              ))}
+
             {insights.sources && (
               <div className="mt-4 p-3 bg-slate-50 rounded-lg">
                 <p className="text-xs text-slate-600 mb-2">Sources:</p>
                 {insights.sources.slice(0, 3).map((source: any, index: number) => (
-                  <a 
+                  <a
                     key={index}
-                    href={source.url} 
-                    target="_blank" 
+                    href={source.url}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="block text-xs text-blue-600 hover:underline mb-1"
                   >
@@ -130,24 +125,24 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
               <Lightbulb className="w-5 h-5 text-purple-600" />
               <h3 className="font-semibold text-slate-900">Idées de Contenu</h3>
             </div>
-            
+
             <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
               <div className="prose prose-sm max-w-none">
                 <div className="text-purple-900 text-sm whitespace-pre-wrap">
                   {insights.content}
                 </div>
               </div>
-              
+
               <div className="mt-4 flex space-x-2">
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   onClick={() => onInsightApplied?.(insights)}
                   className="bg-purple-600 text-white hover:bg-purple-700"
                 >
                   Utiliser ce contenu
                 </Button>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant="outline"
                   onClick={handleGenerateContent}
                   disabled={isLoading}
@@ -156,15 +151,15 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
                 </Button>
               </div>
             </div>
-            
+
             {insights.sources && (
               <div className="p-3 bg-slate-50 rounded-lg">
                 <p className="text-xs text-slate-600 mb-2">Recherche basée sur:</p>
                 {insights.sources.slice(0, 3).map((source: any, index: number) => (
-                  <a 
+                  <a
                     key={index}
-                    href={source.url} 
-                    target="_blank" 
+                    href={source.url}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="block text-xs text-blue-600 hover:underline mb-1"
                   >
@@ -183,15 +178,13 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
               <Clock className="w-5 h-5 text-green-600" />
               <h3 className="font-semibold text-slate-900">Optimisation Horaires</h3>
             </div>
-            
+
             <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-              <div className="text-green-900 text-sm whitespace-pre-wrap">
-                {insights.content}
-              </div>
-              
+              <div className="text-green-900 text-sm whitespace-pre-wrap">{insights.content}</div>
+
               <div className="mt-4">
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   onClick={() => onInsightApplied?.(insights)}
                   className="bg-green-600 text-white hover:bg-green-700"
                 >
@@ -199,15 +192,15 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
                 </Button>
               </div>
             </div>
-            
+
             {insights.sources && (
               <div className="p-3 bg-slate-50 rounded-lg">
                 <p className="text-xs text-slate-600 mb-2">Données basées sur:</p>
                 {insights.sources.slice(0, 3).map((source: any, index: number) => (
-                  <a 
+                  <a
                     key={index}
-                    href={source.url} 
-                    target="_blank" 
+                    href={source.url}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="block text-xs text-blue-600 hover:underline mb-1"
                   >
@@ -236,7 +229,7 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
           <TrendingUp className="w-4 h-4 mr-2" />
           {isLoading && activeInsight === 'trends' ? 'Analyse...' : 'Analyser les tendances'}
         </Button>
-        
+
         <Button
           onClick={handleGenerateContent}
           disabled={isLoading}
@@ -245,7 +238,7 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
           <Lightbulb className="w-4 h-4 mr-2" />
           {isLoading && activeInsight === 'content' ? 'Génération...' : 'Générer du contenu'}
         </Button>
-        
+
         <Button
           onClick={handleGetTimingInsights}
           disabled={isLoading}
@@ -288,9 +281,7 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
       {/* Contenu des insights */}
       {insights && (
         <Card className="border-2 border-blue-200">
-          <CardContent className="p-4">
-            {renderInsightContent()}
-          </CardContent>
+          <CardContent className="p-4">{renderInsightContent()}</CardContent>
         </Card>
       )}
 
@@ -304,4 +295,4 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
       )}
     </div>
   );
-}; 
+};

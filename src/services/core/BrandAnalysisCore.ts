@@ -304,7 +304,7 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
 
   // === MÉTHODES DE PARSING ===
 
-  private parseRealObjectiveAnalysis(content: string, brandName: string): ObjectiveAnalysis {
+  private parseRealObjectiveAnalysis(content: string, _brandName?: string): ObjectiveAnalysis {
     const cleanedContent = this.cleanRawContent(content);
 
     return {
@@ -339,7 +339,7 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
     };
   }
 
-  private parseRealRecentActions(content: string, brandName: string): RecentAction[] {
+  private parseRealRecentActions(content: string, _brandName?: string): RecentAction[] {
     const cleanedContent = this.cleanRawContent(content);
     const actions: RecentAction[] = [];
 
@@ -378,7 +378,7 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
     return actions.slice(0, 10); // Limiter à 10 actions les plus récentes
   }
 
-  private parseRealStrategicAnalysis(content: string, brandName: string): StrategicAnalysis {
+  private parseRealStrategicAnalysis(content: string, _brandName?: string): StrategicAnalysis {
     const cleanedContent = this.cleanRawContent(content);
 
     return {
@@ -399,7 +399,7 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
     };
   }
 
-  private parseRealTrendAnalysis(content: string, brandName: string): TrendAnalysis {
+  private parseRealTrendAnalysis(content: string, _brandName?: string): TrendAnalysis {
     const cleanedContent = this.cleanRawContent(content);
 
     return {

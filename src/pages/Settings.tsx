@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Bell, Shield, Palette, Globe } from 'lucide-react';
+import { User, Bell, Shield, Palette } from 'lucide-react';
 import Header from '../components/Header';
 import AIConnectionTest from '../components/AIConnectionTest';
 import LinkedInAuth from '../components/LinkedInAuth';
@@ -49,11 +49,15 @@ const Settings = () => {
                 </Avatar>
                 <div className="space-y-2 flex-1">
                   <div>
-                    <Label htmlFor="username" className="text-slate-700">Nom d'utilisateur</Label>
+                    <Label htmlFor="username" className="text-slate-700">
+                      Nom d'utilisateur
+                    </Label>
                     <Input id="username" defaultValue="" className="mt-1" />
                   </div>
                   <div>
-                    <Label htmlFor="email" className="text-slate-700">Email</Label>
+                    <Label htmlFor="email" className="text-slate-700">
+                      Email
+                    </Label>
                     <Input id="email" type="email" defaultValue="" className="mt-1" />
                   </div>
                 </div>
@@ -78,20 +82,14 @@ const Settings = () => {
                   <Label className="text-slate-700">Notifications push</Label>
                   <p className="text-sm text-slate-500">Recevoir des notifications en temps réel</p>
                 </div>
-                <Switch 
-                  checked={notifications} 
-                  onCheckedChange={setNotifications}
-                />
+                <Switch checked={notifications} onCheckedChange={setNotifications} />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-slate-700">Sauvegarde automatique</Label>
                   <p className="text-sm text-slate-500">Sauvegarder automatiquement vos projets</p>
                 </div>
-                <Switch 
-                  checked={autoSave} 
-                  onCheckedChange={setAutoSave}
-                />
+                <Switch checked={autoSave} onCheckedChange={setAutoSave} />
               </div>
             </CardContent>
           </Card>
@@ -110,10 +108,7 @@ const Settings = () => {
                   <Label className="text-slate-700">Mode sombre</Label>
                   <p className="text-sm text-slate-500">Activer le thème sombre</p>
                 </div>
-                <Switch 
-                  checked={darkMode} 
-                  onCheckedChange={setDarkMode}
-                />
+                <Switch checked={darkMode} onCheckedChange={setDarkMode} />
               </div>
               <div>
                 <Label className="text-slate-700">Langue</Label>
@@ -136,15 +131,21 @@ const Settings = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="current-password" className="text-slate-700">Mot de passe actuel</Label>
+                <Label htmlFor="current-password" className="text-slate-700">
+                  Mot de passe actuel
+                </Label>
                 <Input id="current-password" type="password" className="mt-1" />
               </div>
               <div>
-                <Label htmlFor="new-password" className="text-slate-700">Nouveau mot de passe</Label>
+                <Label htmlFor="new-password" className="text-slate-700">
+                  Nouveau mot de passe
+                </Label>
                 <Input id="new-password" type="password" className="mt-1" />
               </div>
               <div>
-                <Label htmlFor="confirm-password" className="text-slate-700">Confirmer le nouveau mot de passe</Label>
+                <Label htmlFor="confirm-password" className="text-slate-700">
+                  Confirmer le nouveau mot de passe
+                </Label>
                 <Input id="confirm-password" type="password" className="mt-1" />
               </div>
               <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">

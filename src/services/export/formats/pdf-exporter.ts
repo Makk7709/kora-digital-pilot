@@ -1037,7 +1037,6 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
 
   private addMarketPositioning(pdf: jsPDF, report: any) {
     const pageHeight = pdf.internal.pageSize.height;
-    const margin = this.dimensions.margin;
     let currentY = this.dimensions.margin;
 
     // Utiliser les méthodes utilitaires existantes
