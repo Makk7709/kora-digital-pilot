@@ -58,10 +58,35 @@ export interface LinkedInAuthResponse {
   id_token?: string; // ID token pour OpenID Connect
 }
 
+// Profil OpenID Connect tel que retourné par le proxy /api/auth/linkedin/me
+interface LinkedInUserInfoClaims {
+  sub?: string;
+  given_name?: string;
+  family_name?: string;
+  name?: string;
+  picture?: string;
+  email?: string;
+  email_verified?: boolean;
+  locale?: string;
+  [k: string]: unknown;
+}
+
 class LinkedInAPI {
   private config: LinkedInConfig;
+  // `accessToken` reste utilisable pendant la session courante (entre l'OAuth
+  // callback et un reload de page), pour les appels LinkedIn directs déjà
+  // câblés (UGC posts). Il n'est JAMAIS persisté côté client - cf. la migration
+  // vers le cookie httpOnly `kora_linkedin_session` documentée dans
+  // docs/SECURITY.md.
   private accessToken: string | null = null;
   private baseURL = 'https://api.linkedin.com/v2';
+
+  // État de session local (rafraîchi par restoreSession()).
+  private isAuthenticatedFlag = false;
+  private sessionExpiresAtMs: number | null = null;
+  private cachedProfile: LinkedInUserInfoClaims | null = null;
+  // Promesse en vol pour éviter les appels concurrents à /api/auth/linkedin/me.
+  private restorePromise: Promise<boolean> | null = null;
 
   // Configuration OpenID Connect LinkedIn officielle
   private openIDConfig: LinkedInOpenIDConfig = {
@@ -99,11 +124,11 @@ class LinkedInAPI {
         'http://localhost:8088/auth/linkedin/callback',
     };
 
-    // Charger le token existant
-    const storedToken = localStorage.getItem('linkedin_access_token');
-    if (storedToken && this.isTokenValid()) {
-      this.accessToken = storedToken;
-      console.log('🔑 Token LinkedIn existant chargé');
+    // Reprise opportuniste de la session côté serveur via le cookie httpOnly.
+    // Fire-and-forget: l'UI peut quand même observer l'état via isAuthenticated()
+    // après que la promesse a résolu (les hooks attendent restoreSession() au mount).
+    if (typeof window !== 'undefined') {
+      void this.restoreSession();
     }
 
     console.log('🚀 LinkedIn API initialisé:', {
@@ -114,9 +139,66 @@ class LinkedInAPI {
     });
   }
 
-  private isTokenValid(): boolean {
-    const expiresAt = localStorage.getItem('linkedin_token_expires');
-    return expiresAt ? Date.now() < parseInt(expiresAt) : false;
+  /**
+   * Vérifie auprès du proxy s'il existe une session LinkedIn valide associée
+   * au cookie httpOnly. Met à jour l'état interne pour que les appels
+   * synchrones (`isAuthenticated`) reflètent la réalité serveur.
+   */
+  async restoreSession(): Promise<boolean> {
+    if (this.restorePromise) return this.restorePromise;
+
+    this.restorePromise = (async () => {
+      try {
+        const response = await fetch('/api/auth/linkedin/me', {
+          method: 'GET',
+          credentials: 'include',
+          headers: { Accept: 'application/json' },
+        });
+
+        if (response.status === 401) {
+          this.clearLocalSessionState();
+          return false;
+        }
+
+        if (!response.ok) {
+          // Erreur transitoire: on n'invalide pas la session locale.
+          console.warn('⚠️ /api/auth/linkedin/me a répondu', response.status);
+          return this.isAuthenticatedFlag;
+        }
+
+        const payload = (await response.json()) as {
+          authenticated?: boolean;
+          profile?: LinkedInUserInfoClaims;
+          expiresAt?: string;
+        };
+
+        if (!payload.authenticated || !payload.profile) {
+          this.clearLocalSessionState();
+          return false;
+        }
+
+        this.isAuthenticatedFlag = true;
+        this.cachedProfile = payload.profile;
+        this.sessionExpiresAtMs = payload.expiresAt ? Date.parse(payload.expiresAt) : null;
+        return true;
+      } catch (error) {
+        // Réseau / proxy down: on ne touche pas à l'état local pour éviter de
+        // déconnecter visuellement un utilisateur sur un simple hoquet.
+        console.debug('🌐 [LinkedIn] restoreSession échec réseau:', (error as Error).message);
+        return this.isAuthenticatedFlag;
+      } finally {
+        this.restorePromise = null;
+      }
+    })();
+
+    return this.restorePromise;
+  }
+
+  private clearLocalSessionState(): void {
+    this.isAuthenticatedFlag = false;
+    this.sessionExpiresAtMs = null;
+    this.cachedProfile = null;
+    this.accessToken = null;
   }
 
   private generateState(): string {
@@ -245,25 +327,48 @@ class LinkedInAPI {
         throw new Error('Access token manquant dans la réponse LinkedIn');
       }
 
+      // Conserver le token en mémoire pour la session courante (utilisé par
+      // les appels directs LinkedIn type ugcPosts). Sur reload, il sera perdu
+      // côté client mais le cookie httpOnly restera valide pour /me et logout.
       this.accessToken = data.access_token;
 
-      // SECURITY DEBT: les tokens LinkedIn sont actuellement persistés dans
-      // localStorage et sont donc lisibles par tout script s'exécutant dans
-      // l'origine (XSS). À migrer vers un cookie httpOnly posé par le proxy
-      // server.cjs. Voir docs/SECURITY.md (section "Stockage de tokens").
-      const expiresAt = Date.now() + (data.expires_in || 3600) * 1000;
-      localStorage.setItem('linkedin_access_token', data.access_token);
-      localStorage.setItem('linkedin_token_expires', expiresAt.toString());
+      // Lier les tokens à un cookie httpOnly côté proxy. Les valeurs ne sont
+      // ni persistées dans localStorage, ni accessibles aux scripts tiers.
+      const sessionResponse = await fetch('/api/auth/linkedin/session', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          access_token: data.access_token,
+          id_token: data.id_token || null,
+          expires_in: data.expires_in || 3600,
+        }),
+      });
 
-      if (data.id_token) {
-        localStorage.setItem('linkedin_id_token', data.id_token);
-        console.log('🆔 ID Token OpenID Connect stocké');
+      if (!sessionResponse.ok) {
+        const sessionErr = await sessionResponse.text();
+        throw new Error(
+          `Création de la session httpOnly échouée: ${sessionResponse.status} - ${sessionErr}`,
+        );
       }
 
-      console.log('💾 Tokens stockés (OpenID Connect):', {
-        expiresAt: new Date(expiresAt).toISOString(),
-        expiresIn: (data.expires_in || 3600) + ' secondes',
-        hasIdToken: !!data.id_token,
+      const sessionPayload = (await sessionResponse.json()) as {
+        authenticated?: boolean;
+        expiresAt?: string;
+        hasIdToken?: boolean;
+      };
+
+      this.isAuthenticatedFlag = Boolean(sessionPayload.authenticated);
+      this.sessionExpiresAtMs = sessionPayload.expiresAt
+        ? Date.parse(sessionPayload.expiresAt)
+        : Date.now() + (data.expires_in || 3600) * 1000;
+
+      console.log('🔐 Session LinkedIn liée au cookie httpOnly', {
+        expiresAt: this.sessionExpiresAtMs ? new Date(this.sessionExpiresAtMs).toISOString() : null,
+        hasIdToken: Boolean(sessionPayload.hasIdToken),
       });
 
       return data.access_token;
@@ -276,7 +381,11 @@ class LinkedInAPI {
   }
 
   /**
-   * Vérifier si l'utilisateur est authentifié
+   * Vérifier si l'utilisateur est authentifié.
+   *
+   * Sync sur l'état local (rafraîchi via restoreSession() au mount des hooks).
+   * Si la session locale est expirée, elle est purgée localement; la source de
+   * vérité reste le cookie httpOnly côté proxy.
    */
   isAuthenticated(): boolean {
     if (!this.config.clientSecret) {
@@ -284,28 +393,22 @@ class LinkedInAPI {
       return false;
     }
 
-    if (!this.accessToken) {
-      console.log("🔐 LinkedIn: Aucun token d'accès trouvé");
+    if (!this.isAuthenticatedFlag) {
       return false;
     }
 
-    const expiresAt = localStorage.getItem('linkedin_token_expires');
-    if (!expiresAt) {
-      console.log("🔐 LinkedIn: Aucune date d'expiration trouvée");
+    if (this.sessionExpiresAtMs && Date.now() >= this.sessionExpiresAtMs) {
+      console.log('🔐 LinkedIn: session locale expirée, purge du cache');
+      this.clearLocalSessionState();
       return false;
     }
 
-    const isValid = Date.now() < parseInt(expiresAt);
-    if (!isValid) {
-      console.log('🔐 LinkedIn: Token expiré');
-      this.logout();
-    }
-
-    return isValid;
+    return true;
   }
 
   /**
-   * Récupérer le profil utilisateur via OpenID Connect
+   * Récupérer le profil utilisateur via le proxy (cookie httpOnly).
+   * Le token n'est jamais manipulé côté client.
    */
   async getUserProfile(): Promise<{
     id: string;
@@ -313,40 +416,43 @@ class LinkedInAPI {
     lastName: { localized: Record<string, string> };
     profilePicture?: { displayImage: unknown };
   }> {
-    if (!this.isAuthenticated()) {
-      throw new Error('Non authentifié LinkedIn');
-    }
-
-    console.log('🔄 Récupération profil via OpenID Connect userinfo endpoint');
+    console.log('🔄 Récupération profil via /api/auth/linkedin/me');
 
     try {
-      // Utiliser directement l'endpoint userinfo OpenID Connect
-      const response = await fetch('/api/linkedin/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          access_token: this.accessToken,
-          endpoint: this.openIDConfig.userinfo_endpoint,
-        }),
+      const response = await fetch('/api/auth/linkedin/me', {
+        method: 'GET',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
       });
+
+      if (response.status === 401) {
+        this.clearLocalSessionState();
+        throw new Error('Session LinkedIn expirée. Veuillez vous reconnecter.');
+      }
 
       if (!response.ok) {
         const errorText = await response.text();
-        const errorMsg = `LinkedIn OpenID Connect Error: ${response.status} - ${response.statusText}`;
-
-        if (response.status === 401) {
-          console.warn('⚠️ Erreur 401 - Token invalide ou permissions insuffisantes');
-          this.logout();
-          throw new Error('Token expiré. Veuillez vous reconnecter.');
-        }
-
-        throw new Error(`${errorMsg}: ${errorText}`);
+        throw new Error(
+          `LinkedIn /me Error: ${response.status} - ${response.statusText} - ${errorText}`,
+        );
       }
 
-      const data = await response.json();
+      const payload = (await response.json()) as {
+        authenticated?: boolean;
+        profile?: LinkedInUserInfoClaims;
+        expiresAt?: string;
+      };
+
+      if (!payload.authenticated || !payload.profile) {
+        this.clearLocalSessionState();
+        throw new Error('Session LinkedIn absente côté proxy');
+      }
+
+      this.isAuthenticatedFlag = true;
+      this.cachedProfile = payload.profile;
+      this.sessionExpiresAtMs = payload.expiresAt ? Date.parse(payload.expiresAt) : null;
+
+      const data = payload.profile;
       console.log('✅ Profil OpenID Connect récupéré:', {
         hasId: !!data.sub,
         hasName: !!data.given_name,
@@ -354,7 +460,6 @@ class LinkedInAPI {
         claims: Object.keys(data),
       });
 
-      // Format OpenID Connect standard
       return {
         id: data.sub || 'unknown',
         firstName: {
@@ -989,27 +1094,27 @@ class LinkedInAPI {
   }
 
   /**
-   * Déconnexion et nettoyage des tokens
+   * Déconnexion: invalide la session côté proxy (qui purge le cookie httpOnly)
+   * et nettoie l'état local. Le state OAuth (`linkedin_oauth_state`) reste dans
+   * localStorage tel que documenté car non sensible.
    */
   logout(): void {
     console.log('🚪 Déconnexion LinkedIn...');
 
-    // Nettoyer tous les tokens LinkedIn
-    const tokensToRemove = [
-      'linkedin_access_token',
-      'linkedin_token_expires',
-      'linkedin_oauth_state',
-      'linkedin_id_token', // Nouveau : nettoyer l'ID token OpenID Connect
-    ];
-
-    tokensToRemove.forEach((tokenKey) => {
-      if (localStorage.getItem(tokenKey)) {
-        localStorage.removeItem(tokenKey);
-        console.log(`🗑️ ${tokenKey} supprimé`);
-      }
+    // Fire-and-forget: même si le proxy est down, on libère l'état local pour
+    // permettre à l'utilisateur de se reconnecter.
+    void fetch('/api/auth/linkedin/logout', {
+      method: 'POST',
+      credentials: 'include',
+    }).catch((err) => {
+      console.warn('⚠️ Logout proxy injoignable:', (err as Error).message);
     });
 
-    this.accessToken = null;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('linkedin_oauth_state');
+    }
+
+    this.clearLocalSessionState();
     console.log('✅ Déconnexion LinkedIn terminée');
   }
 
@@ -1295,46 +1400,25 @@ class LinkedInAPI {
   }
 
   /**
-   * Récupérer et valider l'ID Token stocké
+   * Récupérer et valider l'ID Token stocké.
+   *
+   * Depuis la migration cookie httpOnly, l'ID token n'est plus accessible côté
+   * client. Cette méthode est conservée pour compat ascendante et retourne
+   * `null` (les callers tomberont sur le fallback profil de getUserProfile()).
    */
   getValidatedIDToken(): any | null {
-    const idToken = localStorage.getItem('linkedin_id_token');
-    if (!idToken) {
-      console.log('ℹ️ Aucun ID Token stocké');
-      return null;
-    }
-
-    // Note: Dans un environnement de production, vous devriez valider la signature
-    // en récupérant les clés publiques depuis jwks_uri
-    return this.validateIDToken(idToken);
+    return null;
   }
 
   /**
-   * Récupérer les informations utilisateur depuis l'ID Token
+   * Récupérer les informations utilisateur (claims OIDC).
+   *
+   * Retourne le profil mis en cache lors du dernier appel à
+   * /api/auth/linkedin/me. Pour forcer un rafraîchissement, appeler
+   * getUserProfile() qui met à jour le cache.
    */
-  getUserInfoFromIDToken(): any | null {
-    const idToken = localStorage.getItem('linkedin_id_token');
-    if (!idToken) {
-      return null;
-    }
-
-    try {
-      const parts = idToken.split('.');
-      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-
-      console.log('👤 Informations utilisateur depuis ID Token:', {
-        subject: payload.sub,
-        name: payload.name,
-        hasEmail: !!payload.email,
-        hasPicture: !!payload.picture,
-        locale: payload.locale,
-      });
-
-      return payload;
-    } catch (error) {
-      console.error('❌ Erreur décodage ID Token:', error);
-      return null;
-    }
+  getUserInfoFromIDToken(): LinkedInUserInfoClaims | null {
+    return this.cachedProfile;
   }
 }
 

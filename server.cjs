@@ -507,6 +507,225 @@ app.post('/api/linkedin/profile', rateLimiter(100, 60000), (req, res) => {
   })();
 });
 
+// === SESSION LINKEDIN VIA COOKIE httpOnly ===
+//
+// Architecture:
+// - Le client effectue l'échange OAuth via /api/linkedin/token (déjà en place);
+// - Une fois les tokens reçus, il poste leurs valeurs à /api/auth/linkedin/session,
+//   qui les conserve côté serveur dans un Map en mémoire indexé par session id
+//   et pose un cookie kora_linkedin_session (httpOnly + SameSite=Lax + Secure en PROD);
+// - /api/auth/linkedin/me lit le cookie, valide la session et retourne le profil
+//   (mis en cache après le premier appel LinkedIn);
+// - /api/auth/linkedin/logout invalide la session côté serveur et clear le cookie.
+//
+// LIMITE ASSUMÉE: stockage mémoire mono-instance. Acceptable pour le déploiement
+// local actuel; à remplacer par un store partagé (Redis, etc.) dès qu'on scale
+// horizontalement. Documenté dans docs/SECURITY.md et docs/audit/SECURITY_REMEDIATION_REPORT.md.
+
+const SESSION_COOKIE_NAME = 'kora_linkedin_session';
+const SESSION_COOKIE_PATH = '/api/auth';
+const linkedinSessions = new Map();
+
+const generateSessionId = () => crypto.randomBytes(32).toString('hex');
+
+const createLinkedInSession = ({ accessToken, idToken, expiresIn }) => {
+  const sessionId = generateSessionId();
+  const ttlSec =
+    Number.isFinite(Number(expiresIn)) && Number(expiresIn) > 0 ? Number(expiresIn) : 3600;
+  const expiresAtMs = Date.now() + ttlSec * 1000;
+  linkedinSessions.set(sessionId, {
+    accessToken,
+    idToken: idToken || null,
+    expiresAtMs,
+    profile: null,
+  });
+  return { sessionId, expiresAtMs };
+};
+
+const getLinkedInSession = (sessionId) => {
+  if (!sessionId) return null;
+  const session = linkedinSessions.get(sessionId);
+  if (!session) return null;
+  if (Date.now() > session.expiresAtMs) {
+    linkedinSessions.delete(sessionId);
+    return null;
+  }
+  return session;
+};
+
+const destroyLinkedInSession = (sessionId) => {
+  if (sessionId) linkedinSessions.delete(sessionId);
+};
+
+const buildSessionCookie = (sessionId, expiresAtMs) => {
+  const maxAgeSec = Math.max(1, Math.floor((expiresAtMs - Date.now()) / 1000));
+  return serializeCookie(SESSION_COOKIE_NAME, sessionId, {
+    httpOnly: true,
+    secure: ENV === 'PRODUCTION',
+    sameSite: 'lax',
+    path: SESSION_COOKIE_PATH,
+    maxAge: maxAgeSec,
+  });
+};
+
+const buildClearSessionCookie = () =>
+  serializeCookie(SESSION_COOKIE_NAME, '', {
+    httpOnly: true,
+    secure: ENV === 'PRODUCTION',
+    sameSite: 'lax',
+    path: SESSION_COOKIE_PATH,
+    maxAge: 0,
+  });
+
+// Nettoyage périodique des sessions expirées (chaque heure). unref() pour ne pas
+// bloquer le shutdown du process.
+setInterval(() => {
+  const now = Date.now();
+  let removed = 0;
+  for (const [id, session] of linkedinSessions.entries()) {
+    if (now > session.expiresAtMs) {
+      linkedinSessions.delete(id);
+      removed += 1;
+    }
+  }
+  if (removed > 0 && ENV !== 'PRODUCTION') {
+    console.log(`🧹 [LinkedIn Session] ${removed} session(s) expirée(s) purgée(s)`);
+  }
+}, 3600 * 1000).unref();
+
+// Pose un cookie httpOnly portant l'identifiant de session après que le client
+// a reçu les tokens via /api/linkedin/token. Les tokens ne sont plus persistés
+// côté navigateur (ni localStorage ni sessionStorage).
+app.post('/api/auth/linkedin/session', rateLimiter(30, 60_000), (req, res) => {
+  try {
+    const { access_token: accessToken, id_token: idToken, expires_in: expiresIn } = req.body || {};
+
+    if (!accessToken || typeof accessToken !== 'string') {
+      return res.status(400).json({
+        error: 'access_token manquant ou invalide',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    if (idToken !== undefined && idToken !== null && typeof idToken !== 'string') {
+      return res.status(400).json({
+        error: 'id_token doit être une chaîne',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const { sessionId, expiresAtMs } = createLinkedInSession({
+      accessToken,
+      idToken,
+      expiresIn,
+    });
+
+    res.setHeader('Set-Cookie', buildSessionCookie(sessionId, expiresAtMs));
+    res.status(201).json({
+      authenticated: true,
+      expiresAt: new Date(expiresAtMs).toISOString(),
+      hasIdToken: Boolean(idToken),
+    });
+  } catch (error) {
+    console.error('💥 [LinkedIn Session] Erreur:', { message: error.message });
+    res.status(500).json({
+      error: 'Erreur création session',
+      message: ENV === 'DEV' ? error.message : 'Erreur interne',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// Détruit la session côté serveur et purge le cookie côté navigateur. Le token
+// LinkedIn upstream n'est pas explicitement révoqué (LinkedIn n'expose pas
+// d'endpoint de révocation OIDC stable); il expirera selon son expires_in.
+app.post('/api/auth/linkedin/logout', rateLimiter(60, 60_000), (req, res) => {
+  const sessionId = req.cookies ? req.cookies[SESSION_COOKIE_NAME] : null;
+  destroyLinkedInSession(sessionId);
+  res.setHeader('Set-Cookie', buildClearSessionCookie());
+  res.status(204).end();
+});
+
+// Retourne le profil de l'utilisateur. Si la session n'a pas encore mis en cache
+// le profil, on l'interroge auprès de LinkedIn via le token côté serveur, puis
+// on le mémorise dans la session pour limiter les rebonds.
+app.get('/api/auth/linkedin/me', rateLimiter(120, 60_000), (req, res) => {
+  const startTime = Date.now();
+  const sessionId = req.cookies ? req.cookies[SESSION_COOKIE_NAME] : null;
+  const session = getLinkedInSession(sessionId);
+
+  if (!session) {
+    return res.status(401).json({
+      authenticated: false,
+      error: 'Session LinkedIn absente ou expirée',
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  if (session.profile) {
+    return res.json({
+      authenticated: true,
+      profile: session.profile,
+      expiresAt: new Date(session.expiresAtMs).toISOString(),
+      cached: true,
+    });
+  }
+
+  (async () => {
+    try {
+      const response = await fetch('https://api.linkedin.com/v2/userinfo', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          Accept: 'application/json',
+          'User-Agent': `KORA-Proxy/${ENV}-${PORT}`,
+        },
+        timeout: 30000,
+      });
+
+      if (!response.ok) {
+        const body = await response.text();
+        // 401 upstream → la session locale est inutilisable, on la purge.
+        if (response.status === 401) {
+          destroyLinkedInSession(sessionId);
+          res.setHeader('Set-Cookie', buildClearSessionCookie());
+        }
+        return res.status(response.status).json({
+          authenticated: false,
+          error: 'LinkedIn userinfo error',
+          details: ENV === 'DEV' ? body.substring(0, 200) : undefined,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      const profile = await response.json();
+      session.profile = profile;
+
+      console.log('✅ [LinkedIn me] Profil mis en cache', {
+        hasId: Boolean(profile.sub),
+        hasEmail: Boolean(profile.email),
+        claimsCount: Object.keys(profile).length,
+        durationMs: Date.now() - startTime,
+      });
+
+      res.json({
+        authenticated: true,
+        profile,
+        expiresAt: new Date(session.expiresAtMs).toISOString(),
+        cached: false,
+      });
+    } catch (error) {
+      console.error('💥 [LinkedIn me] Erreur:', { message: error.message });
+      res.status(500).json({
+        authenticated: false,
+        error: 'Erreur récupération profil',
+        message: ENV === 'DEV' ? error.message : 'Erreur interne',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  })();
+});
+
 // === ENDPOINTS MONITORING & HEALTH CHECK ===
 
 // Health check détaillé
@@ -545,6 +764,9 @@ if (ENV === 'DEV') {
         'POST /api/linkedin/token',
         'POST /api/anthropic/messages',
         'POST /api/linkedin/profile',
+        'POST /api/auth/linkedin/session',
+        'POST /api/auth/linkedin/logout',
+        'GET /api/auth/linkedin/me',
         'GET /api/health',
         'GET /api/metrics',
       ],
@@ -582,6 +804,9 @@ app.use('*', (req, res) => {
       'POST /api/linkedin/token',
       'POST /api/anthropic/messages',
       'POST /api/linkedin/profile',
+      'POST /api/auth/linkedin/session',
+      'POST /api/auth/linkedin/logout',
+      'GET /api/auth/linkedin/me',
       'GET /api/health',
     ],
     timestamp: new Date().toISOString(),
@@ -600,7 +825,10 @@ const server = app.listen(PORT, () => {
   console.log('   ├── POST /api/linkedin/token');
   console.log('   ├── POST /api/anthropic/messages');
   console.log('   ├── POST /api/linkedin/profile');
-  console.log('   └── GET /api/health');
+  console.log('   ├── POST /api/auth/linkedin/session');
+  console.log('   ├── POST /api/auth/linkedin/logout');
+  console.log('   ├── GET  /api/auth/linkedin/me');
+  console.log('   └── GET  /api/health');
   if (ENV === 'DEV') {
     console.log('   └── GET /api/metrics (dev only)');
   }
