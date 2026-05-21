@@ -1,3 +1,5 @@
+> Note d'archivage (2026-05-21) : contenu intégré dans `docs/FEATURES.md` (catalogue fonctionnel) et, le cas échéant, dans `docs/SECURITY.md` ou `docs/OPERATIONS.md`. Ce guide est conservé pour traçabilité mais n'est plus maintenu. Toute information divergente vis-à-vis des documents canoniques est obsolète.
+
 # 🤖 Intégration IA - Kora Digital Pilot
 
 ## 🎯 Protocole de Garantie 100% de Réussite
@@ -15,7 +17,7 @@ Créez un fichier `.env.local` à la racine du projet :
 VITE_ANTHROPIC_API_KEY=sk-ant-your-anthropic-key-here
 
 # Clé API OpenAI - FALLBACK + IMAGES
-VITE_OPENAI_API_KEY=sk-proj-your-openai-key-here
+VITE_OPENAI_API_KEY=[REDACTED]
 
 # Configuration IA
 VITE_DEFAULT_AI_MODEL=claude-3-5-sonnet-20241022

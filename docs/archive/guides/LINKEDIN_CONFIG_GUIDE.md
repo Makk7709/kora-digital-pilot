@@ -1,3 +1,5 @@
+> Note d'archivage (2026-05-21) : contenu intégré dans `docs/FEATURES.md` (catalogue fonctionnel) et, le cas échéant, dans `docs/SECURITY.md` ou `docs/OPERATIONS.md`. Ce guide est conservé pour traçabilité mais n'est plus maintenu. Toute information divergente vis-à-vis des documents canoniques est obsolète.
+
 # 🔗 Guide de Configuration LinkedIn
 
 ## Problème actuel
@@ -9,7 +11,7 @@ Erreur 401 "invalid_client" car les credentials LinkedIn ne sont pas configurés
 
 ```env
 # LinkedIn API Configuration
-VITE_LINKEDIN_CLIENT_ID=771wyq0br5qhum
+VITE_LINKEDIN_CLIENT_ID=[REDACTED]
 VITE_LINKEDIN_CLIENT_SECRET=VOTRE_CLIENT_SECRET_ICI
 VITE_LINKEDIN_REDIRECT_URI=http://localhost:8088/auth/linkedin/callback
 ```
@@ -26,7 +28,7 @@ npm run dev:full
 ```
 
 ## Vérification
-- ✅ Le Client ID est déjà correct : `771wyq0br5qhum` - ✅ L'URL de redirection est configurée : `http://localhost:8088/auth/linkedin/callback` - ❌ Il manque seulement le Client Secret dans le fichier `.env` ## Mode démonstration
+- ✅ Le Client ID est déjà correct : `[REDACTED]` - ✅ L'URL de redirection est configurée : `http://localhost:8088/auth/linkedin/callback` - ❌ Il manque seulement le Client Secret dans le fichier `.env` ## Mode démonstration
 Si vous ne configurez pas LinkedIn, l'application fonctionne parfaitement en mode démonstration avec des données simulées réalistes.
 
 ## Support

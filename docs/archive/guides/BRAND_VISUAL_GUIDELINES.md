@@ -1,3 +1,5 @@
+> Note d'archivage (2026-05-21) : contenu intégré dans `docs/FEATURES.md` (catalogue fonctionnel) et, le cas échéant, dans `docs/SECURITY.md` ou `docs/OPERATIONS.md`. Ce guide est conservé pour traçabilité mais n'est plus maintenu. Toute information divergente vis-à-vis des documents canoniques est obsolète.
+
 # 🎨 Guidelines Visuelles Premium - Kora Digital Pilot
 
 ## 🏆 Identité Visuelle Kora
