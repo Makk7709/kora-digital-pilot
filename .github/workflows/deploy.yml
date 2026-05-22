@@ -1,0 +1,70 @@
+# ============================================================================
+# Kora Digital Pilot — deployment placeholder
+# ----------------------------------------------------------------------------
+# Wave 3 — Agent 6 (SaaSisation light).
+#
+# This workflow is intentionally a PLACEHOLDER. It exercises the build and
+# (optionally) the Docker image build on every release tag, so that the
+# pipeline is wired before a real deployment target is chosen.
+#
+# Activation:
+#   - Push a semver tag, e.g. `git tag v0.3.0 && git push --tags`.
+#
+# To turn `deploy` into a real job:
+#   1. Pick a target (Fly.io / Render / Railway / VPS / Cloud Run / ...).
+#   2. Add the matching `deploy` step here (e.g. flyctl deploy, render-action).
+#   3. Configure the secrets listed in docs/DEPLOYMENT.md.
+#   4. Remove the `if: false` guard on the deploy job.
+# ============================================================================
+
+name: deploy
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    name: Build & smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Lint + typecheck + tests + build
+        env:
+          HUSKY: "0"
+        run: npm run check
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker build (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: kora-digital-pilot:${{ github.ref_name }}
+
+  deploy:
+    name: Deploy (placeholder)
+    needs: build
+    runs-on: ubuntu-latest
+    # Disable until a real target is wired. Flip to `if: true` (or remove)
+    # once the deployment step below is configured.
+    if: false
+    steps:
+      - name: TODO — configure deployment target
+        run: |
+          echo "::warning::No deployment target configured."
+          echo "See docs/DEPLOYMENT.md for the menu of supported options."
+          echo "Replace this step with the real deploy action and remove the 'if: false' guard."

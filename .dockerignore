@@ -1,0 +1,48 @@
+# Keep the build context lean. Mirrors .gitignore for the parts that matter
+# to the image, plus the heavy local artefacts that should never end up in a
+# container.
+
+# Dependencies & build artefacts
+node_modules
+dist
+build
+coverage
+.cache
+.tmp
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+!env.example
+
+# Tooling / VCS
+.git
+.gitignore
+.github
+.husky
+.vscode
+.idea
+
+# Docs that are too heavy or never required at runtime
+docs/archive
+docs/cabinet
+docs/audit
+dossier-valorisation
+
+# Test artefacts
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+coverage
+.vitest
+
+# Local diagnostic / Lovable artefacts
+diagnostic-simple.html
+fix-markdown.cjs
+fix-markdown.js
+
+# OS junk
+.DS_Store
+Thumbs.db
