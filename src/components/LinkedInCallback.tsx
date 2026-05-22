@@ -4,6 +4,7 @@ import { linkedinAPI } from '@/lib/linkedin-api';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
+import { logUsage, USAGE_EVENTS } from '@/lib/usage-logger';
 
 const LinkedInCallback: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -87,6 +88,10 @@ const LinkedInCallback: React.FC = () => {
 
         // Nettoyer le state stocké
         localStorage.removeItem('linkedin_oauth_state');
+
+        void logUsage(USAGE_EVENTS.LINKEDIN_CONNECT_SUCCESS, {
+          hasProfile: Boolean(profile?.id),
+        });
 
         console.log('🎉 Authentification LinkedIn terminée avec succès');
 
