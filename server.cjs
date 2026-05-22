@@ -10,6 +10,10 @@ const rateLimit = require('express-rate-limit');
 const fetch = require('node-fetch');
 const path = require('path');
 
+// Supabase admin client (server-side, service role). Returns null when the
+// SUPABASE_* env vars are absent; every consumer below MUST guard for that.
+const { getAdminClient, isAdminConfigured } = require('./src/lib/supabase-admin.cjs');
+
 // ===== CONFIGURATION PORTS ENTERPRISE - SERVEUR PROXY =====
 
 /**
@@ -726,6 +730,227 @@ app.get('/api/auth/linkedin/me', rateLimiter(120, 60_000), (req, res) => {
   })();
 });
 
+// === SAAS / MULTI-TENANT ENDPOINTS (Wave 3 — Agent 6) ===
+//
+// Architecture:
+// - The browser obtains a Supabase JWT through `@supabase/supabase-js`.
+// - It calls this proxy with `Authorization: Bearer <jwt>` to (a) identify
+//   itself via `/api/me` and (b) emit telemetry via `/api/usage`.
+// - `requireUser` validates the JWT against Supabase using the admin client
+//   (`auth.getUser(jwt)`), then resolves the user's primary `org_id` from
+//   the `org_members` table.
+// - When Supabase is NOT configured (SUPABASE_URL or SERVICE_ROLE_KEY missing),
+//   the endpoints degrade gracefully: `/api/me` returns a demo identity and
+//   `/api/usage` answers 202 without persisting. This keeps the local dev
+//   experience identical to before Wave 3.
+//
+// SECURITY:
+// - The service-role key is read from `SUPABASE_SERVICE_ROLE_KEY` and never
+//   exposed to the browser bundle (no VITE_ prefix).
+// - The LinkedIn session cookie (`kora_linkedin_session`) is left untouched;
+//   it still backs Agent 1's flow.
+
+const DEMO_USER_PAYLOAD = {
+  id: 'demo-user',
+  email: 'demo@local',
+  isDemo: true,
+};
+
+const DEMO_ORG_PAYLOAD = {
+  id: 'demo-org',
+  name: 'Demo Organization',
+  slug: 'demo',
+  plan: 'free',
+  role: 'owner',
+  isDemo: true,
+};
+
+function extractBearerToken(req) {
+  const header = req.headers && req.headers.authorization;
+  if (typeof header !== 'string') return null;
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  return match ? match[1].trim() : null;
+}
+
+/**
+ * Express middleware that resolves the Supabase user behind the call and
+ * attaches `{ user, org }` to `req`.
+ *
+ * Modes:
+ *  - admin client configured + valid JWT  -> 200 path
+ *  - admin client configured + missing/invalid JWT -> 401
+ *  - admin client NOT configured          -> demo identity attached, next()
+ */
+async function requireUser(req, res, next) {
+  try {
+    const admin = getAdminClient();
+
+    if (!admin) {
+      req.user = DEMO_USER_PAYLOAD;
+      req.org = DEMO_ORG_PAYLOAD;
+      req.authMode = 'demo';
+      return next();
+    }
+
+    const token = extractBearerToken(req);
+    if (!token) {
+      return res.status(401).json({
+        error: 'Authentification requise',
+        details: 'Header Authorization: Bearer <jwt> manquant.',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const { data, error } = await admin.auth.getUser(token);
+    if (error || !data || !data.user) {
+      return res.status(401).json({
+        error: 'Token invalide',
+        details: error ? error.message : 'getUser returned no user',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const user = {
+      id: data.user.id,
+      email: data.user.email || '',
+      isDemo: false,
+    };
+
+    // Resolve the user's primary org. We pick the first membership; a
+    // future UI may let the user pick another.
+    const { data: memberships, error: memberErr } = await admin
+      .from('org_members')
+      .select('role, organizations:org_id(id, name, slug, plan)')
+      .eq('user_id', user.id)
+      .limit(1);
+
+    if (memberErr) {
+      console.warn('[requireUser] org lookup failed:', memberErr.message);
+    }
+
+    let org = null;
+    if (Array.isArray(memberships) && memberships.length > 0) {
+      const row = memberships[0];
+      const orgRow = Array.isArray(row.organizations)
+        ? row.organizations[0]
+        : row.organizations;
+      if (orgRow) {
+        org = {
+          id: orgRow.id,
+          name: orgRow.name,
+          slug: orgRow.slug,
+          plan: orgRow.plan,
+          role: row.role || 'member',
+          isDemo: false,
+        };
+      }
+    }
+
+    req.user = user;
+    req.org = org;
+    req.authMode = 'supabase';
+    return next();
+  } catch (err) {
+    console.error('💥 [requireUser]', { message: err.message });
+    return res.status(500).json({
+      error: 'Erreur middleware auth',
+      message: ENV === 'DEV' ? err.message : 'Erreur interne',
+      timestamp: new Date().toISOString(),
+    });
+  }
+}
+
+// GET /api/me — returns the current user + primary organization.
+//   - In demo mode, returns the demo identity.
+//   - In Supabase mode, requires a valid JWT.
+app.get('/api/me', rateLimiter(120, 60_000), requireUser, (req, res) => {
+  res.json({
+    authenticated: true,
+    authMode: req.authMode,
+    user: req.user,
+    org: req.org,
+    supabaseConfigured: isAdminConfigured(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// POST /api/usage — append a telemetry row.
+//   - body: { event_name: string, properties?: Record<string, unknown> }
+//   - Rejects events with no event_name.
+//   - Truncates properties to <=4KB to avoid pathological payloads.
+//   - In demo mode answers 202 without persisting (log to stdout only).
+app.post('/api/usage', rateLimiter(240, 60_000), requireUser, (req, res) => {
+  (async () => {
+    const body = req.body || {};
+    const eventName = typeof body.event_name === 'string' ? body.event_name.trim() : '';
+    if (!eventName) {
+      return res.status(400).json({
+        error: 'event_name requis',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    let properties = body.properties && typeof body.properties === 'object'
+      ? body.properties
+      : {};
+    try {
+      const serialised = JSON.stringify(properties);
+      if (serialised.length > 4096) {
+        properties = { __truncated: true, length: serialised.length };
+      }
+    } catch {
+      properties = { __unserializable: true };
+    }
+
+    if (req.authMode === 'demo' || !isAdminConfigured()) {
+      if (ENV !== 'PRODUCTION') {
+        console.log('[usage] (demo)', eventName, properties);
+      }
+      return res.status(202).json({
+        accepted: true,
+        persisted: false,
+        reason: 'demo-mode',
+      });
+    }
+
+    if (!req.org) {
+      return res.status(409).json({
+        error: "Utilisateur sans organisation",
+        details: "Aucun org_members trouvé pour cet utilisateur.",
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    try {
+      const admin = getAdminClient();
+      const { error } = await admin.from('usage_events').insert({
+        org_id: req.org.id,
+        user_id: req.user.id,
+        event_name: eventName,
+        properties,
+      });
+
+      if (error) {
+        console.error('[usage] insert failed:', error.message);
+        return res.status(500).json({
+          error: 'Persistence error',
+          details: ENV === 'DEV' ? error.message : undefined,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      res.status(202).json({ accepted: true, persisted: true });
+    } catch (err) {
+      console.error('💥 [usage]', { message: err.message });
+      res.status(500).json({
+        error: 'Erreur serveur',
+        message: ENV === 'DEV' ? err.message : 'Erreur interne',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  })();
+});
+
 // === ENDPOINTS MONITORING & HEALTH CHECK ===
 
 // Health check détaillé
@@ -750,6 +975,9 @@ app.get('/api/health', (req, res) => {
     },
     timestamp: new Date().toISOString(),
     nodeVersion: process.version,
+    supabase: {
+      configured: isAdminConfigured(),
+    },
   });
 });
 
@@ -767,6 +995,8 @@ if (ENV === 'DEV') {
         'POST /api/auth/linkedin/session',
         'POST /api/auth/linkedin/logout',
         'GET /api/auth/linkedin/me',
+        'GET /api/me',
+        'POST /api/usage',
         'GET /api/health',
         'GET /api/metrics',
       ],
@@ -807,6 +1037,8 @@ app.use('*', (req, res) => {
       'POST /api/auth/linkedin/session',
       'POST /api/auth/linkedin/logout',
       'GET /api/auth/linkedin/me',
+      'GET /api/me',
+      'POST /api/usage',
       'GET /api/health',
     ],
     timestamp: new Date().toISOString(),
@@ -828,10 +1060,13 @@ const server = app.listen(PORT, () => {
   console.log('   ├── POST /api/auth/linkedin/session');
   console.log('   ├── POST /api/auth/linkedin/logout');
   console.log('   ├── GET  /api/auth/linkedin/me');
+  console.log('   ├── GET  /api/me');
+  console.log('   ├── POST /api/usage');
   console.log('   └── GET  /api/health');
   if (ENV === 'DEV') {
     console.log('   └── GET /api/metrics (dev only)');
   }
+  console.log(`🔐 Supabase admin: ${isAdminConfigured() ? 'configured' : 'NOT configured (demo mode)'}`);
   console.log('✅ Serveur démarré avec succès');
   console.log('');
 });
