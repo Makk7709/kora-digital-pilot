@@ -33,6 +33,7 @@ import type { PerplexityReport, BrandReport } from '../types/brand-analysis';
 import { PerplexityReportViewer } from './PerplexityReportViewer';
 import { BrandAnalysisOrchestrator } from '../services/brand/brand-analysis-orchestrator';
 import { logger } from '../lib/logger';
+import { logUsage, USAGE_EVENTS } from '../lib/usage-logger';
 
 // Données de test mockées pour le mode test
 const mockBrandReport: BrandReport = {
@@ -233,6 +234,11 @@ export const BrandMonitoring: React.FC = () => {
       const parsedReport = parsePerplexityResponse(content, targetName);
       setRealBrandReport(parsedReport);
       setLastUpdate(new Date());
+
+      void logUsage(USAGE_EVENTS.REPORT_GENERATED, {
+        source: 'perplexity',
+        brandName: targetName,
+      });
 
       toast({
         title: '✅ Analyse IA terminée',
@@ -474,6 +480,11 @@ export const BrandMonitoring: React.FC = () => {
         toast({
           title: '✅ Export PDF réussi',
           description: `Fichier téléchargé: ${result.fileName} (${result.fileSize} bytes)`,
+        });
+
+        void logUsage(USAGE_EVENTS.EXPORT_PDF, {
+          brandName: realBrandReport.brandName,
+          fileSize: result.fileSize,
         });
 
         logger.debug(`✅ Export PDF réussi: ${result.fileName}`);

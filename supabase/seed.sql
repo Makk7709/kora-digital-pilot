@@ -1,0 +1,22 @@
+-- =============================================================================
+-- Kora Digital Pilot — optional seed for local Supabase dev
+-- =============================================================================
+-- This file is intentionally minimal. The bootstrap trigger
+-- public.kora_handle_new_user() will auto-provision an organization the first
+-- time a user signs up via Supabase Auth, so no seed data is required to
+-- exercise the basic multi-tenant flow.
+--
+-- Add fixtures here if you want a deterministic local dataset
+-- (e.g. demo organizations, replay events). Keep them safe to re-run.
+-- =============================================================================
+
+-- Example (commented):
+--
+-- insert into public.organizations (id, name, slug, plan)
+-- values (
+--   '00000000-0000-0000-0000-000000000001',
+--   'Demo Organization',
+--   'demo-org',
+--   'free'
+-- )
+-- on conflict (id) do nothing;

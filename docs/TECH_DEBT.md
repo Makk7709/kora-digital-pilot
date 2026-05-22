@@ -155,4 +155,29 @@ Six fichiers dépassent 1 000 lignes et concentrent une part importante du code 
 
 ---
 
-Dernière mise à jour : 2026-05-22 (Wave 1 + Wave 2 packaging).
+## SaaSisation — restant après Wave 3 (Agent 6)
+
+Wave 3 livre les briques minimales (auth Supabase, multi-tenant RLS,
+telemetry scoped, scaffold Docker, workflow déploiement placeholder).
+Le détail complet figure dans [`docs/audit/SAASISATION_REPORT.md`](./audit/SAASISATION_REPORT.md).
+Ce qui reste pour passer en SaaS pleinement opérationnel :
+
+| # | Sujet | Effort | Priorité |
+| --- | --- | --- | --- |
+| S1 | **Choix d'une cible de déploiement** + activation du job `deploy` (workflow `if: false` aujourd'hui) | XS | Haute |
+| S2 | **Billing Stripe** (Checkout + webhook → `organizations.plan`) | M | Haute pour monétiser |
+| S3 | **Plans payants** : quotas par plan (rate limit `report.generated`, exports/mois) | S | dépend de S2 |
+| S4 | **Invitations d'utilisateurs** (UI Settings → Équipe + table `pending_invitations` + adaptation du trigger `kora_on_auth_user_created`) | M | Moyenne |
+| S5 | **Migration sessions LinkedIn** vers `public.linkedin_sessions` (scaffold livré, table créée, RLS posée, mais code de `server.cjs` toujours sur `Map` mémoire) | M | Moyenne |
+| S6 | **Org-switcher** dans le header + persistance du choix (TenantContext.switchOrg déjà câblé côté state, manque le composant UI) | S | Basse |
+| S7 | **Logout côté UI** (bouton dans `Settings`, hook `useAuth().signOut` déjà disponible) | XS | Haute (UX) |
+| S8 | **Audit log admin** (table `audit_events`, journal des actions sensibles côté server) | S | Basse |
+| S9 | **Emails transactionnels** (Resend / Postmark) pour confirmation, reset, invitations | S | dépend de S4 |
+| S10 | **Tests automatisés** sur la couche auth + telemetry (`AuthContext`, `requireUser`, `logUsage`) — Wave 3 n'a livré aucun test pour respecter le scope | M | Moyenne |
+| S11 | **Export `usage_events`** vers un outil BI ou S3 (CSV/Parquet quotidien) | S | Basse |
+| S12 | **`docker build` non vérifié en CI réel** (Docker n'était pas disponible dans l'environnement d'exécution d'Agent 6). Le job `build` du workflow `deploy.yml` exécutera la commande au premier tag — surveiller le résultat. | XS | Haute avant prod |
+| S13 | **`RequireAuth` no-op en démo en prod** — si les vars Supabase manquent en prod, `/app` est accessible sans login. La checklist `DEPLOYMENT.md` §5 le contrôle ; envisager une garde dure `if (!isSupabaseConfigured() && NODE_ENV === 'production') throw` au boot. | XS | Haute avant prod |
+
+---
+
+Dernière mise à jour : 2026-05-22 (Wave 3 — Agent 6 SaaSisation light).

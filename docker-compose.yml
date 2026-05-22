@@ -1,0 +1,61 @@
+# ============================================================================
+# Kora Digital Pilot — local docker-compose for dev / preview
+# ----------------------------------------------------------------------------
+# Spins up:
+#   - app       : the container built by ./Dockerfile (proxy + SPA)
+#   - postgres  : a vanilla Postgres 15, useful when you want to apply the
+#                 supabase/migrations/*.sql files locally without depending
+#                 on a Supabase project.
+#
+# This file is intentionally minimal. It is NOT a Supabase replacement: the
+# Supabase Auth runtime is not bundled here. When `postgres` is the only
+# backing store, the app keeps running in its demo fallback mode (see
+# `src/contexts/AuthContext.tsx`).
+# ----------------------------------------------------------------------------
+# Wave 3 — Agent 6 (SaaSisation light).
+# ============================================================================
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: kora-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kora
+      POSTGRES_PASSWORD: kora_dev_password
+      POSTGRES_DB: kora
+    ports:
+      - "5432:5432"
+    volumes:
+      - kora_pgdata:/var/lib/postgresql/data
+      - ./supabase/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kora -d kora"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-}
+    container_name: kora-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PROXY_PORT: 3001
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      VITE_LINKEDIN_CLIENT_ID: ${VITE_LINKEDIN_CLIENT_ID:-}
+      VITE_LINKEDIN_CLIENT_SECRET: ${VITE_LINKEDIN_CLIENT_SECRET:-}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  kora_pgdata:
