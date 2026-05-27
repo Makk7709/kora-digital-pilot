@@ -139,20 +139,6 @@
         "isSemVerMajor": true
       }
     },
-    "lovable-tagger": {
-      "name": "lovable-tagger",
-      "severity": "moderate",
-      "isDirect": true,
-      "via": [
-        "vite"
-      ],
-      "effects": [],
-      "range": "<=1.1.9",
-      "nodes": [
-        "node_modules/lovable-tagger"
-      ],
-      "fixAvailable": true
-    },
     "vite": {
       "name": "vite",
       "severity": "moderate",
@@ -179,7 +165,6 @@
       ],
       "effects": [
         "@vitest/mocker",
-        "lovable-tagger",
         "vite-node",
         "vitest"
       ],
@@ -242,18 +227,18 @@
     "vulnerabilities": {
       "info": 0,
       "low": 0,
-      "moderate": 9,
+      "moderate": 8,
       "high": 0,
       "critical": 0,
-      "total": 9
+      "total": 8
     },
     "dependencies": {
-      "prod": 399,
-      "dev": 421,
-      "optional": 91,
+      "prod": 412,
+      "dev": 393,
+      "optional": 66,
       "peer": 7,
       "peerOptional": 0,
-      "total": 837
+      "total": 822
     }
   }
 }

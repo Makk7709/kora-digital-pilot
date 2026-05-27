@@ -68,7 +68,6 @@ Inventaire bâti à partir de `package.json` et des conventions publiques de cha
 | `eslint-plugin-react-refresh` | ^0.4.14 | MIT |
 | `globals` | ^15.11.0 | MIT |
 | `jsdom` | ^26.1.0 | MIT |
-| `lovable-tagger` | ^1.1.7 | MIT (à confirmer) |
 | `postcss` | ^8.4.49 | MIT |
 | `tailwindcss` | ^3.4.14 | MIT |
 | `typescript` | ~5.6.2 | Apache-2.0 |

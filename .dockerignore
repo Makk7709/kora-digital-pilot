@@ -38,7 +38,7 @@ yarn-error.log*
 coverage
 .vitest
 
-# Local diagnostic / Lovable artefacts
+# Local diagnostic artefacts
 diagnostic-simple.html
 fix-markdown.cjs
 fix-markdown.js

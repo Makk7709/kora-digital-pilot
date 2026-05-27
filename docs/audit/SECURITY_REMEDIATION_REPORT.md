@@ -157,7 +157,7 @@ Toutes sont stables depuis jspdf 2.x. Bump effectif : **`^3.0.1` → `^4.2.1`** 
 | Avant | 1 | 0 | 9 | 10 |
 | Après | 0 | 0 | 9 | 9 |
 
-Les 9 vulnérabilités modérées restantes sont toutes dans la branche `devDependencies` (vitest 2.x et son écosystème, lovable-tagger, brace-expansion). Elles sont hors scope Agent 1 et devraient être traitées par Agent 2 (`@vitest/*` → 3.x) puisqu'elles ne touchent pas le bundle livré.
+Les 8 vulnérabilités modérées restantes (après retrait de l'outillage tiers de tagging composant en post-traitement) sont toutes dans la branche `devDependencies` (vitest 2.x et son écosystème, brace-expansion). Elles sont hors scope sécurité immédiat et seront traitées lors du bump `@vitest/*` 2.x → 3.x, puisqu'elles ne touchent pas le bundle livré.
 
 ## 6b. Smoke test des endpoints session
 

@@ -405,7 +405,7 @@ Inventoriée dans [`docs/TECH_DEBT.md`](../TECH_DEBT.md). Points saillants à da
 | Conformité RGPD / AI Act non formalisée | Aucune analyse d'impact (PIA) documentée ; Supabase introduit la persistance de données utilisateurs (email, télémétrie indexée) | Élevé en cas d'exposition multi-utilisateurs publique |
 | Adresse `security@korev.ai` annoncée comme placeholder dans [`SECURITY.md`](../../SECURITY.md) | À confirmer ou ajuster par Korev AI | Faible |
 | Statut juridique des marques « Korev AI » et « Kora Digital Pilot » | À confirmer par le porteur | Faible techniquement, opposable au cabinet |
-| Statut juridique des contributions Agents IA dans l'historique Git | 9 commits sous identité `gpt-engineer-app[bot]` ; cession de droits et mention `CONTRIBUTORS` à clarifier | Faible techniquement, opposable au cabinet |
+| Statut juridique des contributions issues d'outillages tiers d'assistance au développement dans l'historique Git | Un faible nombre de commits sous identité d'outil tiers ; cession de droits et mention `CONTRIBUTORS` à clarifier par le porteur | Faible techniquement, opposable au cabinet |
 | Périmètre d'usage cible (poste interne vs SaaS multi-utilisateurs publique) | Détermine la sévérité finale des risques résiduels et le scope des évolutions à programmer | Élevé pour le dossier de valorisation |
 | Plugin de tagging de composants Vite (devDependency) | Outillage de développement non requis pour build/run | Faible — à retirer du `package.json` et du [`vite.config.ts`](../../vite.config.ts) par le porteur si souhaité |
 

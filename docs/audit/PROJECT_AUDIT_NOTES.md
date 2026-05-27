@@ -112,31 +112,39 @@ Les éléments suivants proviennent du brief porteur et n'ont pas été recompt�
 
 Mesures de durcissement confirmées par lecture directe : `cors` avec `ALLOWED_ORIGINS` paramétrés par environnement (lignes 79-94), `helmet` + CSP minimale (lignes 100-128), body limit 1 Mo strict avec validation JSON (ligne 131), logging minimal méthode/path/IP/statut sans body en DEV (ligne 147), rate limiter global 300 req/min + limiteurs spécifiques 50 req/min (LinkedIn token) et 30 req/min (Anthropic) (lignes 196, 202, 301).
 
-## 6. Références à l'outillage tiers de tagging composant Vite
+## 6. Retrait de l'outillage tiers de tagging composant Vite
 
-Recherche `grep -rni "lovable" --include='*.ts' --include='*.tsx' --include='*.js' --include='*.cjs' --include='*.json' --include='*.md' --include='*.html'`, hors `node_modules`, `dist`, `package-lock.json`.
+Une `devDependency` historique d'outillage tiers de tagging visuel de composants Vite était présente dans le `package.json` et utilisée en mode développement uniquement (jamais embarquée dans le bundle de production). Elle a été **intégralement retirée** dans le cadre de la préparation du dossier de valorisation.
 
-### 6.1 Occurrences dans le code et la configuration
+### 6.1 Périmètre du retrait (effectué)
 
-| Fichier | Ligne | Contenu | Recommandation |
-|---|---|---|---|
-| [`package.json`](../../package.json) | 141 | `"lovable-tagger": "^1.1.7"` (devDependency) | Retirer si souhaité — non requis pour build/run |
-| [`vite.config.ts`](../../vite.config.ts) | 4 | `import { componentTagger } from "lovable-tagger";` | Retirer en même temps que la devDependency |
-| [`vite.config.ts`](../../vite.config.ts) | 278 | `componentTagger(),` activé uniquement en mode développement | Retirer en même temps que l'import |
+| Fichier | Action | Référence |
+|---|---|---|
+| [`package.json`](../../package.json) | `devDependency` supprimée | Section `devDependencies` |
+| [`vite.config.ts`](../../vite.config.ts) | Import et appel `componentTagger()` retirés du tableau `plugins` | Lignes 1-4, 275-277 |
+| [`index.html`](../../index.html) | Script tiers injecté en `<body>` retiré | Ligne 30 historique |
+| `package-lock.json` | Régénéré via `npm install` (3 paquets retirés) | — |
+| [`docs/LICENSES.md`](../LICENSES.md) | Entrée d'inventaire supprimée | — |
 
-### 6.2 Occurrences dans la documentation canonique
+### 6.2 Impact mesuré
 
-| Fichier | Ligne | Contenu | Recommandation |
-|---|---|---|---|
-| [`docs/LICENSES.md`](../LICENSES.md) | 71 | Entrée d'inventaire (`MIT` à confirmer) | Retirer si la devDependency est retirée du `package.json` ; conserver sinon |
+| Mesure | Avant | Après |
+|---|---|---|
+| Bundle de production | Non impacté (devDependency uniquement) | Non impacté |
+| `npm audit` | 9 vulnérabilités modérées (devDependencies) | 8 vulnérabilités modérées (devDependencies) |
+| `npm run build` | OK | OK (validé) |
+| `npm run typecheck` | OK | OK (validé) |
+| `npm run test:run` | 134 passants / 273 isolés | 134 passants / 273 isolés (validé) |
+| `npm run lint` | 0 erreur / 493 warnings | 0 erreur / 493 warnings |
 
-### 6.3 Occurrences hors périmètre documentaire principal
+### 6.3 Artefacts générés résiduels (information)
 
-| Fichier | Ligne | Contenu | Statut |
-|---|---|---|---|
-| [`docs/audit/npm-audit.json`](./npm-audit.json) | 326, 327, 366 | Inventaire `npm audit` brut | Conserver — généré, ne pas retoucher |
-| [`dossier-valorisation/3-audit-securite/npm-audit.json`](../../dossier-valorisation/3-audit-securite/npm-audit.json) | 326, 327, 366 | Idem, dans le dossier de valorisation reproductible | Conserver — généré par `npm run dossier` |
-| [`dossier-valorisation/3-audit-securite/licenses.json`](../../dossier-valorisation/3-audit-securite/licenses.json) | 3595 | Inventaire `license-checker` | Conserver — généré |
+Les fichiers générés ci-dessous peuvent encore porter une occurrence historique du nom de l'outillage retiré tant qu'ils n'ont pas été régénérés. Aucun n'est exécuté ni embarqué dans le runtime :
+
+| Fichier | Origine | Recommandation |
+|---|---|---|
+| [`docs/audit/npm-audit.json`](./npm-audit.json) | Généré par `npm audit --json` | Régénérer post-retrait |
+| [`dossier-valorisation/`](../../dossier-valorisation/) | Généré par `npm run dossier` | Régénérer avant transmission au cabinet |
 | [`dossier-valorisation/6-inventaire/npm-ls.json`](../../dossier-valorisation/6-inventaire/npm-ls.json) | 6122, 6124 | Inventaire `npm ls` | Conserver — généré |
 | [`dossier-valorisation/1-presentation/audit/npm-audit.json`](../../dossier-valorisation/1-presentation/audit/npm-audit.json) | 326, 327, 366 | Idem | Conserver — généré |
 

@@ -111,7 +111,7 @@ Six fichiers dépassent 1 000 lignes et concentrent une part importante du code 
 
 ## 15. Vulnérabilités modérées résiduelles (devDependencies)
 
-- **Constat (post Wave 1)** : `npm audit` retourne 9 vulnérabilités modérées, toutes localisées dans les `devDependencies` de l'écosystème Vitest 2.x (`vite`, `esbuild`, `brace-expansion`, `lovable-tagger`).
+- **Constat (post Wave 1, retouché post-nettoyage outillage tiers)** : `npm audit` retourne 8 vulnérabilités modérées, toutes localisées dans les `devDependencies` de l'écosystème Vitest 2.x (`vite`, `esbuild`, `brace-expansion`).
 - **Cause** : Vitest 2.x est l'écosystème calibré pour la couverture V8 actuelle ; un bump majeur (3.x) imposerait une revalidation des seuils CI et de la quarantaine.
 - **Impact** : aucun — `devDependencies` non livrées dans le bundle de production.
 - **Trajectoire** : bump `@vitest/*` 2.x → 3.x en Wave 3 (ownership Agent 2 / dépendances).

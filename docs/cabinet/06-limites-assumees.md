@@ -49,7 +49,7 @@ Sept fichiers dépassent 1 000 lignes :
 | --- | --- | --- | --- |
 | Critical | 0 | [`docs/audit/npm-audit.json`](../audit/npm-audit.json) | ✅ Résolu Wave 1 (bump jspdf) |
 | High | 0 | idem | ✅ Résolu Wave 1 |
-| Moderate | 9 | idem | Tous dans `devDependencies` (Vitest 2.x, vite, esbuild, brace-expansion, lovable-tagger) ; aucun impact bundle. Bump Vitest 3.x reporté en Wave 3 |
+| Moderate | 8 | idem | Tous dans `devDependencies` (Vitest 2.x, vite, esbuild, brace-expansion) ; aucun impact bundle. Bump Vitest 3.x planifié |
 
 ## 6.6 Pipeline et déploiement
 

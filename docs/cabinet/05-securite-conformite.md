@@ -64,7 +64,7 @@ Détail dans [`docs/audit/SECURITY_REMEDIATION_REPORT.md`](../audit/SECURITY_REM
 
 **CVEs résolues** : `GHSA-f8cm-6447-x5h2` (LFI/Path Traversal, critical), `GHSA-pqxr-3g65-p328` (PDF Injection AcroFormChoiceField), `GHSA-95fx-jjr5-f39c` (DoS BMPDecoder), `GHSA-9vjf-qc39-jprp` (PDF Object Injection addJS), `GHSA-vm32-vv63-w422` (XMP Metadata Injection), `GHSA-cjw8-79x6-5cj4` (addJS Race Condition).
 
-**Vulnérabilités résiduelles** : 9 modérées dans `devDependencies` (vitest 2.x, vite, esbuild, brace-expansion, lovable-tagger). Aucune ne touche le bundle livré. Traitement prévu en Wave 3 (bump Vitest 3.x — ownership Agent 2 / dépendances).
+**Vulnérabilités résiduelles** : 8 modérées dans `devDependencies` (vitest 2.x, vite, esbuild, brace-expansion). Aucune ne touche le bundle livré. Traitement prévu lors du bump `@vitest/*` 2.x → 3.x.
 
 **Constaté** par exécution `npm audit --json` et croisement avec [`docs/audit/npm-audit.json`](../audit/npm-audit.json).
 
@@ -134,7 +134,6 @@ Aucune analyse d'impact AI Act formalisée à ce snapshot. À conduire par un ca
 | Licence du projet | MIT — [`LICENSE`](../../LICENSE) | © 2024-2026 Korev AI |
 | Licences des dépendances | Inventaire `npx license-checker --json` dans [`docs/audit/licenses.json`](../audit/licenses.json) | Non rejouée dans le cabinet — pointeur direct |
 | Compatibilité licence | MIT-compatible (Apache 2.0, BSD, ISC, MIT, …) | À vérifier formellement par un cabinet juridique |
-| Dépendance « lovable-tagger » | devDependency, Vite plugin développement uniquement | Sans impact runtime, retrait recommandé par [`docs/audit/PROJECT_AUDIT_NOTES.md`](../audit/PROJECT_AUDIT_NOTES.md) §6 |
 
 **Constaté** par lecture de `LICENSE`, `package.json` et de `docs/audit/licenses.json`.
 
