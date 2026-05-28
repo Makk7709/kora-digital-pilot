@@ -483,7 +483,6 @@ Les points listés ci-dessous sont **identifiés, documentés, non bloquants pou
 | B.4 | **Distribution du store de sessions LinkedIn** (Redis ou table `linkedin_sessions` SQL) | Scaffold SQL en place ; chemin d'industrialisation identifié | Préparer le multi-instance |
 | B.5 | **Élargissement progressif du périmètre de tests** depuis les 134 tests passants déterministes | Trajectoire documentée ([`docs/TESTING.md`](../TESTING.md) §5) | Réintégrer progressivement le périmètre temporairement isolé |
 | B.6 | **Remontée progressive de la couverture** depuis la baseline opposable (16,68 % lines) vers la cible documentée | Trajectoire dans [`docs/TECH_DEBT.md`](../TECH_DEBT.md) | Renforcer la profondeur du gate CI |
-| B.7 | **Statut juridique des contributions issues d'outillages tiers d'assistance au développement** dans l'historique Git | Quelques commits sous identité d'outil tiers à clarifier (cession de droits et mention CONTRIBUTORS) | Conforter le périmètre des droits transmis |
 
 ### 13.C — Dette technique normale d'un produit SaaS pré-stable
 
@@ -504,7 +503,7 @@ Les points listés ci-dessous sont **identifiés, documentés, non bloquants pou
 
 **Catégorie A (6 points)** — décisions dirigeant à arrêter avant transmission ou avant exposition publique. Toutes les procédures techniques associées sont versionnées et documentées ; l'exécution est conditionnée à des décisions de gouvernance.
 
-**Catégorie B (7 points)** — actions opérationnelles d'industrialisation. Scaffold présent dans le dépôt ; activation par configuration ou par provisionnement managé.
+**Catégorie B (6 points)** — actions opérationnelles d'industrialisation. Scaffold présent dans le dépôt ; activation par configuration ou par provisionnement managé.
 
 **Catégorie C (10 points)** — dette technique normale d'un produit SaaS en phase pré-stable, en trajectoire de remédiation continue et tracée. Aucun point de catégorie C n'altère le runtime applicatif ou la valeur économique du livrable.
 
@@ -582,10 +581,10 @@ Réalise les contrôles suivants et produis un rapport structuré :
    - Le ton est-il sobre, précis, sans phrase marketing ni ton défensif ?
 
 7. Absence de mentions parasites
-   - Aucune mention de « IA générative », « ChatGPT », « Lovable »,
-     « généré automatiquement », « brouillon », « subagent »,
-     « prompt généré » n'est présente, sauf si nécessaire factuellement
-     pour décrire un module audité du dépôt.
+   - Aucune mention de plateforme tierce de génération de code,
+     d'outil d'assistance IA, ou de terme évoquant un statut de
+     brouillon ou de génération automatique n'est présente, sauf si
+     nécessaire factuellement pour décrire un module audité du dépôt.
 
 8. Décisions dirigeant identifiées
    - Les 4 décisions dirigeant (§0.4) sont-elles bien :
