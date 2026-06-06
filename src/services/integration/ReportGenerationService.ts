@@ -444,7 +444,8 @@ Réputation:
     };
 
     const patterns = keywords[type].map(
-      (keyword) => new RegExp(`${keyword}[\\s\\S]*?(?=\\n\\n|${keywords[type].join('|')}|$)`, 'gi'),
+      (keyword) =>
+        new RegExp(String.raw`${keyword}[\s\S]*?(?=\n\n|${keywords[type].join('|')}|$)`, 'gi'),
     );
 
     patterns.forEach((pattern) => {
@@ -537,7 +538,7 @@ Réputation:
       /Tu es Perplexity, un assistant de recherche utile formé par Perplexity AI\.[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
       /Ta tâche est de rédiger une réponse précise[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
       /Suis ces instructions pour formuler ta réponse[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      /KORA[\s]*$/gm,
+      /KORA\s*$/gm,
       /===== ENRICHISSEMENT CONTEXTUEL =====[\s\S]*?(?=\n\n|\n[^=])/gi,
       /SYNTHÈSE STRATÉGIQUE:[\s\S]*$/gi,
       /RECOMMANDATIONS OPÉRATIONNELLES:[\s\S]*$/gi,
@@ -638,7 +639,7 @@ Réputation:
   }
 
   private extractRecommendationTimeline(description: string): string {
-    const timelineMatch = description.match(/(\d+)\s*(mois|semaines?|jours?)/i);
+    const timelineMatch = /(\d+)\s*(mois|semaines?|jours?)/i.exec(description);
     if (timelineMatch) {
       return `${timelineMatch[1]} ${timelineMatch[2]}`;
     }
@@ -655,7 +656,7 @@ Réputation:
   }
 
   private estimateRecommendationBudget(description: string): any {
-    const budgetMatch = description.match(/(\d+(?:,\d{3})*)\s*(?:€|euros?)/i);
+    const budgetMatch = /(\d+(?:,\d{3})*)\s*(?:€|euros?)/i.exec(description);
 
     if (budgetMatch) {
       const amount = Number.parseInt(budgetMatch[1].replace(',', ''));
@@ -890,7 +891,7 @@ Réputation:
   }
 
   private extractAlertTimeline(description: string): string {
-    const timelineMatch = description.match(/(\d+)\s*(mois|semaines?|jours?)/i);
+    const timelineMatch = /(\d+)\s*(mois|semaines?|jours?)/i.exec(description);
     if (timelineMatch) {
       return `${timelineMatch[1]} ${timelineMatch[2]}`;
     }
@@ -947,17 +948,17 @@ Réputation:
   }
 
   private extractCurrentValue(description: string): string {
-    const valueMatch = description.match(/(\d+(?:\.\d+)?)\s*%/);
+    const valueMatch = /(\d+(?:\.\d+)?)\s*%/.exec(description);
     return valueMatch ? `${valueMatch[1]}%` : 'Valeur à mesurer';
   }
 
   private extractThreshold(description: string): number {
-    const thresholdMatch = description.match(/seuil.*?(\d+(?:\.\d+)?)/i);
+    const thresholdMatch = /seuil.*?(\d+(?:\.\d+)?)/i.exec(description);
     return thresholdMatch ? Number.parseFloat(thresholdMatch[1]) : 80;
   }
 
   private calculateDeviation(description: string): number {
-    const deviationMatch = description.match(/écart.*?([+-]?\d+(?:\.\d+)?)/i);
+    const deviationMatch = /écart.*?([+-]?\d+(?:\.\d+)?)/i.exec(description);
     return deviationMatch ? Number.parseFloat(deviationMatch[1]) : -10;
   }
 

@@ -8,7 +8,7 @@ const CLEANUP_PATTERNS: RegExp[] = [
   /Tu es Perplexity, un assistant de recherche utile formé par Perplexity AI\.[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
   /Ta tâche est de rédiger une réponse précise[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
   /Suis ces instructions pour formuler ta réponse[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-  /KORA[\s]*$/gm,
+  /KORA\s*$/gm,
   /===== ENRICHISSEMENT CONTEXTUEL =====[\s\S]*?(?=\n\n|\n[^=])/gi,
   /SYNTHÈSE STRATÉGIQUE:[\s\S]*$/gi,
   /RECOMMANDATIONS OPÉRATIONNELLES:[\s\S]*$/gi,
@@ -36,7 +36,7 @@ export function cleanRawContent(content: string): string {
     );
     return content
       .replace(/Tu es Perplexity, un assistant de recherche utile[\s\S]*?(?=\n\n)/gi, '')
-      .replace(/KORA[\s]*$/gm, '')
+      .replace(/KORA\s*$/gm, '')
       .trim();
   }
 

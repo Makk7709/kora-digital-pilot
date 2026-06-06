@@ -211,7 +211,7 @@ export const CommunityManagerDashboard: React.FC = () => {
     let currentInsight: Partial<TrendInsight> = {};
 
     for (const line of lines) {
-      if (line.match(/^\d+\.|^-|^•/) || line.includes(':')) {
+      if (/^\d+\.|^-|^•/.test(line) || line.includes(':')) {
         if (currentInsight.title) {
           insights.push({
             id: Math.random().toString(36).substr(2, 9),

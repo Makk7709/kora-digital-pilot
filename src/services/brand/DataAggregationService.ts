@@ -443,7 +443,7 @@ Utilise des données mesurables et des sources fiables.`;
       /Tu es Perplexity, un assistant de recherche utile formé par Perplexity AI\.[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
       /Ta tâche est de rédiger une réponse précise[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
       /Suis ces instructions pour formuler ta réponse[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      /KORA[\s]*$/gm,
+      /KORA\s*$/gm,
       /===== ENRICHISSEMENT CONTEXTUEL =====[\s\S]*?(?=\n\n|\n[^=])/gi,
       /SYNTHÈSE STRATÉGIQUE:[\s\S]*$/gi,
       /RECOMMANDATIONS OPÉRATIONNELLES:[\s\S]*$/gi,
@@ -494,7 +494,7 @@ Utilise des données mesurables et des sources fiables.`;
   private extractScore(content: string, keyword: string, fallback: number): number {
     if (!keyword) {
       // Recherche de scores génériques
-      const scoreMatch = content.match(/(\d{1,3})\s*(?:%|\/100|points?)/i);
+      const scoreMatch = /(\d{1,3})\s*(?:%|\/100|points?)/i.exec(content);
       if (scoreMatch) {
         const score = Number.parseInt(scoreMatch[1]);
         return score <= 100 ? score : fallback;
@@ -502,18 +502,18 @@ Utilise des données mesurables et des sources fiables.`;
       return fallback;
     }
 
-    const scoreMatch = content.match(new RegExp(`${keyword}.*?(\\d+)`, 'i'));
+    const scoreMatch = new RegExp(String.raw`${keyword}.*?(\d+)`, 'i').exec(content);
     return scoreMatch ? Math.min(Number.parseInt(scoreMatch[1]), 100) : fallback;
   }
 
   private extractNumber(content: string, keyword: string, fallback: number): number {
     const patterns = [
-      new RegExp(`${keyword}.*?(\\d{1,3}(?:,\\d{3})*(?:\\.\\d+)?)`, 'i'),
-      new RegExp(`(\\d{1,3}(?:,\\d{3})*(?:\\.\\d+)?).*?${keyword}`, 'i'),
+      new RegExp(String.raw`${keyword}.*?(\d{1,3}(?:,\d{3})*(?:\.\d+)?)`, 'i'),
+      new RegExp(String.raw`(\d{1,3}(?:,\d{3})*(?:\.\d+)?).*?${keyword}`, 'i'),
     ];
 
     for (const pattern of patterns) {
-      const match = content.match(pattern);
+      const match = pattern.exec(content);
       if (match) {
         return Number.parseFloat(match[1].replace(',', ''));
       }
@@ -523,21 +523,21 @@ Utilise des données mesurables et des sources fiables.`;
   }
 
   private extractPercentage(content: string, keyword: string, fallback: number): number {
-    const pattern = new RegExp(`${keyword}.*?(\\d+(?:\\.\\d+)?)\\s*%`, 'i');
-    const match = content.match(pattern);
+    const pattern = new RegExp(String.raw`${keyword}.*?(\d+(?:\.\d+)?)\s*%`, 'i');
+    const match = pattern.exec(content);
     return match ? Number.parseFloat(match[1]) : fallback;
   }
 
   private extractSentimentScore(content: string): number {
     // Recherche de scores de sentiment (-100 à +100)
-    const sentimentMatch = content.match(/sentiment.*?([+-]?\d+)/i);
+    const sentimentMatch = /sentiment.*?([+-]?\d+)/i.exec(content);
     if (sentimentMatch) {
       return Math.max(-100, Math.min(100, Number.parseInt(sentimentMatch[1])));
     }
 
     // Estimation basée sur les pourcentages positif/négatif
-    const positiveMatch = content.match(/positif.*?(\d+)\s*%/i);
-    const negativeMatch = content.match(/négatif.*?(\d+)\s*%/i);
+    const positiveMatch = /positif.*?(\d+)\s*%/i.exec(content);
+    const negativeMatch = /négatif.*?(\d+)\s*%/i.exec(content);
 
     if (positiveMatch && negativeMatch) {
       const positive = Number.parseInt(positiveMatch[1]);
@@ -589,7 +589,7 @@ Utilise des données mesurables et des sources fiables.`;
 
     lines.forEach((line) => {
       if (line.includes('sujet') || line.includes('thème') || line.includes('topic')) {
-        const topicMatch = line.match(/([a-zA-ZÀ-ÿ\s]+)/);
+        const topicMatch = /([a-zA-ZÀ-ÿ\s]+)/.exec(line);
         if (topicMatch && topicMatch[1].length > 5) {
           topics.push({
             topic: topicMatch[1].trim(),
@@ -636,7 +636,7 @@ Utilise des données mesurables et des sources fiables.`;
   }
 
   private extractMarketShare(content: string): number {
-    const shareMatch = content.match(/part\s+de\s+marché.*?(\d+(?:\.\d+)?)\s*%/i);
+    const shareMatch = /part\s+de\s+marché.*?(\d+(?:\.\d+)?)\s*%/i.exec(content);
     return shareMatch ? Number.parseFloat(shareMatch[1]) : 15;
   }
 
@@ -659,7 +659,7 @@ Utilise des données mesurables et des sources fiables.`;
   }
 
   private extractProjectedShare(content: string): number {
-    const projectionMatch = content.match(/projection.*?(\d+(?:\.\d+)?)\s*%/i);
+    const projectionMatch = /projection.*?(\d+(?:\.\d+)?)\s*%/i.exec(content);
     return projectionMatch
       ? Number.parseFloat(projectionMatch[1])
       : this.extractMarketShare(content) + 2;
@@ -681,17 +681,17 @@ Utilise des données mesurables et des sources fiables.`;
   }
 
   private extractBenchmarkPosition(content: string): number {
-    const rankMatch = content.match(/rang.*?(\d+)/i);
+    const rankMatch = /rang.*?(\d+)/i.exec(content);
     return rankMatch ? Number.parseInt(rankMatch[1]) : 5;
   }
 
   private extractCompetitiveAdvantageIndex(content: string): number {
-    const advantageMatch = content.match(/avantage.*?(\d+)/i);
+    const advantageMatch = /avantage.*?(\d+)/i.exec(content);
     return advantageMatch ? Math.min(Number.parseInt(advantageMatch[1]), 100) : 65;
   }
 
   private extractThreatLevel(content: string): number {
-    const threatMatch = content.match(/menace.*?(\d+)/i);
+    const threatMatch = /menace.*?(\d+)/i.exec(content);
     if (threatMatch) {
       return Math.min(Number.parseInt(threatMatch[1]), 100);
     }
@@ -759,7 +759,7 @@ Utilise des données mesurables et des sources fiables.`;
   }
 
   private extractCostAdvantage(content: string): number {
-    const costMatch = content.match(/coût.*?([+-]?\d+(?:\.\d+)?)\s*%/i);
+    const costMatch = /coût.*?([+-]?\d+(?:\.\d+)?)\s*%/i.exec(content);
     if (costMatch) {
       return Number.parseFloat(costMatch[1]);
     }
@@ -785,7 +785,7 @@ Utilise des données mesurables et des sources fiables.`;
     }> = [];
 
     // Recherche de comparaisons explicites
-    const comparisonPattern = /(?:vs|contre|comparé à)\s+([A-Za-zÀ-ÿ\s]+)/gi;
+    const comparisonPattern = /(?:vs|contre|comparé à)\s+([a-zÀ-ÿ\s]+)/gi;
     let match;
 
     while ((match = comparisonPattern.exec(content)) !== null) {

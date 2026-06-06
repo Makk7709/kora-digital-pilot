@@ -316,7 +316,7 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
 
       // Génération du blob
       const pdfBlob = doc.output('blob');
-      const fileName = `${brandName.replace(/[^a-zA-Z0-9]/g, '_')}_Kora_Report_${new Date().toISOString().slice(0, 16).replace(/[:]/g, '-')}.pdf`;
+      const fileName = `${brandName.replace(/[^a-zA-Z0-9]/g, '_')}_Kora_Report_${new Date().toISOString().slice(0, 16).split(':').join('-')}.pdf`;
       const downloadUrl = URL.createObjectURL(pdfBlob);
 
       return {

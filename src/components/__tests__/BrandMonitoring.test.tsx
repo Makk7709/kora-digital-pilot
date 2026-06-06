@@ -461,7 +461,7 @@ describe.skip('BrandMonitoring - Tests TDD', () => {
         });
 
         // Relancer l'analyse
-        const retryButton = screen.getByRole('button', { name: /réessayer l\'analyse/i });
+        const retryButton = screen.getByRole('button', { name: /réessayer l'analyse/i });
         fireEvent.click(retryButton);
 
         vi.advanceTimersByTime(300);

@@ -41,7 +41,7 @@ export class PerplexityResponseParser {
 
       lines.forEach((line, index) => {
         // Chercher des patterns comme "- quelque chose" ou "1. quelque chose"
-        const contentMatch = line.match(/[-•]\s*["""]([^"""]+)["""]/);
+        const contentMatch = /[-•]\s*"([^"]+)"/.exec(line);
         if (contentMatch) {
           const content = contentMatch[1];
           let sentiment: 'positive' | 'neutral' | 'negative' = 'neutral';
@@ -133,11 +133,11 @@ export class PerplexityResponseParser {
   parseSentiment(response: string): RealSentiment {
     // Chercher des patterns numériques pour les pourcentages
     const positiveMatch =
-      response.match(/positif[^\d]*(\d+)%/i) || response.match(/positive[^\d]*(\d+)%/i);
+      /positif[^\d]*(\d+)%/i.exec(response) || /positive[^\d]*(\d+)%/i.exec(response);
     const negativeMatch =
-      response.match(/négatif[^\d]*(\d+)%/i) || response.match(/negative[^\d]*(\d+)%/i);
+      /négatif[^\d]*(\d+)%/i.exec(response) || /negative[^\d]*(\d+)%/i.exec(response);
     const neutralMatch =
-      response.match(/neutre[^\d]*(\d+)%/i) || response.match(/neutral[^\d]*(\d+)%/i);
+      /neutre[^\d]*(\d+)%/i.exec(response) || /neutral[^\d]*(\d+)%/i.exec(response);
 
     let positive = positiveMatch ? Number.parseInt(positiveMatch[1]) : 0;
     let negative = negativeMatch ? Number.parseInt(negativeMatch[1]) : 0;
@@ -208,9 +208,17 @@ export class PerplexityResponseParser {
   parseCompetitors(response: string): RealCompetitor[] {
     const competitors: RealCompetitor[] = [];
 
-    // Patterns pour extraire les concurrents
-    const competitorRegex =
-      /(\w+(?:\s+\w+)*)\s*[-:]?\s*(\d+)?\s*mentions?\s*[-,]?\s*(\d+)%?\s*sentiment?\s*[-,]?\s*(\d+(?:\.\d+)?)%?\s*(?:marché|market)/gi;
+    // Patterns pour extraire les concurrents (regex décomposée pour réduire la
+    // complexité cognitive Sonar S5843)
+    const NAME = /(\w+(?:\s+\w+)*)/.source;
+    const MENTIONS = /(\d+)?\s*mentions?/.source;
+    const SENTIMENT = /(\d+)%?\s*sentiment?/.source;
+    const MARKET = /(\d+(?:\.\d+)?)%?\s*(?:marché|market)/.source;
+    const SEP = /\s*[-:,]?\s*/.source;
+    const competitorRegex = new RegExp(
+      `${NAME}${SEP}${MENTIONS}${SEP}${SENTIMENT}${SEP}${MARKET}`,
+      'gi',
+    );
     let match;
 
     while ((match = competitorRegex.exec(response)) !== null) {
@@ -344,16 +352,28 @@ export class PerplexityResponseParser {
       isAIGenerated: true,
     };
 
-    // Patterns pour chaque section SWOT
+    // SWOT — Sonar S5843 : on factorise les alternances pour réduire la
+    // complexité de chaque regex à <20.
+    const SWOT_HEADERS = {
+      strengths: /forces?|strengths?/.source,
+      weaknesses: /faiblesses?|weaknesses?/.source,
+      opportunities: /opportunités?|opportunities?/.source,
+      threats: /menaces?|threats?/.source,
+    } as const;
+
+    const buildSwotRegex = (current: keyof typeof SWOT_HEADERS) => {
+      const others = (Object.keys(SWOT_HEADERS) as (keyof typeof SWOT_HEADERS)[])
+        .filter((k) => k !== current)
+        .map((k) => SWOT_HEADERS[k])
+        .join('|');
+      return new RegExp(`(?:${SWOT_HEADERS[current]})[:\\s]*([^]*?)(?=(?:${others})|$)`, 'gi');
+    };
+
     const sections = {
-      strengths:
-        /(?:forces?|strengths?)[:\s]*([^]*?)(?=(?:faiblesses?|weaknesses?|opportunités?|opportunities?|menaces?|threats?)|$)/gi,
-      weaknesses:
-        /(?:faiblesses?|weaknesses?)[:\s]*([^]*?)(?=(?:forces?|strengths?|opportunités?|opportunities?|menaces?|threats?)|$)/gi,
-      opportunities:
-        /(?:opportunités?|opportunities?)[:\s]*([^]*?)(?=(?:forces?|strengths?|faiblesses?|weaknesses?|menaces?|threats?)|$)/gi,
-      threats:
-        /(?:menaces?|threats?)[:\s]*([^]*?)(?=(?:forces?|strengths?|faiblesses?|weaknesses?|opportunités?|opportunities?)|$)/gi,
+      strengths: buildSwotRegex('strengths'),
+      weaknesses: buildSwotRegex('weaknesses'),
+      opportunities: buildSwotRegex('opportunities'),
+      threats: buildSwotRegex('threats'),
     };
 
     Object.entries(sections).forEach(([key, regex]) => {

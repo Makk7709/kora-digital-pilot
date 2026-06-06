@@ -250,12 +250,12 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
 
     // Patterns pour extraire les mots-clés sectoriels
     const sectorPatterns = [
-      /secteur\s+([a-zA-ZÀ-ÿ\s]+)/gi,
-      /domaine\s+([a-zA-ZÀ-ÿ\s]+)/gi,
-      /industrie\s+([a-zA-ZÀ-ÿ\s]+)/gi,
-      /marché\s+([a-zA-ZÀ-ÿ\s]+)/gi,
-      /spécialisé\s+dans\s+([a-zA-ZÀ-ÿ\s]+)/gi,
-      /actif\s+dans\s+([a-zA-ZÀ-ÿ\s]+)/gi,
+      /secteur\s+([a-zÀ-ÿ\s]+)/gi,
+      /domaine\s+([a-zÀ-ÿ\s]+)/gi,
+      /industrie\s+([a-zÀ-ÿ\s]+)/gi,
+      /marché\s+([a-zÀ-ÿ\s]+)/gi,
+      /spécialisé\s+dans\s+([a-zÀ-ÿ\s]+)/gi,
+      /actif\s+dans\s+([a-zÀ-ÿ\s]+)/gi,
     ];
 
     sectorPatterns.forEach((pattern) => {
@@ -352,8 +352,14 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
         const actionText = section.trim();
 
         // Extraire la date si présente
-        const dateMatch = actionText.match(
-          /(\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2}|janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre|\d{1,2}\s+(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+\d{4})/i,
+        // S5843 : on factorise la liste des mois pour réduire la complexité.
+        const MONTHS_FR =
+          /janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre/
+            .source;
+        const NUMERIC_DATE = /\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2}/.source;
+        const NAMED_DATE = `\\d{1,2}\\s+(?:${MONTHS_FR})\\s+\\d{4}`;
+        const dateMatch = new RegExp(`(${NUMERIC_DATE}|${MONTHS_FR}|${NAMED_DATE})`, 'i').exec(
+          actionText,
         );
 
         const action: RecentAction = {
@@ -439,7 +445,7 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
       /Tu es Perplexity, un assistant de recherche utile formé par Perplexity AI\.[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
       /Ta tâche est de rédiger une réponse précise[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
       /Suis ces instructions pour formuler ta réponse[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
-      /KORA[\s]*$/gm,
+      /KORA\s*$/gm,
       /===== ENRICHISSEMENT CONTEXTUEL =====[\s\S]*?(?=\n\n|\n[^=])/gi,
       /SYNTHÈSE STRATÉGIQUE:[\s\S]*$/gi,
       /RECOMMANDATIONS OPÉRATIONNELLES:[\s\S]*$/gi,
@@ -461,7 +467,10 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
   private extractSection(content: string, keyword: string, fallback: string): string {
     if (!keyword) return content.substring(0, 100);
 
-    const regex = new RegExp(`(?:${keyword})[:\\s]*([^\\n\\r]*(?:[\\n\\r][^\\n\\r]*){0,2})`, 'i');
+    const regex = new RegExp(
+      String.raw`(?:${keyword})[:\s]*([^\n\r]*(?:[\n\r][^\n\r]*){0,2})`,
+      'i',
+    );
     const match = content.match(regex);
     return match ? match[1].trim() : fallback;
   }
@@ -471,7 +480,7 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
     const lines = content.split('\n');
 
     lines.forEach((line) => {
-      const yearMatch = line.match(/(\d{4})/);
+      const yearMatch = /(\d{4})/.exec(line);
       if (yearMatch && line.length > 20) {
         milestones.push({
           year: Number.parseInt(yearMatch[1]),
@@ -484,12 +493,12 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
   }
 
   private extractMarketCap(content: string): number | undefined {
-    const capMatch = content.match(/capitalisation.*?(\d+(?:,\d+)?)\s*(?:milliards?|millions?)/i);
+    const capMatch = /capitalisation.*?(\d+(?:,\d+)?)\s*(?:milliards?|millions?)/i.exec(content);
     return capMatch ? Number.parseFloat(capMatch[1].replace(',', '.')) : undefined;
   }
 
   private extractEmployeeCount(content: string): number | undefined {
-    const employeeMatch = content.match(/(\d+(?:,\d+)?)\s*(?:employés?|salariés?)/i);
+    const employeeMatch = /(\d+(?:,\d+)?)\s*(?:employés?|salariés?)/i.exec(content);
     return employeeMatch ? Number.parseInt(employeeMatch[1].replace(',', '')) : undefined;
   }
 
@@ -724,7 +733,7 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
   }
 
   private extractGrowthRate(content: string): number {
-    const growthMatch = content.match(/croissance.*?(\d+(?:\.\d+)?)\s*%/i);
+    const growthMatch = /croissance.*?(\d+(?:\.\d+)?)\s*%/i.exec(content);
     return growthMatch ? Number.parseFloat(growthMatch[1]) : 5;
   }
 
@@ -810,12 +819,12 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
   }
 
   private extractScore(content: string, keyword: string, fallback: number): number {
-    const scoreMatch = content.match(new RegExp(`${keyword}.*?(\\d+)`, 'i'));
+    const scoreMatch = new RegExp(String.raw`${keyword}.*?(\d+)`, 'i').exec(content);
     return scoreMatch ? Number.parseInt(scoreMatch[1]) : fallback;
   }
 
   private extractFoundingYear(content: string): number {
-    const yearMatch = content.match(/(?:fondée?|créée?|établie?).*?(\d{4})/i);
+    const yearMatch = /(?:fondée?|créée?|établie?).*?(\d{4})/i.exec(content);
     return yearMatch ? Number.parseInt(yearMatch[1]) : 2000;
   }
 
@@ -852,13 +861,13 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
   }
 
   private extractGlobalRank(content: string): number | undefined {
-    const rankMatch = content.match(/rang\s+(?:mondial|global)\s*:?\s*(\d+)/i);
+    const rankMatch = /rang\s+(?:mondial|global)\s*:?\s*(\d+)/i.exec(content);
     return rankMatch ? Number.parseInt(rankMatch[1]) : undefined;
   }
 
   private extractRevenue(content: string): number | undefined {
-    const revenueMatch = content.match(
-      /chiffre\s+d'affaires.*?(\d+(?:,\d+)?)\s*(?:milliards?|millions?)/i,
+    const revenueMatch = /chiffre\s+d'affaires.*?(\d+(?:,\d+)?)\s*(?:milliards?|millions?)/i.exec(
+      content,
     );
     return revenueMatch ? Number.parseFloat(revenueMatch[1].replace(',', '.')) : undefined;
   }
@@ -879,8 +888,8 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
   }
 
   private extractValuation(content: string): number | undefined {
-    const valuationMatch = content.match(
-      /valorisation.*?(\d+(?:,\d+)?)\s*(?:milliards?|millions?)/i,
+    const valuationMatch = /valorisation.*?(\d+(?:,\d+)?)\s*(?:milliards?|millions?)/i.exec(
+      content,
     );
     return valuationMatch ? Number.parseFloat(valuationMatch[1].replace(',', '.')) : undefined;
   }

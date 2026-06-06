@@ -315,7 +315,7 @@ function parseTrends(content: string): DomainTrend[] {
   for (let i = 0; i < lines.length && trends.length < 5; i++) {
     const line = lines[i].trim();
 
-    if (line.match(/^\d+\.|\*|-|•/)) {
+    if (/^\d+\.|\*|-|•/.exec(line)) {
       if (currentTrend.title) {
         trends.push({
           id: `trend-${trends.length + 1}`,
@@ -363,7 +363,7 @@ function parseOpportunities(content: string): DomainOpportunity[] {
   for (let i = 0; i < lines.length && opportunities.length < 5; i++) {
     const line = lines[i].trim();
 
-    if (line.match(/^\d+\.|\*|-|•/)) {
+    if (/^\d+\.|\*|-|•/.exec(line)) {
       const cleanLine = line.replace(/^\d+\.|\*|-|•/, '').trim();
       const [title, ...descParts] = cleanLine.split(':');
 
@@ -472,7 +472,7 @@ function inferDifficulty(text: string): 'easy' | 'medium' | 'hard' {
 }
 
 function extractTimeline(text: string): string {
-  const timelineMatch = text.match(/(\d{4}(?:-\d{4})?|\d+\s*(?:mois|ans?))/i);
+  const timelineMatch = /(\d{4}(?:-\d{4})?|\d+\s*(?:mois|ans?))/i.exec(text);
   return timelineMatch ? timelineMatch[1] : '2024-2025';
 }
 

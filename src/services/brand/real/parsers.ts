@@ -84,26 +84,21 @@ import {
 export function parseRealObjectiveAnalysis(content: string, _brandName: string): ObjectiveAnalysis {
   const cleanContent = cleanRawContent(content);
 
-  const foundingYearMatch = cleanContent.match(
-    /fondé(?:e)? en (\d{4})|créé(?:e)? en (\d{4})|lancé(?:e)? en (\d{4})/i,
-  );
+  const foundingYearMatch =
+    /fondé(?:e)? en (\d{4})|créé(?:e)? en (\d{4})|lancé(?:e)? en (\d{4})/i.exec(cleanContent);
   const foundingYear = foundingYearMatch
     ? Number.parseInt(foundingYearMatch[1] || foundingYearMatch[2] || foundingYearMatch[3])
     : undefined;
 
-  const innovationMatch = cleanContent.match(
-    /innovation.*?(\d{1,2})(?:\s*\/\s*100|%)|R&D.*?(\d{1,2})(?:\s*\/\s*100|%)/i,
-  );
-  const innovationIndex = innovationMatch
-    ? Number.parseInt(innovationMatch[1] || innovationMatch[2])
-    : 75;
+  // S5843 : on isole le tail commun pour réduire la complexité Sonar.
+  const SCORE_TAIL = /(\d{1,2})(?:\s*\/\s*100|%)/.source;
+  const innovationMatch = new RegExp(`(?:innovation|R&D).*?${SCORE_TAIL}`, 'i').exec(cleanContent);
+  const innovationIndex = innovationMatch ? Number.parseInt(innovationMatch[1]) : 75;
 
-  const reputationMatch = cleanContent.match(
-    /réputation.*?(\d{1,2})(?:\s*\/\s*100|%)|confiance.*?(\d{1,2})(?:\s*\/\s*100|%)/i,
+  const reputationMatch = new RegExp(`(?:réputation|confiance).*?${SCORE_TAIL}`, 'i').exec(
+    cleanContent,
   );
-  const reputationScore = reputationMatch
-    ? Number.parseInt(reputationMatch[1] || reputationMatch[2])
-    : 70;
+  const reputationScore = reputationMatch ? Number.parseInt(reputationMatch[1]) : 70;
 
   return {
     brandHistory: {
@@ -142,8 +137,8 @@ export function parseRealRecentActions(content: string, _brandName: string): Rec
   const lines = cleanContent.split('\n');
 
   for (const line of lines) {
-    if (line.match(/^\d+\.|^-|\*/) && line.length > 20) {
-      const dateMatch = line.match(/(\w+\s+\d{4}|\d{1,2}\/\d{4}|[A-Za-z]+\s+\d{4})/);
+    if (/^\d+\.|^-|\*/.exec(line) && line.length > 20) {
+      const dateMatch = /(\w+\s+\d{4}|\d{1,2}\/\d{4}|[A-Za-z]+\s+\d{4})/.exec(line);
       const action: RecentAction = {
         date: dateMatch
           ? parseDate(dateMatch[1])
@@ -281,8 +276,8 @@ export function parseRealSWOTMetrics(content: string): SWOTMetrics {
 }
 
 export function parseRealContentMetrics(content: string): ContentMetrics {
-  const sentimentMatch = content.match(/(\d+)%\s*positif/i);
-  const volumeMatch = content.match(/(\d+(?:\.\d+)?)[MK]?\s*mentions/i);
+  const sentimentMatch = /(\d+)%\s*positif/i.exec(content);
+  const volumeMatch = /(\d+(?:\.\d+)?)[MK]?\s*mentions/i.exec(content);
 
   return {
     overallSentiment: sentimentMatch ? Number.parseInt(sentimentMatch[1]) - 50 : 22,

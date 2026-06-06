@@ -496,7 +496,7 @@ class PerplexityService {
       /RECOMMANDATIONS OPÉRATIONNELLES:[\s\S]*?(?=\n\n|\n[A-Z]|$)/gi,
 
       // Lignes de métadonnées KORA
-      /KORA[\s]*$/gm,
+      /KORA\s*$/gm,
 
       // Instructions génériques de début
       /^(Voici une analyse|Voici un rapport|Voici une synthèse)[\s\S]*?(?=\n\n)/gi,
@@ -528,7 +528,7 @@ class PerplexityService {
           /Tu es Perplexity, un assistant de recherche utile formé par Perplexity AI\.[\s\S]*?(?=\n\n)/gi,
           '',
         )
-        .replace(/KORA[\s]*$/gm, '')
+        .replace(/KORA\s*$/gm, '')
         .trim();
     }
 

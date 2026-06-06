@@ -77,7 +77,7 @@ export function extractKeywords(prompt: string): string[] {
   const words = cleaned
     .split(' ')
     .filter((word) => word.length > 2 && !STOP_WORDS.includes(word))
-    .filter((word) => !word.match(/^\d+$/));
+    .filter((word) => !/^\d+$/.exec(word));
 
   const importantWords = words.filter(
     (word) =>

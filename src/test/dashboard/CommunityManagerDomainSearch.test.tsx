@@ -85,7 +85,7 @@ describe('🏢 DASHBOARD COMMUNITY MANAGER - RECHERCHE DOMAINE', () => {
 
       // Test avec champ vide
       await user.click(searchButton);
-      expect(screen.getByText(/domaine d\'activité est requis/i)).toBeInTheDocument();
+      expect(screen.getByText(/domaine d'activité est requis/i)).toBeInTheDocument();
 
       // Test avec entrée trop courte
       await user.type(searchInput, 'AI');
@@ -217,7 +217,7 @@ describe('🏢 DASHBOARD COMMUNITY MANAGER - RECHERCHE DOMAINE', () => {
       render(<CommunityManagerDomainDashboard />);
 
       expect(screen.getByTestId('error-message')).toBeInTheDocument();
-      expect(screen.getByText(/Impossible d\'analyser ce domaine/i)).toBeInTheDocument();
+      expect(screen.getByText(/Impossible d'analyser ce domaine/i)).toBeInTheDocument();
     });
   });
 

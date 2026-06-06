@@ -300,12 +300,12 @@ export function extractMetricFromDescription(description: string): string {
 }
 
 export function extractCurrentValue(description: string): string {
-  const match = description.match(/(\d+(?:\.\d+)?)\s*(?:%|€|M€|milliards?)/);
+  const match = /(\d+(?:\.\d+)?)\s*(?:%|€|M€|milliards?)/.exec(description);
   return match ? match[0] : 'N/A';
 }
 
 export function extractThreshold(description: string): number {
-  const match = description.match(/seuil.*?(\d+)/i);
+  const match = /seuil.*?(\d+)/i.exec(description);
   return match ? Number.parseInt(match[1]) : 70;
 }
 
