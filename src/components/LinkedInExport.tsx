@@ -88,7 +88,7 @@ const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
     link.download = filename;
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
     URL.revokeObjectURL(url);
   };
 

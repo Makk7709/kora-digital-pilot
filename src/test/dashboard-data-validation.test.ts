@@ -142,27 +142,25 @@ describe('Dashboard Data Validation - TDD Phase RED', () => {
       });
     });
   });
-
-  // Fonction utilitaire pour recalculer les métriques (pour les tests)
-  function recalculateMetrics(platforms: any[]) {
-    const totalReachNum = platforms.reduce((sum, p) => sum + p.stats.reachNum, 0);
-    const totalEngagementNum = platforms.reduce((sum, p) => sum + p.stats.engagementNum, 0);
-    const totalClicksNum = platforms.reduce((sum, p) => sum + p.stats.clicksNum, 0);
-
-    const globalEngagementRate =
-      totalReachNum > 0 ? ((totalEngagementNum / totalReachNum) * 100).toFixed(1) : '0.0';
-
-    return {
-      totalReach:
-        totalReachNum >= 1000 ? (totalReachNum / 1000).toFixed(1) + 'K' : totalReachNum.toString(),
-      totalEngagement: `${globalEngagementRate}%`,
-      totalClicks:
-        totalClicksNum >= 1000
-          ? (totalClicksNum / 1000).toFixed(1) + 'K'
-          : totalClicksNum.toString(),
-    };
-  }
 });
+
+// S7721 : helper sorti du `describe` parent pour éviter sa redéclaration à chaque test.
+function recalculateMetrics(platforms: any[]) {
+  const totalReachNum = platforms.reduce((sum, p) => sum + p.stats.reachNum, 0);
+  const totalEngagementNum = platforms.reduce((sum, p) => sum + p.stats.engagementNum, 0);
+  const totalClicksNum = platforms.reduce((sum, p) => sum + p.stats.clicksNum, 0);
+
+  const globalEngagementRate =
+    totalReachNum > 0 ? ((totalEngagementNum / totalReachNum) * 100).toFixed(1) : '0.0';
+
+  return {
+    totalReach:
+      totalReachNum >= 1000 ? (totalReachNum / 1000).toFixed(1) + 'K' : totalReachNum.toString(),
+    totalEngagement: `${globalEngagementRate}%`,
+    totalClicks:
+      totalClicksNum >= 1000 ? (totalClicksNum / 1000).toFixed(1) + 'K' : totalClicksNum.toString(),
+  };
+}
 
 /**
  * 🧪 INSTRUCTIONS D'EXÉCUTION TDD

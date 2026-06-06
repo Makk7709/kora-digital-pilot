@@ -18,10 +18,9 @@
 
 type LogFn = (message: string, ...args: unknown[]) => void;
 
-const IS_PROD = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.PROD);
-const IS_TEST =
-  typeof import.meta !== 'undefined' &&
-  (import.meta.env?.MODE === 'test' || import.meta.env?.VITEST);
+// S7741 : `import.meta` est toujours défini par Vite/ESM ; on lit directement les flags.
+const IS_PROD = Boolean(import.meta.env?.PROD);
+const IS_TEST = import.meta.env?.MODE === 'test' || Boolean(import.meta.env?.VITEST);
 
 const noop: LogFn = () => undefined;
 

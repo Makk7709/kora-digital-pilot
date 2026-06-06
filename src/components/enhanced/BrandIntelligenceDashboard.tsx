@@ -225,7 +225,7 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
     link.download = result.fileName;
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
   };
 
   // === EXPORT DU RAPPORT PREMIUM ===

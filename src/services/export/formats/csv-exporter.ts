@@ -153,7 +153,7 @@ export class CSVExporter {
     if (Array.isArray(recommendations)) {
       recommendations.forEach((rec: ActionableRecommendation, index: number) => {
         csvLines.push(
-          `Recommandations,Recommandation ${index + 1},${this.escapeCSV(rec.title || rec.description || rec)},Priorité: ${rec.priority || 'N/A'}`,
+          `Recommandations,Recommandation ${index + 1},${this.escapeCSV(rec.title || rec.description || JSON.stringify(rec))},Priorité: ${rec.priority || 'N/A'}`,
           `Recommandations,Impact attendu ${index + 1},${rec.expectedImpact || rec.estimatedImpact || 'N/A'},/100`,
           `Recommandations,Timeline ${index + 1},${rec.implementation?.timeline || rec.timeline || 'N/A'},`,
         );

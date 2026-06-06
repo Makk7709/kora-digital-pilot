@@ -838,7 +838,7 @@ function simulateHistoricalMetrics(brandName: string, months: number): any[] {
 
 function calculateTrends(historicalData: any[]): any {
   const firstScore = historicalData[0].metrics.reputationScore;
-  const lastScore = historicalData[historicalData.length - 1].metrics.reputationScore;
+  const lastScore = historicalData.at(-1)!.metrics.reputationScore;
   const change = lastScore - firstScore;
 
   let direction: 'positive' | 'negative' | 'stable';

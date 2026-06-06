@@ -104,19 +104,23 @@ const Carousel = React.forwardRef<
     };
   }, [api, onSelect]);
 
+  // S6481 : on mémoïse le `value` pour éviter de re-render tous les consumers à chaque tick.
+  const contextValue = React.useMemo(
+    () => ({
+      carouselRef,
+      api,
+      opts,
+      orientation: orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
+      scrollPrev,
+      scrollNext,
+      canScrollPrev,
+      canScrollNext,
+    }),
+    [carouselRef, api, opts, orientation, scrollPrev, scrollNext, canScrollPrev, canScrollNext],
+  );
+
   return (
-    <CarouselContext.Provider
-      value={{
-        carouselRef,
-        api: api,
-        opts,
-        orientation: orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
-        scrollPrev,
-        scrollNext,
-        canScrollPrev,
-        canScrollNext,
-      }}
-    >
+    <CarouselContext.Provider value={contextValue}>
       {/* S6819 : on utilise un <section> natif (role="region" implicite) avec aria-label
             via aria-roledescription pour les lecteurs d'écran. */}
       <section

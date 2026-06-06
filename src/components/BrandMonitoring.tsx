@@ -475,7 +475,7 @@ export const BrandMonitoring: React.FC = () => {
         link.download = result.fileName;
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        link.remove();
 
         toast({
           title: '✅ Export PDF réussi',
@@ -553,7 +553,7 @@ export const BrandMonitoring: React.FC = () => {
         link.download = result.fileName;
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        link.remove();
 
         toast({
           title: '✅ Export Excel réussi',

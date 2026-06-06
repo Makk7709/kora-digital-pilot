@@ -207,16 +207,17 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
       errors.push('Au moins une section requise si sections spécifiées');
     }
 
-    const validSections = [
+    // S7776 : `Set` pour des lookups O(1) au lieu de `Array.includes` O(n).
+    const validSections = new Set([
       'objectiveAnalysis',
       'strategicAnalysis',
       'swotMetrics',
       'competitiveMetrics',
       'recommendations',
       'alerts',
-    ];
+    ]);
     if (options.sections) {
-      const invalidSections = options.sections.filter((s) => !validSections.includes(s));
+      const invalidSections = options.sections.filter((s) => !validSections.has(s));
       if (invalidSections.length > 0) {
         errors.push(`Sections invalides: ${invalidSections.join(', ')}`);
       }

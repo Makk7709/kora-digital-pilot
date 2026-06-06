@@ -65,7 +65,7 @@ const DigitalWave = () => {
 
       {/* Particules réduites pour de meilleures performances */}
       <div className="absolute inset-0">
-        {[...Array(8)].map((_, i) => (
+        {[...new Array(8)].map((_, i) => (
           <div
             key={`row-${i}`}
             className="absolute w-1 h-1 bg-sky-300 rounded-full opacity-50"

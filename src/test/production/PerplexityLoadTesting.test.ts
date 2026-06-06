@@ -307,7 +307,7 @@ describe('🔥 TESTS DE CHARGE - PRODUCTION PERPLEXITY', () => {
         // Analyse tendance performance
         if (monitoringResults.length >= 2) {
           const firstTime = monitoringResults[0].responseTime;
-          const lastTime = monitoringResults[monitoringResults.length - 1].responseTime;
+          const lastTime = monitoringResults.at(-1)!.responseTime;
           const degradation = (lastTime - firstTime) / firstTime;
 
           // Alerte si dégradation > 50%

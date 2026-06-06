@@ -57,7 +57,7 @@ afterEach(() => {
 
 // jsdom on Node 20+ already exposes a global `fetch`. We only need a guard
 // against future regressions, so we leave a no-op stub if it is missing.
-if (typeof globalThis.fetch === 'undefined') {
+if (globalThis.fetch === undefined) {
   globalThis.fetch = (() => {
     throw new Error('global fetch is missing — tests should mock fetch explicitly');
   }) as unknown as typeof fetch;

@@ -43,7 +43,15 @@ class GlobalApiBlocker {
     const originalFetch = this.originalFetch.bind(globalThis);
 
     globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      const url = typeof input === 'string' ? input : input.toString();
+      // S6551 : distinguer chaque cas (Request → `.url`, URL → `.toString()`, string → tel quel).
+      let url: string;
+      if (typeof input === 'string') {
+        url = input;
+      } else if (input instanceof URL) {
+        url = input.toString();
+      } else {
+        url = input.url;
+      }
 
       // Bloquer seulement les appels vers /api
       if (url.includes('/api/')) {

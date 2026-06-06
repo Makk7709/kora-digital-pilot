@@ -484,6 +484,7 @@ function extractRequirements(text: string): string[] {
 }
 
 function extractInsightTitle(text: string): string {
-  const sentences = text.split('.').filter((s) => s.trim().length > 10);
-  return sentences[0]?.trim().substring(0, 60) + '...' || 'Insight sectoriel';
+  // S7750 : on cherche la première phrase suffisamment longue, donc `find` plutôt que `filter[0]`.
+  const firstSentence = text.split('.').find((s) => s.trim().length > 10);
+  return firstSentence?.trim().substring(0, 60) + '...' || 'Insight sectoriel';
 }

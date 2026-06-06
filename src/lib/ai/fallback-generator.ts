@@ -4,7 +4,8 @@
 
 import type { AIRequest, AIResponse } from './types';
 
-const STOP_WORDS = [
+// S7776 : `Set` pour des lookups O(1) lors du filtre des mots du prompt.
+const STOP_WORDS = new Set([
   'le',
   'la',
   'les',
@@ -65,7 +66,7 @@ const STOP_WORDS = [
   'aux',
   'en',
   'y',
-];
+]);
 
 export function extractKeywords(prompt: string): string[] {
   const cleaned = prompt
@@ -76,7 +77,7 @@ export function extractKeywords(prompt: string): string[] {
 
   const words = cleaned
     .split(' ')
-    .filter((word) => word.length > 2 && !STOP_WORDS.includes(word))
+    .filter((word) => word.length > 2 && !STOP_WORDS.has(word))
     .filter((word) => !/^\d+$/.exec(word));
 
   const importantWords = words.filter(

@@ -154,7 +154,7 @@ const ImageGenerator = () => {
       document.body.appendChild(a);
       a.click();
       globalThis.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      a.remove();
 
       toast({
         title: 'Image téléchargée',
