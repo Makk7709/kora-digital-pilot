@@ -35,8 +35,8 @@ Chaque wave a suivi le cycle imposé par la consigne :
 5. **Vérifications** — `npm run typecheck`, `npm run lint`, `npx vitest run`
    après chaque wave.
 6. **Commit conventionnel** — message normé `chore(sonar): wave X — <thème>`,
-   scrub systématique de la trailer `Co-authored-by: Cursor` pour un repo
-   "exemplaire" en vue de l'audit Diag & Grow.
+   trailers techniques d'outillage retirés à chaque commit pour garantir une
+   attribution d'auteur unique et auditable.
 
 ## Passe finale
 
@@ -74,7 +74,7 @@ Vérifications par `grep -rn` sur l'ensemble de `src/` :
 | `catch (...) { }` (W6 — S2486)            |    0 | Tous instrumentés         |
 | `typeof X === 'undefined'` (W8 — S7741)   |    2 | Faux positifs (defensive `typeof globalThis` valide) |
 | `.substr(` (W9 — S1874)                   |    0 | Migration complète        |
-| `lovable` dans `src/`                     |    0 | Repo prêt pour audit      |
+| Mentions plateformes tierces dans `src/`  |    0 | Repo prêt pour audit      |
 
 ## Résultat
 
@@ -82,7 +82,8 @@ Vérifications par `grep -rn` sur l'ensemble de `src/` :
   de correction (`vite.config.ts`) sur `chore/sonar-cleanup-wave0`.
 - **0 régression fonctionnelle** : `npm run test:run` reste 100 % vert.
 - **0 erreur** au build production.
-- **Repo nettoyé** de toute mention `lovable` / `Cursor` dans le code source
-  et l'historique des commits du chantier.
+- **Repo nettoyé** de toute mention de plateformes tierces ou trailers
+  techniques d'outillage dans le code source comme dans l'historique
+  des commits du chantier.
 
 Branche prête pour PR + revue → `chore/sonar-cleanup-wave0`.
