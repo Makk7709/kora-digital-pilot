@@ -37,8 +37,6 @@ const formatEngagementLabel = (
   platform: RecentDemoPost['platform'],
 ): string => {
   switch (platform) {
-    case 'LinkedIn':
-      return `${engagement} interactions`;
     case 'Instagram':
       return `${engagement} likes`;
     case 'X (Twitter)':

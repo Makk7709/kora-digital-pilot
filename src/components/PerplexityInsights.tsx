@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { handleActivateKey } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -516,9 +517,12 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                     {techWatch.watchlist.map((domain, index) => (
                       <Badge
                         key={`row-${index}`}
+                        role="button"
+                        tabIndex={0}
                         variant="secondary"
                         className="cursor-pointer"
                         onClick={() => techWatch.removeFromWatchlist(domain)}
+                        onKeyDown={handleActivateKey(() => techWatch.removeFromWatchlist(domain))}
                       >
                         {domain} ×
                       </Badge>

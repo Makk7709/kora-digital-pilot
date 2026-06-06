@@ -48,8 +48,6 @@ const Index = () => {
 
   const renderContent = () => {
     switch (activeSection) {
-      case 'dashboard':
-        return <Dashboard onSectionChange={setActiveSection} />;
       case 'cm-dashboard':
         return <CommunityManagerDashboard />;
       case 'cm-domain-search':

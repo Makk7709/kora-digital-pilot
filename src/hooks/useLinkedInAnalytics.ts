@@ -113,24 +113,26 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
       // Utiliser un intervalle fixe plus long grâce au cache du gestionnaire d'API
       const interval = 10000; // 10s fixe
 
-      proxyCheckIntervalRef.current = setTimeout(async () => {
-        const isReady = await checkProxyHealth();
-        retryCountRef.current++;
+      proxyCheckIntervalRef.current = setTimeout(() => {
+        void (async () => {
+          const isReady = await checkProxyHealth();
+          retryCountRef.current++;
 
-        if (isReady) {
-          logger.debug('✅ [LinkedIn] Proxy ready, stopping monitoring');
+          if (isReady) {
+            logger.debug('✅ [LinkedIn] Proxy ready, stopping monitoring');
 
-          // Continuer l'initialisation via cookie httpOnly côté proxy
-          const authenticated = await linkedinAPI.restoreSession();
-          setIsAuthenticated(authenticated);
+            // Continuer l'initialisation via cookie httpOnly côté proxy
+            const authenticated = await linkedinAPI.restoreSession();
+            setIsAuthenticated(authenticated);
 
-          if (authenticated) {
-            loadCachedMetrics();
+            if (authenticated) {
+              loadCachedMetrics();
+            }
+          } else {
+            // Programmer la prochaine vérification
+            scheduleNextCheck();
           }
-        } else {
-          // Programmer la prochaine vérification
-          scheduleNextCheck();
-        }
+        })();
       }, interval);
 
       logger.debug(

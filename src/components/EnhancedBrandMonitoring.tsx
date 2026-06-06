@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
+import { handleActivateKey } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -222,12 +223,15 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
             {ANALYSIS_MODES.map((mode) => (
               <Card
                 key={mode.id}
+                role="button"
+                tabIndex={0}
                 className={`cursor-pointer transition-all hover:shadow-md border-2 ${
                   mode.premium
                     ? 'border-purple-200 bg-purple-50/50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
                 onClick={() => handleModeChange(mode.id)}
+                onKeyDown={handleActivateKey(() => handleModeChange(mode.id))}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">

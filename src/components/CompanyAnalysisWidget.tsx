@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
+import { handleActivateKey } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -552,12 +553,17 @@ export const CompanyAnalysisWidget: React.FC = () => {
                 {ANALYSIS_MODES.map((mode) => (
                   <Card
                     key={mode.id}
+                    role="button"
+                    tabIndex={0}
                     className={`p-4 cursor-pointer transition-all hover:shadow-md border-2 ${
                       searchState.analysisMode === mode.id
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                     onClick={() => setSearchState((prev) => ({ ...prev, analysisMode: mode.id }))}
+                    onKeyDown={handleActivateKey(() =>
+                      setSearchState((prev) => ({ ...prev, analysisMode: mode.id })),
+                    )}
                     data-testid={`analysis-mode-${mode.id}`}
                   >
                     <div className="flex items-start gap-3">
@@ -629,9 +635,14 @@ export const CompanyAnalysisWidget: React.FC = () => {
                   {searchState.searchHistory.map((company, index) => (
                     <Badge
                       key={`row-${index}`}
+                      role="button"
+                      tabIndex={0}
                       variant="outline"
                       className="cursor-pointer hover:bg-gray-50"
                       onClick={() => setSearchState((prev) => ({ ...prev, query: company }))}
+                      onKeyDown={handleActivateKey(() =>
+                        setSearchState((prev) => ({ ...prev, query: company })),
+                      )}
                     >
                       {company}
                     </Badge>
