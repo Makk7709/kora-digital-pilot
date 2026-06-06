@@ -80,17 +80,9 @@ export class CSVExporter {
   private addObjectiveAnalysisToCSV(analysis: ObjectiveAnalysis, csvLines: string[]): void {
     csvLines.push(
       `Analyse Objective,Année de fondation,${analysis.brandHistory?.foundingYear || 'N/A'},${analysis.brandHistory?.founders?.join('; ') || 'N/A'}`,
-    );
-    csvLines.push(
       `Analyse Objective,Secteur d'activité,${analysis.marketPosition?.sector?.join('; ') || 'N/A'},${analysis.marketPosition?.markets?.join('; ') || 'N/A'}`,
-    );
-    csvLines.push(
       `Analyse Objective,Chiffre d'affaires,${analysis.financialHealth?.revenue || 'N/A'},${analysis.financialHealth?.profitability || 'N/A'}`,
-    );
-    csvLines.push(
       `Analyse Objective,Score innovation,${analysis.metrics?.innovationIndex || 'N/A'},/100`,
-    );
-    csvLines.push(
       `Analyse Objective,Score réputation,${analysis.metrics?.reputationScore || 'N/A'},/100`,
     );
   }
@@ -137,23 +129,21 @@ export class CSVExporter {
   private addCompetitiveMetricsToCSV(competitive: CompetitiveMetrics, csvLines: string[]): void {
     csvLines.push(
       `Concurrentiel,Part de marché actuelle,${competitive.marketShare?.current || 'N/A'},%`,
-    );
-    csvLines.push(
       `Concurrentiel,Tendance part de marché,${competitive.marketShare?.trend || 'N/A'},`,
-    );
-    csvLines.push(`Concurrentiel,Rang sectoriel,${competitive.benchmarkPosition?.rank || 'N/A'},`);
-    csvLines.push(
+      `Concurrentiel,Rang sectoriel,${competitive.benchmarkPosition?.rank || 'N/A'},`,
       `Concurrentiel,Index avantage concurrentiel,${competitive.competitiveAdvantageIndex || 'N/A'},/100`,
+      `Concurrentiel,Niveau de menace,${competitive.threatLevel || 'N/A'},/100`,
     );
-    csvLines.push(`Concurrentiel,Niveau de menace,${competitive.threatLevel || 'N/A'},/100`);
   }
 
   private addReputationKPIsToCSV(reputation: ReputationKPIs, csvLines: string[]): void {
-    csvLines.push(`Réputation,Score global,${reputation.overallScore || 'N/A'},/100`);
-    csvLines.push(`Réputation,Confiance marque,${reputation.brandTrust || 'N/A'},/100`);
-    csvLines.push(`Réputation,Reconnaissance marque,${reputation.brandRecognition || 'N/A'},/100`);
-    csvLines.push(`Réputation,Fidélité marque,${reputation.brandLoyalty || 'N/A'},/100`);
-    csvLines.push(`Réputation,Résilience aux crises,${reputation.crisisResilience || 'N/A'},/100`);
+    csvLines.push(
+      `Réputation,Score global,${reputation.overallScore || 'N/A'},/100`,
+      `Réputation,Confiance marque,${reputation.brandTrust || 'N/A'},/100`,
+      `Réputation,Reconnaissance marque,${reputation.brandRecognition || 'N/A'},/100`,
+      `Réputation,Fidélité marque,${reputation.brandLoyalty || 'N/A'},/100`,
+      `Réputation,Résilience aux crises,${reputation.crisisResilience || 'N/A'},/100`,
+    );
   }
 
   private addRecommendationsToCSV(
@@ -164,11 +154,7 @@ export class CSVExporter {
       recommendations.forEach((rec: ActionableRecommendation, index: number) => {
         csvLines.push(
           `Recommandations,Recommandation ${index + 1},${this.escapeCSV(rec.title || rec.description || rec)},Priorité: ${rec.priority || 'N/A'}`,
-        );
-        csvLines.push(
           `Recommandations,Impact attendu ${index + 1},${rec.expectedImpact || rec.estimatedImpact || 'N/A'},/100`,
-        );
-        csvLines.push(
           `Recommandations,Timeline ${index + 1},${rec.implementation?.timeline || rec.timeline || 'N/A'},`,
         );
       });

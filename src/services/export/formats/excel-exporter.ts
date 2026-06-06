@@ -28,10 +28,12 @@ export class ExcelExporter {
       const excelLines: string[] = [];
 
       // En-tête du rapport Excel avec métadonnées
-      excelLines.push(`Rapport Brand Intelligence\t${report.brandName || 'N/A'}\t\t`);
-      excelLines.push(`Date d'export\t${new Date().toLocaleDateString('fr-FR')}\t\t`);
-      excelLines.push(`Score de confiance\t${report.confidenceScore || 'N/A'}/100\t\t`);
-      excelLines.push(''); // Ligne vide
+      excelLines.push(
+        `Rapport Brand Intelligence\t${report.brandName || 'N/A'}\t\t`,
+        `Date d'export\t${new Date().toLocaleDateString('fr-FR')}\t\t`,
+        `Score de confiance\t${report.confidenceScore || 'N/A'}/100\t\t`,
+        '',
+      );
 
       // En-tête des colonnes
       excelLines.push('Section\tMétrique\tValeur\tDétails');
@@ -84,29 +86,19 @@ export class ExcelExporter {
   }
 
   private addObjectiveAnalysisToExcel(analysis: ObjectiveAnalysis, excelLines: string[]): void {
-    excelLines.push(''); // Ligne de séparation
-    excelLines.push('ANALYSE OBJECTIVE\t\t\t');
+    excelLines.push('', 'ANALYSE OBJECTIVE\t\t\t');
 
     excelLines.push(
       `Analyse Objective\tAnnée de fondation\t${analysis.brandHistory?.foundingYear || 'N/A'}\t${analysis.brandHistory?.founders?.join('; ') || 'N/A'}`,
-    );
-    excelLines.push(
       `Analyse Objective\tSecteur d'activité\t${analysis.marketPosition?.sector?.join('; ') || 'N/A'}\t${analysis.marketPosition?.markets?.join('; ') || 'N/A'}`,
-    );
-    excelLines.push(
       `Analyse Objective\tChiffre d'affaires\t${analysis.financialHealth?.revenue || 'N/A'}\t${analysis.financialHealth?.profitability || 'N/A'}`,
-    );
-    excelLines.push(
       `Analyse Objective\tScore innovation\t${analysis.metrics?.innovationIndex || 'N/A'}\t/100`,
-    );
-    excelLines.push(
       `Analyse Objective\tScore réputation\t${analysis.metrics?.reputationScore || 'N/A'}\t/100`,
     );
   }
 
   private addSWOTMetricsToExcel(swot: SWOTMetrics, excelLines: string[]): void {
-    excelLines.push(''); // Ligne de séparation
-    excelLines.push('ANALYSE SWOT\t\t\t');
+    excelLines.push('', 'ANALYSE SWOT\t\t\t');
 
     const overall = (swot as { overallScore?: number }).overallScore;
     excelLines.push(`SWOT\tScore global\t${overall ?? 'N/A'}\t/100`);
@@ -154,35 +146,25 @@ export class ExcelExporter {
     competitive: CompetitiveMetrics,
     excelLines: string[],
   ): void {
-    excelLines.push(''); // Ligne de séparation
-    excelLines.push('ANALYSE CONCURRENTIELLE\t\t\t');
+    excelLines.push('', 'ANALYSE CONCURRENTIELLE\t\t\t');
 
     excelLines.push(
       `Concurrentiel\tPart de marché actuelle\t${competitive.marketShare?.current || 'N/A'}\t%`,
-    );
-    excelLines.push(
       `Concurrentiel\tTendance part de marché\t${competitive.marketShare?.trend || 'N/A'}\t`,
-    );
-    excelLines.push(
       `Concurrentiel\tRang sectoriel\t${competitive.benchmarkPosition?.rank || 'N/A'}\t`,
-    );
-    excelLines.push(
       `Concurrentiel\tIndex avantage concurrentiel\t${competitive.competitiveAdvantageIndex || 'N/A'}\t/100`,
+      `Concurrentiel\tNiveau de menace\t${competitive.threatLevel || 'N/A'}\t/100`,
     );
-    excelLines.push(`Concurrentiel\tNiveau de menace\t${competitive.threatLevel || 'N/A'}\t/100`);
   }
 
   private addReputationKPIsToExcel(reputation: ReputationKPIs, excelLines: string[]): void {
-    excelLines.push(''); // Ligne de séparation
-    excelLines.push('RÉPUTATION & KPIS\t\t\t');
+    excelLines.push('', 'RÉPUTATION & KPIS\t\t\t');
 
-    excelLines.push(`Réputation\tScore global\t${reputation.overallScore || 'N/A'}\t/100`);
-    excelLines.push(`Réputation\tConfiance marque\t${reputation.brandTrust || 'N/A'}\t/100`);
     excelLines.push(
+      `Réputation\tScore global\t${reputation.overallScore || 'N/A'}\t/100`,
+      `Réputation\tConfiance marque\t${reputation.brandTrust || 'N/A'}\t/100`,
       `Réputation\tReconnaissance marque\t${reputation.brandRecognition || 'N/A'}\t/100`,
-    );
-    excelLines.push(`Réputation\tFidélité marque\t${reputation.brandLoyalty || 'N/A'}\t/100`);
-    excelLines.push(
+      `Réputation\tFidélité marque\t${reputation.brandLoyalty || 'N/A'}\t/100`,
       `Réputation\tRésilience aux crises\t${reputation.crisisResilience || 'N/A'}\t/100`,
     );
   }
@@ -191,18 +173,13 @@ export class ExcelExporter {
     recommendations: ActionableRecommendation[],
     excelLines: string[],
   ): void {
-    excelLines.push(''); // Ligne de séparation
-    excelLines.push('RECOMMANDATIONS STRATÉGIQUES\t\t\t');
+    excelLines.push('', 'RECOMMANDATIONS STRATÉGIQUES\t\t\t');
 
     if (Array.isArray(recommendations)) {
       recommendations.forEach((rec: ActionableRecommendation, index: number) => {
         excelLines.push(
           `Recommandations\tRecommandation ${index + 1}\t${this.escapeExcel(rec.title || rec.description || rec)}\tPriorité: ${rec.priority || 'N/A'}`,
-        );
-        excelLines.push(
           `Recommandations\tImpact attendu ${index + 1}\t${rec.expectedImpact || rec.estimatedImpact || 'N/A'}\t/100`,
-        );
-        excelLines.push(
           `Recommandations\tTimeline ${index + 1}\t${rec.implementation?.timeline || rec.timeline || 'N/A'}\t`,
         );
 

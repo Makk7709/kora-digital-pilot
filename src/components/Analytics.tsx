@@ -35,6 +35,64 @@ import {
   type DemoTopPost,
 } from '@/lib/demo-data';
 
+// S3358 : helpers extraits pour éviter les ternaires imbriqués.
+const periodLabel = (period: AnalyticsPeriod): string => {
+  if (period === '7d') return '7 jours';
+  if (period === '30d') return '30 jours';
+  return '90 jours';
+};
+
+const ratePerformance = (likes: number): 'Excellent' | 'Bon' | 'Moyen' => {
+  if (likes > 100) return 'Excellent';
+  if (likes > 50) return 'Bon';
+  return 'Moyen';
+};
+
+const performanceColor = (likes: number): string => {
+  if (likes > 100) return 'text-green-600';
+  if (likes > 50) return 'text-blue-600';
+  return 'text-yellow-500';
+};
+
+// S6478 : composants purs hissés au module pour ne plus être redéclarés à chaque rendu.
+const MiniChart: React.FC<{ data: number[]; color: string }> = ({ data, color }) => {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min;
+
+  return (
+    <div className="flex items-end space-x-1 h-8">
+      {data.map((value, index) => {
+        const height = range > 0 ? ((value - min) / range) * 100 : 50;
+        return (
+          <div
+            key={`row-${index}`}
+            className={`w-1 ${color} rounded-t`}
+            style={{ height: `${Math.max(height, 10)}%` }}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+const DataSourceBadge: React.FC<{ isRealData: boolean; platform?: string }> = ({ isRealData }) => {
+  if (isRealData) {
+    return (
+      <Badge className="bg-green-500/10 text-green-600 border-green-500/30 text-xs">
+        <CheckCircle2 className="w-3 h-3 mr-1" />
+        Données réelles
+      </Badge>
+    );
+  }
+  return (
+    <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 text-xs">
+      <Database className="w-3 h-3 mr-1" />
+      Données simulées
+    </Badge>
+  );
+};
+
 interface AnalyticsPlatform extends Omit<DemoPlatformSnapshot, 'stats'> {
   isRealData: boolean;
   stats: Omit<DemoPlatformSnapshot['stats'], 'reachNum' | 'engagementNum' | 'clicksNum'> & {
@@ -286,14 +344,8 @@ const Analytics = () => {
               shares: post.metrics.shares,
               clicks: post.metrics.clicks,
             },
-            performance:
-              post.metrics.likes > 100 ? 'Excellent' : post.metrics.likes > 50 ? 'Bon' : 'Moyen',
-            color:
-              post.metrics.likes > 100
-                ? 'text-green-600'
-                : post.metrics.likes > 50
-                  ? 'text-blue-600'
-                  : 'text-yellow-500',
+            performance: ratePerformance(post.metrics.likes),
+            color: performanceColor(post.metrics.likes),
           }))
         : [];
 
@@ -440,45 +492,8 @@ const Analytics = () => {
     }
   };
 
-  const MiniChart = ({ data, color }: { data: number[]; color: string }) => {
-    const max = Math.max(...data);
-    const min = Math.min(...data);
-    const range = max - min;
-
-    return (
-      <div className="flex items-end space-x-1 h-8">
-        {data.map((value, index) => {
-          const height = range > 0 ? ((value - min) / range) * 100 : 50;
-          return (
-            <div
-              key={index}
-              className={`w-1 ${color} rounded-t`}
-              style={{ height: `${Math.max(height, 10)}%` }}
-            />
-          );
-        })}
-      </div>
-    );
-  };
-
-  const DataSourceBadge = ({ isRealData }: { isRealData: boolean; platform?: string }) => {
-    if (isRealData) {
-      return (
-        <Badge className="bg-green-500/10 text-green-600 border-green-500/30 text-xs">
-          <CheckCircle2 className="w-3 h-3 mr-1" />
-          Données réelles
-        </Badge>
-      );
-    }
-    return (
-      <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 text-xs">
-        <Database className="w-3 h-3 mr-1" />
-        Données simulées
-      </Badge>
-    );
-  };
-
-  const DataSourceInfo = () => (
+  // S6478 : DataSourceInfo capture l'état du parent, on le garde en render-function.
+  const renderDataSourceInfo = () => (
     <Card className="border-blue-200 bg-blue-50/50">
       <CardContent className="p-4">
         <div className="flex items-start space-x-3">
@@ -563,7 +578,7 @@ const Analytics = () => {
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                {period === '7d' ? '7 jours' : period === '30d' ? '30 jours' : '90 jours'}
+                {periodLabel(period)}
               </button>
             ))}
           </div>
@@ -602,7 +617,7 @@ const Analytics = () => {
         </div>
       </div>
 
-      {showDataSourceInfo && <DataSourceInfo />}
+      {showDataSourceInfo && renderDataSourceInfo()}
 
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -636,7 +651,7 @@ const Analytics = () => {
             accent: 'amber',
           },
         ].map((stat, idx) => (
-          <Card key={idx} className="premium-card relative overflow-hidden">
+          <Card key={`row-${idx}`} className="premium-card relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent"></div>
             <CardContent className="p-6 relative z-10">
               <div className="flex items-center justify-between">
@@ -727,7 +742,7 @@ const Analytics = () => {
 
             {currentData.platforms.map((platform, index) => (
               <div
-                key={index}
+                key={`row-${index}`}
                 className={`p-4 rounded-xl border ${platform.color} ${platform.bgColor} hover:shadow-md transition-all duration-300`}
               >
                 <div className="flex items-center justify-between mb-4">
@@ -818,7 +833,7 @@ const Analytics = () => {
             ) : (
               insights.map((insight, index) => (
                 <div
-                  key={index}
+                  key={`row-${index}`}
                   className={`p-4 rounded-xl border ${insight.color} hover:shadow-md transition-all duration-300`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -957,7 +972,7 @@ const Analytics = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {topPosts.map((post, index) => (
                 <div
-                  key={index}
+                  key={`row-${index}`}
                   className="p-4 rounded-xl border border-slate-200 bg-white hover:shadow-md transition-all duration-300"
                 >
                   <div className="flex items-center justify-between mb-3">

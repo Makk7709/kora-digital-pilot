@@ -81,30 +81,32 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
               <h3 className="font-semibold text-slate-900">Tendances Marketing</h3>
             </div>
 
-            {insights.insights &&
-              insights.insights.map((insight: any, index: number) => (
-                <div key={index} className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <h4 className="font-medium text-blue-900 mb-2">{insight.trend}</h4>
-                  <p className="text-blue-800 text-sm mb-3">{insight.description}</p>
-                  <div className="flex items-center justify-between">
-                    <Badge className="bg-blue-100 text-blue-700">Impact: {insight.impact}</Badge>
-                    <Button
-                      size="sm"
-                      onClick={() => onInsightApplied?.(insight)}
-                      className="bg-blue-600 text-white hover:bg-blue-700"
-                    >
-                      Appliquer
-                    </Button>
-                  </div>
+            {insights.insights?.map((insight: any, index: number) => (
+              <div
+                key={`row-${index}`}
+                className="p-4 bg-blue-50 rounded-lg border border-blue-200"
+              >
+                <h4 className="font-medium text-blue-900 mb-2">{insight.trend}</h4>
+                <p className="text-blue-800 text-sm mb-3">{insight.description}</p>
+                <div className="flex items-center justify-between">
+                  <Badge className="bg-blue-100 text-blue-700">Impact: {insight.impact}</Badge>
+                  <Button
+                    size="sm"
+                    onClick={() => onInsightApplied?.(insight)}
+                    className="bg-blue-600 text-white hover:bg-blue-700"
+                  >
+                    Appliquer
+                  </Button>
                 </div>
-              ))}
+              </div>
+            ))}
 
             {insights.sources && (
               <div className="mt-4 p-3 bg-slate-50 rounded-lg">
                 <p className="text-xs text-slate-600 mb-2">Sources:</p>
                 {insights.sources.slice(0, 3).map((source: any, index: number) => (
                   <a
-                    key={index}
+                    key={`row-${index}`}
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -157,7 +159,7 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
                 <p className="text-xs text-slate-600 mb-2">Recherche basée sur:</p>
                 {insights.sources.slice(0, 3).map((source: any, index: number) => (
                   <a
-                    key={index}
+                    key={`row-${index}`}
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -198,7 +200,7 @@ export const PlanningInsights: React.FC<PlanningInsightsProps> = ({
                 <p className="text-xs text-slate-600 mb-2">Données basées sur:</p>
                 {insights.sources.slice(0, 3).map((source: any, index: number) => (
                   <a
-                    key={index}
+                    key={`row-${index}`}
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"

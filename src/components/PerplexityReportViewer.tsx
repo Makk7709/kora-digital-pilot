@@ -5,16 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { 
-  FileText, 
-  Download, 
-  Share2, 
-  TrendingUp, 
-  Target, 
+import {
+  FileText,
+  Download,
+  Share2,
+  TrendingUp,
+  Target,
   AlertTriangle,
   Eye,
   CheckCircle2,
-  Clock
+  Clock,
 } from 'lucide-react';
 import { PerplexityReport } from '@/types/brand-analysis';
 
@@ -23,9 +23,9 @@ interface PerplexityReportViewerProps {
   className?: string;
 }
 
-export const PerplexityReportViewer: React.FC<PerplexityReportViewerProps> = ({ 
-  report, 
-  className = '' 
+export const PerplexityReportViewer: React.FC<PerplexityReportViewerProps> = ({
+  report,
+  className = '',
 }) => {
   const [activeTab, setActiveTab] = useState('summary');
 
@@ -37,18 +37,18 @@ export const PerplexityReportViewer: React.FC<PerplexityReportViewerProps> = ({
     keyInsightsCount: report?.keyInsights?.length,
     recommendedActionsCount: report?.recommendedActions?.length,
     hasDetailedAnalysis: !!report?.detailedAnalysis,
-    activeTab
+    activeTab,
   });
 
   React.useEffect(() => {
-    console.log('🔄 [PerplexityReportViewer] Changement d\'onglet:', activeTab);
+    console.log("🔄 [PerplexityReportViewer] Changement d'onglet:", activeTab);
   }, [activeTab]);
 
   React.useEffect(() => {
     console.log('🔄 [PerplexityReportViewer] Nouveau rapport reçu:', {
       id: report?.id,
       insights: report?.keyInsights?.length,
-      actions: report?.recommendedActions?.length
+      actions: report?.recommendedActions?.length,
     });
   }, [report]);
 
@@ -147,9 +147,7 @@ Rapport généré par Kora Digital - Solution de veille de marque IA
                 <FileText className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <CardTitle className="text-2xl">
-                  Rapport Perplexity - {report.brandName}
-                </CardTitle>
+                <CardTitle className="text-2xl">Rapport Perplexity - {report.brandName}</CardTitle>
                 <CardDescription className="flex items-center space-x-2 mt-1">
                   <Clock className="h-4 w-4" />
                   <span>Généré le {report.generatedAt.toLocaleString('fr-FR')}</span>
@@ -161,7 +159,9 @@ Rapport généré par Kora Digital - Solution de veille de marque IA
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <div className={`px-4 py-2 rounded-lg font-semibold ${getScoreColor(report.reputationScore)}`}>
+              <div
+                className={`px-4 py-2 rounded-lg font-semibold ${getScoreColor(report.reputationScore)}`}
+              >
                 {report.reputationScore}/100
               </div>
               <Button variant="outline" size="sm" onClick={handleDownload}>
@@ -184,11 +184,14 @@ Rapport généré par Kora Digital - Solution de veille de marque IA
             <div>
               <h3 className="text-lg font-semibold mb-2">Score de Réputation</h3>
               <p className="text-sm text-gray-600">
-                Évaluation globale basée sur l'analyse des mentions, sentiment et position concurrentielle
+                Évaluation globale basée sur l'analyse des mentions, sentiment et position
+                concurrentielle
               </p>
             </div>
             <div className="text-center">
-              <div className={`text-4xl font-bold mb-1 ${getScoreColor(report.reputationScore).split(' ')[0]}`}>
+              <div
+                className={`text-4xl font-bold mb-1 ${getScoreColor(report.reputationScore).split(' ')[0]}`}
+              >
                 {report.reputationScore}
               </div>
               <div className="text-sm text-gray-500">/ 100</div>
@@ -220,9 +223,14 @@ Rapport généré par Kora Digital - Solution de veille de marque IA
             </CardHeader>
             <CardContent>
               <div className="prose max-w-none">
-                <div dangerouslySetInnerHTML={{ 
-                  __html: report.executiveSummary.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
-                }} />
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: report.executiveSummary.replace(
+                      /\*\*(.*?)\*\*/g,
+                      '<strong>$1</strong>',
+                    ),
+                  }}
+                />
               </div>
             </CardContent>
           </Card>
@@ -236,9 +244,14 @@ Rapport généré par Kora Digital - Solution de veille de marque IA
             </CardHeader>
             <CardContent>
               <div className="prose max-w-none">
-                <div dangerouslySetInnerHTML={{ 
-                  __html: report.competitivePosition.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
-                }} />
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: report.competitivePosition.replace(
+                      /\*\*(.*?)\*\*/g,
+                      '<strong>$1</strong>',
+                    ),
+                  }}
+                />
               </div>
             </CardContent>
           </Card>
@@ -259,13 +272,14 @@ Rapport généré par Kora Digital - Solution de veille de marque IA
             <CardContent>
               <div className="space-y-3">
                 {report.keyInsights.map((insight, index) => (
-                  <div key={index} className="flex items-start space-x-3 p-3 rounded-lg bg-gray-50">
+                  <div
+                    key={`row-${index}`}
+                    className="flex items-start space-x-3 p-3 rounded-lg bg-gray-50"
+                  >
                     <div className="flex-shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-sm font-semibold text-purple-600">
                       {index + 1}
                     </div>
-                    <div className="flex-1 text-sm">
-                      {insight}
-                    </div>
+                    <div className="flex-1 text-sm">{insight}</div>
                   </div>
                 ))}
               </div>
@@ -341,9 +355,7 @@ Rapport généré par Kora Digital - Solution de veille de marque IA
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-40">
-                  <pre className="text-sm whitespace-pre-wrap">
-                    {report.detailedAnalysis.swot}
-                  </pre>
+                  <pre className="text-sm whitespace-pre-wrap">{report.detailedAnalysis.swot}</pre>
                 </ScrollArea>
               </CardContent>
             </Card>
@@ -381,7 +393,10 @@ Rapport généré par Kora Digital - Solution de veille de marque IA
             <CardContent>
               <div className="space-y-4">
                 {report.recommendedActions.map((action, index) => (
-                  <div key={index} className="flex items-start space-x-3 p-4 rounded-lg border border-green-200 bg-green-50">
+                  <div
+                    key={`row-${index}`}
+                    className="flex items-start space-x-3 p-4 rounded-lg border border-green-200 bg-green-50"
+                  >
                     <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-sm font-semibold text-green-600">
                       {index + 1}
                     </div>
@@ -389,9 +404,7 @@ Rapport généré par Kora Digital - Solution de veille de marque IA
                       <div className="text-sm font-medium text-green-900 mb-1">
                         Action recommandée
                       </div>
-                      <div className="text-sm text-green-700">
-                        {action}
-                      </div>
+                      <div className="text-sm text-green-700">{action}</div>
                     </div>
                   </div>
                 ))}
@@ -417,13 +430,11 @@ Rapport généré par Kora Digital - Solution de veille de marque IA
                 <FileText className="h-3 w-3 mr-1" />
                 Rapport Perplexity
               </Badge>
-              <Badge variant="secondary">
-                Optimisé pour lecture
-              </Badge>
+              <Badge variant="secondary">Optimisé pour lecture</Badge>
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
   );
-}; 
+};

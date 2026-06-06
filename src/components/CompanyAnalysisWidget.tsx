@@ -626,7 +626,7 @@ export const CompanyAnalysisWidget: React.FC = () => {
                 <div className="flex flex-wrap gap-2">
                   {searchState.searchHistory.map((company, index) => (
                     <Badge
-                      key={index}
+                      key={`row-${index}`}
                       variant="outline"
                       className="cursor-pointer hover:bg-gray-50"
                       onClick={() => setSearchState((prev) => ({ ...prev, query: company }))}

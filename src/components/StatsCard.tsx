@@ -29,6 +29,13 @@ interface StatsCardProps {
 
 type ConnectionStatus = 'connected' | 'disconnected' | 'error' | string;
 
+// S3358 : helper extrait pour éviter le ternaire imbriqué de label de période.
+const formatPeriodLabel = (period: '7d' | '30d' | '90d'): string => {
+  if (period === '7d') return '7 jours';
+  if (period === '30d') return '30 jours';
+  return '90 jours';
+};
+
 const formatLastUpdate = (date: Date | null): string => {
   if (!date) return 'Jamais';
   const now = new Date();
@@ -46,7 +53,7 @@ const LoadingSkeleton: React.FC = () => (
   <div className="space-y-4 animate-pulse">
     <div className="grid grid-cols-3 gap-4">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="space-y-2">
+        <div key={`row-${i}`} className="space-y-2">
           <div className="h-4 bg-slate-200 rounded w-3/4"></div>
           <div className="h-8 bg-slate-200 rounded"></div>
           <div className="h-3 bg-slate-200 rounded w-1/2"></div>
@@ -299,7 +306,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
               disabled={isLoading}
               className={selectedPeriod === p ? 'bg-blue-600 text-white' : ''}
             >
-              {p === '7d' ? '7 jours' : p === '30d' ? '30 jours' : '90 jours'}
+              {formatPeriodLabel(p)}
             </Button>
           ))}
         </div>
@@ -433,7 +440,10 @@ const StatsCard: React.FC<StatsCardProps> = ({
               <div className="space-y-3">
                 <h4 className="font-semibold text-slate-900">Insights</h4>
                 {metrics.insights.slice(0, 2).map((insight, index) => (
-                  <div key={index} className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div
+                    key={`row-${index}`}
+                    className="bg-blue-50 border border-blue-200 rounded-lg p-4"
+                  >
                     <div className="flex items-start space-x-3">
                       <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
                         <span className="text-white text-xs">💡</span>

@@ -71,10 +71,7 @@ const DEMO_SESSION: KoraSession = {
 // Auth API
 // -----------------------------------------------------------------------------
 
-export async function signUpWithPassword(
-  email: string,
-  password: string,
-): Promise<AuthResult> {
+export async function signUpWithPassword(email: string, password: string): Promise<AuthResult> {
   if (!isSupabaseConfigured() || !supabase) {
     return { user: DEMO_USER, error: null };
   }
@@ -87,10 +84,7 @@ export async function signUpWithPassword(
   };
 }
 
-export async function signInWithPassword(
-  email: string,
-  password: string,
-): Promise<AuthResult> {
+export async function signInWithPassword(email: string, password: string): Promise<AuthResult> {
   if (!isSupabaseConfigured() || !supabase) {
     return { user: DEMO_USER, error: null };
   }
@@ -114,7 +108,7 @@ export async function getCurrentSession(): Promise<KoraSession | null> {
   }
   const { data } = await supabase.auth.getSession();
   const session = data.session;
-  if (!session || !session.user) return null;
+  if (!session?.user) return null;
   return {
     user: {
       id: session.user.id,

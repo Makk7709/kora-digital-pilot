@@ -38,6 +38,27 @@ import {
 } from 'lucide-react';
 
 import { useBusinessIntelligence, DomainTrend } from '../hooks/useBusinessIntelligence';
+
+// S6478 : composant overlay hissé au top-level pour éviter sa redéclaration à chaque
+// rendu (et la perte d'état React qui en découlerait).
+const LoaderOverlay: React.FC<{ searchProgress: number }> = ({ searchProgress }) => (
+  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
+    <div className="text-center">
+      <Loader2
+        className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-3"
+        data-testid="search-loader"
+      />
+      <p className="text-sm font-medium text-slate-700">Notre IA carbure à fond ! ⚡</p>
+      <p className="text-xs text-slate-500 mt-1">🧠 Décryptage sectoriel en cours...</p>
+      {searchProgress > 0 && (
+        <div className="mt-3 w-32 mx-auto">
+          <Progress value={searchProgress} className="h-2" />
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 // === SUGGESTIONS DE DOMAINES POPULAIRES ===
 const POPULAR_DOMAINS = [
   { name: 'Intelligence Artificielle', icon: Brain, color: 'from-purple-500 to-blue-500' },
@@ -122,26 +143,10 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
     return trends.filter((trend) => trend.impact === filterType);
   };
 
-  // === COMPOSANTS UI ===
-  const LoaderOverlay = () => (
-    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
-      <div className="text-center">
-        <Loader2
-          className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-3"
-          data-testid="search-loader"
-        />
-        <p className="text-sm font-medium text-slate-700">Notre IA carbure à fond ! ⚡</p>
-        <p className="text-xs text-slate-500 mt-1">🧠 Décryptage sectoriel en cours...</p>
-        {searchProgress > 0 && (
-          <div className="mt-3 w-32 mx-auto">
-            <Progress value={searchProgress} className="h-2" />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const SearchSection = () => (
+  // S6478 : on convertit ces sous-vues en render-fonctions (et non en composants)
+  // pour éviter qu'elles soient recréées comme composants distincts à chaque rendu
+  // tout en conservant l'accès direct à l'état local sans drilling de props.
+  const renderSearchSection = () => (
     <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-slate-50 to-white shadow-xl">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-3 text-2xl text-slate-900">
@@ -236,7 +241,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
             <div className="flex flex-wrap gap-2">
               {businessIntel.searchHistory.slice(0, 5).map((search, index) => (
                 <Button
-                  key={index}
+                  key={`row-${index}`}
                   variant="ghost"
                   size="sm"
                   onClick={() => handleSuggestionClick(search)}
@@ -259,11 +264,11 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
         )}
       </CardContent>
 
-      {businessIntel.isLoading && <LoaderOverlay />}
+      {businessIntel.isLoading && <LoaderOverlay searchProgress={searchProgress} />}
     </Card>
   );
 
-  const ResultsSection = () => {
+  const renderResultsSection = () => {
     if (!businessIntel.currentResult) return null;
 
     const result = businessIntel.currentResult;
@@ -361,7 +366,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
                 <p className="text-sm font-medium text-slate-700 mb-2">Acteurs principaux</p>
                 <div className="flex flex-wrap gap-2">
                   {result.overview.keyPlayers.slice(0, 4).map((player, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
+                    <Badge key={`row-${index}`} variant="secondary" className="text-xs">
                       {player}
                     </Badge>
                   ))}
@@ -603,7 +608,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
     );
   };
 
-  const ErrorState = () => {
+  const renderErrorState = () => {
     if (!businessIntel.error) return null;
 
     return (
@@ -636,7 +641,7 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
   };
 
   // === MODAL DE DÉTAIL ===
-  const TrendDetailModal = () => (
+  const renderTrendDetailModal = () => (
     <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
       <DialogContent data-testid="trend-detail-modal" className="max-w-2xl">
         <DialogHeader>
@@ -715,14 +720,14 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
         </div>
 
         {/* Section de recherche */}
-        <SearchSection />
+        {renderSearchSection()}
 
         {/* Gestion des états */}
-        {businessIntel.error && <ErrorState />}
-        {businessIntel.currentResult && <ResultsSection />}
+        {businessIntel.error && renderErrorState()}
+        {businessIntel.currentResult && renderResultsSection()}
 
         {/* Modal de détail */}
-        <TrendDetailModal />
+        {renderTrendDetailModal()}
       </div>
     </div>
   );

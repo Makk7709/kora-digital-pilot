@@ -37,6 +37,110 @@ interface PerplexityInsightsProps {
   className?: string;
 }
 
+// S3358 : helper extrait pour la variant d'impact (sinon ternaire imbriqué).
+const impactVariant = (
+  impact: MarketInsight['impact'],
+): 'destructive' | 'default' | 'secondary' => {
+  if (impact === 'high') return 'destructive';
+  if (impact === 'medium') return 'default';
+  return 'secondary';
+};
+
+// S6478 : composants purs hissés au module — pas de closure sur l'état parent.
+const ResponseDisplay: React.FC<{ response: PerplexityResponse }> = ({ response }) => (
+  <Card className="mt-4">
+    <CardHeader>
+      <div className="flex items-center justify-between">
+        <CardTitle className="flex items-center gap-2">
+          <Brain className="h-5 w-5" />
+          Insights Perplexity
+        </CardTitle>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline">{response.model}</Badge>
+          <Badge variant="secondary">{response.usage.total_tokens} tokens</Badge>
+        </div>
+      </div>
+      <CardDescription>Généré le {response.timestamp.toLocaleString('fr-FR')}</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <ScrollArea className="h-96 w-full">
+        <div className="prose prose-sm max-w-none">
+          {response.content.split('\n').map((paragraph, index) => (
+            <p key={`row-${index}`} className="mb-3 text-sm leading-relaxed">
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      </ScrollArea>
+
+      {response.sources.length > 0 && (
+        <>
+          <Separator className="my-4" />
+          <div>
+            <h4 className="font-semibold mb-3 flex items-center gap-2">
+              <ExternalLink className="h-4 w-4" />
+              Sources ({response.sources.length})
+            </h4>
+            <div className="space-y-2">
+              {response.sources.map((source, index) => (
+                <Card key={`row-${index}`} className="p-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h5 className="font-medium text-sm">{source.title}</h5>
+                      <p className="text-xs text-muted-foreground mt-1">{source.snippet}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => window.open(source.url, '_blank')}
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </CardContent>
+  </Card>
+);
+
+const InsightsDisplay: React.FC<{ insights: MarketInsight[] }> = ({ insights }) => (
+  <div className="space-y-4 mt-4">
+    {insights.map((insight, index) => (
+      <Card key={`row-${index}`}>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">{insight.trend}</CardTitle>
+            <div className="flex items-center gap-2">
+              <Badge variant={impactVariant(insight.impact)}>Impact {insight.impact}</Badge>
+              <Badge variant="outline">Score: {Math.round(insight.confidence_score * 100)}%</Badge>
+            </div>
+          </div>
+          <CardDescription>Délai: {insight.timeframe}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {insight.actionable_insights.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="font-semibold text-sm">Actions recommandées:</h4>
+              <ul className="space-y-1">
+                {insight.actionable_insights.map((action, actionIndex) => (
+                  <li key={`row-${actionIndex}`} className="flex items-start gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    {action}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    ))}
+  </div>
+);
+
 export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ className }) => {
   const perplexity = usePerplexity();
   const marketingInsights = useMarketingInsights();
@@ -112,113 +216,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
     }
   };
 
-  // Composant pour afficher une réponse
-  const ResponseDisplay: React.FC<{ response: PerplexityResponse }> = ({ response }) => (
-    <Card className="mt-4">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="h-5 w-5" />
-            Insights Perplexity
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline">{response.model}</Badge>
-            <Badge variant="secondary">{response.usage.total_tokens} tokens</Badge>
-          </div>
-        </div>
-        <CardDescription>Généré le {response.timestamp.toLocaleString('fr-FR')}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-96 w-full">
-          <div className="prose prose-sm max-w-none">
-            {response.content.split('\n').map((paragraph, index) => (
-              <p key={index} className="mb-3 text-sm leading-relaxed">
-                {paragraph}
-              </p>
-            ))}
-          </div>
-        </ScrollArea>
-
-        {response.sources.length > 0 && (
-          <>
-            <Separator className="my-4" />
-            <div>
-              <h4 className="font-semibold mb-3 flex items-center gap-2">
-                <ExternalLink className="h-4 w-4" />
-                Sources ({response.sources.length})
-              </h4>
-              <div className="space-y-2">
-                {response.sources.map((source, index) => (
-                  <Card key={index} className="p-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h5 className="font-medium text-sm">{source.title}</h5>
-                        <p className="text-xs text-muted-foreground mt-1">{source.snippet}</p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.open(source.url, '_blank')}
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
-
-  // Composant pour afficher les insights marketing
-  const InsightsDisplay: React.FC<{ insights: MarketInsight[] }> = ({ insights }) => (
-    <div className="space-y-4 mt-4">
-      {insights.map((insight, index) => (
-        <Card key={index}>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">{insight.trend}</CardTitle>
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant={
-                    insight.impact === 'high'
-                      ? 'destructive'
-                      : insight.impact === 'medium'
-                        ? 'default'
-                        : 'secondary'
-                  }
-                >
-                  Impact {insight.impact}
-                </Badge>
-                <Badge variant="outline">
-                  Score: {Math.round(insight.confidence_score * 100)}%
-                </Badge>
-              </div>
-            </div>
-            <CardDescription>Délai: {insight.timeframe}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {insight.actionable_insights.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">Actions recommandées:</h4>
-                <ul className="space-y-1">
-                  {insight.actionable_insights.map((action, actionIndex) => (
-                    <li key={actionIndex} className="flex items-start gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      {action}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
+  // ResponseDisplay et InsightsDisplay sont déclarés au module scope (S6478).
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -513,7 +511,7 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                   <div className="flex flex-wrap gap-2">
                     {techWatch.watchlist.map((domain, index) => (
                       <Badge
-                        key={index}
+                        key={`row-${index}`}
                         variant="secondary"
                         className="cursor-pointer"
                         onClick={() => techWatch.removeFromWatchlist(domain)}

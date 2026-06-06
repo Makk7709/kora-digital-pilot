@@ -375,10 +375,15 @@ export class RealBrandIntelligenceService {
       }
     }
 
+    let reliability: 'high' | 'medium' | 'low';
+    if (isDataFresh) reliability = 'high';
+    else if (averageDataAge < 72) reliability = 'medium';
+    else reliability = 'low';
+
     return {
       lastUpdated: recentActions.length > 0 ? recentActions[0].date : new Date(),
       dataAge: oldestDataAge,
-      reliability: isDataFresh ? 'high' : averageDataAge < 72 ? 'medium' : 'low',
+      reliability,
       sources: recentActions.length,
       isDataFresh,
       oldestDataAge,

@@ -281,8 +281,8 @@ class PerplexityService {
     return {
       content: cleanedContent,
       sources: this.extractSources(cleanedContent),
-      usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
-      model: data.model || this.config.model || 'sonar-pro',
+      usage: data.usage ?? { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+      model: data.model ?? this.config.model ?? 'sonar-pro',
       timestamp: new Date(),
     };
   }

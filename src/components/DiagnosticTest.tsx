@@ -158,12 +158,22 @@ const DiagnosticTest = () => {
     }
   };
 
+  // S3358 : paire {variant, label} extraite pour éviter le ternaire imbriqué.
+  const STATUS_BADGE: Record<
+    string,
+    { variant: 'default' | 'destructive' | 'secondary'; label: string }
+  > = {
+    success: { variant: 'default', label: 'OK' },
+    error: { variant: 'destructive', label: 'Erreur' },
+  };
   const getStatusBadge = (status: string) => {
-    const variant =
-      status === 'success' ? 'default' : status === 'error' ? 'destructive' : 'secondary';
+    const { variant, label } = STATUS_BADGE[status] ?? {
+      variant: 'secondary' as const,
+      label: 'Attention',
+    };
     return (
       <Badge variant={variant} className="ml-2">
-        {status === 'success' ? 'OK' : status === 'error' ? 'Erreur' : 'Attention'}
+        {label}
       </Badge>
     );
   };
@@ -187,7 +197,7 @@ const DiagnosticTest = () => {
 
       <div className="grid gap-4">
         {results.map((result, index) => (
-          <Card key={index} className="transition-all duration-200 hover:shadow-md">
+          <Card key={`row-${index}`} className="transition-all duration-200 hover:shadow-md">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">

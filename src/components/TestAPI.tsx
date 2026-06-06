@@ -116,7 +116,7 @@ export const TestAPI: React.FC = () => {
             <p className="text-gray-500">Aucun log pour le moment...</p>
           ) : (
             logs.map((log, index) => (
-              <div key={index} className="text-sm font-mono mb-1">
+              <div key={`row-${index}`} className="text-sm font-mono mb-1">
                 {log}
               </div>
             ))

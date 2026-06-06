@@ -188,7 +188,10 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
       {/* Features Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {FEATURE_HIGHLIGHTS.map((feature, index) => (
-          <Card key={index} className="hover:shadow-lg transition-all duration-300 border-gray-200">
+          <Card
+            key={`row-${index}`}
+            className="hover:shadow-lg transition-all duration-300 border-gray-200"
+          >
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div

@@ -496,12 +496,8 @@ export const usePerplexity = (): UsePerplexityReturn => {
   // Actualiser les stats du cache
   const refreshCacheStats = useCallback(() => {
     if (state.isInitialized) {
-      if (!state.isSimulationMode) {
-        const service = getPerplexityService();
-        const cacheStats = service.getCacheStats();
-        setState((prev) => ({ ...prev, cacheStats }));
-      } else {
-        // Stats simulées
+      // S7735 : on traite d'abord le cas simulation (positif) puis le cas service réel.
+      if (state.isSimulationMode) {
         setState((prev) => ({
           ...prev,
           cacheStats: {
@@ -509,6 +505,10 @@ export const usePerplexity = (): UsePerplexityReturn => {
             keys: ['demo-1', 'demo-2', 'demo-3'],
           },
         }));
+      } else {
+        const service = getPerplexityService();
+        const cacheStats = service.getCacheStats();
+        setState((prev) => ({ ...prev, cacheStats }));
       }
     }
   }, [state.isInitialized, state.isSimulationMode]);

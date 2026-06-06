@@ -274,7 +274,7 @@ const ImageGenerator = () => {
                   <div className="space-y-1">
                     {industry.prompts.slice(0, 1).map((prompt, index) => (
                       <button
-                        key={index}
+                        key={`row-${index}`}
                         onClick={() => handleUseIndustryTemplate(prompt, key)}
                         className="w-full text-left text-xs p-2 rounded bg-white/50 hover:bg-white/80 transition-colors"
                       >
@@ -306,7 +306,7 @@ const ImageGenerator = () => {
                   <div className="space-y-1">
                     {category.prompts.slice(0, 2).map((prompt, index) => (
                       <button
-                        key={index}
+                        key={`row-${index}`}
                         onClick={() => handleUseTemplate(prompt, key)}
                         className="w-full text-left text-xs p-2 rounded bg-white/50 hover:bg-white/80 transition-colors"
                       >

@@ -29,7 +29,7 @@ export const PerplexityTestWidget: React.FC = () => {
   // Vérification de la clé API au chargement
   React.useEffect(() => {
     const apiKey = import.meta.env.VITE_PERPLEXITY_API_KEY;
-    if (apiKey && apiKey.startsWith('pplx-') && apiKey.length > 20) {
+    if (apiKey?.startsWith('pplx-') && apiKey.length > 20) {
       setApiKeyStatus('valid');
     } else {
       setApiKeyStatus('invalid');

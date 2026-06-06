@@ -3,11 +3,7 @@ import React from 'react';
 const DigitalWave = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <svg 
-        className="absolute w-full h-full" 
-        viewBox="0 0 1400 800" 
-        preserveAspectRatio="none"
-      >
+      <svg className="absolute w-full h-full" viewBox="0 0 1400 800" preserveAspectRatio="none">
         <defs>
           {/* Gradients simplifiés pour de meilleures performances */}
           <linearGradient id="waveGradient1" x1="100%" y1="0%" x2="0%" y2="0%">
@@ -16,7 +12,7 @@ const DigitalWave = () => {
             <stop offset="70%" stopColor="#0284c7" stopOpacity="0.15" />
             <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0" />
           </linearGradient>
-          
+
           <linearGradient id="waveGradient2" x1="100%" y1="0%" x2="0%" y2="0%">
             <stop offset="0%" stopColor="#38bdf8" stopOpacity="0" />
             <stop offset="40%" stopColor="#0ea5e9" stopOpacity="0.12" />
@@ -71,7 +67,7 @@ const DigitalWave = () => {
       <div className="absolute inset-0">
         {[...Array(8)].map((_, i) => (
           <div
-            key={i}
+            key={`row-${i}`}
             className="absolute w-1 h-1 bg-sky-300 rounded-full opacity-50"
             style={{
               right: `${10 + i * 10}%`,
@@ -87,4 +83,4 @@ const DigitalWave = () => {
   );
 };
 
-export default DigitalWave; 
+export default DigitalWave;

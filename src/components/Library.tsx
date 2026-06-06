@@ -299,7 +299,7 @@ const Library = () => {
                     <div
                       key={item.id}
                       className={`p-4 border-slate-200 hover:bg-slate-50 cursor-pointer transition-colors ${
-                        index !== filteredContent.length - 1 ? 'border-b' : ''
+                        index === filteredContent.length - 1 ? '' : 'border-b'
                       }`}
                     >
                       <div className="flex items-center justify-between">

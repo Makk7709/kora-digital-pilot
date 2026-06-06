@@ -252,7 +252,12 @@ export class BrandAnalysisAPIService {
         .map(([word, count]) => ({
           word,
           count,
-          trend: Math.random() > 0.5 ? 'up' : Math.random() > 0.3 ? 'stable' : 'down',
+          trend: ((): 'up' | 'stable' | 'down' => {
+            const r = Math.random();
+            if (r > 0.5) return 'up';
+            if (r > 0.3) return 'stable';
+            return 'down';
+          })(),
           isFromContent: true,
         }));
     }

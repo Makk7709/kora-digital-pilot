@@ -1216,7 +1216,7 @@ export const BrandMonitoring: React.FC = () => {
             <ScrollArea className="h-48">
               {realBrandReport.competitors.map((competitor, index) => (
                 <div
-                  key={index}
+                  key={`row-${index}`}
                   className="flex items-center justify-between p-3 border-b border-slate-100 last:border-0"
                 >
                   <div>
@@ -1260,7 +1260,7 @@ export const BrandMonitoring: React.FC = () => {
                 <div className="flex flex-wrap gap-2">
                   {realBrandReport.keywords.map((keyword, index) => (
                     <Badge
-                      key={index}
+                      key={`row-${index}`}
                       variant="outline"
                       className="border-green-300 text-green-700 bg-green-50"
                       style={{ fontSize: `${Math.min(16, 10 + keyword.count / 10)}px` }}
@@ -1303,7 +1303,10 @@ export const BrandMonitoring: React.FC = () => {
                 </div>
                 <div className="space-y-2">
                   {realBrandReport.swot.strengths.map((strength, index) => (
-                    <div key={index} className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div
+                      key={`row-${index}`}
+                      className="p-3 bg-green-50 border border-green-200 rounded-lg"
+                    >
                       <p className="text-sm text-green-800">{strength}</p>
                     </div>
                   ))}
@@ -1318,7 +1321,10 @@ export const BrandMonitoring: React.FC = () => {
                 </div>
                 <div className="space-y-2">
                   {realBrandReport.swot.weaknesses.map((weakness, index) => (
-                    <div key={index} className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <div
+                      key={`row-${index}`}
+                      className="p-3 bg-red-50 border border-red-200 rounded-lg"
+                    >
                       <p className="text-sm text-red-800">{weakness}</p>
                     </div>
                   ))}
@@ -1333,7 +1339,10 @@ export const BrandMonitoring: React.FC = () => {
                 </div>
                 <div className="space-y-2">
                   {realBrandReport.swot.opportunities.map((opportunity, index) => (
-                    <div key={index} className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div
+                      key={`row-${index}`}
+                      className="p-3 bg-blue-50 border border-blue-200 rounded-lg"
+                    >
                       <p className="text-sm text-blue-800">{opportunity}</p>
                     </div>
                   ))}
@@ -1348,7 +1357,10 @@ export const BrandMonitoring: React.FC = () => {
                 </div>
                 <div className="space-y-2">
                   {realBrandReport.swot.threats.map((threat, index) => (
-                    <div key={index} className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div
+                      key={`row-${index}`}
+                      className="p-3 bg-amber-50 border border-amber-200 rounded-lg"
+                    >
                       <p className="text-sm text-amber-800">{threat}</p>
                     </div>
                   ))}

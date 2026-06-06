@@ -46,7 +46,7 @@ class LinkedInIntegrationTester {
       };
     }
 
-    if (!this.redirectUri || !this.redirectUri.includes('localhost')) {
+    if (!this.redirectUri?.includes('localhost')) {
       return {
         step,
         status: 'error',
@@ -321,7 +321,8 @@ class LinkedInIntegrationTester {
   }
 
   private logResult(result: LinkedInTestResult): void {
-    const emoji = result.status === 'success' ? '✅' : result.status === 'error' ? '❌' : '⚠️';
+    const STATUS_EMOJI: Record<string, string> = { success: '✅', error: '❌' };
+    const emoji = STATUS_EMOJI[result.status] ?? '⚠️';
     console.log(`${emoji} ${result.step}: ${result.message}`);
     if (result.details) {
       console.log('   Détails:', result.details);

@@ -293,7 +293,11 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
                 <label className="block text-sm font-medium text-slate-700 mb-2">Tags</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {formData.tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center space-x-1">
+                    <Badge
+                      key={`row-${index}`}
+                      variant="secondary"
+                      className="flex items-center space-x-1"
+                    >
                       <span>{tag}</span>
                       <button
                         onClick={() => handleRemoveTag(tag)}

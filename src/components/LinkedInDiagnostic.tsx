@@ -192,7 +192,7 @@ const LinkedInDiagnostic: React.FC<LinkedInDiagnosticProps> = ({
                     }`}
                   >
                     {healthStatus.issues.slice(0, 3).map((issue, index) => (
-                      <li key={index}>• {issue}</li>
+                      <li key={`row-${index}`}>• {issue}</li>
                     ))}
                   </ul>
                 </div>

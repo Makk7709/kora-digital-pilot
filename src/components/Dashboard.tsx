@@ -152,7 +152,10 @@ const generateSmartSuggestions = (
   });
 
   const globalRate = Number.parseFloat(globalEngagement.replace('%', ''));
-  const visualImprovement = globalRate < 5 ? 25 : globalRate < 7 ? 18 : 12;
+  let visualImprovement: number;
+  if (globalRate < 5) visualImprovement = 25;
+  else if (globalRate < 7) visualImprovement = 18;
+  else visualImprovement = 12;
   suggestions.push({
     title: 'Amélioration visuelle',
     description: `Engagement global à ${globalEngagement}. Carrousels + visuels personnalisés recommandés`,
@@ -244,8 +247,9 @@ const Dashboard = ({ onSectionChange }: DashboardProps) => {
   };
 
   const toggleTvMode = () => {
-    setIsTvMode(!isTvMode);
-    if (!isTvMode) {
+    const nextEnabled = !isTvMode;
+    setIsTvMode(nextEnabled);
+    if (nextEnabled) {
       document.body.classList.add('tv-presentation-mode');
     } else {
       document.body.classList.remove('tv-presentation-mode');
@@ -274,7 +278,7 @@ const Dashboard = ({ onSectionChange }: DashboardProps) => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <Card key={index} className="premium-card overflow-hidden relative">
+          <Card key={`row-${index}`} className="premium-card overflow-hidden relative">
             <div className="absolute inset-0 digital-wave-pattern opacity-5"></div>
             <CardContent className="p-6 relative z-10">
               <div className="flex items-center justify-between">
@@ -318,7 +322,7 @@ const Dashboard = ({ onSectionChange }: DashboardProps) => {
             <CardContent className="p-6 space-y-4">
               {recentPosts.map((post, index) => (
                 <div
-                  key={index}
+                  key={`row-${index}`}
                   className="p-4 rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white hover:border-blue-300 transition-all duration-300"
                 >
                   <div className="flex items-center justify-between mb-3">
@@ -393,7 +397,7 @@ const Dashboard = ({ onSectionChange }: DashboardProps) => {
 
                 return (
                   <div
-                    key={index}
+                    key={`row-${index}`}
                     className={`p-4 rounded-xl border ${color.border} ${color.bg} transition-all duration-300`}
                   >
                     <div className="flex items-center justify-between mb-2">

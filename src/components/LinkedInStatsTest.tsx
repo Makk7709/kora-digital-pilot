@@ -19,6 +19,48 @@ import {
   Activity,
 } from 'lucide-react';
 
+// S6478 : TestIndicatorBase hissé pour éviter sa redéclaration à chaque rendu.
+const STATUS_CONFIG = {
+  success: {
+    icon: CheckCircle2,
+    color: 'text-green-600',
+    bgColor: 'bg-green-50',
+    borderColor: 'border-green-200',
+  },
+  error: {
+    icon: XCircle,
+    color: 'text-red-600',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
+  },
+  pending: {
+    icon: AlertTriangle,
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-50',
+    borderColor: 'border-orange-200',
+  },
+} as const;
+
+const TestIndicatorBase: React.FC<{
+  status: 'pending' | 'success' | 'error';
+  label: string;
+  isRunningTests: boolean;
+}> = ({ status, label, isRunningTests }) => {
+  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.pending;
+  const Icon = config.icon;
+  return (
+    <div
+      className={`flex items-center space-x-3 p-3 rounded-lg border ${config.bgColor} ${config.borderColor}`}
+    >
+      <Icon className={`w-5 h-5 ${config.color}`} />
+      <span className={`font-medium ${config.color}`}>{label}</span>
+      {isRunningTests && status === 'pending' && (
+        <div className="w-4 h-4 border-2 border-orange-300 border-t-orange-600 rounded-full animate-spin"></div>
+      )}
+    </div>
+  );
+};
+
 const LinkedInStatsTest: React.FC = () => {
   const [testResults, setTestResults] = useState<{
     authentication: 'pending' | 'success' | 'error';
@@ -153,55 +195,10 @@ const LinkedInStatsTest: React.FC = () => {
     }
   };
 
-  // Composant d'indicateur de test
-  const TestIndicator = ({
-    status,
-    label,
-  }: {
-    status: 'pending' | 'success' | 'error';
-    label: string;
-  }) => {
-    const getConfig = () => {
-      switch (status) {
-        case 'success':
-          return {
-            icon: CheckCircle2,
-            color: 'text-green-600',
-            bgColor: 'bg-green-50',
-            borderColor: 'border-green-200',
-          };
-        case 'error':
-          return {
-            icon: XCircle,
-            color: 'text-red-600',
-            bgColor: 'bg-red-50',
-            borderColor: 'border-red-200',
-          };
-        default:
-          return {
-            icon: AlertTriangle,
-            color: 'text-orange-600',
-            bgColor: 'bg-orange-50',
-            borderColor: 'border-orange-200',
-          };
-      }
-    };
-
-    const config = getConfig();
-    const Icon = config.icon;
-
-    return (
-      <div
-        className={`flex items-center space-x-3 p-3 rounded-lg border ${config.bgColor} ${config.borderColor}`}
-      >
-        <Icon className={`w-5 h-5 ${config.color}`} />
-        <span className={`font-medium ${config.color}`}>{label}</span>
-        {isRunningTests && status === 'pending' && (
-          <div className="w-4 h-4 border-2 border-orange-300 border-t-orange-600 rounded-full animate-spin"></div>
-        )}
-      </div>
-    );
-  };
+  // S6478 : TestIndicator hissé au module — il accepte isRunningTests en prop.
+  const TestIndicator = (props: { status: 'pending' | 'success' | 'error'; label: string }) => (
+    <TestIndicatorBase {...props} isRunningTests={isRunningTests} />
+  );
 
   return (
     <div className="space-y-6">

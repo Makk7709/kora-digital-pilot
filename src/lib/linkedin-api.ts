@@ -1,6 +1,13 @@
 // LinkedIn API Service pour Kora Digital Pilot
 // Intégration avec LinkedIn Marketing API pour vraies métriques
 
+// S3358 : map des durées de période pour éviter ternaires imbriqués.
+const PERIOD_DAYS: Record<string, number> = {
+  '7d': 7,
+  '30d': 30,
+  '90d': 90,
+};
+
 export interface LinkedInConfig {
   clientId: string;
   clientSecret: string;
@@ -764,7 +771,7 @@ class LinkedInAPI {
       : 'Utilisateur LinkedIn';
 
     const now = Date.now();
-    const periodDays = period === '7d' ? 7 : period === '30d' ? 30 : 90;
+    const periodDays = PERIOD_DAYS[period] ?? 90;
 
     // Générer 3-5 posts personnalisés selon la période
     const numPosts = Math.min(Math.floor(periodDays / 7) + 2, 5);

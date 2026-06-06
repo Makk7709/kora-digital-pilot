@@ -47,10 +47,30 @@ export const PerplexityDebug: React.FC = () => {
           <div>
             <h3 className="font-semibold mb-2">État du Hook usePerplexity</h3>
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <div>Initialisé: <Badge variant={perplexity.isInitialized ? 'default' : 'destructive'}>{perplexity.isInitialized ? 'Oui' : 'Non'}</Badge></div>
-              <div>Mode Simulation: <Badge variant={perplexity.isSimulationMode ? 'secondary' : 'default'}>{perplexity.isSimulationMode ? 'Oui' : 'Non'}</Badge></div>
-              <div>En cours: <Badge variant={perplexity.isLoading ? 'secondary' : 'outline'}>{perplexity.isLoading ? 'Oui' : 'Non'}</Badge></div>
-              <div>Erreur: <Badge variant={perplexity.error ? 'destructive' : 'outline'}>{perplexity.error || 'Aucune'}</Badge></div>
+              <div>
+                Initialisé:{' '}
+                <Badge variant={perplexity.isInitialized ? 'default' : 'destructive'}>
+                  {perplexity.isInitialized ? 'Oui' : 'Non'}
+                </Badge>
+              </div>
+              <div>
+                Mode Simulation:{' '}
+                <Badge variant={perplexity.isSimulationMode ? 'secondary' : 'default'}>
+                  {perplexity.isSimulationMode ? 'Oui' : 'Non'}
+                </Badge>
+              </div>
+              <div>
+                En cours:{' '}
+                <Badge variant={perplexity.isLoading ? 'secondary' : 'outline'}>
+                  {perplexity.isLoading ? 'Oui' : 'Non'}
+                </Badge>
+              </div>
+              <div>
+                Erreur:{' '}
+                <Badge variant={perplexity.error ? 'destructive' : 'outline'}>
+                  {perplexity.error || 'Aucune'}
+                </Badge>
+              </div>
             </div>
           </div>
 
@@ -58,10 +78,18 @@ export const PerplexityDebug: React.FC = () => {
           <div>
             <h3 className="font-semibold mb-2">Variables d'Environnement</h3>
             <div className="text-sm space-y-1">
-              <div>Mode: <code>{envInfo.mode}</code></div>
-              <div>Dev: <code>{envInfo.dev?.toString()}</code></div>
-              <div>Clé API: <code>{envInfo.apiKeyPrefix}...</code></div>
-              <div>Longueur: <code>{envInfo.apiKeyLength} caractères</code></div>
+              <div>
+                Mode: <code>{envInfo.mode}</code>
+              </div>
+              <div>
+                Dev: <code>{envInfo.dev?.toString()}</code>
+              </div>
+              <div>
+                Clé API: <code>{envInfo.apiKeyPrefix}...</code>
+              </div>
+              <div>
+                Longueur: <code>{envInfo.apiKeyLength} caractères</code>
+              </div>
             </div>
           </div>
 
@@ -77,10 +105,13 @@ export const PerplexityDebug: React.FC = () => {
                   { name: 'Pas de placeholder', result: apiKey !== 'your_perplexity_api_key_here' },
                   { name: 'Longueur > 10', result: apiKey && apiKey.length > 10 },
                 ];
-                
+
                 return checks.map((check, index) => (
-                  <div key={index}>
-                    {check.name}: <Badge variant={check.result ? 'default' : 'destructive'}>{check.result ? 'OK' : 'KO'}</Badge>
+                  <div key={`row-${index}`}>
+                    {check.name}:{' '}
+                    <Badge variant={check.result ? 'default' : 'destructive'}>
+                      {check.result ? 'OK' : 'KO'}
+                    </Badge>
                   </div>
                 ));
               })()}
@@ -98,21 +129,13 @@ export const PerplexityDebug: React.FC = () => {
           {/* Test d'appel */}
           <div>
             <h3 className="font-semibold mb-2">Test d'Appel API</h3>
-            <Button 
-              onClick={testPerplexityCall} 
-              disabled={perplexity.isLoading}
-              className="mb-2"
-            >
+            <Button onClick={testPerplexityCall} disabled={perplexity.isLoading} className="mb-2">
               Tester un Appel
             </Button>
-            {testResult && (
-              <div className="p-2 bg-gray-100 rounded text-sm">
-                {testResult}
-              </div>
-            )}
+            {testResult && <div className="p-2 bg-gray-100 rounded text-sm">{testResult}</div>}
           </div>
         </CardContent>
       </Card>
     </div>
   );
-}; 
+};

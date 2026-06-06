@@ -117,7 +117,7 @@ export const ApiHealthDashboard: React.FC = () => {
             <div className="space-y-3">
               <h4 className="font-medium text-gray-900">Endpoint Status</h4>
               {stats.endpoints.map((endpoint, index) => (
-                <div key={index} className="border rounded-lg p-3 bg-white">
+                <div key={`row-${index}`} className="border rounded-lg p-3 bg-white">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       {getStatusIcon(endpoint)}

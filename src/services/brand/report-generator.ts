@@ -12,6 +12,25 @@ import {
   RealAlert,
 } from '../../types/brand-analysis';
 
+// S3358 : helpers extraits pour éviter les ternaires imbriqués sur tendances.
+function trendIndicatorEmoji(trend: 'positive' | 'negative' | string): string {
+  if (trend === 'positive') return '📈';
+  if (trend === 'negative') return '📉';
+  return '📊';
+}
+
+function keywordTrendEmoji(trend: 'up' | 'down' | string): string {
+  if (trend === 'up') return '📈';
+  if (trend === 'down') return '📉';
+  return '📊';
+}
+
+function formatSentimentTrend(trend: 'positive' | 'negative' | string): string {
+  if (trend === 'positive') return '📈 Positive';
+  if (trend === 'negative') return '📉 Négative';
+  return '📊 Stable';
+}
+
 export class BrandReportGenerator {
   async generatePerplexityReport(brandReport: BrandReport): Promise<PerplexityReport> {
     console.log('📝 Génération du rapport Perplexity pour:', brandReport.brandName);
@@ -87,7 +106,7 @@ La marque ${brandName} présente une réputation ${sentimentDescription} avec un
 
 **Points saillants:**
 • ${mentions.length} mentions analysées avec ${sentiment.positive}% de sentiment positif
-• Tendance: ${sentiment.trend === 'positive' ? '📈 Positive' : sentiment.trend === 'negative' ? '📉 Négative' : '📊 Stable'}
+• Tendance: ${formatSentimentTrend(sentiment.trend)}
 • Position concurrentielle: ${competitors.length > 0 ? `Face à ${competitors[0]?.name} et ${competitors.length - 1} autres` : 'À définir'}
 
 **Recommandations immédiates:**
@@ -353,8 +372,7 @@ ${sentiment.overallScore < 50 ? '🚨 Actions correctives urgentes nécessaires'
   }
 
   private formatSentimentAnalysis(sentiment: RealSentiment): string {
-    const trendEmoji =
-      sentiment.trend === 'positive' ? '📈' : sentiment.trend === 'negative' ? '📉' : '📊';
+    const trendEmoji = trendIndicatorEmoji(sentiment.trend);
 
     return `${trendEmoji} **Score Global: ${sentiment.overallScore}/100** (Tendance: ${sentiment.trend})
     
@@ -440,10 +458,7 @@ ${sortedCompetitors
 🎯 **Top mots-clés par volume**:
 ${sortedKeywords
   .slice(0, 5)
-  .map(
-    (kw, i) =>
-      `${i + 1}. "${kw.word}" - ${kw.count} mentions (${kw.trend === 'up' ? '📈' : kw.trend === 'down' ? '📉' : '📊'})`,
-  )
+  .map((kw, i) => `${i + 1}. "${kw.word}" - ${kw.count} mentions (${keywordTrendEmoji(kw.trend)})`)
   .join('\n')}`;
   }
 

@@ -674,7 +674,7 @@ const KoraReportDisplay: React.FC<{ brandName: string; data: PerplexityRawData }
     </Card>
 
     {/* Section Sources */}
-    {data.sources && data.sources.length > 0 && (
+    {data.sources?.length ? (
       <Card className="border-slate-200 shadow-lg">
         <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50">
           <CardTitle className="text-xl flex items-center gap-3 text-slate-900">
@@ -685,7 +685,10 @@ const KoraReportDisplay: React.FC<{ brandName: string; data: PerplexityRawData }
         <CardContent className="p-6">
           <div className="grid gap-4">
             {data.sources.slice(0, 6).map((source, index) => (
-              <div key={index} className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg">
+              <div
+                key={`row-${index}`}
+                className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg"
+              >
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm">
                   {index + 1}
                 </div>
@@ -709,7 +712,7 @@ const KoraReportDisplay: React.FC<{ brandName: string; data: PerplexityRawData }
           </div>
         </CardContent>
       </Card>
-    )}
+    ) : null}
 
     {/* Footer du rapport */}
     <Card className="bg-gradient-to-r from-slate-800 to-slate-900 text-white border-0">
@@ -837,7 +840,7 @@ const OverviewCards: React.FC<{ report: DeepResearchReport }> = ({ report }) => 
         <div className="space-y-3">
           {report.recommendations.slice(0, 3).map((action, index) => (
             <div
-              key={index}
+              key={`row-${index}`}
               className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
             >
               <div className="flex-1">
@@ -877,7 +880,7 @@ const SWOTDashboard: React.FC<{ swotMetrics: SWOTMetrics }> = ({ swotMetrics }) 
         <Progress value={swotMetrics.strengthsScore} className="mb-4 h-3" />
         <div className="space-y-3">
           {swotMetrics.detailedBreakdown.strengths.map((strength, index) => (
-            <div key={index} className="p-3 bg-green-50 rounded-lg">
+            <div key={`row-${index}`} className="p-3 bg-green-50 rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium">{strength.area}</span>
                 <Badge variant="outline" className="border-green-300 text-green-700">
@@ -906,7 +909,7 @@ const SWOTDashboard: React.FC<{ swotMetrics: SWOTMetrics }> = ({ swotMetrics }) 
         <Progress value={swotMetrics.weaknessesScore} className="mb-4 h-3" />
         <div className="space-y-3">
           {swotMetrics.detailedBreakdown.weaknesses.map((weakness, index) => (
-            <div key={index} className="p-3 bg-red-50 rounded-lg">
+            <div key={`row-${index}`} className="p-3 bg-red-50 rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium">{weakness.area}</span>
                 <Badge variant="outline" className="border-red-300 text-red-700">
@@ -935,7 +938,7 @@ const SWOTDashboard: React.FC<{ swotMetrics: SWOTMetrics }> = ({ swotMetrics }) 
         <Progress value={swotMetrics.opportunitiesScore} className="mb-4 h-3" />
         <div className="space-y-3">
           {swotMetrics.detailedBreakdown.opportunities.map((opportunity, index) => (
-            <div key={index} className="p-3 bg-blue-50 rounded-lg">
+            <div key={`row-${index}`} className="p-3 bg-blue-50 rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium">{opportunity.area}</span>
                 <Badge variant="outline" className="border-blue-300 text-blue-700">
@@ -964,7 +967,7 @@ const SWOTDashboard: React.FC<{ swotMetrics: SWOTMetrics }> = ({ swotMetrics }) 
         <Progress value={swotMetrics.threatsScore} className="mb-4 h-3" />
         <div className="space-y-3">
           {swotMetrics.detailedBreakdown.threats.map((threat, index) => (
-            <div key={index} className="p-3 bg-orange-50 rounded-lg">
+            <div key={`row-${index}`} className="p-3 bg-orange-50 rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium">{threat.area}</span>
                 <Badge variant="outline" className="border-orange-300 text-orange-700">
@@ -1033,7 +1036,7 @@ const CompetitiveDashboard: React.FC<{ competitiveMetrics: CompetitiveMetrics }>
       <CardContent>
         <div className="space-y-4">
           {competitiveMetrics.competitorBenchmark.map((competitor, index) => (
-            <div key={index} className="p-4 border rounded-lg">
+            <div key={`row-${index}`} className="p-4 border rounded-lg">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="font-semibold">{competitor.name}</h4>
                 <Badge
@@ -1155,7 +1158,7 @@ const ContentDashboard: React.FC<{ contentMetrics: ContentMetrics }> = ({ conten
               color: 'orange',
             },
           ].map((metric, index) => (
-            <div key={index}>
+            <div key={`row-${index}`}>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm text-slate-600">{metric.label}</span>
                 <span className="font-bold">{metric.value}/100</span>
@@ -1185,7 +1188,10 @@ const ActionsDashboard: React.FC<{
       <CardContent>
         <div className="space-y-4">
           {recommendations.map((action, index) => (
-            <div key={index} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+            <div
+              key={`row-${index}`}
+              className="p-4 border rounded-lg hover:shadow-md transition-shadow"
+            >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <h4 className="font-semibold text-lg">{action.title}</h4>
@@ -1238,7 +1244,7 @@ const ActionsDashboard: React.FC<{
                 <p className="text-xs text-slate-600 mb-1">Métriques de succès:</p>
                 <div className="flex flex-wrap gap-1">
                   {action.successMetrics.map((metric, idx) => (
-                    <Badge key={idx} variant="outline" className="text-xs">
+                    <Badge key={`row-${idx}`} variant="outline" className="text-xs">
                       {metric}
                     </Badge>
                   ))}

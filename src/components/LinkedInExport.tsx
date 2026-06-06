@@ -4,13 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLinkedInStats } from '@/hooks/useLinkedInStats';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Download, 
-  FileText, 
-  Database, 
-  Calendar,
-  CheckCircle2
-} from 'lucide-react';
+import { Download, FileText, Database, Calendar, CheckCircle2 } from 'lucide-react';
 
 interface LinkedInExportProps {
   className?: string;
@@ -19,7 +13,7 @@ interface LinkedInExportProps {
 const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
   const [isExporting, setIsExporting] = useState(false);
   const [exportFormat, setExportFormat] = useState<'csv' | 'json'>('csv');
-  
+
   const { metrics, topPosts, connectionStatus } = useLinkedInStats(false);
   const { toast } = useToast();
 
@@ -29,32 +23,37 @@ const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
     const headers = ['Métrique', 'Valeur', 'Période', 'Date Export'];
     const rows = [
       ['Portée Totale', metrics.totalReach, '7 jours', new Date().toLocaleDateString('fr-FR')],
-      ['Engagement Total', metrics.totalEngagement, '7 jours', new Date().toLocaleDateString('fr-FR')],
+      [
+        'Engagement Total',
+        metrics.totalEngagement,
+        '7 jours',
+        new Date().toLocaleDateString('fr-FR'),
+      ],
       ['Clics Totaux', metrics.totalClicks, '7 jours', new Date().toLocaleDateString('fr-FR')],
-      ['Croissance', metrics.growth, '7 jours', new Date().toLocaleDateString('fr-FR')]
+      ['Croissance', metrics.growth, '7 jours', new Date().toLocaleDateString('fr-FR')],
     ];
 
     // Ajouter les posts
     if (topPosts.length > 0) {
-      rows.push(['', '', '', '']); // Ligne vide
-      rows.push(['Posts les plus performants', '', '', '']);
-      rows.push(['Contenu', 'Impressions', 'Likes', 'Commentaires', 'Partages', 'Date Publication']);
-      
-      topPosts.forEach(post => {
+      rows.push(
+        ['', '', '', ''],
+        ['Posts les plus performants', '', '', ''],
+        ['Contenu', 'Impressions', 'Likes', 'Commentaires', 'Partages', 'Date Publication'],
+      );
+
+      topPosts.forEach((post) => {
         rows.push([
           post.content.substring(0, 50) + '...',
           post.metrics.impressions.toString(),
           post.metrics.likes.toString(),
           post.metrics.comments.toString(),
           post.metrics.shares.toString(),
-          new Date(post.publishedAt).toLocaleDateString('fr-FR')
+          new Date(post.publishedAt).toLocaleDateString('fr-FR'),
         ]);
       });
     }
 
-    return [headers, ...rows]
-      .map(row => row.map(cell => `"${cell}"`).join(','))
-      .join('\n');
+    return [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n');
   };
 
   const generateJSON = () => {
@@ -67,15 +66,15 @@ const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
         totalReach: metrics.totalReach,
         totalEngagement: metrics.totalEngagement,
         totalClicks: metrics.totalClicks,
-        growth: metrics.growth
+        growth: metrics.growth,
       },
-      posts: topPosts.map(post => ({
+      posts: topPosts.map((post) => ({
         id: post.id,
         content: post.content,
         publishedAt: post.publishedAt,
-        metrics: post.metrics
+        metrics: post.metrics,
       })),
-      insights: metrics.insights || []
+      insights: metrics.insights || [],
     };
 
     return JSON.stringify(exportData, null, 2);
@@ -96,9 +95,9 @@ const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
   const handleExport = async () => {
     if (!metrics) {
       toast({
-        title: "Aucune donnée à exporter",
+        title: 'Aucune donnée à exporter',
         description: "Connectez-vous à LinkedIn et récupérez vos métriques d'abord",
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
@@ -107,7 +106,7 @@ const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
 
     try {
       const timestamp = new Date().toISOString().split('T')[0];
-      
+
       if (exportFormat === 'csv') {
         const csvContent = generateCSV();
         downloadFile(csvContent, `linkedin-metrics-${timestamp}.csv`, 'text/csv');
@@ -117,16 +116,15 @@ const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
       }
 
       toast({
-        title: "Export réussi !",
+        title: 'Export réussi !',
         description: `Vos données LinkedIn ont été exportées en ${exportFormat.toUpperCase()}`,
       });
-
     } catch (error) {
       console.error('Erreur export:', error);
       toast({
         title: "Erreur d'export",
         description: "Impossible d'exporter les données",
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setIsExporting(false);
@@ -138,11 +136,11 @@ const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
 
     const postsCount = topPosts.length;
     const insightsCount = metrics.insights?.length || 0;
-    
+
     return {
       metricsCount: 4, // reach, engagement, clicks, growth
       postsCount,
-      insightsCount
+      insightsCount,
     };
   };
 
@@ -164,9 +162,11 @@ const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
           {/* Statut de connexion */}
           <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
             <div className="flex items-center space-x-3">
-              <div className={`w-3 h-3 rounded-full ${
-                connectionStatus === 'connected' ? 'bg-green-500' : 'bg-red-500'
-              }`}></div>
+              <div
+                className={`w-3 h-3 rounded-full ${
+                  connectionStatus === 'connected' ? 'bg-green-500' : 'bg-red-500'
+                }`}
+              ></div>
               <span className="font-medium text-slate-900">
                 {connectionStatus === 'connected' ? 'LinkedIn connecté' : 'LinkedIn non connecté'}
               </span>
@@ -215,7 +215,7 @@ const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
                   </Badge>
                 )}
               </Button>
-              
+
               <Button
                 onClick={() => setExportFormat('json')}
                 variant={exportFormat === 'json' ? 'default' : 'outline'}
@@ -243,9 +243,7 @@ const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
               <li>• Posts les plus performants avec détails</li>
               <li>• Insights et recommandations</li>
               <li>• Horodatage de l'export</li>
-              {exportFormat === 'csv' && (
-                <li>• Format compatible Excel/Google Sheets</li>
-              )}
+              {exportFormat === 'csv' && <li>• Format compatible Excel/Google Sheets</li>}
               {exportFormat === 'json' && (
                 <li>• Structure de données complète pour développeurs</li>
               )}
@@ -283,4 +281,4 @@ const LinkedInExport: React.FC<LinkedInExportProps> = ({ className = '' }) => {
   );
 };
 
-export default LinkedInExport; 
+export default LinkedInExport;

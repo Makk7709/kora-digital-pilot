@@ -10,6 +10,14 @@ import {
   RealAlert,
 } from '../../types/brand-analysis';
 
+// S3358 : helper extrait pour éviter les ternaires imbriqués sur tendances aléatoires.
+function pickRandomTrend(upThreshold: number, stableThreshold: number): 'up' | 'stable' | 'down' {
+  const r = Math.random();
+  if (r > upThreshold) return 'up';
+  if (r > stableThreshold) return 'stable';
+  return 'down';
+}
+
 export class PerplexityResponseParser {
   parseMentions(response: string, brandName: string): RealMention[] {
     const mentions: RealMention[] = [];
@@ -306,7 +314,7 @@ export class PerplexityResponseParser {
           keywords.push({
             word: word.trim(),
             count,
-            trend: Math.random() > 0.6 ? 'up' : Math.random() > 0.3 ? 'stable' : 'down',
+            trend: pickRandomTrend(0.6, 0.3),
             isFromContent: true,
           });
         }
@@ -334,7 +342,7 @@ export class PerplexityResponseParser {
           keywords.push({
             word,
             count,
-            trend: Math.random() > 0.5 ? 'up' : Math.random() > 0.3 ? 'stable' : 'down',
+            trend: pickRandomTrend(0.5, 0.3),
             isFromContent: true,
           });
         });

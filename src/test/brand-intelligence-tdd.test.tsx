@@ -841,9 +841,14 @@ function calculateTrends(historicalData: any[]): any {
   const lastScore = historicalData[historicalData.length - 1].metrics.reputationScore;
   const change = lastScore - firstScore;
 
+  let direction: 'positive' | 'negative' | 'stable';
+  if (change > 2) direction = 'positive';
+  else if (change < -2) direction = 'negative';
+  else direction = 'stable';
+
   return {
     reputationTrend: {
-      direction: change > 2 ? 'positive' : change < -2 ? 'negative' : 'stable',
+      direction,
       magnitude: Math.abs(change),
     },
     sentimentTrend: { direction: 'stable', magnitude: 0 },

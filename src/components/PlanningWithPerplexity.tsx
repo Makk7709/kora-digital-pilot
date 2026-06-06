@@ -3,18 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Calendar, 
-  Brain, 
-  TrendingUp, 
-  Zap, 
-  Eye, 
+import {
+  Calendar,
+  Brain,
+  TrendingUp,
+  Zap,
+  Eye,
   Target,
   Lightbulb,
   BarChart3,
   Clock,
   Plus,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 import { usePlanning } from '@/hooks/usePlanning';
 import { usePerplexity } from '@/hooks/usePerplexity';
@@ -35,7 +35,7 @@ interface SmartSuggestion {
 export const PlanningWithPerplexity: React.FC = () => {
   const planning = usePlanning();
   const perplexity = usePerplexity();
-  
+
   const [activeTab, setActiveTab] = useState('planning');
   const [smartSuggestions, setSmartSuggestions] = useState<SmartSuggestion[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -54,8 +54,8 @@ export const PlanningWithPerplexity: React.FC = () => {
         depth: 'detailed',
         language: 'fr',
         context: `Planning actuel: ${planning.posts.length} posts programmés. 
-                  Plateformes utilisées: ${[...new Set(planning.posts.map(p => p.platform))].join(', ')}.
-                  Analyse pour optimisation et suggestions d'amélioration.`
+                  Plateformes utilisées: ${[...new Set(planning.posts.map((p) => p.platform))].join(', ')}.
+                  Analyse pour optimisation et suggestions d'amélioration.`,
       });
 
       // Analyser les horaires optimaux
@@ -64,7 +64,7 @@ export const PlanningWithPerplexity: React.FC = () => {
         industry: 'digital-marketing',
         depth: 'quick',
         language: 'fr',
-        context: 'Optimisation des horaires de publication pour maximiser l\'engagement'
+        context: "Optimisation des horaires de publication pour maximiser l'engagement",
       });
 
       // Générer des suggestions intelligentes
@@ -79,7 +79,7 @@ export const PlanningWithPerplexity: React.FC = () => {
           confidence: 0.85,
           source: 'perplexity',
           actionable: true,
-          data: trendsResponse
+          data: trendsResponse,
         });
       }
 
@@ -88,36 +88,39 @@ export const PlanningWithPerplexity: React.FC = () => {
           id: 'timing-optimization',
           type: 'timing',
           title: 'Optimisation des horaires',
-          description: 'Suggestions d\'horaires pour améliorer l\'engagement',
+          description: "Suggestions d'horaires pour améliorer l'engagement",
           confidence: 0.78,
           source: 'perplexity',
           actionable: true,
-          data: timingResponse
+          data: timingResponse,
         });
       }
 
       // Analyser la distribution des plateformes
-      const platformDistribution = planning.posts.reduce((acc, post) => {
-        acc[post.platform] = (acc[post.platform] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
+      const platformDistribution = planning.posts.reduce(
+        (acc, post) => {
+          acc[post.platform] = (acc[post.platform] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
 
       const totalPosts = planning.posts.length;
       const platformAnalysis = Object.entries(platformDistribution).map(([platform, count]) => ({
         platform,
         percentage: (count / totalPosts) * 100,
-        count
+        count,
       }));
 
       suggestions.push({
         id: 'platform-balance',
         type: 'platform',
         title: 'Équilibrage des plateformes',
-        description: `Répartition actuelle: ${platformAnalysis.map(p => `${p.platform} (${p.percentage.toFixed(1)}%)`).join(', ')}`,
+        description: `Répartition actuelle: ${platformAnalysis.map((p) => `${p.platform} (${p.percentage.toFixed(1)}%)`).join(', ')}`,
         confidence: 0.9,
         source: 'analytics',
         actionable: true,
-        data: platformAnalysis
+        data: platformAnalysis,
       });
 
       setSmartSuggestions(suggestions);
@@ -148,7 +151,7 @@ export const PlanningWithPerplexity: React.FC = () => {
           contentType: 'post',
           tone: 'Professionnel',
           tags: ['IA', 'Tendances'],
-          originalPrompt: topic
+          originalPrompt: topic,
         });
       }
     } catch (error) {
@@ -164,7 +167,8 @@ export const PlanningWithPerplexity: React.FC = () => {
   }, [perplexity.isInitialized, planning.posts.length]);
 
   // Composant pour afficher les suggestions intelligentes
-  const SmartSuggestionsPanel = () => (
+  // S6478 : trois sous-vues converties en render-fonctions (closures sur l'état parent).
+  const renderSmartSuggestionsPanel = () => (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
@@ -210,24 +214,26 @@ export const PlanningWithPerplexity: React.FC = () => {
               <Card key={suggestion.id} className="p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    {suggestion.type === 'trend' && <TrendingUp className="h-4 w-4 text-green-500" />}
+                    {suggestion.type === 'trend' && (
+                      <TrendingUp className="h-4 w-4 text-green-500" />
+                    )}
                     {suggestion.type === 'timing' && <Clock className="h-4 w-4 text-blue-500" />}
-                    {suggestion.type === 'platform' && <BarChart3 className="h-4 w-4 text-purple-500" />}
-                    {suggestion.type === 'content' && <Target className="h-4 w-4 text-orange-500" />}
+                    {suggestion.type === 'platform' && (
+                      <BarChart3 className="h-4 w-4 text-purple-500" />
+                    )}
+                    {suggestion.type === 'content' && (
+                      <Target className="h-4 w-4 text-orange-500" />
+                    )}
                     <h4 className="font-semibold text-sm">{suggestion.title}</h4>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline">
-                      {Math.round(suggestion.confidence * 100)}%
-                    </Badge>
+                    <Badge variant="outline">{Math.round(suggestion.confidence * 100)}%</Badge>
                     <Badge variant={suggestion.source === 'perplexity' ? 'default' : 'secondary'}>
                       {suggestion.source}
                     </Badge>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mb-3">
-                  {suggestion.description}
-                </p>
+                <p className="text-sm text-muted-foreground mb-3">{suggestion.description}</p>
                 {suggestion.actionable && (
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline">
@@ -247,14 +253,17 @@ export const PlanningWithPerplexity: React.FC = () => {
   );
 
   // Composant pour les actions rapides IA
-  const QuickAIActions = () => (
+  const renderQuickAIActions = () => (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-blue-500" />
           Actions IA Rapides
           {perplexity.isSimulationMode && (
-            <Badge variant="outline" className="text-xs bg-green-50 text-green-600 border-green-200">
+            <Badge
+              variant="outline"
+              className="text-xs bg-green-50 text-green-600 border-green-200"
+            >
               Actif
             </Badge>
           )}
@@ -278,10 +287,9 @@ export const PlanningWithPerplexity: React.FC = () => {
               <span className="font-medium">Contenu Tendance</span>
             </div>
             <span className="text-xs text-muted-foreground">
-              {perplexity.isSimulationMode 
+              {perplexity.isSimulationMode
                 ? 'Générer du contenu sur les dernières tendances (démo)'
-                : 'Générer du contenu sur les dernières tendances'
-              }
+                : 'Générer du contenu sur les dernières tendances'}
             </span>
           </Button>
 
@@ -311,10 +319,9 @@ export const PlanningWithPerplexity: React.FC = () => {
               <span className="font-medium">Veille Concurrence</span>
             </div>
             <span className="text-xs text-muted-foreground">
-              {perplexity.isSimulationMode 
+              {perplexity.isSimulationMode
                 ? 'Analyser la concurrence (simulation)'
-                : 'Analyser la concurrence en temps réel'
-              }
+                : 'Analyser la concurrence en temps réel'}
             </span>
           </Button>
 
@@ -333,13 +340,15 @@ export const PlanningWithPerplexity: React.FC = () => {
             </span>
           </Button>
         </div>
-        
+
         {perplexity.isLoading && (
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-center gap-2 text-blue-600">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
               <span className="text-sm">
-                {perplexity.isSimulationMode ? 'Génération en cours...' : 'Analyse Perplexity en cours...'}
+                {perplexity.isSimulationMode
+                  ? 'Génération en cours...'
+                  : 'Analyse Perplexity en cours...'}
               </span>
             </div>
           </div>
@@ -349,7 +358,7 @@ export const PlanningWithPerplexity: React.FC = () => {
   );
 
   // Statistiques enrichies
-  const EnhancedStats = () => (
+  const renderEnhancedStats = () => (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <Card>
         <CardContent className="p-4">
@@ -369,7 +378,7 @@ export const PlanningWithPerplexity: React.FC = () => {
             <div>
               <p className="text-sm text-muted-foreground">Contenu IA</p>
               <p className="text-2xl font-bold">
-                {planning.posts.filter(p => p.aiGenerated).length}
+                {planning.posts.filter((p) => p.aiGenerated).length}
               </p>
             </div>
             <Brain className="h-8 w-8 text-purple-500" />
@@ -420,29 +429,33 @@ export const PlanningWithPerplexity: React.FC = () => {
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className={`h-2 w-2 rounded-full ${perplexity.isInitialized ? 'bg-green-500' : 'bg-red-500'}`} />
+                <div
+                  className={`h-2 w-2 rounded-full ${perplexity.isInitialized ? 'bg-green-500' : 'bg-red-500'}`}
+                />
                 <span className="text-sm">
-                  {perplexity.isInitialized 
-                    ? (perplexity.isSimulationMode ? 'Mode Simulation' : 'Perplexity Connecté')
-                    : 'Déconnecté'
-                  }
+                  {perplexity.isInitialized
+                    ? perplexity.isSimulationMode
+                      ? 'Mode Simulation'
+                      : 'Perplexity Connecté'
+                    : 'Déconnecté'}
                 </span>
                 {perplexity.isSimulationMode && (
-                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600 border-blue-200">
+                  <Badge
+                    variant="outline"
+                    className="text-xs bg-blue-50 text-blue-600 border-blue-200"
+                  >
                     Démo
                   </Badge>
                 )}
               </div>
-              <Badge variant="outline">
-                {planning.posts.length} posts
-              </Badge>
+              <Badge variant="outline">{planning.posts.length} posts</Badge>
             </div>
           </div>
         </CardHeader>
       </Card>
 
       {/* Statistiques enrichies */}
-      <EnhancedStats />
+      {renderEnhancedStats()}
 
       {/* Onglets principaux */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -472,7 +485,7 @@ export const PlanningWithPerplexity: React.FC = () => {
               <Planning />
             </div>
             <div className="space-y-4">
-              <QuickAIActions />
+              {renderQuickAIActions()}
               {smartSuggestions.length > 0 && (
                 <Card>
                   <CardHeader>
@@ -502,9 +515,7 @@ export const PlanningWithPerplexity: React.FC = () => {
         </TabsContent>
 
         {/* Onglet Suggestions */}
-        <TabsContent value="suggestions">
-          <SmartSuggestionsPanel />
-        </TabsContent>
+        <TabsContent value="suggestions">{renderSmartSuggestionsPanel()}</TabsContent>
 
         {/* Onglet Analytics */}
         <TabsContent value="analytics">
@@ -530,7 +541,7 @@ export const PlanningWithPerplexity: React.FC = () => {
                   <div className="flex justify-between">
                     <span>Contenu IA</span>
                     <span className="font-semibold">
-                      {planning.posts.filter(p => p.aiGenerated).length}
+                      {planning.posts.filter((p) => p.aiGenerated).length}
                     </span>
                   </div>
                 </div>
@@ -571,4 +582,4 @@ export const PlanningWithPerplexity: React.FC = () => {
       </Tabs>
     </div>
   );
-}; 
+};

@@ -236,11 +236,11 @@ export class ContentDeduplicationService {
     for (const item of array) {
       const key = item[keyField]?.toString().toLowerCase() || JSON.stringify(item);
 
-      if (!seen.has(key)) {
+      if (seen.has(key)) {
+        console.log(`🔄 Doublon supprimé dans array: ${key}`);
+      } else {
         seen.add(key);
         result.push(item);
-      } else {
-        console.log(`🔄 Doublon supprimé dans array: ${key}`);
       }
     }
 

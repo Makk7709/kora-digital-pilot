@@ -203,7 +203,7 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
       errors.push(`Format non supporté: ${options.format}`);
     }
 
-    if (options.sections && options.sections.length === 0) {
+    if (options.sections?.length === 0) {
       errors.push('Au moins une section requise si sections spécifiées');
     }
 

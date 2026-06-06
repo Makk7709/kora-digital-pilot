@@ -397,7 +397,10 @@ const InspirationAI = () => {
                 )}
 
                 {history.slice(0, 3).map((response, index) => (
-                  <div key={index} className="border border-slate-200 rounded-lg p-4 bg-white">
+                  <div
+                    key={`row-${index}`}
+                    className="border border-slate-200 rounded-lg p-4 bg-white"
+                  >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2">
                         <Badge variant="outline" className="border-blue-300 text-blue-600">

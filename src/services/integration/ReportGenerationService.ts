@@ -518,12 +518,16 @@ Réputation:
       ],
     };
 
+    const TIMELINE_BY_TYPE: Record<string, string> = {
+      critical: 'Immédiat',
+      warning: '1-3 mois',
+    };
     templates[type].forEach((template, index) => {
       alerts.push({
         id: `alert_${type}_gen_${index}`,
         message: template,
         context: 'Analyse automatique des métriques',
-        timeline: type === 'critical' ? 'Immédiat' : type === 'warning' ? '1-3 mois' : '3-6 mois',
+        timeline: TIMELINE_BY_TYPE[type] ?? '3-6 mois',
         suggestedAction: `Analyser en détail et définir un plan d'action pour: ${template.toLowerCase()}`,
       });
     });
