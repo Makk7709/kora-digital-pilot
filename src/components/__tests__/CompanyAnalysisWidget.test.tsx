@@ -814,7 +814,7 @@ describe.skip('🏢 COMPANY ANALYSIS WIDGET - TESTS TDD PREMIUM', () => {
 
       // Les éléments critiques doivent être visibles
       const title = screen.getByText('Analyse de Société');
-      const computedStyle = window.getComputedStyle(title);
+      const computedStyle = globalThis.getComputedStyle(title);
 
       // Vérifier que les styles sont appliqués
       expect(computedStyle).toBeDefined();

@@ -883,8 +883,8 @@ class LinkedInAPI {
     // Trouver la valeur avec la plus haute fréquence
     const maxFrequency = Math.max(...Object.values(frequency));
     const mostFrequentValues = Object.keys(frequency)
-      .filter((key) => frequency[parseInt(key)] === maxFrequency)
-      .map((key) => parseInt(key));
+      .filter((key) => frequency[Number.parseInt(key)] === maxFrequency)
+      .map((key) => Number.parseInt(key));
 
     // Si égalité, retourner la valeur la plus récente (ou moyenne)
     if (mostFrequentValues.length > 1) {
@@ -935,7 +935,7 @@ class LinkedInAPI {
   private calculateHourlyEngagement(posts: LinkedInPost[], targetHour: number): number {
     const postsAtHour = posts.filter((post) => {
       const date = new Date(post.publishedAt);
-      return !isNaN(date.getTime()) && date.getHours() === targetHour;
+      return !Number.isNaN(date.getTime()) && date.getHours() === targetHour;
     });
 
     return this.calculateAverageEngagement(postsAtHour);
@@ -999,7 +999,7 @@ class LinkedInAPI {
 
     posts.forEach((post) => {
       const date = new Date(post.publishedAt);
-      if (!isNaN(date.getTime())) {
+      if (!Number.isNaN(date.getTime())) {
         const hour = date.getHours();
         if (!hourlyData[hour]) {
           hourlyData[hour] = { posts: [], totalEngagement: 0 };
@@ -1012,7 +1012,7 @@ class LinkedInAPI {
     // Calculer l'engagement moyen par heure
     const hourlyAverage: { [hour: number]: number } = {};
     Object.keys(hourlyData).forEach((hourStr) => {
-      const hour = parseInt(hourStr);
+      const hour = Number.parseInt(hourStr);
       const data = hourlyData[hour];
       hourlyAverage[hour] = data.totalEngagement / data.posts.length;
     });
@@ -1028,7 +1028,7 @@ class LinkedInAPI {
 
     // Identifier les heures avec engagement supérieur à la moyenne
     const peakHours = Object.keys(hourlyAverage)
-      .map((hour) => parseInt(hour))
+      .map((hour) => Number.parseInt(hour))
       .filter((hour) => hourlyAverage[hour] > globalAverage * 1.1) // 10% au-dessus de la moyenne
       .sort((a, b) => hourlyAverage[b] - hourlyAverage[a]) // Trier par performance
       .slice(0, 3); // Top 3 heures
@@ -1115,7 +1115,7 @@ class LinkedInAPI {
     const postTimes = posts
       .map((post) => {
         const date = new Date(post.publishedAt);
-        return isNaN(date.getTime()) ? null : date.getHours();
+        return Number.isNaN(date.getTime()) ? null : date.getHours();
       })
       .filter((hour): hour is number => hour !== null);
 
@@ -1202,12 +1202,12 @@ class LinkedInAPI {
 
       const recentPosts = posts.filter((post) => {
         const postDate = new Date(post.publishedAt).getTime();
-        return !isNaN(postDate) && postDate > midPeriod;
+        return !Number.isNaN(postDate) && postDate > midPeriod;
       });
 
       const olderPosts = posts.filter((post) => {
         const postDate = new Date(post.publishedAt).getTime();
-        return !isNaN(postDate) && postDate <= midPeriod;
+        return !Number.isNaN(postDate) && postDate <= midPeriod;
       });
 
       if (recentPosts.length === 0 || olderPosts.length === 0) {

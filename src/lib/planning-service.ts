@@ -318,7 +318,7 @@ class PlanningService {
 
     // Suggestions d'horaires optimaux
     const morningPosts = posts.filter((p) => {
-      const hour = parseInt(p.scheduledTime.split(':')[0]);
+      const hour = Number.parseInt(p.scheduledTime.split(':')[0]);
       return hour >= 8 && hour <= 11;
     });
 

@@ -117,8 +117,8 @@ export const EnhancedBrandMonitoring: React.FC<EnhancedBrandMonitoringProps> = (
     setActiveMode(mode);
 
     // Analytics tracking
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'brand_monitoring_mode_change', {
+    if (typeof globalThis !== 'undefined' && (globalThis as any).gtag) {
+      (globalThis as any).gtag('event', 'brand_monitoring_mode_change', {
         mode,
         timestamp: new Date().toISOString(),
       });

@@ -27,8 +27,8 @@ export class BrandAnalysisCore {
     this.perplexityService = createPerplexityService({
       apiKey,
       model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-large-128k-online',
-      maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 8000,
-      temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
+      maxTokens: Number.parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 8000,
+      temperature: Number.parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
     });
 
     this.isInitialized = true;
@@ -474,7 +474,7 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
       const yearMatch = line.match(/(\d{4})/);
       if (yearMatch && line.length > 20) {
         milestones.push({
-          year: parseInt(yearMatch[1]),
+          year: Number.parseInt(yearMatch[1]),
           event: line.replace(/^\d+\.?\s*/, '').trim(),
         });
       }
@@ -485,12 +485,12 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
 
   private extractMarketCap(content: string): number | undefined {
     const capMatch = content.match(/capitalisation.*?(\d+(?:,\d+)?)\s*(?:milliards?|millions?)/i);
-    return capMatch ? parseFloat(capMatch[1].replace(',', '.')) : undefined;
+    return capMatch ? Number.parseFloat(capMatch[1].replace(',', '.')) : undefined;
   }
 
   private extractEmployeeCount(content: string): number | undefined {
     const employeeMatch = content.match(/(\d+(?:,\d+)?)\s*(?:employés?|salariés?)/i);
-    return employeeMatch ? parseInt(employeeMatch[1].replace(',', '')) : undefined;
+    return employeeMatch ? Number.parseInt(employeeMatch[1].replace(',', '')) : undefined;
   }
 
   private extractMarkets(content: string): string[] {
@@ -725,7 +725,7 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
 
   private extractGrowthRate(content: string): number {
     const growthMatch = content.match(/croissance.*?(\d+(?:\.\d+)?)\s*%/i);
-    return growthMatch ? parseFloat(growthMatch[1]) : 5.0;
+    return growthMatch ? Number.parseFloat(growthMatch[1]) : 5;
   }
 
   private determineSectorMaturity(content: string): 'emerging' | 'growth' | 'mature' | 'declining' {
@@ -811,12 +811,12 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
 
   private extractScore(content: string, keyword: string, fallback: number): number {
     const scoreMatch = content.match(new RegExp(`${keyword}.*?(\\d+)`, 'i'));
-    return scoreMatch ? parseInt(scoreMatch[1]) : fallback;
+    return scoreMatch ? Number.parseInt(scoreMatch[1]) : fallback;
   }
 
   private extractFoundingYear(content: string): number {
     const yearMatch = content.match(/(?:fondée?|créée?|établie?).*?(\d{4})/i);
-    return yearMatch ? parseInt(yearMatch[1]) : 2000;
+    return yearMatch ? Number.parseInt(yearMatch[1]) : 2000;
   }
 
   private extractFounders(content: string): string[] {
@@ -853,14 +853,14 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
 
   private extractGlobalRank(content: string): number | undefined {
     const rankMatch = content.match(/rang\s+(?:mondial|global)\s*:?\s*(\d+)/i);
-    return rankMatch ? parseInt(rankMatch[1]) : undefined;
+    return rankMatch ? Number.parseInt(rankMatch[1]) : undefined;
   }
 
   private extractRevenue(content: string): number | undefined {
     const revenueMatch = content.match(
       /chiffre\s+d'affaires.*?(\d+(?:,\d+)?)\s*(?:milliards?|millions?)/i,
     );
-    return revenueMatch ? parseFloat(revenueMatch[1].replace(',', '.')) : undefined;
+    return revenueMatch ? Number.parseFloat(revenueMatch[1].replace(',', '.')) : undefined;
   }
 
   private extractProfitability(content: string): string {
@@ -882,7 +882,7 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
     const valuationMatch = content.match(
       /valorisation.*?(\d+(?:,\d+)?)\s*(?:milliards?|millions?)/i,
     );
-    return valuationMatch ? parseFloat(valuationMatch[1].replace(',', '.')) : undefined;
+    return valuationMatch ? Number.parseFloat(valuationMatch[1].replace(',', '.')) : undefined;
   }
 
   private parseDate(dateStr: string): Date {
@@ -898,10 +898,18 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
       if (match) {
         if (format === formats[0]) {
           // DD/MM/YYYY
-          return new Date(parseInt(match[3]), parseInt(match[2]) - 1, parseInt(match[1]));
+          return new Date(
+            Number.parseInt(match[3]),
+            Number.parseInt(match[2]) - 1,
+            Number.parseInt(match[1]),
+          );
         } else if (format === formats[1]) {
           // YYYY-MM-DD
-          return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]));
+          return new Date(
+            Number.parseInt(match[1]),
+            Number.parseInt(match[2]) - 1,
+            Number.parseInt(match[3]),
+          );
         } else if (format === formats[2]) {
           // DD mois YYYY
           const months = [
@@ -919,7 +927,7 @@ PÉRIODE: Focus sur les 12 derniers mois avec impact potentiel sur ${brandName}.
             'décembre',
           ];
           const monthIndex = months.indexOf(match[2].toLowerCase());
-          return new Date(parseInt(match[3]), monthIndex, parseInt(match[1]));
+          return new Date(Number.parseInt(match[3]), monthIndex, Number.parseInt(match[1]));
         }
       }
     }

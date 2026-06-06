@@ -31,7 +31,7 @@ const Landing = () => {
         <Button
           size="lg"
           className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-          onClick={() => (window.location.href = '/app')}
+          onClick={() => (globalThis.location.href = '/app')}
         >
           Accéder à l'application
         </Button>
@@ -61,7 +61,7 @@ const Landing = () => {
             <Button
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-              onClick={() => (window.location.href = '/app')}
+              onClick={() => (globalThis.location.href = '/app')}
             >
               Accéder à l'application
             </Button>

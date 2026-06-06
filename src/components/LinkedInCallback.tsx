@@ -22,7 +22,7 @@ const LinkedInCallback: React.FC = () => {
       setIsProcessing(true);
       try {
         console.log('🔄 Début traitement callback LinkedIn');
-        console.log('📍 URL actuelle:', window.location.href);
+        console.log('📍 URL actuelle:', globalThis.location.href);
         console.log('🔍 Paramètres URL:', Object.fromEntries(searchParams.entries()));
 
         const code = searchParams.get('code');
@@ -38,17 +38,19 @@ const LinkedInCallback: React.FC = () => {
           errorDescription: errorDescription,
           state: state,
           storedState: storedState,
-          stateMatch: state === storedState
+          stateMatch: state === storedState,
         });
 
         if (error) {
           console.error('❌ Erreur OAuth LinkedIn:', { error, errorDescription });
-          throw new Error(`Erreur LinkedIn: ${error} - ${errorDescription || 'Aucune description'}`);
+          throw new Error(
+            `Erreur LinkedIn: ${error} - ${errorDescription || 'Aucune description'}`,
+          );
         }
 
         if (!code) {
-          console.error('❌ Code d\'autorisation manquant');
-          throw new Error('Code d\'autorisation manquant dans la réponse LinkedIn');
+          console.error("❌ Code d'autorisation manquant");
+          throw new Error("Code d'autorisation manquant dans la réponse LinkedIn");
         }
 
         // Validation du state (optionnel mais recommandé)
@@ -57,33 +59,34 @@ const LinkedInCallback: React.FC = () => {
           throw new Error('State OAuth invalide - possible attaque CSRF');
         }
 
-        setMessage('Échange du code d\'autorisation...');
+        setMessage("Échange du code d'autorisation...");
         console.log('🔄 Début échange code pour token');
-        
+
         // Échanger le code contre un token
         const token = await linkedinAPI.exchangeCodeForToken(code);
         console.log('✅ Token obtenu avec succès');
-        
+
         setMessage('Récupération du profil utilisateur...');
         console.log('🔄 Récupération profil utilisateur');
-        
+
         // Tester la connexion
         const profile = await linkedinAPI.getUserProfile();
         console.log('✅ Profil utilisateur récupéré:', {
           id: profile.id,
           firstName: profile.firstName?.localized,
-          lastName: profile.lastName?.localized
+          lastName: profile.lastName?.localized,
         });
-        
+
         setStatus('success');
-        const userName = profile.firstName?.localized?.['en_US'] || 
-                        Object.values(profile.firstName?.localized || {})[0] || 
-                        'Utilisateur';
+        const userName =
+          profile.firstName?.localized?.['en_US'] ||
+          Object.values(profile.firstName?.localized || {})[0] ||
+          'Utilisateur';
         setMessage(`Connexion réussie ! Bienvenue ${userName}`);
-        
+
         toast({
-          title: "✅ LinkedIn connecté !",
-          description: "Votre compte LinkedIn a été connecté avec succès",
+          title: '✅ LinkedIn connecté !',
+          description: 'Votre compte LinkedIn a été connecté avec succès',
         });
 
         // Nettoyer le state stocké
@@ -100,17 +103,16 @@ const LinkedInCallback: React.FC = () => {
           console.log('🔄 Redirection vers /app');
           navigate('/app');
         }, 2000);
-
       } catch (error) {
         console.error('💥 Erreur callback LinkedIn:', error);
         setStatus('error');
         const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
         setMessage(errorMessage);
-        
+
         toast({
-          title: "❌ Erreur de connexion",
+          title: '❌ Erreur de connexion',
           description: errorMessage,
-          variant: "destructive",
+          variant: 'destructive',
         });
 
         // Rediriger vers l'app principale après 3 secondes
@@ -152,36 +154,32 @@ const LinkedInCallback: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 flex items-center justify-center p-4">
       <Card className={`w-full max-w-md ${getStatusColor()} border-2`}>
         <CardContent className="p-8 text-center">
-          <div className="mb-6">
-            {getStatusIcon()}
-          </div>
-          
-          <h1 className="text-xl font-bold text-slate-900 mb-4">
-            Authentification LinkedIn
-          </h1>
-          
-          <p className="text-slate-600 mb-6">
-            {message}
-          </p>
-          
+          <div className="mb-6">{getStatusIcon()}</div>
+
+          <h1 className="text-xl font-bold text-slate-900 mb-4">Authentification LinkedIn</h1>
+
+          <p className="text-slate-600 mb-6">{message}</p>
+
           {status === 'loading' && (
             <div className="flex items-center justify-center space-x-2 text-sm text-slate-500">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              <div
+                className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                style={{ animationDelay: '0.1s' }}
+              ></div>
+              <div
+                className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                style={{ animationDelay: '0.2s' }}
+              ></div>
             </div>
           )}
-          
+
           {status === 'success' && (
-            <p className="text-sm text-green-600">
-              Redirection vers la page de test...
-            </p>
+            <p className="text-sm text-green-600">Redirection vers la page de test...</p>
           )}
-          
+
           {status === 'error' && (
-            <p className="text-sm text-red-600">
-              Redirection vers la page de test...
-            </p>
+            <p className="text-sm text-red-600">Redirection vers la page de test...</p>
           )}
         </CardContent>
       </Card>
@@ -189,4 +187,4 @@ const LinkedInCallback: React.FC = () => {
   );
 };
 
-export default LinkedInCallback; 
+export default LinkedInCallback;

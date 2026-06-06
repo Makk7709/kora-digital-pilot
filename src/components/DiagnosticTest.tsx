@@ -73,7 +73,7 @@ const DiagnosticTest = () => {
         name: 'React Router',
         status: 'success',
         message: 'Routage fonctionnel',
-        details: `Route actuelle: ${window.location.pathname}`,
+        details: `Route actuelle: ${globalThis.location.pathname}`,
       };
     } catch (error) {
       return {
@@ -110,7 +110,7 @@ const DiagnosticTest = () => {
 
   const checkAiServices = (): DiagnosticResult => {
     try {
-      const hasLinkedInAPI = !!(window as unknown as { linkedinAPI?: unknown }).linkedinAPI;
+      const hasLinkedInAPI = !!(globalThis as unknown as { linkedinAPI?: unknown }).linkedinAPI;
       return {
         name: 'Services IA',
         status: hasLinkedInAPI ? 'success' : 'warning',

@@ -207,7 +207,7 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
     }
 
     const authURL = linkedinAPI.getAuthURL();
-    window.location.href = authURL;
+    globalThis.location.href = authURL;
   }, [isConfigured]);
 
   // ✅ CORRECTION: Récupérer les métriques avec gestion d'erreur améliorée

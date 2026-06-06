@@ -28,28 +28,28 @@ class ErrorHandler {
 
   private setupGlobalErrorHandlers() {
     // Gérer les erreurs JavaScript non capturées
-    window.addEventListener('error', (event) => {
+    globalThis.addEventListener('error', (event) => {
       this.handleError({
         message: event.message,
         stack: event.error?.stack,
         source: event.filename,
-        type: this.categorizeError(event.message)
+        type: this.categorizeError(event.message),
       });
     });
 
     // Gérer les promesses rejetées non capturées
-    window.addEventListener('unhandledrejection', (event) => {
+    globalThis.addEventListener('unhandledrejection', (event) => {
       this.handleError({
         message: event.reason?.message || 'Promise rejection',
         stack: event.reason?.stack,
-        type: this.categorizeError(event.reason?.message || '')
+        type: this.categorizeError(event.reason?.message || ''),
       });
     });
   }
 
   private categorizeError(message: string): ErrorInfo['type'] {
     const lowerMessage = message.toLowerCase();
-    
+
     // Erreurs d'extensions de navigateur
     if (
       lowerMessage.includes('extension') ||
@@ -60,7 +60,7 @@ class ErrorHandler {
     ) {
       return 'extension';
     }
-    
+
     // Erreurs réseau et proxy
     if (
       lowerMessage.includes('fetch') ||
@@ -73,7 +73,7 @@ class ErrorHandler {
     ) {
       return 'network';
     }
-    
+
     // Erreurs API
     if (
       lowerMessage.includes('api') ||
@@ -82,29 +82,31 @@ class ErrorHandler {
     ) {
       return 'api';
     }
-    
+
     return 'unknown';
   }
 
   private handleError(errorInfo: ErrorInfo) {
     // Ignorer les erreurs d'extensions de navigateur courantes
     if (errorInfo.type === 'extension') {
-      console.debug('🔧 Erreur d\'extension de navigateur ignorée:', errorInfo.message);
+      console.debug("🔧 Erreur d'extension de navigateur ignorée:", errorInfo.message);
       return;
     }
 
     // Ignorer les erreurs de proxy au démarrage (normales)
-    if (errorInfo.type === 'network' && 
-        (errorInfo.message.includes('ECONNREFUSED') || 
-         errorInfo.message.includes('proxy') ||
-         errorInfo.message.includes('localhost:3001'))) {
+    if (
+      errorInfo.type === 'network' &&
+      (errorInfo.message.includes('ECONNREFUSED') ||
+        errorInfo.message.includes('proxy') ||
+        errorInfo.message.includes('localhost:3001'))
+    ) {
       console.debug('🔄 Erreur de proxy au démarrage (normale):', errorInfo.message);
       return;
     }
 
     // Ajouter à la queue d'erreurs
     this.errorQueue.push(errorInfo);
-    
+
     // Limiter la taille de la queue
     if (this.errorQueue.length > this.maxErrors) {
       this.errorQueue.shift();
@@ -144,24 +146,22 @@ class ErrorHandler {
     status: 'healthy' | 'warning' | 'error';
     issues: string[];
   } {
-    const recentErrors = this.errorQueue.filter(
-      error => error.type !== 'extension'
-    );
+    const recentErrors = this.errorQueue.filter((error) => error.type !== 'extension');
 
     if (recentErrors.length === 0) {
       return { status: 'healthy', issues: [] };
     }
 
     if (recentErrors.length < 3) {
-      return { 
-        status: 'warning', 
-        issues: recentErrors.map(e => e.message) 
+      return {
+        status: 'warning',
+        issues: recentErrors.map((e) => e.message),
       };
     }
 
-    return { 
-      status: 'error', 
-      issues: recentErrors.map(e => e.message) 
+    return {
+      status: 'error',
+      issues: recentErrors.map((e) => e.message),
     };
   }
 }
@@ -174,8 +174,8 @@ export const useErrorHandler = () => {
   return {
     getRecentErrors: () => errorHandler.getRecentErrors(),
     clearErrors: () => errorHandler.clearErrors(),
-    getHealthStatus: () => errorHandler.getHealthStatus()
+    getHealthStatus: () => errorHandler.getHealthStatus(),
   };
 };
 
-export default ErrorHandler; 
+export default ErrorHandler;

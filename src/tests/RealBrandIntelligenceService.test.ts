@@ -396,7 +396,10 @@ describe.skip('🔍 RealBrandIntelligenceService - Audit Complet', () => {
       expect(report.swotMetrics.weaknessesScore).not.toBeNaN();
 
       // Cohérence scores seulement si les valeurs sont valides
-      if (!isNaN(report.swotMetrics.strengthsScore) && !isNaN(report.swotMetrics.weaknessesScore)) {
+      if (
+        !Number.isNaN(report.swotMetrics.strengthsScore) &&
+        !Number.isNaN(report.swotMetrics.weaknessesScore)
+      ) {
         expect(report.swotMetrics.strengthsScore).toBeGreaterThan(
           report.swotMetrics.weaknessesScore,
         );

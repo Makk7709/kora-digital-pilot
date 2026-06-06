@@ -34,9 +34,9 @@ export const getEnvDataMode = (): DataMode => {
  */
 const readLocalOverride = (): DataMode | null => {
   if (!import.meta.env?.DEV) return null;
-  if (typeof window === 'undefined') return null;
+  if (typeof globalThis === 'undefined') return null;
   try {
-    const stored = window.localStorage.getItem(DEMO_MODE_STORAGE_KEY);
+    const stored = globalThis.localStorage.getItem(DEMO_MODE_STORAGE_KEY);
     return isDataMode(stored) ? stored : null;
   } catch {
     return null;
@@ -56,12 +56,12 @@ export const isRealMode = (): boolean => getDataMode() === 'real';
  */
 export const setDataModeOverride = (mode: DataMode | null): void => {
   if (!import.meta.env?.DEV) return;
-  if (typeof window === 'undefined') return;
+  if (typeof globalThis === 'undefined') return;
   try {
     if (mode === null) {
-      window.localStorage.removeItem(DEMO_MODE_STORAGE_KEY);
+      globalThis.localStorage.removeItem(DEMO_MODE_STORAGE_KEY);
     } else if (isDataMode(mode)) {
-      window.localStorage.setItem(DEMO_MODE_STORAGE_KEY, mode);
+      globalThis.localStorage.setItem(DEMO_MODE_STORAGE_KEY, mode);
     }
   } catch {
     // localStorage indisponible (mode navigation privée stricte) : on ignore.

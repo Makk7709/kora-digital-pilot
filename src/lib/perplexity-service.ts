@@ -342,7 +342,7 @@ class PerplexityService {
     let match;
 
     while ((match = refRegex.exec(content)) !== null) {
-      const refNumber = parseInt(match[1]);
+      const refNumber = Number.parseInt(match[1]);
       const snippet = match[2].trim();
 
       if (urls[refNumber - 1]) {

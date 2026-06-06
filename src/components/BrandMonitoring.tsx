@@ -133,8 +133,8 @@ export const BrandMonitoring: React.FC = () => {
         initializeService({
           apiKey,
           model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-small-128k-online',
-          maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 1000,
-          temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
+          maxTokens: Number.parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 1000,
+          temperature: Number.parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
         });
       }
     }
@@ -728,7 +728,7 @@ export const BrandMonitoring: React.FC = () => {
                     const event = new CustomEvent('navigate-to-tdd', {
                       detail: { section: 'brand-intelligence-tdd' },
                     });
-                    window.dispatchEvent(event);
+                    globalThis.dispatchEvent(event);
                   }}
                   className="bg-gradient-to-r from-green-500 to-blue-500 hover:shadow-lg"
                 >

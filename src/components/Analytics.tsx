@@ -87,7 +87,7 @@ const Analytics = () => {
   const parseMetricValue = useCallback((value: string): number => {
     if (!value) return 0;
     const numStr = value.replace(/[KM]/g, '');
-    const num = parseFloat(numStr);
+    const num = Number.parseFloat(numStr);
     if (value.includes('K')) return num * 1000;
     if (value.includes('M')) return num * 1000000;
     return num;
@@ -110,7 +110,7 @@ const Analytics = () => {
       totalReachNum > 0 ? ((totalEngagementNum / totalReachNum) * 100).toFixed(1) : '0.0';
 
     const calculateDynamicGrowth = (): string => {
-      const engagementRate = parseFloat(globalEngagementRate);
+      const engagementRate = Number.parseFloat(globalEngagementRate);
       const clickThroughRate = totalReachNum > 0 ? (totalClicksNum / totalReachNum) * 100 : 0;
       let baseGrowth = 10;
       if (engagementRate > 7) baseGrowth += 8;
@@ -174,7 +174,9 @@ const Analytics = () => {
 
       const realReachNum = parseMetricValue(realLinkedInData.totalReach);
       const realClicksNum = parseMetricValue(realLinkedInData.totalClicks);
-      const realEngagementRate = parseFloat(realLinkedInData.totalEngagement.replace('%', ''));
+      const realEngagementRate = Number.parseFloat(
+        realLinkedInData.totalEngagement.replace('%', ''),
+      );
       const realEngagementNum = Math.round((realReachNum * realEngagementRate) / 100);
 
       const existingLinkedIn = baseState.platforms.find((p) => p.name === 'LinkedIn');
@@ -220,7 +222,7 @@ const Analytics = () => {
       );
       const otherEngagementNum = otherPlatforms.reduce((sum, p) => {
         const reach = parseMetricValue(p.stats.reach);
-        const rate = parseFloat(p.stats.engagement.replace('%', ''));
+        const rate = Number.parseFloat(p.stats.engagement.replace('%', ''));
         return sum + Math.round((reach * rate) / 100);
       }, 0);
 
@@ -718,7 +720,7 @@ const Analytics = () => {
                 description="Connectez LinkedIn dans les Paramètres, ou activez le mode démo pour voir des exemples de métriques."
                 ctaLabel="Ouvrir les Paramètres"
                 onConnect={() => {
-                  window.location.href = '/settings';
+                  globalThis.location.href = '/settings';
                 }}
               />
             )}

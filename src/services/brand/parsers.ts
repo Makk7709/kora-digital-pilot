@@ -28,7 +28,7 @@ export class PerplexityResponseParser {
         source,
         sentiment: sentiment.toLowerCase() as 'positive' | 'neutral' | 'negative',
         date: new Date(),
-        reach: parseInt(reach),
+        reach: Number.parseInt(reach),
         isReal: true,
       });
       id++;
@@ -139,9 +139,9 @@ export class PerplexityResponseParser {
     const neutralMatch =
       response.match(/neutre[^\d]*(\d+)%/i) || response.match(/neutral[^\d]*(\d+)%/i);
 
-    let positive = positiveMatch ? parseInt(positiveMatch[1]) : 0;
-    let negative = negativeMatch ? parseInt(negativeMatch[1]) : 0;
-    let neutral = neutralMatch ? parseInt(neutralMatch[1]) : 0;
+    let positive = positiveMatch ? Number.parseInt(positiveMatch[1]) : 0;
+    let negative = negativeMatch ? Number.parseInt(negativeMatch[1]) : 0;
+    let neutral = neutralMatch ? Number.parseInt(neutralMatch[1]) : 0;
 
     // Si aucun pourcentage trouvé, analyser le texte
     if (positive + negative + neutral === 0) {
@@ -218,9 +218,11 @@ export class PerplexityResponseParser {
 
       competitors.push({
         name: name.trim(),
-        mentions: mentions ? parseInt(mentions) : Math.floor(Math.random() * 1000) + 100,
-        sentiment: sentiment ? parseInt(sentiment) : Math.floor(Math.random() * 40) + 30,
-        marketShare: marketShare ? parseFloat(marketShare) : Math.floor(Math.random() * 20) + 5,
+        mentions: mentions ? Number.parseInt(mentions) : Math.floor(Math.random() * 1000) + 100,
+        sentiment: sentiment ? Number.parseInt(sentiment) : Math.floor(Math.random() * 40) + 30,
+        marketShare: marketShare
+          ? Number.parseFloat(marketShare)
+          : Math.floor(Math.random() * 20) + 5,
         isFromPerplexity: true,
       });
     }
@@ -290,7 +292,7 @@ export class PerplexityResponseParser {
       let match;
       while ((match = pattern.exec(response)) !== null) {
         const [, word, countStr] = match;
-        const count = parseInt(countStr) || Math.floor(Math.random() * 100) + 10;
+        const count = Number.parseInt(countStr) || Math.floor(Math.random() * 100) + 10;
 
         if (word && word.length > 2) {
           keywords.push({

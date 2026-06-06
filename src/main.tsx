@@ -1,19 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import App from './App.tsx'
-import './index.css'
-import './lib/error-handler'
-import { linkedinAPI } from './lib/linkedin-api'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App.tsx';
+import './index.css';
+import './lib/error-handler';
+import { linkedinAPI } from './lib/linkedin-api';
 
 // Exposer l'API LinkedIn dans le global scope pour les tests
-if (typeof window !== 'undefined') {
-  (window as any).linkedinAPI = linkedinAPI
-  console.log('🔗 LinkedIn API exposée dans window.linkedinAPI pour les tests')
+if (typeof globalThis !== 'undefined') {
+  (globalThis as any).linkedinAPI = linkedinAPI;
+  console.log('🔗 LinkedIn API exposée dans window.linkedinAPI pour les tests');
 }
 
 // 🛑 PROTECTION ANTI-SPAM - Initialiser le bloqueur global
-import './lib/global-api-blocker'
+import './lib/global-api-blocker';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -21,4 +21,4 @@ createRoot(document.getElementById('root')!).render(
       <App />
     </BrowserRouter>
   </StrictMode>,
-)
+);

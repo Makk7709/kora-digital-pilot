@@ -118,12 +118,12 @@ export function extractMarketCap(content: string): number | undefined {
   const match = content.match(
     /capitalisation.*?(\d+(?:\.\d+)?)\s*(?:milliards?|billions?|B\$|\$B)/i,
   );
-  return match ? parseFloat(match[1]) * 1_000_000_000 : undefined;
+  return match ? Number.parseFloat(match[1]) * 1_000_000_000 : undefined;
 }
 
 export function extractEmployeeCount(content: string): number | undefined {
   const match = content.match(/(\d{1,3}(?:\s?\d{3})*)\s*(?:employés?|salariés?|workers?)/i);
-  return match ? parseInt(match[1].replace(/\s/g, '')) : undefined;
+  return match ? Number.parseInt(match[1].replace(/\s/g, '')) : undefined;
 }
 
 export function extractMarkets(_content: string): string[] {
@@ -230,12 +230,12 @@ export function extractTechnologies(_content: string): string[] {
 
 export function extractScore(content: string, keyword: string, fallback: number): number {
   const match = content.match(new RegExp(`${keyword}.*?(\\d+)`, 'i'));
-  return match ? parseInt(match[1]) : fallback;
+  return match ? Number.parseInt(match[1]) : fallback;
 }
 
 export function extractMarketShare(content: string): number {
   const match = content.match(/part.*?marché.*?(\d+(?:\.\d+)?)/i);
-  return match ? parseFloat(match[1]) : 15;
+  return match ? Number.parseFloat(match[1]) : 15;
 }
 
 export function extractMarketTrend(content: string): string {
@@ -250,7 +250,7 @@ export function extractMarketTrend(content: string): string {
 
   const growthMatch = content.match(/croissance.*?(\d+(?:\.\d+)?)%/i);
   if (growthMatch) {
-    const rate = parseFloat(growthMatch[1]);
+    const rate = Number.parseFloat(growthMatch[1]);
     if (rate > 5) return 'growth';
     if (rate < -2) return 'decline';
   }
@@ -263,7 +263,7 @@ export function extractProjectedShare(content: string): number {
     /prévision.*?(\d+(?:\.\d+)?)%|projection.*?(\d+(?:\.\d+)?)%/i,
   );
   if (projectedMatch) {
-    return parseFloat(projectedMatch[1] || projectedMatch[2]);
+    return Number.parseFloat(projectedMatch[1] || projectedMatch[2]);
   }
 
   const currentShare = extractMarketShare(content);
@@ -294,7 +294,7 @@ export function extractHistoricalShares(content: string): GenericRecord[] {
     let match;
     while ((match = pattern.exec(content)) !== null) {
       const period = match[1];
-      const share = parseFloat(match[2]);
+      const share = Number.parseFloat(match[2]);
 
       if (share > 0 && share <= 100) {
         historical.push({
@@ -329,7 +329,7 @@ export function extractHistoricalShares(content: string): GenericRecord[] {
 export function extractBenchmarkPosition(content: string): number {
   const positionMatch = content.match(/position.*?(\d+)|rang.*?(\d+)|place.*?(\d+)/i);
   if (positionMatch) {
-    return parseInt(positionMatch[1] || positionMatch[2] || positionMatch[3]);
+    return Number.parseInt(positionMatch[1] || positionMatch[2] || positionMatch[3]);
   }
 
   const marketShare = extractMarketShare(content);
@@ -464,7 +464,7 @@ export function extractCostAdvantage(content: string): number {
 export function extractFoundingYear(content: string): number {
   const yearMatch = content.match(/fondé[e]?\s+en\s+(\d{4})|créé[e]?\s+en\s+(\d{4})|(\d{4})/i);
   return yearMatch
-    ? parseInt(yearMatch[1] || yearMatch[2] || yearMatch[3])
+    ? Number.parseInt(yearMatch[1] || yearMatch[2] || yearMatch[3])
     : new Date().getFullYear() - 20;
 }
 
@@ -482,14 +482,14 @@ export function extractEvolution(content: string): string[] {
 
 export function extractGlobalRank(content: string): number | undefined {
   const rankMatch = content.match(/rang[:\s]+(\d+)|position[:\s]+(\d+)/i);
-  return rankMatch ? parseInt(rankMatch[1] || rankMatch[2]) : undefined;
+  return rankMatch ? Number.parseInt(rankMatch[1] || rankMatch[2]) : undefined;
 }
 
 export function extractRevenue(content: string): number | undefined {
   const revenueMatch = content.match(
     /chiffre d'affaires[:\s]+(\d+(?:\.\d+)?)\s*(?:milliards?|millions?)/i,
   );
-  return revenueMatch ? parseFloat(revenueMatch[1]) : undefined;
+  return revenueMatch ? Number.parseFloat(revenueMatch[1]) : undefined;
 }
 
 export function extractProfitability(content: string): string {
@@ -501,13 +501,13 @@ export function extractValuation(content: string): number | undefined {
   const valuationMatch = content.match(
     /valorisation[:\s]+(\d+(?:\.\d+)?)\s*(?:milliards?|millions?)/i,
   );
-  return valuationMatch ? parseFloat(valuationMatch[1]) : undefined;
+  return valuationMatch ? Number.parseFloat(valuationMatch[1]) : undefined;
 }
 
 export function extractGrowthRate(content: string): number {
   const percentMatch = content.match(/(\d+(?:\.\d+)?)\s*%/);
   if (percentMatch) {
-    return parseFloat(percentMatch[1]);
+    return Number.parseFloat(percentMatch[1]);
   }
   return 5.5;
 }
@@ -713,7 +713,7 @@ export function parseDate(dateStr: string): Date {
   });
 
   const parsed = new Date(normalizedDate);
-  return isNaN(parsed.getTime()) ? new Date() : parsed;
+  return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
 }
 
 export function classifyActionType(
@@ -786,7 +786,7 @@ export function extractTopInfluencers(content: string): GenericRecord[] {
 
   if (influencers.length === 0) {
     influencers.push(
-      { name: 'Tech Reviewer A', followers: 12_000_000, engagement: 8.0, relevance: 85 },
+      { name: 'Tech Reviewer A', followers: 12_000_000, engagement: 8, relevance: 85 },
       { name: 'Industry Expert B', followers: 8_000_000, engagement: 9.2, relevance: 90 },
     );
   }

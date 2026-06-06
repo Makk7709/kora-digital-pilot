@@ -266,7 +266,7 @@ describe.skip('🎨 TDD - Interface améliorée Veille de Marque', () => {
   describe('📱 Responsive design et accessibilité', () => {
     it('devrait être lisible sur mobile avec adaptation des grilles', async () => {
       // Simuler un viewport mobile
-      Object.defineProperty(window, 'innerWidth', {
+      Object.defineProperty(globalThis, 'innerWidth', {
         writable: true,
         configurable: true,
         value: 375,

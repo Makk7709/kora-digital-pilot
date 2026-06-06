@@ -27,7 +27,7 @@ class AIService {
   constructor() {
     this.openaiKey = import.meta.env.VITE_OPENAI_API_KEY || '';
     this.anthropicKey = import.meta.env.VITE_ANTHROPIC_API_KEY || '';
-    this.timeout = parseInt(import.meta.env.VITE_AI_TIMEOUT || '30000');
+    this.timeout = Number.parseInt(import.meta.env.VITE_AI_TIMEOUT || '30000');
 
     const isOpenAIValid =
       this.openaiKey &&

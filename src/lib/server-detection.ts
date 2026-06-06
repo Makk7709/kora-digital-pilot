@@ -247,33 +247,33 @@ export const useServerDetector = () => {
 // Utilitaire pour exposer le gestionnaire d'API globalement
 if (typeof window !== 'undefined') {
   import('./api-call-manager').then(({ apiCallManager }) => {
-    (window as any).apiCallManager = apiCallManager;
+    (globalThis as any).apiCallManager = apiCallManager;
   });
 
   // Fonction globale pour arrêter tous les appels API intempestifs
-  (window as any).stopApiSpam = () => {
+  (globalThis as any).stopApiSpam = () => {
     logger.debug('🛑 [Global] Stopping all API spam...');
 
     // Arrêter le server detector
     serverDetector.stopMonitoring();
 
     // Reset le proxy state dans Vite
-    if ((window as any).resetProxyState) {
-      (window as any).resetProxyState();
+    if ((globalThis as any).resetProxyState) {
+      (globalThis as any).resetProxyState();
     }
 
     // Reset le gestionnaire d'API
-    if ((window as any).apiCallManager) {
-      (window as any).apiCallManager.reset?.();
+    if ((globalThis as any).apiCallManager) {
+      (globalThis as any).apiCallManager.reset?.();
     }
 
     logger.debug(
-      '✅ [Global] All API monitoring stopped. To restart, use: window.restartApiMonitoring()',
+      '✅ [Global] All API monitoring stopped. To restart, use: globalThis.restartApiMonitoring()',
     );
   };
 
   // Fonction globale pour redémarrer la surveillance
-  (window as any).restartApiMonitoring = () => {
+  (globalThis as any).restartApiMonitoring = () => {
     logger.debug('🔄 [Global] Restarting API monitoring...');
 
     // Reset le server detector

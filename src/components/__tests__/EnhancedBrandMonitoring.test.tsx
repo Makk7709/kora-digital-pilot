@@ -397,7 +397,7 @@ describe('🚀 ENHANCED BRAND MONITORING - TESTS TDD PREMIUM', () => {
   describe('📱 Responsiveness', () => {
     it("💻 DOIT s'adapter aux écrans desktop", () => {
       // Simuler un écran large
-      Object.defineProperty(window, 'innerWidth', {
+      Object.defineProperty(globalThis, 'innerWidth', {
         writable: true,
         configurable: true,
         value: 1200,
@@ -411,7 +411,7 @@ describe('🚀 ENHANCED BRAND MONITORING - TESTS TDD PREMIUM', () => {
 
     it("📱 DOIT s'adapter aux écrans mobiles", () => {
       // Simuler un écran mobile
-      Object.defineProperty(window, 'innerWidth', {
+      Object.defineProperty(globalThis, 'innerWidth', {
         writable: true,
         configurable: true,
         value: 375,

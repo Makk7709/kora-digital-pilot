@@ -35,8 +35,8 @@ export class ReportGenerationService {
     this.perplexityService = createPerplexityService({
       apiKey,
       model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-large-128k-online',
-      maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 8000,
-      temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
+      maxTokens: Number.parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 8000,
+      temperature: Number.parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
     });
 
     this.isInitialized = true;
@@ -658,7 +658,7 @@ Réputation:
     const budgetMatch = description.match(/(\d+(?:,\d{3})*)\s*(?:€|euros?)/i);
 
     if (budgetMatch) {
-      const amount = parseInt(budgetMatch[1].replace(',', ''));
+      const amount = Number.parseInt(budgetMatch[1].replace(',', ''));
       return {
         min: amount * 0.8,
         max: amount * 1.2,
@@ -953,12 +953,12 @@ Réputation:
 
   private extractThreshold(description: string): number {
     const thresholdMatch = description.match(/seuil.*?(\d+(?:\.\d+)?)/i);
-    return thresholdMatch ? parseFloat(thresholdMatch[1]) : 80;
+    return thresholdMatch ? Number.parseFloat(thresholdMatch[1]) : 80;
   }
 
   private calculateDeviation(description: string): number {
     const deviationMatch = description.match(/écart.*?([+-]?\d+(?:\.\d+)?)/i);
-    return deviationMatch ? parseFloat(deviationMatch[1]) : -10;
+    return deviationMatch ? Number.parseFloat(deviationMatch[1]) : -10;
   }
 
   private extractHistoricalComparison(description: string): string {

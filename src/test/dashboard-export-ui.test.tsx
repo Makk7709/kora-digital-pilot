@@ -93,8 +93,8 @@ describe('🖱️ UI Export - Dashboard Intelligence TDD', () => {
   // TODO(agent2-wave1): même cause que le test ci-dessus (selectors obsolètes).
   it.skip('🎯 FONCTIONNEL - Click export JSON fonctionne', async () => {
     // Mock window.URL pour les tests
-    global.URL.createObjectURL = vi.fn(() => 'mock-url');
-    global.URL.revokeObjectURL = vi.fn();
+    globalThis.URL.createObjectURL = vi.fn(() => 'mock-url');
+    globalThis.URL.revokeObjectURL = vi.fn();
 
     // Mock createElement et appendChild
     const mockLink = {

@@ -28,8 +28,8 @@ export class DataAggregationService {
     this.perplexityService = createPerplexityService({
       apiKey,
       model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-large-128k-online',
-      maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 8000,
-      temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
+      maxTokens: Number.parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 8000,
+      temperature: Number.parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
     });
 
     this.isInitialized = true;
@@ -496,14 +496,14 @@ Utilise des données mesurables et des sources fiables.`;
       // Recherche de scores génériques
       const scoreMatch = content.match(/(\d{1,3})\s*(?:%|\/100|points?)/i);
       if (scoreMatch) {
-        const score = parseInt(scoreMatch[1]);
+        const score = Number.parseInt(scoreMatch[1]);
         return score <= 100 ? score : fallback;
       }
       return fallback;
     }
 
     const scoreMatch = content.match(new RegExp(`${keyword}.*?(\\d+)`, 'i'));
-    return scoreMatch ? Math.min(parseInt(scoreMatch[1]), 100) : fallback;
+    return scoreMatch ? Math.min(Number.parseInt(scoreMatch[1]), 100) : fallback;
   }
 
   private extractNumber(content: string, keyword: string, fallback: number): number {
@@ -515,7 +515,7 @@ Utilise des données mesurables et des sources fiables.`;
     for (const pattern of patterns) {
       const match = content.match(pattern);
       if (match) {
-        return parseFloat(match[1].replace(',', ''));
+        return Number.parseFloat(match[1].replace(',', ''));
       }
     }
 
@@ -525,14 +525,14 @@ Utilise des données mesurables et des sources fiables.`;
   private extractPercentage(content: string, keyword: string, fallback: number): number {
     const pattern = new RegExp(`${keyword}.*?(\\d+(?:\\.\\d+)?)\\s*%`, 'i');
     const match = content.match(pattern);
-    return match ? parseFloat(match[1]) : fallback;
+    return match ? Number.parseFloat(match[1]) : fallback;
   }
 
   private extractSentimentScore(content: string): number {
     // Recherche de scores de sentiment (-100 à +100)
     const sentimentMatch = content.match(/sentiment.*?([+-]?\d+)/i);
     if (sentimentMatch) {
-      return Math.max(-100, Math.min(100, parseInt(sentimentMatch[1])));
+      return Math.max(-100, Math.min(100, Number.parseInt(sentimentMatch[1])));
     }
 
     // Estimation basée sur les pourcentages positif/négatif
@@ -540,8 +540,8 @@ Utilise des données mesurables et des sources fiables.`;
     const negativeMatch = content.match(/négatif.*?(\d+)\s*%/i);
 
     if (positiveMatch && negativeMatch) {
-      const positive = parseInt(positiveMatch[1]);
-      const negative = parseInt(negativeMatch[1]);
+      const positive = Number.parseInt(positiveMatch[1]);
+      const negative = Number.parseInt(negativeMatch[1]);
       return Math.round(positive - negative);
     }
 
@@ -637,7 +637,7 @@ Utilise des données mesurables et des sources fiables.`;
 
   private extractMarketShare(content: string): number {
     const shareMatch = content.match(/part\s+de\s+marché.*?(\d+(?:\.\d+)?)\s*%/i);
-    return shareMatch ? parseFloat(shareMatch[1]) : 15;
+    return shareMatch ? Number.parseFloat(shareMatch[1]) : 15;
   }
 
   private extractMarketTrend(content: string): 'growing' | 'stable' | 'declining' {
@@ -660,7 +660,9 @@ Utilise des données mesurables et des sources fiables.`;
 
   private extractProjectedShare(content: string): number {
     const projectionMatch = content.match(/projection.*?(\d+(?:\.\d+)?)\s*%/i);
-    return projectionMatch ? parseFloat(projectionMatch[1]) : this.extractMarketShare(content) + 2;
+    return projectionMatch
+      ? Number.parseFloat(projectionMatch[1])
+      : this.extractMarketShare(content) + 2;
   }
 
   private extractHistoricalShares(content: string): Array<{ period: string; share: number }> {
@@ -680,18 +682,18 @@ Utilise des données mesurables et des sources fiables.`;
 
   private extractBenchmarkPosition(content: string): number {
     const rankMatch = content.match(/rang.*?(\d+)/i);
-    return rankMatch ? parseInt(rankMatch[1]) : 5;
+    return rankMatch ? Number.parseInt(rankMatch[1]) : 5;
   }
 
   private extractCompetitiveAdvantageIndex(content: string): number {
     const advantageMatch = content.match(/avantage.*?(\d+)/i);
-    return advantageMatch ? Math.min(parseInt(advantageMatch[1]), 100) : 65;
+    return advantageMatch ? Math.min(Number.parseInt(advantageMatch[1]), 100) : 65;
   }
 
   private extractThreatLevel(content: string): number {
     const threatMatch = content.match(/menace.*?(\d+)/i);
     if (threatMatch) {
-      return Math.min(parseInt(threatMatch[1]), 100);
+      return Math.min(Number.parseInt(threatMatch[1]), 100);
     }
 
     // Estimation basée sur le contenu
@@ -759,7 +761,7 @@ Utilise des données mesurables et des sources fiables.`;
   private extractCostAdvantage(content: string): number {
     const costMatch = content.match(/coût.*?([+-]?\d+(?:\.\d+)?)\s*%/i);
     if (costMatch) {
-      return parseFloat(costMatch[1]);
+      return Number.parseFloat(costMatch[1]);
     }
 
     const lowerContent = content.toLowerCase();

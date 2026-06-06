@@ -44,7 +44,7 @@ export const APIUsageProtection: React.FC = () => {
 
   const [protectionSettings, setProtectionSettings] = useState<ProtectionSettings>({
     maxCallsPerHour: 10, // Limite de sécurité
-    maxCostPerDay: 5.0, // 5$ par jour maximum
+    maxCostPerDay: 5, // 5$ par jour maximum
     autoScanEnabled: false,
     warningThreshold: 0.8, // Alerte à 80% des limites
   });
@@ -189,7 +189,7 @@ export const APIUsageProtection: React.FC = () => {
 
   // Exposer les fonctions globalement pour les autres composants
   useEffect(() => {
-    (window as any).perplexityProtection = {
+    (globalThis as any).perplexityProtection = {
       recordAPICall,
       canMakeAPICall,
       isProtectionActive,

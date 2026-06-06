@@ -29,8 +29,8 @@ const Index = () => {
         initializeService({
           apiKey,
           model: import.meta.env.VITE_PERPLEXITY_MODEL || 'llama-3.1-sonar-small-128k-online',
-          maxTokens: parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 1000,
-          temperature: parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
+          maxTokens: Number.parseInt(import.meta.env.VITE_PERPLEXITY_MAX_TOKENS) || 1000,
+          temperature: Number.parseFloat(import.meta.env.VITE_PERPLEXITY_TEMPERATURE) || 0.2,
         });
       }
     }
@@ -42,8 +42,8 @@ const Index = () => {
       setActiveSection(event.detail.section);
     };
 
-    window.addEventListener('navigate-to-tdd', handleNavigateToTDD);
-    return () => window.removeEventListener('navigate-to-tdd', handleNavigateToTDD);
+    globalThis.addEventListener('navigate-to-tdd', handleNavigateToTDD);
+    return () => globalThis.removeEventListener('navigate-to-tdd', handleNavigateToTDD);
   }, []);
 
   const renderContent = () => {

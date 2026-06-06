@@ -605,7 +605,7 @@ describe.skip('BrandMonitoring - Tests TDD', () => {
   describe('Responsive design', () => {
     it('devrait maintenir la lisibilité sur mobile', async () => {
       // Simuler une taille d'écran mobile
-      Object.defineProperty(window, 'innerWidth', { value: 375 });
+      Object.defineProperty(globalThis, 'innerWidth', { value: 375 });
 
       render(<BrandMonitoring />);
 

@@ -306,7 +306,7 @@ export function extractCurrentValue(description: string): string {
 
 export function extractThreshold(description: string): number {
   const match = description.match(/seuil.*?(\d+)/i);
-  return match ? parseInt(match[1]) : 70;
+  return match ? Number.parseInt(match[1]) : 70;
 }
 
 export function calculateDeviation(description: string): number {

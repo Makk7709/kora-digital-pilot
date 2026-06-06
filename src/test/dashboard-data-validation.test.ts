@@ -55,7 +55,7 @@ describe('Dashboard Data Validation - TDD Phase RED', () => {
     test('❌ ÉCHEC ATTENDU: Total portée doit égaler la somme des plateformes', () => {
       const data = mockDashboardDataBefore['7d'];
       const platformsReachSum = data.platforms.reduce((sum, p) => sum + p.stats.reachNum, 0);
-      const totalReachNum = parseFloat(data.totalReach.replace('K', '')) * 1000;
+      const totalReachNum = Number.parseFloat(data.totalReach.replace('K', '')) * 1000;
 
       // ✅ Ce test PASSE (pas de problème ici)
       expect(totalReachNum).toBe(platformsReachSum);
@@ -64,7 +64,7 @@ describe('Dashboard Data Validation - TDD Phase RED', () => {
     test('❌ ÉCHEC ATTENDU: Total clics doit égaler la somme des plateformes', () => {
       const data = mockDashboardDataBefore['7d'];
       const platformsClicksSum = data.platforms.reduce((sum, p) => sum + p.stats.clicksNum, 0);
-      const totalClicksNum = parseFloat(data.totalClicks.replace('K', '')) * 1000;
+      const totalClicksNum = Number.parseFloat(data.totalClicks.replace('K', '')) * 1000;
 
       // ✅ Ce test PASSE aussi (1571 ≈ 1600)
       expect(Math.abs(totalClicksNum - platformsClicksSum)).toBeLessThan(100); // Tolérance de 100
@@ -167,7 +167,7 @@ describe('Dashboard Data Validation - TDD Phase RED', () => {
   function parseMetricValue(value: string): number {
     if (!value) return 0;
     const numStr = value.replace(/[KM]/g, '');
-    const num = parseFloat(numStr);
+    const num = Number.parseFloat(numStr);
     if (value.includes('K')) return num * 1000;
     if (value.includes('M')) return num * 1000000;
     return num;

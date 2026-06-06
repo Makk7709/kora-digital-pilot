@@ -126,7 +126,7 @@ const generateSmartSuggestions = (
 
   if (linkedIn) {
     const linkedInEngagement = (linkedIn.engagement * 100).toFixed(1);
-    const linkedInEngagementNum = parseFloat(linkedInEngagement);
+    const linkedInEngagementNum = Number.parseFloat(linkedInEngagement);
     const potentialImprovement =
       linkedInEngagementNum > 6 ? Math.round((linkedInEngagementNum - 6) * 2 + 8) : 15;
 
@@ -151,7 +151,7 @@ const generateSmartSuggestions = (
     category: 'content',
   });
 
-  const globalRate = parseFloat(globalEngagement.replace('%', ''));
+  const globalRate = Number.parseFloat(globalEngagement.replace('%', ''));
   const visualImprovement = globalRate < 5 ? 25 : globalRate < 7 ? 18 : 12;
   suggestions.push({
     title: 'Amélioration visuelle',

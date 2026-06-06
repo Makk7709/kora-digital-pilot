@@ -8,7 +8,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PerplexityService } from '../lib/perplexity-service';
 
 // ✅ MOCKS GLOBAUX
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn();
 const mockFetch = vi.mocked(fetch);
 
 describe('🔧 TDD STRICT - Correction Régression Perplexity Service', () => {

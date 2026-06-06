@@ -220,8 +220,10 @@ const StatsCard: React.FC<StatsCardProps> = ({
   // Détecter les changements significatifs
   useEffect(() => {
     if (metrics && previousMetrics && formattedMetrics) {
-      const currentReach = parseInt(formattedMetrics.reach.value.replace(/[^\d]/g, ''));
-      const previousReach = parseInt(previousMetrics.reach?.value?.replace(/[^\d]/g, '') || '0');
+      const currentReach = Number.parseInt(formattedMetrics.reach.value.replace(/[^\d]/g, ''));
+      const previousReach = Number.parseInt(
+        previousMetrics.reach?.value?.replace(/[^\d]/g, '') || '0',
+      );
 
       const reachIncrease = ((currentReach - previousReach) / previousReach) * 100;
 

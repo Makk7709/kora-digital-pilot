@@ -88,18 +88,22 @@ export function parseRealObjectiveAnalysis(content: string, _brandName: string):
     /fondé(?:e)? en (\d{4})|créé(?:e)? en (\d{4})|lancé(?:e)? en (\d{4})/i,
   );
   const foundingYear = foundingYearMatch
-    ? parseInt(foundingYearMatch[1] || foundingYearMatch[2] || foundingYearMatch[3])
+    ? Number.parseInt(foundingYearMatch[1] || foundingYearMatch[2] || foundingYearMatch[3])
     : undefined;
 
   const innovationMatch = cleanContent.match(
     /innovation.*?(\d{1,2})(?:\s*\/\s*100|%)|R&D.*?(\d{1,2})(?:\s*\/\s*100|%)/i,
   );
-  const innovationIndex = innovationMatch ? parseInt(innovationMatch[1] || innovationMatch[2]) : 75;
+  const innovationIndex = innovationMatch
+    ? Number.parseInt(innovationMatch[1] || innovationMatch[2])
+    : 75;
 
   const reputationMatch = cleanContent.match(
     /réputation.*?(\d{1,2})(?:\s*\/\s*100|%)|confiance.*?(\d{1,2})(?:\s*\/\s*100|%)/i,
   );
-  const reputationScore = reputationMatch ? parseInt(reputationMatch[1] || reputationMatch[2]) : 70;
+  const reputationScore = reputationMatch
+    ? Number.parseInt(reputationMatch[1] || reputationMatch[2])
+    : 70;
 
   return {
     brandHistory: {
@@ -281,9 +285,9 @@ export function parseRealContentMetrics(content: string): ContentMetrics {
   const volumeMatch = content.match(/(\d+(?:\.\d+)?)[MK]?\s*mentions/i);
 
   return {
-    overallSentiment: sentimentMatch ? parseInt(sentimentMatch[1]) - 50 : 22,
+    overallSentiment: sentimentMatch ? Number.parseInt(sentimentMatch[1]) - 50 : 22,
     sentimentDistribution: {
-      positive: sentimentMatch ? parseInt(sentimentMatch[1]) : 72,
+      positive: sentimentMatch ? Number.parseInt(sentimentMatch[1]) : 72,
       neutral: 18,
       negative: 10,
     },
@@ -296,7 +300,7 @@ export function parseRealContentMetrics(content: string): ContentMetrics {
       Products: { positive: 78, neutral: 15, negative: 7 },
     },
     contentVolume: volumeMatch
-      ? parseFloat(volumeMatch[1]) * (volumeMatch[0].includes('M') ? 1_000_000 : 1000)
+      ? Number.parseFloat(volumeMatch[1]) * (volumeMatch[0].includes('M') ? 1_000_000 : 1000)
       : 2_500_000,
     engagementMetrics: {
       likes: 4_800_000,

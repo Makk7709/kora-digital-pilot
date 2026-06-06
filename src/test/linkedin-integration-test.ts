@@ -26,14 +26,14 @@ class LinkedInIntegrationTester {
    * 1️⃣ Test de configuration des variables d'environnement
    */
   testEnvironmentConfig(): LinkedInTestResult {
-    const step = "Configuration Environment";
-    
+    const step = 'Configuration Environment';
+
     if (!this.clientId || this.clientId === 'YOUR_CLIENT_ID') {
       return {
         step,
         status: 'error',
         message: 'VITE_LINKEDIN_CLIENT_ID manquant ou invalide',
-        details: { clientId: this.clientId }
+        details: { clientId: this.clientId },
       };
     }
 
@@ -42,7 +42,7 @@ class LinkedInIntegrationTester {
         step,
         status: 'error',
         message: 'VITE_LINKEDIN_CLIENT_SECRET manquant ou invalide',
-        details: { clientSecret: this.clientSecret?.substring(0, 10) + '...' }
+        details: { clientSecret: this.clientSecret?.substring(0, 10) + '...' },
       };
     }
 
@@ -51,7 +51,7 @@ class LinkedInIntegrationTester {
         step,
         status: 'error',
         message: 'VITE_LINKEDIN_REDIRECT_URI manquant ou invalide',
-        details: { redirectUri: this.redirectUri }
+        details: { redirectUri: this.redirectUri },
       };
     }
 
@@ -62,8 +62,8 @@ class LinkedInIntegrationTester {
       details: {
         clientId: this.clientId,
         redirectUri: this.redirectUri,
-        clientSecretLength: this.clientSecret?.length
-      }
+        clientSecretLength: this.clientSecret?.length,
+      },
     };
   }
 
@@ -72,11 +72,11 @@ class LinkedInIntegrationTester {
    */
   testAuthorizationUrl(): LinkedInTestResult {
     const step = "URL d'Autorisation";
-    
+
     try {
       const state = Math.random().toString(36).substring(7);
       const scope = 'openid profile email';
-      
+
       const authUrl = new URL('https://www.linkedin.com/oauth/v2/authorization');
       authUrl.searchParams.set('response_type', 'code');
       authUrl.searchParams.set('client_id', this.clientId);
@@ -86,33 +86,33 @@ class LinkedInIntegrationTester {
 
       // Validation des paramètres requis
       const requiredParams = ['response_type', 'client_id', 'redirect_uri', 'state', 'scope'];
-      const missingParams = requiredParams.filter(param => !authUrl.searchParams.has(param));
+      const missingParams = requiredParams.filter((param) => !authUrl.searchParams.has(param));
 
       if (missingParams.length > 0) {
         return {
           step,
           status: 'error',
           message: `Paramètres manquants: ${missingParams.join(', ')}`,
-          details: { missingParams, authUrl: authUrl.toString() }
+          details: { missingParams, authUrl: authUrl.toString() },
         };
       }
 
       return {
         step,
         status: 'success',
-        message: 'URL d\'autorisation valide ✅',
+        message: "URL d'autorisation valide ✅",
         details: {
           authUrl: authUrl.toString(),
           scope,
-          state
-        }
+          state,
+        },
       };
     } catch (error) {
       return {
         step,
         status: 'error',
-        message: 'Erreur lors de la génération de l\'URL d\'autorisation',
-        details: { error: error.message }
+        message: "Erreur lors de la génération de l'URL d'autorisation",
+        details: { error: error.message },
       };
     }
   }
@@ -121,14 +121,14 @@ class LinkedInIntegrationTester {
    * 3️⃣ Test de l'échange de code contre token
    */
   async testTokenExchange(authCode?: string): Promise<LinkedInTestResult> {
-    const step = "Échange Token";
-    
+    const step = 'Échange Token';
+
     if (!authCode) {
       return {
         step,
         status: 'warning',
-        message: 'Code d\'autorisation requis pour ce test',
-        details: { note: 'Effectuez d\'abord l\'authentification pour obtenir un code' }
+        message: "Code d'autorisation requis pour ce test",
+        details: { note: "Effectuez d'abord l'authentification pour obtenir un code" },
       };
     }
 
@@ -142,8 +142,8 @@ class LinkedInIntegrationTester {
           code: authCode,
           client_id: this.clientId,
           client_secret: this.clientSecret,
-          redirect_uri: this.redirectUri
-        })
+          redirect_uri: this.redirectUri,
+        }),
       });
 
       const data = await response.json();
@@ -153,11 +153,11 @@ class LinkedInIntegrationTester {
           step,
           status: 'error',
           message: `Erreur ${response.status}: ${data.error_description || data.error}`,
-          details: { 
+          details: {
             status: response.status,
             error: data.error,
-            errorDescription: data.error_description
-          }
+            errorDescription: data.error_description,
+          },
         };
       }
 
@@ -166,8 +166,8 @@ class LinkedInIntegrationTester {
         return {
           step,
           status: 'error',
-          message: 'Token d\'accès manquant dans la réponse',
-          details: data
+          message: "Token d'accès manquant dans la réponse",
+          details: data,
         };
       }
 
@@ -179,15 +179,15 @@ class LinkedInIntegrationTester {
           tokenType: data.token_type,
           expiresIn: data.expires_in,
           scope: data.scope,
-          tokenLength: data.access_token?.length
-        }
+          tokenLength: data.access_token?.length,
+        },
       };
     } catch (error) {
       return {
         step,
         status: 'error',
-        message: 'Erreur réseau lors de l\'échange de token',
-        details: { error: error.message }
+        message: "Erreur réseau lors de l'échange de token",
+        details: { error: error.message },
       };
     }
   }
@@ -196,23 +196,23 @@ class LinkedInIntegrationTester {
    * 4️⃣ Test de récupération du profil utilisateur
    */
   async testProfileRetrieval(accessToken?: string): Promise<LinkedInTestResult> {
-    const step = "Récupération Profil";
-    
+    const step = 'Récupération Profil';
+
     if (!accessToken) {
       return {
         step,
         status: 'warning',
-        message: 'Token d\'accès requis pour ce test',
-        details: { note: 'Effectuez d\'abord l\'authentification pour obtenir un token' }
+        message: "Token d'accès requis pour ce test",
+        details: { note: "Effectuez d'abord l'authentification pour obtenir un token" },
       };
     }
 
     try {
       const response = await fetch('https://api.linkedin.com/v2/userinfo', {
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
@@ -221,10 +221,10 @@ class LinkedInIntegrationTester {
           step,
           status: 'error',
           message: `Erreur ${response.status} lors de la récupération du profil`,
-          details: { 
+          details: {
             status: response.status,
-            error: errorData
-          }
+            error: errorData,
+          },
         };
       }
 
@@ -232,14 +232,14 @@ class LinkedInIntegrationTester {
 
       // Validation des champs requis
       const requiredFields = ['sub', 'name', 'email'];
-      const missingFields = requiredFields.filter(field => !profile[field]);
+      const missingFields = requiredFields.filter((field) => !profile[field]);
 
       if (missingFields.length > 0) {
         return {
           step,
           status: 'warning',
           message: `Champs manquants dans le profil: ${missingFields.join(', ')}`,
-          details: { profile, missingFields }
+          details: { profile, missingFields },
         };
       }
 
@@ -251,15 +251,15 @@ class LinkedInIntegrationTester {
           userId: profile.sub,
           name: profile.name,
           email: profile.email,
-          picture: profile.picture
-        }
+          picture: profile.picture,
+        },
       };
     } catch (error) {
       return {
         step,
         status: 'error',
         message: 'Erreur lors de la récupération du profil',
-        details: { error: error.message }
+        details: { error: error.message },
       };
     }
   }
@@ -268,11 +268,11 @@ class LinkedInIntegrationTester {
    * 5️⃣ Test de validation des scopes
    */
   testScopeValidation(): LinkedInTestResult {
-    const step = "Validation Scopes";
-    
+    const step = 'Validation Scopes';
+
     const requiredScopes = ['openid', 'profile', 'email'];
     const recommendedScopes = ['r_liteprofile', 'r_emailaddress'];
-    
+
     return {
       step,
       status: 'success',
@@ -280,8 +280,8 @@ class LinkedInIntegrationTester {
       details: {
         requiredScopes,
         recommendedScopes,
-        note: 'Utilisez les scopes OpenID Connect pour une meilleure compatibilité'
-      }
+        note: 'Utilisez les scopes OpenID Connect pour une meilleure compatibilité',
+      },
     };
   }
 
@@ -289,7 +289,7 @@ class LinkedInIntegrationTester {
    * 🧪 Exécution de tous les tests
    */
   async runAllTests(authCode?: string, accessToken?: string): Promise<LinkedInTestResult[]> {
-    console.log('🧪 Démarrage des tests d\'intégration LinkedIn...\n');
+    console.log("🧪 Démarrage des tests d'intégration LinkedIn...\n");
 
     // Test 1: Configuration
     const configTest = this.testEnvironmentConfig();
@@ -330,9 +330,9 @@ class LinkedInIntegrationTester {
   }
 
   private printSummary(): void {
-    const successCount = this.results.filter(r => r.status === 'success').length;
-    const errorCount = this.results.filter(r => r.status === 'error').length;
-    const warningCount = this.results.filter(r => r.status === 'warning').length;
+    const successCount = this.results.filter((r) => r.status === 'success').length;
+    const errorCount = this.results.filter((r) => r.status === 'error').length;
+    const warningCount = this.results.filter((r) => r.status === 'warning').length;
 
     console.log('\n📊 RÉSUMÉ DES TESTS:');
     console.log(`✅ Succès: ${successCount}`);
@@ -341,7 +341,7 @@ class LinkedInIntegrationTester {
     console.log(`📈 Score: ${Math.round((successCount / this.results.length) * 100)}%`);
 
     if (errorCount === 0) {
-      console.log('\n🎉 Tous les tests critiques sont passés ! L\'intégration LinkedIn est prête.');
+      console.log("\n🎉 Tous les tests critiques sont passés ! L'intégration LinkedIn est prête.");
     } else {
       console.log('\n🔧 Des corrections sont nécessaires avant la mise en production.');
     }
@@ -352,13 +352,15 @@ class LinkedInIntegrationTester {
 export { LinkedInIntegrationTester };
 
 // Test automatique si exécuté directement
-if (typeof window !== 'undefined') {
+if (typeof globalThis !== 'undefined') {
   const tester = new LinkedInIntegrationTester();
-  
+
   // Fonction globale pour les tests manuels
-  (window as any).testLinkedIn = async (authCode?: string, accessToken?: string) => {
+  (globalThis as any).testLinkedIn = async (authCode?: string, accessToken?: string) => {
     return await tester.runAllTests(authCode, accessToken);
   };
-  
-  console.log('🧪 Testeur LinkedIn chargé. Utilisez testLinkedIn() dans la console pour lancer les tests.');
-} 
+
+  console.log(
+    '🧪 Testeur LinkedIn chargé. Utilisez testLinkedIn() dans la console pour lancer les tests.',
+  );
+}

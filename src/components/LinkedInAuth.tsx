@@ -19,14 +19,14 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
     authenticate,
     logout,
     testConnection,
-    handleOAuthCallback
+    handleOAuthCallback,
   } = useLinkedInAnalytics();
-  
+
   const { toast } = useToast();
 
   // Gérer le callback OAuth au chargement
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(globalThis.location.search);
     const code = urlParams.get('code');
     const error = urlParams.get('error');
 
@@ -34,10 +34,10 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
       toast({
         title: "Erreur d'authentification",
         description: "L'authentification LinkedIn a échoué",
-        variant: "destructive",
+        variant: 'destructive',
       });
       // Nettoyer l'URL
-      window.history.replaceState({}, document.title, window.location.pathname);
+      globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
       return;
     }
 
@@ -45,36 +45,36 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
       handleOAuthCallback(code).then((success) => {
         if (success) {
           toast({
-            title: "Connexion réussie !",
-            description: "Votre compte LinkedIn est maintenant connecté",
+            title: 'Connexion réussie !',
+            description: 'Votre compte LinkedIn est maintenant connecté',
           });
           onAuthSuccess?.();
         } else {
           toast({
-            title: "Erreur de connexion",
-            description: "Impossible de se connecter à LinkedIn",
-            variant: "destructive",
+            title: 'Erreur de connexion',
+            description: 'Impossible de se connecter à LinkedIn',
+            variant: 'destructive',
           });
         }
         // Nettoyer l'URL
-        window.history.replaceState({}, document.title, window.location.pathname);
+        globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
       });
     }
   }, [handleOAuthCallback, toast, onAuthSuccess, isConfigured]);
 
   const handleTestConnection = async () => {
     const isConnected = await testConnection();
-    
+
     if (isConnected) {
       toast({
-        title: "Connexion active",
-        description: "LinkedIn est connecté et fonctionnel",
+        title: 'Connexion active',
+        description: 'LinkedIn est connecté et fonctionnel',
       });
     } else {
       toast({
-        title: "Connexion inactive",
-        description: "Veuillez vous reconnecter à LinkedIn",
-        variant: "destructive",
+        title: 'Connexion inactive',
+        description: 'Veuillez vous reconnecter à LinkedIn',
+        variant: 'destructive',
       });
     }
   };
@@ -82,24 +82,24 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
   const handleLogout = () => {
     logout();
     toast({
-      title: "Déconnexion réussie",
-      description: "Votre compte LinkedIn a été déconnecté",
+      title: 'Déconnexion réussie',
+      description: 'Votre compte LinkedIn a été déconnecté',
     });
   };
 
   const formatLastSync = (date: Date | null) => {
     if (!date) return 'Jamais';
-    
+
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
-    
-    if (diffMins < 1) return 'À l\'instant';
+
+    if (diffMins < 1) return "À l'instant";
     if (diffMins < 60) return `Il y a ${diffMins} min`;
-    
+
     const diffHours = Math.floor(diffMins / 60);
     if (diffHours < 24) return `Il y a ${diffHours}h`;
-    
+
     const diffDays = Math.floor(diffHours / 24);
     return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
   };
@@ -114,7 +114,7 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
           <span>Connexion LinkedIn</span>
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="p-6">
         {!isConfigured ? (
           // État non configuré - Mode démonstration
@@ -122,13 +122,12 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
             <div className="w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center mx-auto">
               <span className="text-2xl">🎭</span>
             </div>
-            
+
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                Mode Démonstration
-              </h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Mode Démonstration</h3>
               <p className="text-slate-600 text-sm mb-4">
-                LinkedIn n'est pas configuré. L'application fonctionne avec des données simulées réalistes pour la démonstration.
+                LinkedIn n'est pas configuré. L'application fonctionne avec des données simulées
+                réalistes pour la démonstration.
               </p>
             </div>
 
@@ -149,8 +148,14 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
                 🔧 Pour activer LinkedIn :
               </h4>
               <ol className="text-blue-700 text-sm space-y-1">
-                <li>1. Créez un fichier <code className="bg-blue-100 px-1 rounded">.env</code> à la racine</li>
-                <li>2. Ajoutez <code className="bg-blue-100 px-1 rounded">VITE_LINKEDIN_CLIENT_SECRET=...</code></li>
+                <li>
+                  1. Créez un fichier <code className="bg-blue-100 px-1 rounded">.env</code> à la
+                  racine
+                </li>
+                <li>
+                  2. Ajoutez{' '}
+                  <code className="bg-blue-100 px-1 rounded">VITE_LINKEDIN_CLIENT_SECRET=...</code>
+                </li>
                 <li>3. Redémarrez l'application</li>
               </ol>
             </div>
@@ -165,13 +170,14 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
             <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto">
               <AlertCircle className="w-8 h-8 text-blue-600" />
             </div>
-            
+
             <div>
               <h3 className="text-lg font-semibold text-slate-900 mb-2">
                 Connectez votre compte LinkedIn
               </h3>
               <p className="text-slate-600 text-sm mb-4">
-                Accédez à vos vraies métriques de performance et obtenez des insights personnalisés basés sur vos données réelles.
+                Accédez à vos vraies métriques de performance et obtenez des insights personnalisés
+                basés sur vos données réelles.
               </p>
             </div>
 
@@ -187,7 +193,7 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
               </ul>
             </div>
 
-            <Button 
+            <Button
               onClick={authenticate}
               disabled={isLoading}
               className="bg-blue-600 text-white hover:bg-blue-700 w-full"
@@ -224,10 +230,8 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
                   </p>
                 </div>
               </div>
-              
-              <Badge className="bg-green-500/10 text-green-600 border-green-500/30">
-                Actif
-              </Badge>
+
+              <Badge className="bg-green-500/10 text-green-600 border-green-500/30">Actif</Badge>
             </div>
 
             <div className="bg-green-50 border border-green-200 rounded-xl p-4">
@@ -243,7 +247,7 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
             </div>
 
             <div className="flex space-x-3">
-              <Button 
+              <Button
                 onClick={handleTestConnection}
                 disabled={isLoading}
                 variant="outline"
@@ -256,8 +260,8 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
                 )}
                 Tester
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={handleLogout}
                 variant="outline"
                 className="flex-1 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
@@ -273,4 +277,4 @@ const LinkedInAuth: React.FC<LinkedInAuthProps> = ({ onAuthSuccess }) => {
   );
 };
 
-export default LinkedInAuth; 
+export default LinkedInAuth;

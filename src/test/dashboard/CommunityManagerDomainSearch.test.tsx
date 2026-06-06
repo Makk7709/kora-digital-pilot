@@ -288,7 +288,7 @@ describe('🏢 DASHBOARD COMMUNITY MANAGER - RECHERCHE DOMAINE', () => {
   describe('📱 RESPONSIVE ET ACCESSIBILITÉ', () => {
     it('DOIT être utilisable sur mobile', () => {
       // Simuler une vue mobile
-      Object.defineProperty(window, 'innerWidth', {
+      Object.defineProperty(globalThis, 'innerWidth', {
         writable: true,
         configurable: true,
         value: 375,

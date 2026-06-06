@@ -39,7 +39,7 @@ describe('LinkedIn Integration - Corrections TDD', () => {
           }),
       });
 
-      global.fetch = mockFetch;
+      globalThis.fetch = mockFetch;
 
       const profile = await linkedinAPI.getUserProfile();
 
@@ -74,7 +74,7 @@ describe('LinkedIn Integration - Corrections TDD', () => {
             }),
         });
 
-      global.fetch = mockFetch;
+      globalThis.fetch = mockFetch;
 
       const profile = await linkedinAPI.getUserProfile();
       expect(profile).toBeDefined();

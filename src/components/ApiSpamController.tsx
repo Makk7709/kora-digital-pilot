@@ -25,22 +25,22 @@ export const ApiSpamController: React.FC = () => {
   const [isApiMonitoringStopped, setIsApiMonitoringStopped] = useState(false);
 
   const stopAllApiSpam = () => {
-    if (typeof window !== 'undefined' && (window as any).stopApiSpam) {
-      (window as any).stopApiSpam();
+    if (typeof globalThis !== 'undefined' && (globalThis as any).stopApiSpam) {
+      (globalThis as any).stopApiSpam();
       setIsApiMonitoringStopped(true);
     }
   };
 
   const restartApiMonitoring = () => {
-    if (typeof window !== 'undefined' && (window as any).restartApiMonitoring) {
-      (window as any).restartApiMonitoring();
+    if (typeof globalThis !== 'undefined' && (globalThis as any).restartApiMonitoring) {
+      (globalThis as any).restartApiMonitoring();
       setIsApiMonitoringStopped(false);
     }
   };
 
   const resetProxyState = () => {
-    if (typeof window !== 'undefined' && (window as any).resetProxyState) {
-      (window as any).resetProxyState();
+    if (typeof globalThis !== 'undefined' && (globalThis as any).resetProxyState) {
+      (globalThis as any).resetProxyState();
     }
   };
 
