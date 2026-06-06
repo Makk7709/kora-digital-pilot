@@ -127,6 +127,9 @@ export default defineConfig(({ mode }) => ({
         configure: (proxy, _options) => {
           let errorCount = 0;
           let isServerDefinitelyDown = false;
+          // Conservé pour diagnostic / horodatage du marqueur de panne (utilisé dans
+          // les logs proxy et exposé via `global.resetProxyState`).
+          let serverDownTime: Date | null = null;
           const maxErrors = 3;
 
           proxy.on('proxyReq', (proxyReq, req, res) => {
