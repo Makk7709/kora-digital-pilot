@@ -84,7 +84,9 @@ export const CompanyAnalysisWidget: React.FC = () => {
 
   const [validationError, setValidationError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [, setAnalysisSteps] = useState<string[]>([]);
+  // S6754 : on conserve `analysisSteps` même non lu pour respecter le pattern destructure complet.
+  const [_analysisSteps, setAnalysisSteps] = useState<string[]>([]);
+  void _analysisSteps;
   const [currentStep, setCurrentStep] = useState('');
 
   const { toast } = useToast();

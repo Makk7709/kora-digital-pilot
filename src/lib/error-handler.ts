@@ -13,7 +13,7 @@ interface ErrorInfo {
 class ErrorHandler {
   private static instance: ErrorHandler;
   private errorQueue: ErrorInfo[] = [];
-  private maxErrors = 10;
+  private readonly maxErrors = 10;
 
   static getInstance(): ErrorHandler {
     if (!ErrorHandler.instance) {

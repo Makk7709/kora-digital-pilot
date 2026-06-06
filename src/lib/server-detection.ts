@@ -36,7 +36,7 @@ class ServerDetector {
     consecutiveFailures: 0,
     lastOnlineTime: null,
   };
-  private listeners = new Set<(status: ServerStatus) => void>();
+  private readonly listeners = new Set<(status: ServerStatus) => void>();
   private checkInterval: NodeJS.Timeout | null = null;
   private isChecking = false;
 

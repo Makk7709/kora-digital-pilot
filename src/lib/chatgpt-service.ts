@@ -58,7 +58,7 @@ export class ChatGPTService {
   private readonly baseURL = 'https://api.openai.com/v1/chat/completions';
   private readonly cache = new Map<string, CacheEntry>();
   private readonly cacheTimeout = 30 * 60 * 1000; // 30 minutes
-  private config: ChatGPTConfig;
+  private readonly config: ChatGPTConfig;
 
   constructor(config: ChatGPTConfig) {
     this.config = {

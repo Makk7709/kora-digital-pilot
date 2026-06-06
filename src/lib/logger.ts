@@ -16,8 +16,7 @@
  * à ce logger. Préférer `{ hasEmail: !!email }` à `{ email }`.
  */
 
-type LogArg = unknown;
-type LogFn = (message: string, ...args: LogArg[]) => void;
+type LogFn = (message: string, ...args: unknown[]) => void;
 
 const IS_PROD = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.PROD);
 const IS_TEST =
@@ -33,10 +32,10 @@ const wrap = (fn: LogFn, level: 'debug' | 'info' | 'warn' | 'error'): LogFn => {
 };
 
 export const logger = {
-  debug: wrap((...args) => console.debug(...args), 'debug') as LogFn,
-  info: wrap((...args) => console.info(...args), 'info') as LogFn,
-  warn: wrap((...args) => console.warn(...args), 'warn') as LogFn,
-  error: wrap((...args) => console.error(...args), 'error') as LogFn,
+  debug: wrap((...args) => console.debug(...args), 'debug'),
+  info: wrap((...args) => console.info(...args), 'info'),
+  warn: wrap((...args) => console.warn(...args), 'warn'),
+  error: wrap((...args) => console.error(...args), 'error'),
 };
 
 export default logger;

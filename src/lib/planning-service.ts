@@ -1,3 +1,9 @@
+/** Champs systèmes d'un ScheduledPost (générés à la persistance). */
+export type ScheduledPostSystemField = 'id' | 'createdAt' | 'updatedAt';
+
+/** Payload de création d'un post (sans les champs systèmes). */
+export type ScheduledPostInput = Omit<ScheduledPost, ScheduledPostSystemField>;
+
 export interface ScheduledPost {
   id: string;
   platform: 'LinkedIn' | 'Instagram' | 'X (Twitter)' | 'Facebook' | 'TikTok';
@@ -85,7 +91,7 @@ class PlanningService {
     }
   }
 
-  addPost(post: Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>): ScheduledPost {
+  addPost(post: ScheduledPostInput): ScheduledPost {
     const newPost: ScheduledPost = {
       ...post,
       id: this.generateId(),
@@ -208,22 +214,26 @@ class PlanningService {
     let posts = this.loadPosts();
 
     if (filters.platforms?.length) {
-      posts = posts.filter((post) => filters.platforms!.includes(post.platform));
+      const { platforms } = filters;
+      posts = posts.filter((post) => platforms.includes(post.platform));
     }
 
     if (filters.status?.length) {
-      posts = posts.filter((post) => filters.status!.includes(post.status));
+      const { status } = filters;
+      posts = posts.filter((post) => status.includes(post.status));
     }
 
     if (filters.dateRange) {
+      const { dateRange } = filters;
       posts = posts.filter((post) => {
         const postDate = new Date(post.scheduledDate);
-        return postDate >= filters.dateRange!.start && postDate <= filters.dateRange!.end;
+        return postDate >= dateRange.start && postDate <= dateRange.end;
       });
     }
 
     if (filters.contentTypes?.length) {
-      posts = posts.filter((post) => filters.contentTypes!.includes(post.contentType));
+      const { contentTypes } = filters;
+      posts = posts.filter((post) => contentTypes.includes(post.contentType));
     }
 
     return posts;

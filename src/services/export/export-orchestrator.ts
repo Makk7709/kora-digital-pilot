@@ -49,10 +49,10 @@ export interface ReportExportServiceInterface {
 
 export class ReportExportOrchestrator implements ReportExportServiceInterface {
   private exportHistory: ExportHistoryItem[] = [];
-  private jsonExporter = new JSONExporter();
-  private csvExporter = new CSVExporter();
-  private pdfExporter = new PDFExporter();
-  private excelExporter = new ExcelExporter();
+  private readonly jsonExporter = new JSONExporter();
+  private readonly csvExporter = new CSVExporter();
+  private readonly pdfExporter = new PDFExporter();
+  private readonly excelExporter = new ExcelExporter();
 
   constructor() {
     this.loadHistoryFromStorage();

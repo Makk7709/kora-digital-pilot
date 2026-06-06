@@ -26,7 +26,11 @@ export const USAGE_EVENTS = {
   EXPORT_PDF: 'export.pdf',
 } as const;
 
-export type UsageEventName = (typeof USAGE_EVENTS)[keyof typeof USAGE_EVENTS] | string;
+// S6571 : on garde l'autocomplétion sur le catalogue d'events (`USAGE_EVENTS`) tout en autorisant
+// des chaînes ad-hoc, via l'astuce `string & {}` qui empêche TypeScript d'aplatir l'union.
+type CatalogEvent = (typeof USAGE_EVENTS)[keyof typeof USAGE_EVENTS];
+
+export type UsageEventName = CatalogEvent | (string & {});
 
 export interface LogUsageOptions {
   /** Force the event to be sent even in demo mode (server will no-op). */

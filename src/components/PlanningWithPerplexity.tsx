@@ -112,11 +112,14 @@ export const PlanningWithPerplexity: React.FC = () => {
         count,
       }));
 
+      const repartition = platformAnalysis
+        .map((p) => `${p.platform} (${p.percentage.toFixed(1)}%)`)
+        .join(', ');
       suggestions.push({
         id: 'platform-balance',
         type: 'platform',
         title: 'Équilibrage des plateformes',
-        description: `Répartition actuelle: ${platformAnalysis.map((p) => `${p.platform} (${p.percentage.toFixed(1)}%)`).join(', ')}`,
+        description: `Répartition actuelle: ${repartition}`,
         confidence: 0.9,
         source: 'analytics',
         actionable: true,

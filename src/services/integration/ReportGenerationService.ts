@@ -21,8 +21,10 @@ import type {
   ReputationKPIs,
 } from '../../types/BrandIntelligenceTypes';
 
+type AlertType = 'critical' | 'warning' | 'opportunity';
+
 export class ReportGenerationService {
-  private perplexityService: PerplexityService;
+  private readonly perplexityService: PerplexityService;
   private isInitialized = false;
 
   constructor() {
@@ -308,13 +310,12 @@ Focus sur des alertes ACTIONABLES et MESURABLES pour ${brandName}.`;
           `📊 Stats déduplication: ${stats.duplications} duplicatas supprimés, ${stats.uniqueWords} mots uniques, ${(stats.repetitionRate * 100).toFixed(1)}% répétition`,
         );
 
-        // Ajouter les stats comme métadonnées
-        (deduplicatedReport as any).deduplicationStats = stats;
+        deduplicatedReport.deduplicationStats = stats;
       }
 
       // 6. Marquer le rapport comme optimisé
-      (deduplicatedReport as any).qualityOptimized = true;
-      (deduplicatedReport as any).optimizationTimestamp = new Date().toISOString();
+      deduplicatedReport.qualityOptimized = true;
+      deduplicatedReport.optimizationTimestamp = new Date().toISOString();
 
       console.log(
         `✅ Rapport recherche approfondie assemblé avec succès pour ${brandName} (optimisé)`,
@@ -432,10 +433,7 @@ Réputation:
     };
   }
 
-  private extractAlertsByType(
-    content: string,
-    type: 'critical' | 'warning' | 'opportunity',
-  ): any[] {
+  private extractAlertsByType(content: string, type: AlertType): any[] {
     const alerts: any[] = [];
     const keywords = {
       critical: ['critique', 'urgent', 'immédiat', 'danger', 'menace majeure'],
@@ -469,11 +467,7 @@ Réputation:
     return alerts.slice(0, 5); // Limiter à 5 alertes par type
   }
 
-  private createAlert(
-    description: string,
-    type: 'critical' | 'warning' | 'opportunity',
-    _content?: string,
-  ): any | null {
+  private createAlert(description: string, type: AlertType, _content?: string): any {
     if (description.length < 20) return null;
 
     return {

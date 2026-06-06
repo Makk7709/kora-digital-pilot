@@ -91,7 +91,9 @@ const ImageGenerator = () => {
   const [quality, setQuality] = useState<'standard' | 'hd'>('hd'); // HD par défaut pour premium
   const [style, setStyle] = useState<'vivid' | 'natural'>('natural'); // Natural par défaut pour réalisme
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [, setSelectedIndustry] = useState<string>('');
+  // S6754 : on conserve la valeur même non lue pour respecter le pattern destructure complet.
+  const [_selectedIndustry, setSelectedIndustry] = useState<string>('');
+  void _selectedIndustry;
 
   const { toast } = useToast();
   const {

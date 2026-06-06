@@ -1,5 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { planningService, ScheduledPost, PlanningFilters } from '@/lib/planning-service';
+import {
+  planningService,
+  ScheduledPost,
+  ScheduledPostInput,
+  PlanningFilters,
+} from '@/lib/planning-service';
 import { useToast } from '@/hooks/use-toast';
 import { useAI } from '@/hooks/useAI';
 
@@ -25,7 +30,7 @@ interface UsePlanningReturn extends UsePlanningState {
   setSelectedDate: (date: Date) => void;
 
   // Gestion des posts
-  addPost: (post: Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>) => Promise<ScheduledPost>;
+  addPost: (post: ScheduledPostInput) => Promise<ScheduledPost>;
   updatePost: (id: string, updates: Partial<ScheduledPost>) => Promise<ScheduledPost | null>;
   deletePost: (id: string) => Promise<boolean>;
   duplicatePost: (id: string, newDate?: Date) => Promise<ScheduledPost | null>;
@@ -159,9 +164,7 @@ export const usePlanning = (): UsePlanningReturn => {
 
   // Gestion des posts
   const addPost = useCallback(
-    async (
-      postData: Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>,
-    ): Promise<ScheduledPost> => {
+    async (postData: ScheduledPostInput): Promise<ScheduledPost> => {
       try {
         setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
@@ -638,8 +641,8 @@ function getWeekStart(date: Date): Date {
 async function parseAIResponseToPosts(
   content: string,
   weekStart: Date,
-): Promise<Array<Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>>> {
-  const posts: Array<Omit<ScheduledPost, 'id' | 'createdAt' | 'updatedAt'>> = [];
+): Promise<Array<ScheduledPostInput>> {
+  const posts: Array<ScheduledPostInput> = [];
 
   // Parser simple pour extraire des posts du contenu IA
   const lines = content.split('\n').filter((line) => line.trim());

@@ -11,10 +11,10 @@ interface LinkedInTestResult {
 }
 
 class LinkedInIntegrationTester {
-  private results: LinkedInTestResult[] = [];
-  private clientId: string;
-  private clientSecret: string;
-  private redirectUri: string;
+  private readonly results: LinkedInTestResult[] = [];
+  private readonly clientId: string;
+  private readonly clientSecret: string;
+  private readonly redirectUri: string;
 
   constructor() {
     this.clientId = import.meta.env.VITE_LINKEDIN_CLIENT_ID;

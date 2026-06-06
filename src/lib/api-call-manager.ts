@@ -27,9 +27,9 @@ interface CachedResponse {
 
 class ApiCallManager {
   private static instance: ApiCallManager;
-  private endpointStatus = new Map<string, ApiCallStatus>();
-  private cache = new Map<string, CachedResponse>();
-  private activeRequests = new Map<string, Promise<any>>();
+  private readonly endpointStatus = new Map<string, ApiCallStatus>();
+  private readonly cache = new Map<string, CachedResponse>();
+  private readonly activeRequests = new Map<string, Promise<any>>();
 
   private constructor() {}
 

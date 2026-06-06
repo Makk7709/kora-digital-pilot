@@ -5,12 +5,19 @@
  */
 
 // ===== TYPES DE BASE =====
+
+/** Niveau qualitatif sur 3 paliers (réutilisé partout : fiabilité, contrôle, etc.). */
+export type ConfidenceLevel = 'high' | 'medium' | 'low';
+
+/** Échelle de priorité étendue, avec un palier critique en plus du `ConfidenceLevel`. */
+export type PriorityLevel = 'critical' | ConfidenceLevel;
+
 export interface DataFreshness {
   lastUpdated: Date;
   dataAge: number; // en heures
-  reliability: 'high' | 'medium' | 'low';
+  reliability: ConfidenceLevel;
   sources: number;
-  
+
   // === PROPRIÉTÉS ÉTENDUES POUR COHÉRENCE COMPLÈTE ===
   lastUpdateTime?: Date; // Alias pour lastUpdated
   dataQualityScore?: number; // 0-100
@@ -24,7 +31,7 @@ export interface SourceVerification {
   reliability: number; // 0-100
   lastUpdated: Date;
   type: 'primary' | 'secondary' | 'tertiary';
-  credibility: 'high' | 'medium' | 'low';
+  credibility: ConfidenceLevel;
 }
 
 // ===== ANALYSES PRINCIPALES =====
@@ -39,7 +46,7 @@ export interface ObjectiveAnalysis {
     }>;
     evolution: string[];
   };
-  
+
   marketPosition: {
     sector: string[];
     markets: string[];
@@ -47,20 +54,20 @@ export interface ObjectiveAnalysis {
     employeeCount?: number;
     globalRank?: number;
   };
-  
+
   financialHealth: {
     revenue?: number;
     growth?: number;
     profitability?: string;
     valuation?: number;
   };
-  
+
   metrics: {
     innovationIndex: number; // 0-100
     reputationScore: number; // 0-100
     marketShare?: number;
   };
-  
+
   // === PROPRIÉTÉS ÉTENDUES POUR COHÉRENCE COMPLÈTE ===
   foundingYear?: number;
   marketCapitalization?: number;
@@ -69,14 +76,21 @@ export interface ObjectiveAnalysis {
 
 export interface RecentAction {
   date: Date;
-  type: 'product' | 'partnership' | 'acquisition' | 'strategy' | 'marketing' | 'crisis' | 'regulation';
+  type:
+    | 'product'
+    | 'partnership'
+    | 'acquisition'
+    | 'strategy'
+    | 'marketing'
+    | 'crisis'
+    | 'regulation';
   title?: string;
   description: string;
   impact: number; // 1-10
   stakeholders?: string[];
   scope?: 'local' | 'national' | 'regional' | 'global';
   source?: string;
-  
+
   // === PROPRIÉTÉS ÉTENDUES POUR COHÉRENCE COMPLÈTE ===
   impactEstimation?: number;
   confidenceLevel?: number;
@@ -93,15 +107,15 @@ export interface StrategicAnalysis {
     valueProposition: string;
     costStructure?: string; // Ajout pour cohérence
   };
-  
+
   competitiveAdvantages: string[];
   strategicRisks: string[];
   priorities: Array<{
     priority: string;
     timeline: string;
-    importance: 'critical' | 'high' | 'medium' | 'low';
+    importance: PriorityLevel;
   }>;
-  
+
   // === PROPRIÉTÉS ÉTENDUES POUR COHÉRENCE COMPLÈTE ===
   coreStrategy?: string;
   targetMarkets?: string[];
@@ -119,20 +133,20 @@ export interface TrendAnalysis {
     timeline: string;
     impact: 'disruptive' | 'evolutionary' | 'minor';
   }>;
-  
+
   weakSignals: Array<{
     signal: string;
     strength: number; // 0-100
     implications: string[];
   }>;
-  
+
   disruptiveThreats: Array<{
     threat: string;
     probability: number; // 0-100
     timeframe: string;
     mitigation: string[];
   }>;
-  
+
   opportunities: Array<{
     opportunity: string;
     potential: number; // 0-100
@@ -154,7 +168,7 @@ export interface SectorEvolution {
   }>;
   regulatoryChanges: string[];
   technologicalDisruptions: string[];
-  
+
   // === PROPRIÉTÉS ÉTENDUES POUR COHÉRENCE COMPLÈTE ===
   maturityLevel?: 'emerging' | 'growth' | 'mature' | 'declining'; // Alias pour maturity
   keyTrends?: string[];
@@ -169,7 +183,7 @@ export interface SWOTMetrics {
   threatsScore?: number; // 0-100
   strategicHealthIndex?: number; // 0-100
   overallScore?: number; // 0-100 (optionnel pour rétrocompatibilité)
-  
+
   // === STRUCTURE DÉTAILLÉE ===
   detailedBreakdown?: {
     strengths?: Array<{
@@ -200,39 +214,39 @@ export interface SWOTMetrics {
       timeToMaterialization: number;
     }>;
   };
-  
+
   competitiveAdvantage?: string[];
-  
+
   // === RÉTROCOMPATIBILITÉ AVEC STRUCTURE LEGACY ===
   strengths?: Array<{
     item: string;
     score: number; // 0-100
     evidence: string[];
   }>;
-  
+
   weaknesses?: Array<{
     item: string;
     severity: number; // 0-100
     impact: string[];
   }>;
-  
+
   opportunities?: Array<{
     item: string;
     potential: number; // 0-100
     timeline: string;
   }>;
-  
+
   threats?: Array<{
     item: string;
     risk: number; // 0-100
     urgency: 'immediate' | 'short-term' | 'medium-term' | 'long-term';
   }>;
-  
+
   // *** PROPRIÉTÉ CRITIQUE POUR RealBrandIntelligenceService - AJOUTÉE ***
   strategicRecommendations?: Array<{
     area: string;
     action: string;
-    priority: 'critical' | 'high' | 'medium' | 'low';
+    priority: PriorityLevel;
     timeline: string;
     expectedImpact: number;
     resourcesNeeded: string[];
@@ -243,20 +257,20 @@ export interface SWOTMetrics {
 export interface ContentMetrics {
   // === STRUCTURE PRINCIPALE ATTENDUE PAR RealBrandIntelligenceService ===
   overallSentiment?: number; // -100 à +100
-  
+
   // *** PROPRIÉTÉ CRITIQUE POUR RealBrandIntelligenceService - AJOUTÉE ***
   sentimentDistribution?: {
     positive: number;
     neutral: number;
     negative: number;
   };
-  
+
   topicsDistribution?: Array<{
     topic: string;
     percentage: number;
     theme?: string;
   }>;
-  
+
   // *** PROPRIÉTÉ CRITIQUE POUR RealBrandIntelligenceService ***
   sentimentByTopic?: {
     [topic: string]: {
@@ -265,12 +279,14 @@ export interface ContentMetrics {
       negative: number;
     };
   };
-  
-  contentVolume?: number | {
-    totalPosts: number;
-    weeklyGrowth: number;
-  };
-  
+
+  contentVolume?:
+    | number
+    | {
+        totalPosts: number;
+        weeklyGrowth: number;
+      };
+
   engagementMetrics?: {
     likes: number;
     shares: number;
@@ -278,9 +294,9 @@ export interface ContentMetrics {
     avgEngagement: number;
     conversionRate?: number;
   };
-  
+
   viralityIndex?: number; // 0-100
-  
+
   influencerMetrics?: {
     totalInfluencers: number;
     avgReach: number;
@@ -289,7 +305,7 @@ export interface ContentMetrics {
       metrics: any;
     }>;
   };
-  
+
   contentQuality?: {
     score: number;
     readability: number;
@@ -300,7 +316,7 @@ export interface ContentMetrics {
     factualAccuracy?: number;
     sourceReliability?: number;
   };
-  
+
   // *** PROPRIÉTÉ CRITIQUE POUR RealBrandIntelligenceService ***
   trendingTopics?: Array<{
     topic: string;
@@ -310,33 +326,33 @@ export interface ContentMetrics {
     reach: number;
     sentiment: number;
   }>;
-  
+
   // === RÉTROCOMPATIBILITÉ AVEC STRUCTURE LEGACY ===
   volume?: {
     totalMentions: number;
     weeklyAverage: number;
     monthlyGrowth: number;
   };
-  
+
   sentiment?: {
     positive: number; // pourcentage
     neutral: number;
     negative: number;
     overallSentiment: number; // -100 à +100
   };
-  
+
   reach?: {
     totalReach: number;
     avgEngagement: number;
     viralityScore: number; // 0-100
   };
-  
+
   topics?: Array<{
     topic: string;
     frequency: number;
     sentiment: number;
   }>;
-  
+
   influencers?: Array<{
     name: string;
     reach: number;
@@ -361,7 +377,7 @@ export interface CompetitiveMetrics {
       gapToLeader: number;
     };
   };
-  
+
   competitorBenchmark?: Array<{
     competitor: string;
     name?: string;
@@ -371,11 +387,11 @@ export interface CompetitiveMetrics {
     marketShare?: number;
     strengthAreas?: string[];
   }>;
-  
+
   competitiveAdvantageIndex?: number; // 0-100
   threatLevel?: number; // 0-100
   opportunityGaps?: string[];
-  
+
   // *** PROPRIÉTÉ CRITIQUE POUR RealBrandIntelligenceService - AJOUTÉE ***
   competitivePositioning?: {
     positionQuadrant: 'leader' | 'challenger' | 'follower' | 'nicher';
@@ -384,7 +400,7 @@ export interface CompetitiveMetrics {
     brandStrength: number;
     operationalExcellence: number;
   };
-  
+
   // *** PROPRIÉTÉ CRITIQUE POUR RealBrandIntelligenceService ***
   marketDynamics?: {
     competitionIntensity: number;
@@ -408,7 +424,7 @@ export interface CompetitiveMetrics {
     supplierPower: number;
     buyerPower: number;
   };
-  
+
   // === RÉTROCOMPATIBILITÉ AVEC STRUCTURE LEGACY ===
   marketShare?: {
     current: number;
@@ -419,45 +435,45 @@ export interface CompetitiveMetrics {
       share: number;
     }>;
   };
-  
+
   benchmarkPosition?: {
     rank: number; // position dans le secteur
     percentile: number; // 0-100
     gapToLeader: number;
   };
-  
+
   positionQuadrant?: 'leader' | 'challenger' | 'follower' | 'niche';
   costAdvantage?: number; // pourcentage vs concurrents
 }
 
 export interface ReputationKPIs {
   overallScore: number; // 0-100
-  
+
   brandTrust: number; // 0-100
   brandRecognition: number; // 0-100
   brandLoyalty: number; // 0-100
-  
+
   publicPerception: {
     favorability: number; // 0-100
     awareness: number; // 0-100
     consideration: number; // 0-100
   };
-  
+
   socialMediaMetrics: {
     followers: number;
     engagement: number;
     sentimentScore: number; // -100 à +100
   };
-  
+
   crisisResilience: number; // 0-100
-  
+
   competitorComparison: Array<{
     competitor: string;
     ourScore: number;
     theirScore: number;
     gap: number;
   }>;
-  
+
   // === PROPRIÉTÉS ÉTENDUES POUR COHÉRENCE COMPLÈTE ===
   overallReputationScore?: number; // Alias pour overallScore
   trustIndex?: number; // Alias pour brandTrust
@@ -468,15 +484,15 @@ export interface ReputationKPIs {
     investors: number;
     media: number;
   };
-  
+
   // *** AJOUT CRITIQUE : Propriétés manquantes dans RealBrandIntelligenceService ***
   reputationDrivers?: Array<{
     factor: string;
     impact: number;
     trend: 'improving' | 'stable' | 'declining';
-    controlLevel: 'high' | 'medium' | 'low';
+    controlLevel: ConfidenceLevel;
   }>;
-  
+
   riskIndicators?: Array<{
     type: string;
     level: 'low' | 'medium' | 'high';
@@ -484,7 +500,7 @@ export interface ReputationKPIs {
     impact: number;
     mitigation: string[];
   }>;
-  
+
   benchmarkComparison?: Array<{
     metric: string;
     ourScore: number;
@@ -502,8 +518,8 @@ export interface ActionableRecommendation {
   title: string;
   description: string;
   category: 'immediate' | 'short-term' | 'medium-term' | 'long-term';
-  priority: 'critical' | 'high' | 'medium' | 'low';
-  
+  priority: PriorityLevel;
+
   implementation: {
     timeline: string;
     estimatedBudget: {
@@ -514,12 +530,12 @@ export interface ActionableRecommendation {
     requiredResources: string[];
     responsibleDepartment: string;
   };
-  
+
   expectedImpact: number; // 0-100
   successMetrics: string[];
   risks: 'low' | 'medium' | 'high';
   dependencies: string[];
-  
+
   // === PROPRIÉTÉS ÉTENDUES POUR COHÉRENCE COMPLÈTE ===
   timeline?: string;
   estimatedImpact?: number;
@@ -545,7 +561,7 @@ export interface SmartAlerts {
     };
     historicalComparison?: string;
   }>;
-  
+
   warnings: Array<{
     id: string;
     message: string;
@@ -553,7 +569,7 @@ export interface SmartAlerts {
     timeline: string;
     suggestedAction: string;
   }>;
-  
+
   opportunities: Array<{
     id: string;
     message: string;
@@ -561,7 +577,7 @@ export interface SmartAlerts {
     timeline: string;
     suggestedAction: string;
   }>;
-  
+
   // === PROPRIÉTÉS ÉTENDUES POUR COHÉRENCE COMPLÈTE ===
   warning?: Array<{
     id: string;
@@ -584,23 +600,23 @@ export interface DeepResearchReport {
   // Métadonnées
   brandName: string;
   executionTimestamp: Date;
-  
+
   // Analyses principales
   objectiveAnalysis: ObjectiveAnalysis;
   recentActions: RecentAction[];
   strategicAnalysis: StrategicAnalysis;
   trendAnalysis: TrendAnalysis;
-  
+
   // Métriques
   swotMetrics: SWOTMetrics;
   contentMetrics: ContentMetrics;
   competitiveMetrics: CompetitiveMetrics;
   reputationKPIs: ReputationKPIs;
-  
+
   // Actions
   recommendations: ActionableRecommendation[];
   alerts: SmartAlerts;
-  
+
   // Qualité et fiabilité
   confidenceScore: number; // 0-100
   dataFreshness: DataFreshness;
@@ -637,14 +653,14 @@ export interface ExportOptions {
   template?: 'executive' | 'detailed' | 'technical' | 'presentation';
   includeCharts?: boolean;
   includeRawData?: boolean;
-  
+
   // === PROPRIÉTÉS ÉTENDUES POUR COHÉRENCE COMPLÈTE ===
   includeMetadata?: boolean;
   sections?: string[];
   compressionLevel?: 'none' | 'low' | 'medium' | 'high';
   enableDeduplication?: boolean;
   qualityEnhancement?: boolean;
-  
+
   customization?: {
     includeCharts?: boolean;
     includeRawData?: boolean;
@@ -652,7 +668,7 @@ export interface ExportOptions {
     includeRecommendations?: boolean;
     includeAlerts?: boolean;
   };
-  
+
   branding?: {
     logo?: string;
     colors?: {
@@ -673,7 +689,7 @@ export interface ExportResult {
   errors?: string[];
   downloadUrl?: string;
   format?: string;
-  
+
   // === PROPRIÉTÉS ÉTENDUES POUR COHÉRENCE COMPLÈTE ===
   enhancementApplied?: boolean;
   contentMetrics?: {
@@ -718,4 +734,4 @@ export interface TestValidationResult {
 }
 
 // ===== EXPORTS PAR DÉFAUT =====
-export default DeepResearchReport; 
+export default DeepResearchReport;

@@ -15,7 +15,7 @@ import { logger } from '../../lib/logger';
 
 export class BrandAnalysisAPIService {
   private parser = new PerplexityResponseParser();
-  private perplexityService: any;
+  private readonly perplexityService: any;
 
   constructor(perplexityService: any) {
     this.perplexityService = perplexityService;

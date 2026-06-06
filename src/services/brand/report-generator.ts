@@ -31,6 +31,19 @@ function formatSentimentTrend(trend: 'positive' | 'negative' | string): string {
   return '📊 Stable';
 }
 
+// S4624 : extrait pour éviter les template literals imbriqués dans `formatKeywordsAnalysis`.
+function formatTopKeywords(
+  keywords: Array<{ word: string; count: number; trend: string }>,
+): string {
+  return keywords
+    .map((kw, i) => {
+      const rank = i + 1;
+      const emoji = keywordTrendEmoji(kw.trend);
+      return `${rank}. "${kw.word}" - ${kw.count} mentions (${emoji})`;
+    })
+    .join('\n');
+}
+
 export class BrandReportGenerator {
   async generatePerplexityReport(brandReport: BrandReport): Promise<PerplexityReport> {
     console.log('📝 Génération du rapport Perplexity pour:', brandReport.brandName);
@@ -456,10 +469,7 @@ ${sortedCompetitors
 - 📊 Stables (${stable.length}): ${stable.map((k) => k.word).join(', ') || 'Aucun'}
 
 🎯 **Top mots-clés par volume**:
-${sortedKeywords
-  .slice(0, 5)
-  .map((kw, i) => `${i + 1}. "${kw.word}" - ${kw.count} mentions (${keywordTrendEmoji(kw.trend)})`)
-  .join('\n')}`;
+${formatTopKeywords(sortedKeywords.slice(0, 5))}`;
   }
 
   private formatSWOTAnalysis(swot: RealSWOT): string {

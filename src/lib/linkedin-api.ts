@@ -78,8 +78,12 @@ interface LinkedInUserInfoClaims {
   [k: string]: unknown;
 }
 
+interface LegacyLocalizedField {
+  localized?: Record<string, string>;
+}
+
 class LinkedInAPI {
-  private config: LinkedInConfig;
+  private readonly config: LinkedInConfig;
   // `accessToken` reste utilisable pendant la session courante (entre l'OAuth
   // callback et un reload de page), pour les appels LinkedIn directs déjà
   // câblés (UGC posts). Il n'est JAMAIS persisté côté client - cf. la migration
@@ -96,7 +100,7 @@ class LinkedInAPI {
   private restorePromise: Promise<boolean> | null = null;
 
   // Configuration OpenID Connect LinkedIn officielle
-  private openIDConfig: LinkedInOpenIDConfig = {
+  private readonly openIDConfig: LinkedInOpenIDConfig = {
     issuer: 'https://www.linkedin.com',
     authorization_endpoint: 'https://www.linkedin.com/oauth/v2/authorization',
     token_endpoint: 'https://www.linkedin.com/oauth/v2/accessToken',
@@ -761,7 +765,14 @@ class LinkedInAPI {
    * Générer des données mockées mais personnalisées selon le profil
    */
   private async generatePersonalizedMockPosts(
-    profile: any | null,
+    // Profile peut venir soit de l'OpenID Connect (`given_name` / `family_name`) soit de
+    // l'API legacy `firstName.localized.en_US` ; on accepte les deux formes.
+    profile:
+      | (LinkedInUserInfoClaims & {
+          firstName?: LegacyLocalizedField;
+          lastName?: LegacyLocalizedField;
+        })
+      | null,
     period: string,
   ): Promise<LinkedInPost[]> {
     console.log('🎭 Génération de données personnalisées...');
@@ -1371,7 +1382,7 @@ class LinkedInAPI {
    * client. Cette méthode est conservée pour compat ascendante et retourne
    * `null` (les callers tomberont sur le fallback profil de getUserProfile()).
    */
-  getValidatedIDToken(): any | null {
+  getValidatedIDToken(): null {
     return null;
   }
 

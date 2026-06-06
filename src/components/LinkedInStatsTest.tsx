@@ -41,8 +41,10 @@ const STATUS_CONFIG = {
   },
 } as const;
 
+type TestStatus = 'pending' | 'success' | 'error';
+
 const TestIndicatorBase: React.FC<{
-  status: 'pending' | 'success' | 'error';
+  status: TestStatus;
   label: string;
   isRunningTests: boolean;
 }> = ({ status, label, isRunningTests }) => {
@@ -63,9 +65,9 @@ const TestIndicatorBase: React.FC<{
 
 const LinkedInStatsTest: React.FC = () => {
   const [testResults, setTestResults] = useState<{
-    authentication: 'pending' | 'success' | 'error';
-    connectivity: 'pending' | 'success' | 'error';
-    dataFetch: 'pending' | 'success' | 'error';
+    authentication: TestStatus;
+    connectivity: TestStatus;
+    dataFetch: TestStatus;
     lastTest: Date | null;
   }>({
     authentication: 'pending',

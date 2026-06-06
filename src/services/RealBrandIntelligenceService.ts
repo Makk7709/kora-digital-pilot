@@ -58,7 +58,7 @@ interface DeduplicationStats {
 }
 
 export class RealBrandIntelligenceService {
-  private perplexityService: PerplexityService;
+  private readonly perplexityService: PerplexityService;
   private isInitialized = false;
 
   constructor(perplexityService?: PerplexityService) {

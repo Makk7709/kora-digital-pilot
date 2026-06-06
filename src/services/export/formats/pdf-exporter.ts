@@ -23,7 +23,7 @@ import { addPageDeGarde as addPageDeGardeImpl } from './pdf/cover';
 import { logger } from '../../../lib/logger';
 
 export class PDFExporter {
-  private sectionsHandler: PDFExporterSections;
+  private readonly sectionsHandler: PDFExporterSections;
 
   constructor() {
     this.sectionsHandler = new PDFExporterSections();

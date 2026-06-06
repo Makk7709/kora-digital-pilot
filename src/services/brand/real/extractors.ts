@@ -3,12 +3,15 @@
 // principal puisse rester sous 800 lignes. Toutes les fonctions sont sans
 // effet de bord et peuvent être consommées par d'autres parsers.
 
+type MilestoneImpact = 'high' | 'medium' | 'low';
+type MilestoneCategory = 'business' | 'product' | 'leadership';
+
 interface BrandKeyMilestone {
   date: Date;
   title: string;
   description: string;
-  impact: 'high' | 'medium' | 'low';
-  category: 'business' | 'product' | 'leadership';
+  impact: MilestoneImpact;
+  category: MilestoneCategory;
 }
 
 interface StrategicPriority {

@@ -15,7 +15,7 @@ import type {
 } from '../../types/BrandIntelligenceTypes';
 
 export class DataAggregationService {
-  private perplexityService: PerplexityService;
+  private readonly perplexityService: PerplexityService;
   private isInitialized = false;
 
   constructor() {

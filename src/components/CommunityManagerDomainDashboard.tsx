@@ -399,7 +399,9 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
                 <div className="ml-auto flex items-center gap-2">
                   <select
                     value={filterType}
-                    onChange={(e) => setFilterType(e.target.value as any)}
+                    onChange={(e) =>
+                      setFilterType(e.target.value as 'high' | 'low' | 'all' | 'medium')
+                    }
                     className="text-xs border rounded px-2 py-1"
                   >
                     <option value="all">Toutes</option>

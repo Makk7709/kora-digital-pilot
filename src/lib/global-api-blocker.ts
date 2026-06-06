@@ -14,7 +14,7 @@ interface ApiBlockerState {
 
 class GlobalApiBlocker {
   private static instance: GlobalApiBlocker;
-  private originalFetch: typeof fetch;
+  private readonly originalFetch: typeof fetch;
   private state: ApiBlockerState = {
     isBlocked: false,
     errorCount: 0,

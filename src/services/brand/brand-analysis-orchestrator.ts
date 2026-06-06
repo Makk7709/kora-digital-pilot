@@ -15,8 +15,8 @@ import {
 import { logger } from '../../lib/logger';
 
 export class BrandAnalysisOrchestrator implements BrandAnalysisService {
-  private apiService: BrandAnalysisAPIService;
-  private reportGenerator: BrandReportGenerator;
+  private readonly apiService: BrandAnalysisAPIService;
+  private readonly reportGenerator: BrandReportGenerator;
 
   constructor(perplexityService: any) {
     this.apiService = new BrandAnalysisAPIService(perplexityService);

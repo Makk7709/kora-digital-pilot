@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { linkedinAPI } from '@/lib/linkedin-api';
 import type { LinkedInMetrics, LinkedInPost } from '@/lib/linkedin-api';
 
+type StatsPeriod = '7d' | '30d' | '90d';
+
 interface StatsState {
   isLoading: boolean;
   isRefreshing: boolean;
@@ -26,7 +28,7 @@ interface UseLinkedInStatsReturn {
   isAuthenticated: boolean;
 
   // Actions
-  refreshStats: (period?: '7d' | '30d' | '90d') => Promise<void>;
+  refreshStats: (period?: StatsPeriod) => Promise<void>;
   clearError: () => void;
   clearCache: () => void;
 
@@ -135,7 +137,7 @@ export const useLinkedInStats = (
 
   // Récupérer les statistiques avec gestion d'erreurs robuste
   const fetchStats = useCallback(
-    async (period: '7d' | '30d' | '90d' = '7d', isRefresh = false) => {
+    async (period: StatsPeriod = '7d', isRefresh = false) => {
       // Annuler la requête précédente si elle existe
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
@@ -214,7 +216,7 @@ export const useLinkedInStats = (
 
   // Action de rafraîchissement manuel
   const refreshStats = useCallback(
-    async (period: '7d' | '30d' | '90d' = '7d') => {
+    async (period: StatsPeriod = '7d') => {
       // Vérifier d'abord la connexion
       const isConnected = await checkAuthentication();
       if (!isConnected) {

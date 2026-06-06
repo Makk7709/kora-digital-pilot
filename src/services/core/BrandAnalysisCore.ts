@@ -14,7 +14,7 @@ import type {
 } from '../../types/BrandIntelligenceTypes';
 
 export class BrandAnalysisCore {
-  private perplexityService: PerplexityService;
+  private readonly perplexityService: PerplexityService;
   private isInitialized = false;
 
   constructor() {

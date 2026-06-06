@@ -15,7 +15,12 @@ if (typeof globalThis !== 'undefined') {
 // 🛑 PROTECTION ANTI-SPAM - Initialiser le bloqueur global
 import './lib/global-api-blocker';
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error('Élément racine #root introuvable dans le DOM');
+}
+
+createRoot(rootElement).render(
   <StrictMode>
     <BrowserRouter>
       <App />

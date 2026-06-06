@@ -191,13 +191,10 @@ export class ExcelExporter {
     }
   }
 
-  private escapeExcel(text: string | any): string {
-    if (typeof text !== 'string') {
-      text = String(text);
-    }
+  private escapeExcel(text: unknown): string {
+    const str = typeof text === 'string' ? text : String(text);
 
-    // Échapper les caractères spéciaux Excel et remplacer les tabulations
-    return text
+    return str
       .replace(/\t/g, ' ') // Remplacer tabulations par espaces
       .replace(/\n/g, ' ') // Remplacer retours à la ligne par espaces
       .replace(/\r/g, '') // Supprimer retours chariot
