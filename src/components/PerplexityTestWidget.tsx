@@ -135,7 +135,7 @@ export const PerplexityTestWidget: React.FC = () => {
       <CardContent className="space-y-4">
         {/* Configuration API */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Configuration API</label>
+          <span className="text-sm font-medium text-gray-700">Configuration API</span>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
               <span className="text-gray-500">Clé API:</span>
@@ -154,33 +154,37 @@ export const PerplexityTestWidget: React.FC = () => {
 
         {/* Test d'appel */}
         <div className="space-y-3">
-          <label className="text-sm font-medium text-gray-700">Test d'Appel API</label>
+          <span className="text-sm font-medium text-gray-700 block">Test d'Appel API</span>
 
           <div className="flex gap-2">
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Votre question de test..."
-              disabled={isLoading || apiKeyStatus !== 'valid'}
-            />
-            <Button
-              onClick={testPerplexityCall}
-              disabled={isLoading || !query.trim() || apiKeyStatus !== 'valid'}
-              className="flex items-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Test...
-                </>
-              ) : (
-                <>
-                  <Zap className="w-4 h-4" />
-                  Tester
-                </>
-              )}
-            </Button>
+            <label className="flex-1">
+              <span className="sr-only">Question de test Perplexity</span>
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Votre question de test..."
+                disabled={isLoading || apiKeyStatus !== 'valid'}
+                className="w-full"
+              />
+            </label>
           </div>
+          <Button
+            onClick={testPerplexityCall}
+            disabled={isLoading || !query.trim() || apiKeyStatus !== 'valid'}
+            className="flex items-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Test...
+              </>
+            ) : (
+              <>
+                <Zap className="w-4 h-4" />
+                Tester
+              </>
+            )}
+          </Button>
         </div>
 
         {/* Résultat du test */}

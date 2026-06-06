@@ -429,12 +429,23 @@ export const CommunityManagerDomainDashboard: React.FC = () => {
                     </div>
                   ) : (
                     filteredTrends.map((trend) => (
+                      // S6848 : on garde un <div> mais on ajoute l'aria role + tabIndex +
+                      // gestion clavier pour rendre l'élément interactif accessible.
                       <div
                         key={trend.id}
                         data-testid={`trend-card-${trend.id.split('-')[1]}`}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => {
                           setSelectedTrend(trend);
                           setIsDetailModalOpen(true);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setSelectedTrend(trend);
+                            setIsDetailModalOpen(true);
+                          }
                         }}
                         className="border border-slate-200 rounded-xl p-4 hover:border-purple-300 hover:shadow-md transition-all duration-300 cursor-pointer bg-gradient-to-br from-white to-slate-50/50"
                       >

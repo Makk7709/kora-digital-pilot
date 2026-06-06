@@ -62,10 +62,10 @@ const Index = () => {
             <div className="bg-white p-6 rounded-lg shadow-sm border">
               <h2 className="text-xl font-bold mb-4">🧠 Brand Intelligence TDD Enhanced</h2>
               <div className="flex gap-4 items-end">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="flex-1 block">
+                  <span className="block text-sm font-medium text-gray-700 mb-2">
                     Nom de la marque à analyser
-                  </label>
+                  </span>
                   <input
                     type="text"
                     value={brandNameForTDD}
@@ -73,7 +73,7 @@ const Index = () => {
                     placeholder="Ex: Nike, Apple, Tesla..."
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                </div>
+                </label>
               </div>
               {!isInitialized && (
                 <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">

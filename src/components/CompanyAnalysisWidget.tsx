@@ -547,7 +547,7 @@ export const CompanyAnalysisWidget: React.FC = () => {
           <div className="space-y-6">
             {/* Sélection du mode d'analyse */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700">Mode d'analyse</label>
+              <span className="text-sm font-medium text-gray-700">Mode d'analyse</span>
               <div className="grid md:grid-cols-2 gap-3">
                 {ANALYSIS_MODES.map((mode) => (
                   <Card
@@ -624,7 +624,7 @@ export const CompanyAnalysisWidget: React.FC = () => {
             {/* Historique de recherche */}
             {searchState.searchHistory.length > 0 && (
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Recherches récentes</label>
+                <span className="text-sm font-medium text-gray-700">Recherches récentes</span>
                 <div className="flex flex-wrap gap-2">
                   {searchState.searchHistory.map((company, index) => (
                     <Badge

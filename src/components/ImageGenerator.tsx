@@ -323,10 +323,10 @@ const ImageGenerator = () => {
           </div>
 
           {/* Prompt */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-700">
               Description de l'image premium
-            </label>
+            </span>
             <Textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
@@ -368,14 +368,16 @@ const ImageGenerator = () => {
                 </Button>
               </div>
             </div>
-          </div>
+          </label>
 
           {/* Paramètres Premium */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">Format</label>
+              <span id="img-format-label" className="text-sm font-medium text-slate-700">
+                Format
+              </span>
               <Select value={size} onValueChange={(value: any) => setSize(value)}>
-                <SelectTrigger>
+                <SelectTrigger aria-labelledby="img-format-label">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -387,9 +389,11 @@ const ImageGenerator = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">Qualité</label>
+              <span id="img-quality-label" className="text-sm font-medium text-slate-700">
+                Qualité
+              </span>
               <Select value={quality} onValueChange={(value: any) => setQuality(value)}>
-                <SelectTrigger>
+                <SelectTrigger aria-labelledby="img-quality-label">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -400,9 +404,11 @@ const ImageGenerator = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">Style</label>
+              <span id="img-style-label" className="text-sm font-medium text-slate-700">
+                Style
+              </span>
               <Select value={style} onValueChange={(value: any) => setStyle(value)}>
-                <SelectTrigger>
+                <SelectTrigger aria-labelledby="img-style-label">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -467,7 +473,7 @@ const ImageGenerator = () => {
                 <div className="relative group">
                   <img
                     src={lastImageResponse.imageUrl}
-                    alt="Image générée par IA"
+                    alt="Visuel généré par IA"
                     className="w-full rounded-lg shadow-lg"
                     style={{ maxHeight: '512px', objectFit: 'contain' }}
                   />
@@ -546,7 +552,7 @@ const ImageGenerator = () => {
                 <div key={image.timestamp} className="relative group">
                   <img
                     src={image.imageUrl}
-                    alt={`Image ${index + 1}`}
+                    alt={`Visuel ${index + 1}`}
                     className="w-full h-48 object-cover rounded-lg shadow-md"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">

@@ -871,7 +871,7 @@ export const BrandMonitoring: React.FC = () => {
 
               {/* Bouton d'analyse principal */}
               <div className="space-y-3">
-                <label className="section-title">🚀 Action</label>
+                <span className="section-title">🚀 Action</span>
                 <Button
                   data-testid="analyze-brand-button"
                   onClick={handleAnalyzeWithAI}

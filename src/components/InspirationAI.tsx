@@ -231,9 +231,9 @@ const InspirationAI = () => {
             <CardContent className="space-y-4">
               {/* Plateformes */}
               <div>
-                <label className="text-slate-600 text-sm font-medium mb-2 block">
+                <span className="text-slate-600 text-sm font-medium mb-2 block">
                   Plateformes cibles
-                </label>
+                </span>
                 <div className="space-y-2">
                   {platforms.map((platform) => (
                     <button
@@ -254,9 +254,9 @@ const InspirationAI = () => {
 
               {/* Type de contenu */}
               <div>
-                <label className="text-slate-600 text-sm font-medium mb-2 block">
+                <span className="text-slate-600 text-sm font-medium mb-2 block">
                   Type de contenu
-                </label>
+                </span>
                 <div className="grid grid-cols-2 gap-2">
                   {contentTypes.map((type) => (
                     <button
@@ -276,10 +276,10 @@ const InspirationAI = () => {
               </div>
 
               {/* Ton */}
-              <div>
-                <label className="text-slate-600 text-sm font-medium mb-2 block">
+              <label className="block">
+                <span className="text-slate-600 text-sm font-medium mb-2 block">
                   Ton de communication
-                </label>
+                </span>
                 <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
@@ -291,7 +291,7 @@ const InspirationAI = () => {
                     </option>
                   ))}
                 </select>
-              </div>
+              </label>
             </CardContent>
           </Card>
 

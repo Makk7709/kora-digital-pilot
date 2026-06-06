@@ -54,7 +54,7 @@ export const SignUp: React.FC<SignUpProps> = ({ onSuccess }) => {
     setSuccessInfo(
       isDemoMode
         ? 'Compte démo actif.'
-        : "Compte créé. Vérifiez votre boîte mail si la confirmation est activée sur le projet Supabase.",
+        : 'Compte créé. Vérifiez votre boîte mail si la confirmation est activée sur le projet Supabase.',
     );
     onSuccess?.();
   });
@@ -114,11 +114,7 @@ export const SignUp: React.FC<SignUpProps> = ({ onSuccess }) => {
           {serverError}
         </p>
       )}
-      {successInfo && (
-        <p className="text-sm text-emerald-700" role="status">
-          {successInfo}
-        </p>
-      )}
+      {successInfo && <output className="text-sm text-emerald-700 block">{successInfo}</output>}
 
       {isDemoMode && (
         <p className="text-xs text-amber-700">

@@ -287,9 +287,11 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Secteur d'activité</label>
+                  <span id="pi-industry-label" className="text-sm font-medium">
+                    Secteur d'activité
+                  </span>
                   <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
-                    <SelectTrigger>
+                    <SelectTrigger aria-labelledby="pi-industry-label">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -302,9 +304,11 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Niveau de détail</label>
+                  <span id="pi-depth-label" className="text-sm font-medium">
+                    Niveau de détail
+                  </span>
                   <Select value={selectedDepth} onValueChange={setSelectedDepth}>
-                    <SelectTrigger>
+                    <SelectTrigger aria-labelledby="pi-depth-label">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -315,15 +319,15 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
                   </Select>
                 </div>
               </div>
-              <div>
-                <label className="text-sm font-medium">Votre question</label>
+              <label className="block">
+                <span className="text-sm font-medium">Votre question</span>
                 <Textarea
                   placeholder="Ex: Quelles sont les dernières tendances en IA pour le marketing digital ?"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   rows={3}
                 />
-              </div>
+              </label>
               <Button
                 onClick={handleBusinessInsights}
                 disabled={!query.trim() || perplexity.isLoading}
@@ -348,14 +352,14 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
               <CardDescription>Découvrez les dernières tendances de votre secteur</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Sujet d'analyse</label>
+              <label className="block">
+                <span className="text-sm font-medium">Sujet d'analyse</span>
                 <Input
                   placeholder="Ex: Marketing d'influence, SEO, publicité programmatique..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                 />
-              </div>
+              </label>
               <Button
                 onClick={handleMarketingTrends}
                 disabled={!query.trim() || marketingInsights.isLoading}
@@ -384,24 +388,22 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">
-                  Concurrents (séparés par des virgules)
-                </label>
+              <label className="block">
+                <span className="text-sm font-medium">Concurrents (séparés par des virgules)</span>
                 <Input
                   placeholder="Ex: HubSpot, Salesforce, Mailchimp"
                   value={competitors}
                   onChange={(e) => setCompetitors(e.target.value)}
                 />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Marché d'analyse</label>
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium">Marché d'analyse</span>
                 <Input
                   placeholder="Ex: Marketing automation, CRM, Email marketing"
                   value={market}
                   onChange={(e) => setMarket(e.target.value)}
                 />
-              </div>
+              </label>
               <Button
                 onClick={handleCompetitorAnalysis}
                 disabled={!competitors.trim() || !market.trim() || perplexity.isLoading}
@@ -429,18 +431,20 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium">Sujet du contenu</label>
+                <label className="block">
+                  <span className="text-sm font-medium">Sujet du contenu</span>
                   <Input
                     placeholder="Ex: L'impact de l'IA sur le marketing digital"
                     value={contentTopic}
                     onChange={(e) => setContentTopic(e.target.value)}
                   />
-                </div>
+                </label>
                 <div>
-                  <label className="text-sm font-medium">Type de contenu</label>
+                  <span id="pi-content-type-label" className="text-sm font-medium">
+                    Type de contenu
+                  </span>
                   <Select value={contentType} onValueChange={(value: any) => setContentType(value)}>
-                    <SelectTrigger>
+                    <SelectTrigger aria-labelledby="pi-content-type-label">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -475,14 +479,14 @@ export const PerplexityInsights: React.FC<PerplexityInsightsProps> = ({ classNam
               <CardDescription>Restez à jour sur les innovations technologiques</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Domaine technologique</label>
+              <label className="block">
+                <span className="text-sm font-medium">Domaine technologique</span>
                 <Input
                   placeholder="Ex: Machine Learning, NLP, Computer Vision, GPT..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                 />
-              </div>
+              </label>
               <div className="flex gap-2">
                 <Button
                   onClick={handleTechWatch}

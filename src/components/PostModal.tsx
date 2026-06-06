@@ -267,19 +267,17 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Colonne gauche - Contenu */}
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Titre du post
-                </label>
+              <label className="block">
+                <span className="block text-sm font-medium text-slate-700 mb-2">Titre du post</span>
                 <Input
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
                   placeholder="Titre accrocheur pour votre post..."
                 />
-              </div>
+              </label>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Contenu</label>
+              <label className="block">
+                <span className="block text-sm font-medium text-slate-700 mb-2">Contenu</span>
                 <Textarea
                   value={formData.content}
                   onChange={(e) => handleInputChange('content', e.target.value)}
@@ -288,10 +286,10 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
                   className="resize-none"
                 />
                 <p className="text-xs text-slate-500 mt-1">{formData.content.length} caractères</p>
-              </div>
+              </label>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Tags</label>
+                <span className="block text-sm font-medium text-slate-700 mb-2">Tags</span>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {formData.tags.map((tag, index) => (
                     <Badge
@@ -310,13 +308,16 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
                   ))}
                 </div>
                 <div className="flex space-x-2">
-                  <Input
-                    value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    placeholder="Ajouter un tag..."
-                    onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
-                    className="flex-1"
-                  />
+                  <label className="flex-1">
+                    <span className="sr-only">Ajouter un tag</span>
+                    <Input
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      placeholder="Ajouter un tag..."
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
+                      className="w-full"
+                    />
+                  </label>
                   <Button onClick={handleAddTag} variant="outline" size="sm">
                     <Tag className="w-4 h-4" />
                   </Button>
@@ -327,12 +328,17 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
             {/* Colonne droite - Paramètres */}
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Plateforme</label>
+                <span
+                  id="post-platform-label"
+                  className="block text-sm font-medium text-slate-700 mb-2"
+                >
+                  Plateforme
+                </span>
                 <Select
                   value={formData.platform}
                   onValueChange={(value) => handleInputChange('platform', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-labelledby="post-platform-label">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -346,14 +352,17 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <span
+                  id="post-type-label"
+                  className="block text-sm font-medium text-slate-700 mb-2"
+                >
                   Type de contenu
-                </label>
+                </span>
                 <Select
                   value={formData.contentType}
                   onValueChange={(value) => handleInputChange('contentType', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-labelledby="post-type-label">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -367,12 +376,17 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Ton</label>
+                <span
+                  id="post-tone-label"
+                  className="block text-sm font-medium text-slate-700 mb-2"
+                >
+                  Ton
+                </span>
                 <Select
                   value={formData.tone}
                   onValueChange={(value) => handleInputChange('tone', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-labelledby="post-tone-label">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -386,15 +400,18 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center space-x-2">
+                <span
+                  id="post-time-label"
+                  className="block text-sm font-medium text-slate-700 mb-2 flex items-center space-x-2"
+                >
                   <Clock className="w-4 h-4" />
                   <span>Heure de publication</span>
-                </label>
+                </span>
                 <Select
                   value={formData.scheduledTime}
                   onValueChange={(value) => handleInputChange('scheduledTime', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-labelledby="post-time-label">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -408,12 +425,17 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Statut</label>
+                <span
+                  id="post-status-label"
+                  className="block text-sm font-medium text-slate-700 mb-2"
+                >
+                  Statut
+                </span>
                 <Select
                   value={formData.status}
                   onValueChange={(value) => handleInputChange('status', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-labelledby="post-status-label">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -424,16 +446,16 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
                 </Select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block">
+                <span className="block text-sm font-medium text-slate-700 mb-2">
                   Engagement estimé
-                </label>
+                </span>
                 <Input
                   value={formData.estimatedEngagement}
                   onChange={(e) => handleInputChange('estimatedEngagement', e.target.value)}
                   placeholder="ex: ~150 interactions"
                 />
-              </div>
+              </label>
             </div>
           </div>
 
