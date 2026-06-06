@@ -345,7 +345,7 @@ export const CommunityManagerDashboard: React.FC = () => {
       if (/^\d+\.|^-|^•/.test(line) || line.includes(':')) {
         if (currentInsight.title) {
           insights.push({
-            id: Math.random().toString(36).substr(2, 9),
+            id: Math.random().toString(36).slice(2, 11),
             title: currentInsight.title || '',
             description: currentInsight.description || '',
             impact: currentInsight.impact || 'medium',
@@ -383,7 +383,7 @@ export const CommunityManagerDashboard: React.FC = () => {
     // Ajouter le dernier insight s'il existe
     if (currentInsight.title) {
       insights.push({
-        id: Math.random().toString(36).substr(2, 9),
+        id: Math.random().toString(36).slice(2, 11),
         title: currentInsight.title || '',
         description: currentInsight.description || '',
         impact: currentInsight.impact || 'medium',

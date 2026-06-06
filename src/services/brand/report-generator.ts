@@ -71,7 +71,7 @@ export class BrandReportGenerator {
     };
 
     const perplexityReport: PerplexityReport = {
-      id: `report_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `report_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
       brandName: brandReport.brandName,
       executiveSummary,
       reputationScore: brandReport.sentiment.overallScore,

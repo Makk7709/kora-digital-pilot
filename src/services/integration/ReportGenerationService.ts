@@ -471,7 +471,7 @@ Réputation:
     if (description.length < 20) return null;
 
     return {
-      id: `alert_${type}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      id: `alert_${type}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       message: description.substring(0, 150) + (description.length > 150 ? '...' : ''),
       context: this.extractAlertContext(description),
       timeline: this.extractAlertTimeline(description),

@@ -655,7 +655,7 @@ export const useTechWatch = (domains: string[] = []) => {
 
           for (const line of lines) {
             newAlerts.push({
-              id: Math.random().toString(36).substr(2, 9),
+              id: Math.random().toString(36).slice(2, 11),
               domain,
               alert: line.trim(),
               timestamp: new Date(),

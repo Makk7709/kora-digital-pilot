@@ -348,7 +348,7 @@ class PlanningService {
 
   // Utilitaires
   private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
   }
 
   private calculateGoals(posts: ScheduledPost[]) {

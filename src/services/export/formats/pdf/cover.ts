@@ -146,7 +146,7 @@ export function addPageDeGarde(pdf: jsPDF, report: CoverReport): void {
 
   currentY += 15;
   pdf.text(
-    `Référence: KRA-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+    `Référence: KRA-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
     pageWidth / 2,
     currentY,
     { align: 'center' },

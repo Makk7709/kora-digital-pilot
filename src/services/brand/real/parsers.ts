@@ -523,7 +523,7 @@ export function parseRealRecommendations(content: string): ActionableRecommendat
   const recommendations = generateRecommendationsFromContent(content);
 
   return recommendations.map((rec) => ({
-    id: `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    id: `rec_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
     title: generateRecommendationTitle(rec.description),
     description: rec.description,
     category: classifyRecommendationCategory(rec.description),

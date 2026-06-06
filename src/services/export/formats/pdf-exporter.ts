@@ -351,7 +351,7 @@ export class PDFExporter {
           [`Classification:`, 'PROPRIETARY & CONFIDENTIAL'],
           [`Méthodologie:`, 'P.R.I.S.M Advanced Analytics Framework'],
           [`Secteur d'activité:`, getSectorFromBrand(report.brandName)],
-          [`Référence:`, `KRA-${Math.random().toString(36).substr(2, 6).toUpperCase()}`],
+          [`Référence:`, `KRA-${Math.random().toString(36).slice(2, 8).toUpperCase()}`],
           [`Version:`, 'McKinsey Standards v3.0'],
           [`Évaluation:`, "Bureau d'Études Quality"],
           [`Scope géographique:`, 'Global Market Analysis'],
