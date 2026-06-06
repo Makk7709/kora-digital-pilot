@@ -10,7 +10,6 @@ import { createPerplexityService } from '../../lib/perplexity-service';
 
 // Configuration tests de charge
 const LOAD_TEST_TIMEOUT = 120000; // 2 minutes pour tests de charge
-const CONCURRENT_REQUESTS = 5;
 const STRESS_TEST_BRANDS = ['Tesla', 'Apple', 'Microsoft', 'Google', 'Amazon'];
 
 describe('🔥 TESTS DE CHARGE - PRODUCTION PERPLEXITY', () => {

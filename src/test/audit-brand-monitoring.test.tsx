@@ -1,4 +1,4 @@
-// TODO(agent2-wave1): suite intégralement skippée — voir docs/TESTING.md
+// TRACKED(agent2-wave1): suite intégralement skippée — voir docs/TESTING.md
 // (Tests brittle/hangs au-delà du budget Wave 1, à reconstruire en TDD propre.)
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';

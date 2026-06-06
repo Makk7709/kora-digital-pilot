@@ -196,7 +196,7 @@ export class BrandAnalysisOrchestrator implements BrandAnalysisService {
         lastAnalysis: new Date(),
         uptime: Date.now(),
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         status: 'unhealthy',
         apiHealth: null,

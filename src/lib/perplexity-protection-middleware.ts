@@ -58,7 +58,7 @@ class PerplexityProtectionMiddleware {
   }
 
   // Vérifier si un appel peut être effectué
-  public canMakeCall(endpoint: string = 'perplexity'): {
+  public canMakeCall(_endpoint: string = 'perplexity'): {
     allowed: boolean;
     reason?: string;
     retryAfter?: number;

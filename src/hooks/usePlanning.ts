@@ -482,7 +482,7 @@ export const usePlanning = (): UsePlanningReturn => {
       
       Donner des recommandations précises d'horaires optimaux pour chaque plateforme.`;
 
-      const response = await generateContent({
+      await generateContent({
         prompt: optimizationPrompt,
         platform: 'linkedin',
         contentType: 'post',
@@ -498,7 +498,7 @@ export const usePlanning = (): UsePlanningReturn => {
       // Mettre à jour les suggestions avec les recommandations IA
       const suggestions = planningService.getOptimizationSuggestions(state.currentWeekStart);
       setState((prev) => ({ ...prev, suggestions, isGenerating: false }));
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, isGenerating: false }));
 
       toast({

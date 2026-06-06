@@ -45,7 +45,7 @@ describe('CommunityManagerDashboard - Lisibilité des cartes', () => {
       expect(cards.length).toBeGreaterThan(0);
     });
 
-    // TODO(agent2-wave1): `Dashboard Community Manager` n'est plus présent
+    // TRACKED(agent2-wave1): `Dashboard Community Manager` n'est plus présent
     // tel quel dans le DOM rendu — refactor visuel pas encore reflété ici.
     it.skip('devrait avoir des titres de cartes lisibles avec une hiérarchie visuelle claire', () => {
       render(<CommunityManagerDashboard />);
@@ -64,7 +64,6 @@ describe('CommunityManagerDashboard - Lisibilité des cartes', () => {
       render(<CommunityManagerDashboard />);
 
       // Simuler des insights dans les cartes
-      const insightCards = screen.queryAllByTestId('insight-card');
 
       // Test structure (sera validé après implémentation)
       // Les cartes d'insights doivent avoir:

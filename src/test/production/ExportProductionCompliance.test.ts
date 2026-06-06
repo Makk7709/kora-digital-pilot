@@ -366,7 +366,7 @@ describe('📄 CONFORMITÉ EXPORT PRODUCTION - PRISM REPORT', () => {
               exportTime: Date.now() - startTime,
               success: result.success,
             });
-          } catch (error) {
+          } catch (_error) {
             exportMetrics.push({
               format,
               fileSize: 0,

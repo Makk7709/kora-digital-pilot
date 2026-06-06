@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { EnhancedBrandMonitoring } from '../EnhancedBrandMonitoring';
 
@@ -58,7 +58,7 @@ describe('🚀 ENHANCED BRAND MONITORING - TESTS TDD PREMIUM', () => {
       expect(screen.getByTestId('tab-reputation-tracking')).toBeInTheDocument();
     });
 
-    // TODO(agent2-wave1): markup d'icônes Lucide rendu en SVG, plus d'occurence "Star".
+    // TRACKED(agent2-wave1): markup d'icônes Lucide rendu en SVG, plus d'occurence "Star".
     it.skip('⭐ DOIT marquer les fonctionnalités premium avec des étoiles', () => {
       render(<EnhancedBrandMonitoring />);
 
@@ -70,7 +70,7 @@ describe('🚀 ENHANCED BRAND MONITORING - TESTS TDD PREMIUM', () => {
       });
     });
 
-    // TODO(agent2-wave1): badges "Essentiel"/"Nouveau" renommés dans le composant.
+    // TRACKED(agent2-wave1): badges "Essentiel"/"Nouveau" renommés dans le composant.
     it.skip('🏆 DOIT afficher les badges appropriés', () => {
       render(<EnhancedBrandMonitoring />);
 
@@ -160,7 +160,7 @@ describe('🚀 ENHANCED BRAND MONITORING - TESTS TDD PREMIUM', () => {
       expect(screen.getByText("Modes d'Analyse Disponibles")).toBeInTheDocument();
     });
 
-    // TODO(agent2-wave1): texte descriptif du mode "Analyse de Société" modifié.
+    // TRACKED(agent2-wave1): texte descriptif du mode "Analyse de Société" modifié.
     it.skip("🏢 DOIT décrire l'Analyse de Société", () => {
       render(<EnhancedBrandMonitoring />);
 
@@ -168,7 +168,7 @@ describe('🚀 ENHANCED BRAND MONITORING - TESTS TDD PREMIUM', () => {
       expect(screen.getByText('Analyse approfondie de votre entreprise')).toBeInTheDocument();
     });
 
-    // TODO(agent2-wave1): texte "Surveillance Concurrentielle" modifié.
+    // TRACKED(agent2-wave1): texte "Surveillance Concurrentielle" modifié.
     it.skip('🎯 DOIT décrire la Surveillance Concurrentielle', () => {
       render(<EnhancedBrandMonitoring />);
 
@@ -176,7 +176,7 @@ describe('🚀 ENHANCED BRAND MONITORING - TESTS TDD PREMIUM', () => {
       expect(screen.getByText('Monitoring et benchmarking concurrents')).toBeInTheDocument();
     });
 
-    // TODO(agent2-wave1): texte "Suivi de Réputation" modifié.
+    // TRACKED(agent2-wave1): texte "Suivi de Réputation" modifié.
     it.skip('🛡️ DOIT décrire le Suivi de Réputation', () => {
       render(<EnhancedBrandMonitoring />);
 
@@ -184,7 +184,7 @@ describe('🚀 ENHANCED BRAND MONITORING - TESTS TDD PREMIUM', () => {
       expect(screen.getByText('Analyse sentiment et e-réputation')).toBeInTheDocument();
     });
 
-    // TODO(agent2-wave1): selectors `mode-*-card` ne sont plus rendus dans le DOM.
+    // TRACKED(agent2-wave1): selectors `mode-*-card` ne sont plus rendus dans le DOM.
     it.skip('👆 DOIT permettre de cliquer sur les modes pour naviguer', async () => {
       render(<EnhancedBrandMonitoring />);
 
@@ -279,7 +279,7 @@ describe('🚀 ENHANCED BRAND MONITORING - TESTS TDD PREMIUM', () => {
 
   // === TESTS CONTENU ONGLETS ===
   describe('📑 Contenu des Onglets', () => {
-    // TODO(agent2-wave1): titre d'onglet "Analyse de Société" présent en double dans le DOM.
+    // TRACKED(agent2-wave1): titre d'onglet "Analyse de Société" présent en double dans le DOM.
     it.skip('🏢 DOIT afficher le titre "Analyse de Société" dans l\'onglet', async () => {
       render(<EnhancedBrandMonitoring />);
 
@@ -292,7 +292,7 @@ describe('🚀 ENHANCED BRAND MONITORING - TESTS TDD PREMIUM', () => {
       ).toBeInTheDocument();
     });
 
-    // TODO(agent2-wave1): titre "Surveillance Concurrentielle" présent en double dans le DOM.
+    // TRACKED(agent2-wave1): titre "Surveillance Concurrentielle" présent en double dans le DOM.
     it.skip('🎯 DOIT afficher le titre "Surveillance Concurrentielle" dans l\'onglet', async () => {
       render(<EnhancedBrandMonitoring />);
 

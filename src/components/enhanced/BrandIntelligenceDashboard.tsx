@@ -11,7 +11,6 @@ import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { ScrollArea } from '../ui/scroll-area';
-import { Separator } from '../ui/separator';
 import {
   TrendingUp,
   TrendingDown,

@@ -1,4 +1,4 @@
-// TODO(agent2-wave1): suite intégralement skippée — voir docs/TESTING.md
+// TRACKED(agent2-wave1): suite intégralement skippée — voir docs/TESTING.md
 // (Tests brittle/hangs au-delà du budget Wave 1, à reconstruire en TDD propre.)
 /**
  * 🧪 TESTS TDD RÉELS - BRAND INTELLIGENCE PERPLEXITY
@@ -11,7 +11,6 @@ import { RealBrandIntelligenceService } from '../services/RealBrandIntelligenceS
 
 // Configuration pour tests réels
 const TEST_TIMEOUT = 30000; // 30 secondes pour les appels API réels
-const TEST_BRANDS = ['Tesla', 'Nike', 'Apple'];
 
 describe.skip('🚀 TDD RÉEL - Real Brand Intelligence Service', () => {
   let service: RealBrandIntelligenceService;
@@ -478,8 +477,3 @@ describe.skip('🔧 TDD RÉEL - Edge Cases et Robustesse', () => {
     TEST_TIMEOUT,
   );
 });
-
-// Helper pour logs de debug
-function logTestProgress(testName: string, brand: string) {
-  console.log(`🧪 ${testName} - ${brand}`);
-}

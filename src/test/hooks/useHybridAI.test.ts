@@ -191,7 +191,7 @@ describe('useHybridAI', () => {
   });
 
   describe('summarizeText', () => {
-    // TODO(agent2-wave1): le singleton chatgptService est partagé entre
+    // TRACKED(agent2-wave1): le singleton chatgptService est partagé entre
     // tests, ce qui rend le mock fetch flaky pour ce cas précis.
     it.skip('should summarize text using ChatGPT', async () => {
       const mockResponse = {

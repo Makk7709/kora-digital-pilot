@@ -61,7 +61,7 @@ describe('🖱️ UI Export - Dashboard Intelligence TDD', () => {
     console.log('✅ Bouton export bien visible après génération rapport');
   });
 
-  // TODO(agent2-wave1): selectors `export-*-button` ne correspondent plus
+  // TRACKED(agent2-wave1): selectors `export-*-button` ne correspondent plus
   // au DOM du composant. À reconstruire avec Agent 4 quand les exports
   // dashboard seront stabilisés.
   it.skip('🎯 INTERFACE - Menu dropdown export contient tous les formats', async () => {
@@ -90,7 +90,7 @@ describe('🖱️ UI Export - Dashboard Intelligence TDD', () => {
     console.log("✅ Tous les formats d'export sont disponibles dans le menu");
   });
 
-  // TODO(agent2-wave1): même cause que le test ci-dessus (selectors obsolètes).
+  // TRACKED(agent2-wave1): même cause que le test ci-dessus (selectors obsolètes).
   it.skip('🎯 FONCTIONNEL - Click export JSON fonctionne', async () => {
     // Mock window.URL pour les tests
     globalThis.URL.createObjectURL = vi.fn(() => 'mock-url');
@@ -141,7 +141,7 @@ describe('🖱️ UI Export - Dashboard Intelligence TDD', () => {
     console.log('✅ Export JSON déclenche bien le téléchargement');
   });
 
-  // TODO(agent2-wave1): selector `brand-intelligence-dashboard` absent du DOM rendu.
+  // TRACKED(agent2-wave1): selector `brand-intelligence-dashboard` absent du DOM rendu.
   it.skip('🎯 VALIDATION - Message erreur si export sans rapport', async () => {
     render(
       <BrandIntelligenceDashboard
@@ -151,7 +151,6 @@ describe('🖱️ UI Export - Dashboard Intelligence TDD', () => {
     );
 
     // Simuler un état où on a un rapport mais on force l'erreur
-    const dashboard = screen.getByTestId('brand-intelligence-dashboard');
 
     // On ne peut pas tester directement car le bouton n'est pas visible sans rapport
     // Mais on vérifie que l'état initial est correct
@@ -161,7 +160,7 @@ describe('🖱️ UI Export - Dashboard Intelligence TDD', () => {
     console.log("✅ Interface gère correctement l'état sans rapport");
   });
 
-  // TODO(agent2-wave1): selector `dashboard-title` introuvable.
+  // TRACKED(agent2-wave1): selector `dashboard-title` introuvable.
   it.skip('🎯 UX - Titre dashboard correct', () => {
     render(
       <BrandIntelligenceDashboard

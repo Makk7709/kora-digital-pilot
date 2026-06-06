@@ -33,7 +33,7 @@ export const useLinkedInAnalytics = (): UseLinkedInAnalyticsReturn => {
   const [metrics, setMetrics] = useState<LinkedInMetrics | null>(null);
   const [lastSync, setLastSync] = useState<Date | null>(null);
 
-  const { makeCall, getStats, markServerAsUp } = useApiCallManager();
+  const { makeCall } = useApiCallManager();
 
   // Refs pour éviter les re-renders inutiles et gérer le backoff
   const proxyCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);

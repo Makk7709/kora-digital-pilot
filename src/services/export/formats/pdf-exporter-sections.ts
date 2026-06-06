@@ -247,10 +247,9 @@ export class PDFExporterSections {
     const pageWidth = pdf.internal.pageSize.width;
     const margin = this.dimensions.margin;
     const contentWidth = pageWidth - margin * 2;
-    let currentY = this.dimensions.margin;
 
     pdf.addPage();
-    currentY = this.dimensions.margin;
+    let currentY: number = this.dimensions.margin;
     addPremiumPageHeader();
 
     // Header section

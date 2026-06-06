@@ -180,7 +180,7 @@ export const PREMIUM_SUBJECTS = {
 // Fonction pour générer un prompt optimisé pour la marque
 export function optimizePromptForBrand(
   basePrompt: string,
-  category: keyof typeof PREMIUM_ENVIRONMENTS = 'business',
+  _category: keyof typeof PREMIUM_ENVIRONMENTS = 'business',
 ): string {
   const randomCamera =
     TECHNICAL_SPECS.cameras[Math.floor(Math.random() * TECHNICAL_SPECS.cameras.length)];

@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CommunityManagerDomainDashboard } from '../../components/CommunityManagerDomainDashboard';
 
@@ -75,7 +75,7 @@ describe('🏢 DASHBOARD COMMUNITY MANAGER - RECHERCHE DOMAINE', () => {
       expect(screen.getByText('HealthTech')).toBeInTheDocument();
     });
 
-    // TODO(agent2-wave1): validation actuelle ne renvoie pas le message attendu.
+    // TRACKED(agent2-wave1): validation actuelle ne renvoie pas le message attendu.
     it.skip('DOIT valider les entrées de recherche', async () => {
       const user = userEvent.setup();
       render(<CommunityManagerDomainDashboard />);
@@ -173,7 +173,7 @@ describe('🏢 DASHBOARD COMMUNITY MANAGER - RECHERCHE DOMAINE', () => {
       expect(screen.getByText('OpenAI')).toBeInTheDocument();
     });
 
-    // TODO(agent2-wave1): interactions de carte non disponibles dans le composant.
+    // TRACKED(agent2-wave1): interactions de carte non disponibles dans le composant.
     it.skip("DOIT permettre l'interaction avec les cartes", async () => {
       mockSearchService.currentResult = mockDomainData;
       const user = userEvent.setup();
@@ -191,7 +191,7 @@ describe('🏢 DASHBOARD COMMUNITY MANAGER - RECHERCHE DOMAINE', () => {
   });
 
   describe("🔄 GESTION D'ÉTAT ET PERFORMANCE", () => {
-    // TODO(agent2-wave1): loader testid non émis par la version actuelle.
+    // TRACKED(agent2-wave1): loader testid non émis par la version actuelle.
     it.skip('DOIT afficher un loader pendant la recherche', async () => {
       mockSearchService.isLoading = true;
 
@@ -201,7 +201,7 @@ describe('🏢 DASHBOARD COMMUNITY MANAGER - RECHERCHE DOMAINE', () => {
       expect(screen.getByText(/Analyse en cours/i)).toBeInTheDocument();
     });
 
-    // TODO(agent2-wave1): historique de recherche non persisté côté UI.
+    // TRACKED(agent2-wave1): historique de recherche non persisté côté UI.
     it.skip('DOIT mémoriser les recherches récentes', async () => {
       mockSearchService.searchHistory = ['E-commerce'];
 
@@ -306,7 +306,7 @@ describe('🏢 DASHBOARD COMMUNITY MANAGER - RECHERCHE DOMAINE', () => {
       }
     });
 
-    // TODO(agent2-wave1): focus management non encore implémenté.
+    // TRACKED(agent2-wave1): focus management non encore implémenté.
     it.skip('DOIT supporter la navigation au clavier', async () => {
       render(<CommunityManagerDomainDashboard />);
 

@@ -1,4 +1,4 @@
-// TODO(agent2-wave1): suite intégralement skippée — voir docs/TESTING.md
+// TRACKED(agent2-wave1): suite intégralement skippée — voir docs/TESTING.md
 // (Tests brittle/hangs au-delà du budget Wave 1, à reconstruire en TDD propre.)
 /**
  * 🧪 TESTS TDD ULTRA-EXIGEANTS - COMPANY ANALYSIS WIDGET
@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CompanyAnalysisWidget } from '../CompanyAnalysisWidget';
 import { RealBrandIntelligenceService } from '../../services/RealBrandIntelligenceService';

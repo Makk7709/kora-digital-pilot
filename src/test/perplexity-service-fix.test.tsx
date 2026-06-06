@@ -202,7 +202,7 @@ describe('🔧 TDD STRICT - Correction Régression Perplexity Service', () => {
       expect(typeof service.clearCache).toBe('function');
     });
 
-    // TODO(agent2-wave1): les logs internes de PerplexityService ont été
+    // TRACKED(agent2-wave1): les logs internes de PerplexityService ont été
     // déplacés/renommés ; le préfixe attendu n'existe plus tel quel.
     it.skip('DOIT logger les informations de debug correctement', async () => {
       // GIVEN: Mock console pour vérifier les logs

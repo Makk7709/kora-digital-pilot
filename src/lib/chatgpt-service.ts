@@ -320,7 +320,6 @@ export class ChatGPTService {
   }
 
   private buildRewriteSystemPrompt(request: RewriteRequest): string {
-    const language = request.language || 'fr';
     const tone = request.newTone;
     const audience = request.targetAudience || 'professionals';
 

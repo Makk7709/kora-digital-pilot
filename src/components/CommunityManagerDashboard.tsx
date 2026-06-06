@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   TrendingUp,
@@ -129,7 +128,7 @@ export const CommunityManagerDashboard: React.FC = () => {
         title: 'Veille mise à jour',
         description: 'Tous les axes ont été analysés avec succès',
       });
-    } catch (error) {
+    } catch (_error) {
       setScanStatus((prev) => ({ ...prev, isScanning: false }));
       toast({
         title: 'Erreur de scan',

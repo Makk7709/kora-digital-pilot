@@ -137,16 +137,8 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
       const fileName = this.generateFileName(report.brandName || 'Report', options.format);
 
       // 7. Création du blob et URL de téléchargement
-      let blob: Blob;
-      let downloadUrl: string;
-
-      if (typeof content === 'string') {
-        blob = new Blob([content], { type: mimeType });
-      } else {
-        blob = new Blob([content], { type: mimeType });
-      }
-
-      downloadUrl = URL.createObjectURL(blob);
+      const blob = new Blob([content], { type: mimeType });
+      const downloadUrl = URL.createObjectURL(blob);
 
       // 8. Enregistrement dans l'historique
       const historyItem: ExportHistoryItem = {

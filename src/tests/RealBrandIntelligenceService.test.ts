@@ -1,4 +1,4 @@
-// TODO(agent2-wave1): suite intégralement skippée — voir docs/TESTING.md
+// TRACKED(agent2-wave1): suite intégralement skippée — voir docs/TESTING.md
 // (Tests brittle/hangs au-delà du budget Wave 1, à reconstruire en TDD propre.)
 /**
  * 🧪 TESTS COMPLETS REAL BRAND INTELLIGENCE SERVICE
@@ -13,10 +13,10 @@
  * ✅ Intégration Perplexity
  */
 
-import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
-import type { PerplexityService } from '../lib/perplexity-service';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import type {} from '../lib/perplexity-service';
 import { RealBrandIntelligenceService } from '../services/RealBrandIntelligenceService';
-import type { DeepResearchReport } from '../types/BrandIntelligenceTypes';
+import type {} from '../types/BrandIntelligenceTypes';
 
 // Mock du service Perplexity
 const mockPerplexityService = {

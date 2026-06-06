@@ -4,11 +4,7 @@
  * Couverture cible : 95%+ | Pas de mocks | Données réelles uniquement
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrandMonitoring } from '../components/BrandMonitoring';
-import { BrandAnalysisOrchestrator } from '../services/brand/brand-analysis-orchestrator';
-import { PerplexityReport } from '../types/brand-analysis';
+import { describe, it, expect } from 'vitest';
 
 describe('🔍 TDD SPEC - Brand Intelligence Deep Research Report', () => {
   describe('📋 EXIGENCE 1: Prompt Perplexity pour Deep Research', () => {
@@ -309,8 +305,7 @@ describe('🔍 TDD SPEC - Brand Intelligence Deep Research Report', () => {
     it('DOIT permettre le tracking de performance dans le temps', async () => {
       // GIVEN: Un système de métriques historiques
       const brandName = 'Tesla';
-      const currentReport = await generateDeepResearchReport(brandName);
-      const currentMetrics = extractAllMetrics(currentReport);
+      const _currentReport = await generateDeepResearchReport(brandName);
 
       // WHEN: Simulation de données historiques pour tracking
       const historicalData = simulateHistoricalMetrics(brandName, 6); // 6 mois
@@ -532,7 +527,7 @@ async function generateDeepResearchReport(brandName: string): Promise<any> {
   };
 }
 
-function extractSWOTMetrics(report: any): any {
+function extractSWOTMetrics(_report: any): any {
   return {
     strengthsScore: 75,
     weaknessesScore: 25,
@@ -546,7 +541,7 @@ function extractSWOTMetrics(report: any): any {
   };
 }
 
-function extractContentMetrics(report: any): any {
+function extractContentMetrics(_report: any): any {
   return {
     topicsDistribution: [
       { theme: 'Innovation', percentage: 30, volume: 1000, growthRate: 15 },
@@ -566,7 +561,7 @@ function extractContentMetrics(report: any): any {
   };
 }
 
-function extractCompetitiveMetrics(report: any): any {
+function extractCompetitiveMetrics(_report: any): any {
   return {
     marketShareEvolution: {
       currentShare: 25.5,
@@ -602,7 +597,7 @@ function extractCompetitiveMetrics(report: any): any {
   };
 }
 
-function calculateReputationKPIs(report: any): any {
+function calculateReputationKPIs(_report: any): any {
   return {
     overallReputationScore: 76,
     trustIndex: 82,
@@ -627,7 +622,7 @@ function extractAllMetrics(report: any): any {
   };
 }
 
-function generateActionableRecommendations(metrics: any): any[] {
+function generateActionableRecommendations(_metrics: any): any[] {
   return [
     // Marketing & Communication
     {
@@ -806,7 +801,7 @@ function generateActionableRecommendations(metrics: any): any[] {
   ];
 }
 
-function generateIntelligentAlerts(metrics: any): any {
+function generateIntelligentAlerts(_metrics: any): any {
   return {
     critical: [],
     warning: [],
@@ -856,7 +851,7 @@ function calculateTrends(historicalData: any[]): any {
   };
 }
 
-function validateDataConsistency(report: any): any {
+function validateDataConsistency(_report: any): any {
   return {
     isValid: true,
     errors: [],
@@ -870,7 +865,7 @@ function validateDataConsistency(report: any): any {
   };
 }
 
-function validateDataFreshness(report: any): any {
+function validateDataFreshness(_report: any): any {
   return {
     isDataFresh: true,
     oldestDataAge: 12,

@@ -10,8 +10,6 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
-import { ScrollArea } from './ui/scroll-area';
-import { Separator } from './ui/separator';
 import { useToast } from '../hooks/use-toast';
 import {
   Search,

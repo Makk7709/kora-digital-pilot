@@ -1,14 +1,10 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Sparkles } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+
 import DigitalWave from '@/components/DigitalWave';
 
 const Landing = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       {/* Nouvelle animation de vague numérique qui traverse l'écran */}

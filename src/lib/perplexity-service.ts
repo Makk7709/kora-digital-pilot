@@ -1,6 +1,5 @@
-// ✅ UTILISATION DU FETCH NATIF DU NAVIGATEUR
+// Utilise le fetch natif du navigateur (et le fetch global de Node 18+ côté tests).
 import { logger } from './logger';
-// import fetch, { Response } from 'node-fetch'; // ❌ Retiré car incompatible navigateur
 
 export interface PerplexityConfig {
   apiKey: string;
@@ -9,13 +8,6 @@ export interface PerplexityConfig {
   temperature?: number;
   stream?: boolean;
 }
-
-// Configuration par défaut
-const DEFAULT_CONFIG: Partial<PerplexityConfig> = {
-  model: 'llama-3.1-sonar-small-128k-online',
-  maxTokens: 1000,
-  temperature: 0.2,
-};
 
 export interface PerplexityResponse {
   content: string;

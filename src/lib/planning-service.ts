@@ -395,7 +395,7 @@ class PlanningService {
       }
 
       return { success: true, message: 'Données importées avec succès' };
-    } catch (error) {
+    } catch (_error) {
       return { success: false, message: "Erreur lors de l'import des données" };
     }
   }

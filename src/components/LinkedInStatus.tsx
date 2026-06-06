@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useLinkedInAnalytics } from '@/hooks/useLinkedInAnalytics';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, AlertCircle, ExternalLink, RefreshCw } from 'lucide-react';

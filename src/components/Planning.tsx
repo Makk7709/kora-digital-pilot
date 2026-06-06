@@ -13,16 +13,9 @@ import {
   Brain,
   Lightbulb,
 } from 'lucide-react';
-import { usePlanning } from '@/hooks/usePlanning';
-import { usePerplexity } from '@/hooks/usePerplexity';
-import { ScheduledPost } from '@/lib/planning-service';
-// import PostModal from './PostModal';
-// import FilterPanel from './FilterPanel';
-import { PerplexityInsights } from './PerplexityInsights';
 
 const Planning = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [, setError] = useState<string | null>(null);
 
   // Simulation de chargement
   useEffect(() => {

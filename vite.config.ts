@@ -127,11 +127,7 @@ export default defineConfig(({ mode }) => ({
         configure: (proxy, _options) => {
           let errorCount = 0;
           let isServerDefinitelyDown = false;
-          let serverDownTime: Date | null = null;
           const maxErrors = 3;
-
-          // SOLUTION RADICALE : Intercepter TOUTES les requêtes vers /api quand down
-          const originalProxyReq = proxy.on.bind(proxy);
 
           proxy.on('proxyReq', (proxyReq, req, res) => {
             // ARRÊT TOTAL : Si serveur down, bloquer immédiatement

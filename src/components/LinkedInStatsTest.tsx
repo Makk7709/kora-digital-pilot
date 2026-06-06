@@ -7,16 +7,16 @@ import { useLinkedInAnalytics } from '@/hooks/useLinkedInAnalytics';
 import { useToast } from '@/hooks/use-toast';
 import StatsCard from './StatsCard';
 import LinkedInAuth from './LinkedInAuth';
-import { 
-  TestTube, 
-  CheckCircle2, 
-  XCircle, 
-  AlertTriangle, 
+import {
+  TestTube,
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
   RefreshCw,
   Database,
   Wifi,
   Clock,
-  Activity
+  Activity,
 } from 'lucide-react';
 
 const LinkedInStatsTest: React.FC = () => {
@@ -29,24 +29,19 @@ const LinkedInStatsTest: React.FC = () => {
     authentication: 'pending',
     connectivity: 'pending',
     dataFetch: 'pending',
-    lastTest: null
+    lastTest: null,
   });
 
   const [isRunningTests, setIsRunningTests] = useState(false);
   const [showStatsCard, setShowStatsCard] = useState(false);
 
-  const { 
+  const {
     isAuthenticated: isLinkedInConnected,
     testConnection,
-    fetchMetrics
+    fetchMetrics,
   } = useLinkedInAnalytics();
 
-  const {
-    connectionStatus,
-    metrics,
-    refreshStats,
-    error
-  } = useLinkedInStats(false); // Pas d'auto-refresh pour les tests
+  const { connectionStatus, metrics, refreshStats, error } = useLinkedInStats(false); // Pas d'auto-refresh pour les tests
 
   const { toast } = useToast();
 
@@ -57,23 +52,23 @@ const LinkedInStatsTest: React.FC = () => {
       authentication: 'pending',
       connectivity: 'pending',
       dataFetch: 'pending',
-      lastTest: null
+      lastTest: null,
     });
 
     try {
       // Test 1: Authentification
       console.log('🔍 Test 1: Vérification authentification...');
       const authResult = isLinkedInConnected;
-      setTestResults(prev => ({
+      setTestResults((prev) => ({
         ...prev,
-        authentication: authResult ? 'success' : 'error'
+        authentication: authResult ? 'success' : 'error',
       }));
 
       if (!authResult) {
         toast({
           title: "Test d'authentification échoué",
           description: "Veuillez vous connecter à LinkedIn d'abord",
-          variant: "destructive",
+          variant: 'destructive',
         });
         setIsRunningTests(false);
         return;
@@ -81,62 +76,60 @@ const LinkedInStatsTest: React.FC = () => {
 
       // Test 2: Connectivité
       console.log('🔍 Test 2: Test de connectivité...');
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Délai pour l'UX
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Délai pour l'UX
+
       const connectivityResult = await testConnection();
-      setTestResults(prev => ({
+      setTestResults((prev) => ({
         ...prev,
-        connectivity: connectivityResult ? 'success' : 'error'
+        connectivity: connectivityResult ? 'success' : 'error',
       }));
 
       if (!connectivityResult) {
         toast({
-          title: "Test de connectivité échoué",
+          title: 'Test de connectivité échoué',
           description: "Impossible de se connecter à l'API LinkedIn",
-          variant: "destructive",
+          variant: 'destructive',
         });
       }
 
       // Test 3: Récupération des données
       console.log('🔍 Test 3: Récupération des métriques...');
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Délai pour l'UX
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Délai pour l'UX
+
       try {
         await fetchMetrics('7d');
-        setTestResults(prev => ({
+        setTestResults((prev) => ({
           ...prev,
           dataFetch: 'success',
-          lastTest: new Date()
+          lastTest: new Date(),
         }));
 
         toast({
-          title: "Tests réussis !",
-          description: "Toutes les fonctionnalités LinkedIn sont opérationnelles",
+          title: 'Tests réussis !',
+          description: 'Toutes les fonctionnalités LinkedIn sont opérationnelles',
         });
 
         // Afficher automatiquement le StatsCard après des tests réussis
         setShowStatsCard(true);
-
-      } catch (error) {
-        setTestResults(prev => ({
+      } catch (_error) {
+        setTestResults((prev) => ({
           ...prev,
           dataFetch: 'error',
-          lastTest: new Date()
+          lastTest: new Date(),
         }));
 
         toast({
-          title: "Test de récupération échoué",
-          description: "Erreur lors de la récupération des métriques",
-          variant: "destructive",
+          title: 'Test de récupération échoué',
+          description: 'Erreur lors de la récupération des métriques',
+          variant: 'destructive',
         });
       }
-
     } catch (error) {
       console.error('Erreur lors des tests:', error);
       toast({
-        title: "Erreur de test",
+        title: 'Erreur de test',
         description: "Une erreur inattendue s'est produite",
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setIsRunningTests(false);
@@ -148,25 +141,25 @@ const LinkedInStatsTest: React.FC = () => {
     try {
       await refreshStats('7d');
       toast({
-        title: "Test de rafraîchissement réussi",
-        description: "Les statistiques ont été mises à jour",
+        title: 'Test de rafraîchissement réussi',
+        description: 'Les statistiques ont été mises à jour',
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
-        title: "Test de rafraîchissement échoué",
-        description: "Erreur lors de la mise à jour des statistiques",
-        variant: "destructive",
+        title: 'Test de rafraîchissement échoué',
+        description: 'Erreur lors de la mise à jour des statistiques',
+        variant: 'destructive',
       });
     }
   };
 
   // Composant d'indicateur de test
-  const TestIndicator = ({ 
-    status, 
-    label 
-  }: { 
-    status: 'pending' | 'success' | 'error'; 
-    label: string; 
+  const TestIndicator = ({
+    status,
+    label,
+  }: {
+    status: 'pending' | 'success' | 'error';
+    label: string;
   }) => {
     const getConfig = () => {
       switch (status) {
@@ -175,21 +168,21 @@ const LinkedInStatsTest: React.FC = () => {
             icon: CheckCircle2,
             color: 'text-green-600',
             bgColor: 'bg-green-50',
-            borderColor: 'border-green-200'
+            borderColor: 'border-green-200',
           };
         case 'error':
           return {
             icon: XCircle,
             color: 'text-red-600',
             bgColor: 'bg-red-50',
-            borderColor: 'border-red-200'
+            borderColor: 'border-red-200',
           };
         default:
           return {
             icon: AlertTriangle,
             color: 'text-orange-600',
             bgColor: 'bg-orange-50',
-            borderColor: 'border-orange-200'
+            borderColor: 'border-orange-200',
           };
       }
     };
@@ -198,7 +191,9 @@ const LinkedInStatsTest: React.FC = () => {
     const Icon = config.icon;
 
     return (
-      <div className={`flex items-center space-x-3 p-3 rounded-lg border ${config.bgColor} ${config.borderColor}`}>
+      <div
+        className={`flex items-center space-x-3 p-3 rounded-lg border ${config.bgColor} ${config.borderColor}`}
+      >
         <Icon className={`w-5 h-5 ${config.color}`} />
         <span className={`font-medium ${config.color}`}>{label}</span>
         {isRunningTests && status === 'pending' && (
@@ -228,13 +223,18 @@ const LinkedInStatsTest: React.FC = () => {
               <h4 className="font-semibold text-slate-900 mb-3">Statut actuel</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
-                  <Wifi className={`w-4 h-4 ${connectionStatus === 'connected' ? 'text-green-600' : 'text-red-600'}`} />
+                  <Wifi
+                    className={`w-4 h-4 ${connectionStatus === 'connected' ? 'text-green-600' : 'text-red-600'}`}
+                  />
                   <span className="text-sm">
-                    Connexion: <strong>{connectionStatus === 'connected' ? 'Active' : 'Inactive'}</strong>
+                    Connexion:{' '}
+                    <strong>{connectionStatus === 'connected' ? 'Active' : 'Inactive'}</strong>
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Database className={`w-4 h-4 ${metrics ? 'text-green-600' : 'text-orange-600'}`} />
+                  <Database
+                    className={`w-4 h-4 ${metrics ? 'text-green-600' : 'text-orange-600'}`}
+                  />
                   <span className="text-sm">
                     Données: <strong>{metrics ? 'Disponibles' : 'Non disponibles'}</strong>
                   </span>
@@ -252,7 +252,10 @@ const LinkedInStatsTest: React.FC = () => {
             {/* Résultats des tests */}
             <div className="space-y-3">
               <h4 className="font-semibold text-slate-900">Résultats des tests</h4>
-              <TestIndicator status={testResults.authentication} label="Authentification LinkedIn" />
+              <TestIndicator
+                status={testResults.authentication}
+                label="Authentification LinkedIn"
+              />
               <TestIndicator status={testResults.connectivity} label="Connectivité API" />
               <TestIndicator status={testResults.dataFetch} label="Récupération des données" />
             </div>
@@ -286,10 +289,7 @@ const LinkedInStatsTest: React.FC = () => {
                 Test rafraîchissement
               </Button>
 
-              <Button
-                onClick={() => setShowStatsCard(!showStatsCard)}
-                variant="outline"
-              >
+              <Button onClick={() => setShowStatsCard(!showStatsCard)} variant="outline">
                 {showStatsCard ? 'Masquer' : 'Afficher'} StatsCard
               </Button>
             </div>
@@ -312,27 +312,27 @@ const LinkedInStatsTest: React.FC = () => {
 
       {/* Authentification LinkedIn si nécessaire */}
       {!isLinkedInConnected && (
-        <LinkedInAuth onAuthSuccess={() => {
-          toast({
-            title: "Connexion réussie !",
-            description: "Vous pouvez maintenant lancer les tests",
-          });
-        }} />
+        <LinkedInAuth
+          onAuthSuccess={() => {
+            toast({
+              title: 'Connexion réussie !',
+              description: 'Vous pouvez maintenant lancer les tests',
+            });
+          }}
+        />
       )}
 
       {/* StatsCard de démonstration */}
       {showStatsCard && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-slate-900">
-              Démonstration StatsCard
-            </h3>
+            <h3 className="text-lg font-semibold text-slate-900">Démonstration StatsCard</h3>
             <Badge variant="secondary">
               Mode {isLinkedInConnected ? 'Données réelles' : 'Simulation'}
             </Badge>
           </div>
-          
-          <StatsCard 
+
+          <StatsCard
             period="7d"
             autoRefresh={false} // Pas d'auto-refresh en mode test
             showPosts={true}
@@ -360,4 +360,4 @@ const LinkedInStatsTest: React.FC = () => {
   );
 };
 
-export default LinkedInStatsTest; 
+export default LinkedInStatsTest;

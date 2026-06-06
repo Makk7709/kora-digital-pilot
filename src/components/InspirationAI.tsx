@@ -162,7 +162,7 @@ const InspirationAI = () => {
         title: 'Copié !',
         description: 'Le contenu a été copié dans le presse-papiers',
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Erreur de copie',
         description: 'Impossible de copier le contenu',
@@ -205,24 +205,6 @@ const InspirationAI = () => {
   // technique réellement utilisé en coulisses. La séparation entre logique
   // de routage IA (anthropic/openai/CORS) et libellé affiché est volontaire.
   const PRIMARY_AI_BADGE = 'Kora IA';
-
-  // Nouvelle méthode pour générer des images (toujours avec OpenAI)
-  const handleImageGeneration = async (imagePrompt: string) => {
-    try {
-      console.log("🎨 Génération d'image avec OpenAI DALL-E");
-      // Cette fonctionnalité sera implémentée plus tard
-      toast({
-        title: "Génération d'images",
-        description: 'Fonctionnalité en cours de développement avec DALL-E 3',
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur de génération d'image",
-        description: error instanceof Error ? error.message : 'Une erreur est survenue',
-        variant: 'destructive',
-      });
-    }
-  };
 
   return (
     <div className="space-y-6 animate-fade-in">

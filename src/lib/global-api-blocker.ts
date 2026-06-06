@@ -101,7 +101,7 @@ class GlobalApiBlocker {
 
     // 🔧 FIX CRITIQUE: Préserver le binding correct pour window.fetch
     Object.defineProperty(globalThis.fetch, 'bind', {
-      value: function (thisArg: any) {
+      value: function (_thisArg: any) {
         return globalThis.fetch;
       },
       writable: false,

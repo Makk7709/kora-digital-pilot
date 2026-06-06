@@ -57,7 +57,7 @@ describe('🔍 CONFORMITÉ PRODUCTION - PERPLEXITY MODULE', () => {
 
     it('⚡ DOIT échouer sans clé API valide', () => {
       expect(() => {
-        const badService = createPerplexityService({
+        new PerplexityService({
           apiKey: '',
           model: 'test',
         });

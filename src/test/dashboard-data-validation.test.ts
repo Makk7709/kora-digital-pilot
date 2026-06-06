@@ -162,16 +162,6 @@ describe('Dashboard Data Validation - TDD Phase RED', () => {
           : totalClicksNum.toString(),
     };
   }
-
-  // Test helper pour parser les valeurs métriques
-  function parseMetricValue(value: string): number {
-    if (!value) return 0;
-    const numStr = value.replace(/[KM]/g, '');
-    const num = Number.parseFloat(numStr);
-    if (value.includes('K')) return num * 1000;
-    if (value.includes('M')) return num * 1000000;
-    return num;
-  }
 });
 
 /**

@@ -365,13 +365,10 @@ export class RealBrandIntelligenceService {
 
       if (veryRecentActions >= 3) {
         dataQualityScore = 95;
-        isDataFresh = true;
       } else if (veryRecentActions >= 2) {
         dataQualityScore = 85;
-        isDataFresh = true;
       } else if (veryRecentActions >= 1) {
         dataQualityScore = 75;
-        isDataFresh = true;
       } else {
         dataQualityScore = 50;
         isDataFresh = false;

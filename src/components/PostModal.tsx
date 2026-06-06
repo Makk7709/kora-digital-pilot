@@ -3,7 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { X, Sparkles, Clock, Tag } from 'lucide-react';
 import { ScheduledPost } from '@/lib/planning-service';
@@ -51,7 +57,7 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
         estimatedEngagement: post.estimatedEngagement || '',
       });
     } else if (selectedDate) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         scheduledDate: selectedDate,
       }));
@@ -85,20 +91,44 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
   ];
 
   const timeSlots = [
-    '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
-    '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
-    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-    '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
-    '20:00', '20:30', '21:00', '21:30', '22:00',
+    '08:00',
+    '08:30',
+    '09:00',
+    '09:30',
+    '10:00',
+    '10:30',
+    '11:00',
+    '11:30',
+    '12:00',
+    '12:30',
+    '13:00',
+    '13:30',
+    '14:00',
+    '14:30',
+    '15:00',
+    '15:30',
+    '16:00',
+    '16:30',
+    '17:00',
+    '17:30',
+    '18:00',
+    '18:30',
+    '19:00',
+    '19:30',
+    '20:00',
+    '20:30',
+    '21:00',
+    '21:30',
+    '22:00',
   ];
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleAddTag = () => {
     if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         tags: [...prev.tags, newTag.trim()],
       }));
@@ -107,18 +137,18 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove),
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
 
   const handleGenerateWithAI = async () => {
     if (!aiPrompt.trim()) {
       toast({
-        title: "Prompt requis",
-        description: "Veuillez saisir une description pour générer le contenu",
-        variant: "destructive",
+        title: 'Prompt requis',
+        description: 'Veuillez saisir une description pour générer le contenu',
+        variant: 'destructive',
       });
       return;
     }
@@ -134,10 +164,13 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
       });
 
       // Extraire le titre du contenu généré
-      const lines = response.content.split('\n').filter(line => line.trim());
-      const title = lines[0]?.length > 60 ? lines[0].substring(0, 60) + '...' : lines[0] || 'Post généré par IA';
+      const lines = response.content.split('\n').filter((line) => line.trim());
+      const title =
+        lines[0]?.length > 60
+          ? lines[0].substring(0, 60) + '...'
+          : lines[0] || 'Post généré par IA';
 
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         title,
         content: response.content,
@@ -145,15 +178,14 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
       }));
 
       toast({
-        title: "Contenu généré !",
-        description: "Le contenu a été créé par Kora",
+        title: 'Contenu généré !',
+        description: 'Le contenu a été créé par Kora',
       });
-
-    } catch (error) {
+    } catch (_error) {
       toast({
-        title: "Erreur de génération",
-        description: "Impossible de générer le contenu",
-        variant: "destructive",
+        title: 'Erreur de génération',
+        description: 'Impossible de générer le contenu',
+        variant: 'destructive',
       });
     } finally {
       setIsGenerating(false);
@@ -163,9 +195,9 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
   const handleSave = () => {
     if (!formData.title.trim() || !formData.content.trim()) {
       toast({
-        title: "Champs requis",
-        description: "Veuillez remplir le titre et le contenu",
-        variant: "destructive",
+        title: 'Champs requis',
+        description: 'Veuillez remplir le titre et le contenu',
+        variant: 'destructive',
       });
       return;
     }
@@ -188,17 +220,10 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
             <CardTitle className="text-slate-900 flex items-center space-x-2">
               <span>{post ? 'Modifier le post' : 'Créer un nouveau post'}</span>
               {selectedDate && (
-                <Badge variant="outline">
-                  {selectedDate.toLocaleDateString('fr-FR')}
-                </Badge>
+                <Badge variant="outline">{selectedDate.toLocaleDateString('fr-FR')}</Badge>
               )}
             </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="h-8 w-8 p-0"
-            >
+            <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
               <X className="w-4 h-4" />
             </Button>
           </div>
@@ -253,9 +278,7 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Contenu
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Contenu</label>
                 <Textarea
                   value={formData.content}
                   onChange={(e) => handleInputChange('content', e.target.value)}
@@ -263,22 +286,14 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
                   rows={8}
                   className="resize-none"
                 />
-                <p className="text-xs text-slate-500 mt-1">
-                  {formData.content.length} caractères
-                </p>
+                <p className="text-xs text-slate-500 mt-1">{formData.content.length} caractères</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Tags
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Tags</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {formData.tags.map((tag, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="flex items-center space-x-1"
-                    >
+                    <Badge key={index} variant="secondary" className="flex items-center space-x-1">
                       <span>{tag}</span>
                       <button
                         onClick={() => handleRemoveTag(tag)}
@@ -297,11 +312,7 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
                     onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
                     className="flex-1"
                   />
-                  <Button
-                    onClick={handleAddTag}
-                    variant="outline"
-                    size="sm"
-                  >
+                  <Button onClick={handleAddTag} variant="outline" size="sm">
                     <Tag className="w-4 h-4" />
                   </Button>
                 </div>
@@ -311,9 +322,7 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
             {/* Colonne droite - Paramètres */}
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Plateforme
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Plateforme</label>
                 <Select
                   value={formData.platform}
                   onValueChange={(value) => handleInputChange('platform', value)}
@@ -353,9 +362,7 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Ton
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Ton</label>
                 <Select
                   value={formData.tone}
                   onValueChange={(value) => handleInputChange('tone', value)}
@@ -396,9 +403,7 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Statut
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Statut</label>
                 <Select
                   value={formData.status}
                   onValueChange={(value) => handleInputChange('status', value)}
@@ -429,16 +434,10 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
 
           {/* Actions */}
           <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">
-            <Button
-              variant="outline"
-              onClick={onClose}
-            >
+            <Button variant="outline" onClick={onClose}>
               Annuler
             </Button>
-            <Button
-              onClick={handleSave}
-              className="bg-blue-600 text-white"
-            >
+            <Button onClick={handleSave} className="bg-blue-600 text-white">
               {post ? 'Mettre à jour' : 'Créer le post'}
             </Button>
           </div>
@@ -448,4 +447,4 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
   );
 };
 
-export default PostModal; 
+export default PostModal;

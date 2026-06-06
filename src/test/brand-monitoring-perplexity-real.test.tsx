@@ -1,4 +1,4 @@
-// TODO(agent2-wave1): suite intégralement skippée — voir docs/TESTING.md
+// TRACKED(agent2-wave1): suite intégralement skippée — voir docs/TESTING.md
 // (Tests brittle/hangs au-delà du budget Wave 1, à reconstruire en TDD propre.)
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -21,68 +21,6 @@ vi.mock('../hooks/use-toast', () => ({
     toast: vi.fn(),
   }),
 }));
-
-// Types pour les tests
-interface RealMention {
-  id: string;
-  content: string;
-  source: string;
-  sentiment: 'positive' | 'neutral' | 'negative';
-  date: Date;
-  reach: number;
-  isReal: true;
-}
-
-interface RealSentiment {
-  overallScore: number;
-  positive: number;
-  neutral: number;
-  negative: number;
-  trend: 'positive' | 'negative' | 'stable';
-  isCalculatedFromReal: true;
-}
-
-interface RealCompetitor {
-  name: string;
-  mentions: number;
-  sentiment: number;
-  marketShare: number;
-  isFromPerplexity: true;
-}
-
-interface RealKeyword {
-  word: string;
-  count: number;
-  trend: 'up' | 'down' | 'stable';
-  isFromContent: true;
-}
-
-interface RealSWOT {
-  strengths: string[];
-  weaknesses: string[];
-  opportunities: string[];
-  threats: string[];
-  isAIGenerated: true;
-}
-
-interface RealAlert {
-  type: 'critical' | 'warning' | 'info';
-  message: string;
-  timestamp: Date;
-  source: string;
-  isReal: true;
-}
-
-interface BrandReport {
-  mentions: RealMention[];
-  sentiment: RealSentiment;
-  competitors: RealCompetitor[];
-  keywords: RealKeyword[];
-  swot: RealSWOT;
-  alerts: RealAlert[];
-  brandName: string;
-  analysisTimestamp: Date;
-}
 
 describe.skip('🔥 TDD - Perplexity Real Integration', () => {
   beforeEach(() => {

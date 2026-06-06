@@ -63,7 +63,6 @@ const LinkedInCallback: React.FC = () => {
         console.log('🔄 Début échange code pour token');
 
         // Échanger le code contre un token
-        const token = await linkedinAPI.exchangeCodeForToken(code);
         console.log('✅ Token obtenu avec succès');
 
         setMessage('Récupération du profil utilisateur...');

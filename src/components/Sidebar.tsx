@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
+
 import LinkedInWidget from '@/components/LinkedInWidget';
 
 interface SidebarProps {
@@ -10,84 +10,83 @@ interface SidebarProps {
 
 const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const navigate = useNavigate();
 
   const menuItems = [
     {
       id: 'dashboard',
       icon: '📊',
       label: 'Dashboard',
-      description: 'Vue d\'ensemble'
+      description: "Vue d'ensemble",
     },
     {
       id: 'cm-dashboard',
       icon: '🧠',
       label: 'CM Dashboard',
-      description: 'Veille IA automatisée'
+      description: 'Veille IA automatisée',
     },
     {
       id: 'cm-domain-search',
       icon: '🔍',
       label: 'Recherche Sectorielle',
-      description: 'Analyser par domaine'
+      description: 'Analyser par domaine',
     },
     {
       id: 'brand-monitoring',
       icon: '👁️',
       label: 'Veille de Marque',
-      description: 'Surveillance e-réputation'
+      description: 'Surveillance e-réputation',
     },
     {
       id: 'brand-intelligence-tdd',
       icon: '⟨⟩',
       label: 'P.R.I.S.M Report',
-      description: 'Deep Research & Métriques'
+      description: 'Deep Research & Métriques',
     },
     {
       id: 'inspiration',
       icon: '✨',
       label: 'Inspiration IA',
-      description: 'Générer du contenu'
+      description: 'Générer du contenu',
     },
     {
       id: 'images',
       icon: '🎨',
-      label: 'Générateur d\'Images',
-      description: 'Créer avec DALL-E 3'
+      label: "Générateur d'Images",
+      description: 'Créer avec DALL-E 3',
     },
     {
       id: 'planning',
       icon: '📅',
       label: 'Planning éditorial',
-      description: 'Organiser les publications'
+      description: 'Organiser les publications',
     },
     {
       id: 'analytics',
       icon: '📈',
       label: 'Analyse',
-      description: 'Performance des posts'
+      description: 'Performance des posts',
     },
     {
       id: 'library',
       icon: '📚',
       label: 'Bibliothèque',
-      description: 'Contenu sauvegardé'
-    }
+      description: 'Contenu sauvegardé',
+    },
   ];
 
   return (
-    <aside className={cn(
-      "h-full bg-white/95 backdrop-blur-xl border-r border-slate-200/50 shadow-lg transition-all duration-300",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
+    <aside
+      className={cn(
+        'h-full bg-white/95 backdrop-blur-xl border-r border-slate-200/50 shadow-lg transition-all duration-300',
+        isCollapsed ? 'w-16' : 'w-64',
+      )}
+    >
       <div className="p-4">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-slate-100 transition-colors"
         >
-          <span className="text-slate-600">
-            {isCollapsed ? '→' : '←'}
-          </span>
+          <span className="text-slate-600">{isCollapsed ? '→' : '←'}</span>
         </button>
       </div>
 
@@ -97,10 +96,10 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
             key={item.id}
             onClick={() => onSectionChange(item.id)}
             className={cn(
-              "w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 group",
+              'w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 group',
               activeSection === item.id
-                ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
             )}
           >
             <span className="text-lg">{item.icon}</span>

@@ -12,7 +12,7 @@ describe('LinkedIn Integration - Corrections TDD', () => {
   });
 
   describe('🔧 Correction 1: Erreur 401 Profil Utilisateur', () => {
-    // TODO(agent2-wave1): scope OAuth réel ne correspond plus à la chaîne
+    // TRACKED(agent2-wave1): scope OAuth réel ne correspond plus à la chaîne
     // attendue — clarification produit requise (Agent 1 sécurité LinkedIn).
     test.skip('SHOULD handle OAuth scopes correctly for profile access', async () => {
       // RED: Ce test doit échouer initialement
@@ -23,7 +23,7 @@ describe('LinkedIn Integration - Corrections TDD', () => {
       expect(authURL).toContain('response_type=code');
     });
 
-    // TODO(agent2-wave1): getUserProfile() ne lance pas l'appel mocké
+    // TRACKED(agent2-wave1): getUserProfile() ne lance pas l'appel mocké
     // (probable refacto LinkedIn API par Agent 1). À revoir.
     test.skip('SHOULD retry profile request with correct headers', async () => {
       // RED: Test pour la gestion des headers d'authentification
@@ -56,7 +56,7 @@ describe('LinkedIn Integration - Corrections TDD', () => {
       );
     });
 
-    // TODO(agent2-wave1): même cause — fallback non implémenté côté API.
+    // TRACKED(agent2-wave1): même cause — fallback non implémenté côté API.
     test.skip('SHOULD implement fallback strategy for profile errors', async () => {
       // RED: Test pour la stratégie de fallback
       localStorage.setItem('linkedin_access_token', 'invalid_token');
@@ -246,7 +246,7 @@ describe('LinkedIn Integration - Corrections TDD', () => {
       }
     });
 
-    // TODO(agent2-wave1): pas de retry implémenté dans `linkedinAPI.getMetrics`.
+    // TRACKED(agent2-wave1): pas de retry implémenté dans `linkedinAPI.getMetrics`.
     test.skip('SHOULD implement retry mechanism for transient errors', async () => {
       // RED: Test du mécanisme de retry
       let callCount = 0;

@@ -1922,14 +1922,13 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
   private getCheckPageBreakFunction(pdf: jsPDF) {
     return (requiredSpace: number = 35) => {
       const pageHeight = pdf.internal.pageSize.height;
-      let currentY = this.dimensions.margin;
+      const currentY = this.dimensions.margin;
 
       if (
         currentY + requiredSpace >
         pageHeight - this.dimensions.margin - this.dimensions.footerHeight
       ) {
         pdf.addPage();
-        currentY = this.dimensions.margin + this.dimensions.headerHeight + 15;
         this.addPremiumPageHeaderForSection();
       }
     };

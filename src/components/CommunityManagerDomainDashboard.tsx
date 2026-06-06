@@ -38,8 +38,6 @@ import {
 } from 'lucide-react';
 
 import { useBusinessIntelligence, DomainTrend } from '../hooks/useBusinessIntelligence';
-import { useToast } from '../hooks/use-toast';
-
 // === SUGGESTIONS DE DOMAINES POPULAIRES ===
 const POPULAR_DOMAINS = [
   { name: 'Intelligence Artificielle', icon: Brain, color: 'from-purple-500 to-blue-500' },
@@ -54,7 +52,6 @@ const POPULAR_DOMAINS = [
 
 export const CommunityManagerDomainDashboard: React.FC = () => {
   const businessIntel = useBusinessIntelligence();
-  const { toast } = useToast();
 
   // === ÉTATS ===
   const [searchQuery, setSearchQuery] = useState('');
