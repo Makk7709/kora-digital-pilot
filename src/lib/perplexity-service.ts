@@ -357,44 +357,61 @@ class PerplexityService {
     return sources;
   }
 
+  private parseImpactLevel(line: string): MarketInsight['impact'] {
+    const lower = line.toLowerCase();
+    if (lower.includes('élevé') || lower.includes('high')) return 'high';
+    if (lower.includes('moyen') || lower.includes('medium')) return 'medium';
+    return 'low';
+  }
+
+  private applyInsightLine(
+    line: string,
+    current: Partial<MarketInsight>,
+  ): {
+    current: Partial<MarketInsight>;
+    flushed?: Partial<MarketInsight>;
+  } {
+    if (line.includes('Tendance:') || line.includes('Trend:')) {
+      const flushed = current.trend ? current : undefined;
+      return {
+        current: { trend: line.replace(/Tendance:|Trend:/, '').trim() },
+        flushed,
+      };
+    }
+    if (line.includes('Impact:')) {
+      return { current: { ...current, impact: this.parseImpactLevel(line) } };
+    }
+    if (line.includes('Délai:') || line.includes('Timeframe:')) {
+      return {
+        current: { ...current, timeframe: line.replace(/Délai:|Timeframe:/, '').trim() },
+      };
+    }
+    return { current };
+  }
+
   private parseMarketInsights(response: PerplexityResponse): MarketInsight[] {
-    // Parser intelligent pour extraire des insights structurés
     const insights: MarketInsight[] = [];
     const lines = response.content.split('\n').filter((line) => line.trim());
 
     let currentInsight: Partial<MarketInsight> = {};
-
     for (const line of lines) {
-      if (line.includes('Tendance:') || line.includes('Trend:')) {
-        if (currentInsight.trend) {
-          insights.push(currentInsight as MarketInsight);
-          currentInsight = {};
-        }
-        currentInsight.trend = line.replace(/Tendance:|Trend:/, '').trim();
-      } else if (line.includes('Impact:')) {
-        const impact = line.toLowerCase();
-        currentInsight.impact =
-          impact.includes('élevé') || impact.includes('high')
-            ? 'high'
-            : impact.includes('moyen') || impact.includes('medium')
-              ? 'medium'
-              : 'low';
-      } else if (line.includes('Délai:') || line.includes('Timeframe:')) {
-        currentInsight.timeframe = line.replace(/Délai:|Timeframe:/, '').trim();
+      const { current, flushed } = this.applyInsightLine(line, currentInsight);
+      if (flushed) {
+        insights.push(flushed as MarketInsight);
       }
+      currentInsight = current;
     }
 
     if (currentInsight.trend) {
       insights.push(currentInsight as MarketInsight);
     }
 
-    // Ajouter des valeurs par défaut si nécessaire
     return insights.map((insight) => ({
       ...insight,
       actionable_insights: insight.actionable_insights || [],
       sources: response.sources.map((source) => ({
         ...source,
-        credibility: 0.8, // Score par défaut
+        credibility: 0.8,
       })),
       confidence_score: 0.85,
       last_updated: new Date(),

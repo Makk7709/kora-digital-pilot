@@ -201,24 +201,10 @@ const InspirationAI = () => {
     return 'Kora IA déconnectée';
   };
 
-  const getPrimaryAIBadge = () => {
-    if (!connectionStatus) return 'Kora IA';
-
-    // Toujours afficher Kora peu importe le provider
-    if (connectionStatus.corsIssue && connectionStatus.openai) {
-      return 'Kora IA'; // Si CORS avec Claude, OpenAI sera utilisé mais on affiche Kora
-    }
-
-    if (connectionStatus.anthropic && !connectionStatus.corsIssue) {
-      return 'Kora IA';
-    }
-
-    if (connectionStatus.openai) {
-      return 'Kora IA';
-    }
-
-    return 'Kora IA';
-  };
+  // Marque produit unique exposée à l'utilisateur, quel que soit le provider
+  // technique réellement utilisé en coulisses. La séparation entre logique
+  // de routage IA (anthropic/openai/CORS) et libellé affiché est volontaire.
+  const PRIMARY_AI_BADGE = 'Kora IA';
 
   // Nouvelle méthode pour générer des images (toujours avec OpenAI)
   const handleImageGeneration = async (imagePrompt: string) => {
@@ -371,7 +357,7 @@ const InspirationAI = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline" className="border-blue-300 text-blue-600">
-                    {getPrimaryAIBadge()}
+                    {PRIMARY_AI_BADGE}
                   </Badge>
                   <Badge variant="outline" className="border-slate-300 text-slate-500">
                     {prompt.length}/1000 caractères

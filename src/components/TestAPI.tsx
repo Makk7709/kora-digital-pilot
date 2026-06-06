@@ -1,36 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { aiService } from '../lib/ai-service';
 import { PerplexityDebug } from './PerplexityDebug';
+
+type LogLevel = 'LOG' | 'ERROR' | 'WARN';
+
+// Helper hissé pour éviter une imbrication trop profonde (Sonar S2004).
+// Renvoie une fonction unique à brancher sur `console.{log,error,warn}`.
+const buildLogCapture =
+  (
+    level: LogLevel,
+    originals: { log: typeof console.log; error: typeof console.error; warn: typeof console.warn },
+    appendLog: (message: string) => void,
+  ) =>
+  (...args: unknown[]): void => {
+    const message = `[${level}] ${args.map(String).join(' ')}`;
+    appendLog(message);
+    if (level === 'LOG') originals.log(...args);
+    else if (level === 'ERROR') originals.error(...args);
+    else originals.warn(...args);
+  };
 
 export const TestAPI: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string>('');
   const [logs, setLogs] = useState<string[]>([]);
 
-  // Capturer les logs de la console
-  const originalLog = console.log;
-  const originalError = console.error;
-  const originalWarn = console.warn;
-
-  React.useEffect(() => {
-    const logCapture = (type: string) => (...args: any[]) => {
-      const message = `[${type}] ${args.join(' ')}`;
-      setLogs(prev => [...prev.slice(-20), message]); // Garder les 20 derniers logs
-      
-      // Appeler la fonction originale
-      if (type === 'LOG') originalLog(...args);
-      if (type === 'ERROR') originalError(...args);
-      if (type === 'WARN') originalWarn(...args);
-    };
-
-    console.log = logCapture('LOG');
-    console.error = logCapture('ERROR');
-    console.warn = logCapture('WARN');
-
+  useEffect(() => {
+    const originals = { log: console.log, error: console.error, warn: console.warn };
+    const appendLog = (message: string) => setLogs((prev) => [...prev.slice(-20), message]);
+    console.log = buildLogCapture('LOG', originals, appendLog);
+    console.error = buildLogCapture('ERROR', originals, appendLog);
+    console.warn = buildLogCapture('WARN', originals, appendLog);
     return () => {
-      console.log = originalLog;
-      console.error = originalError;
-      console.warn = originalWarn;
+      console.log = originals.log;
+      console.error = originals.error;
+      console.warn = originals.warn;
     };
   }, []);
 
@@ -38,21 +42,20 @@ export const TestAPI: React.FC = () => {
     setIsLoading(true);
     setResult('');
     setLogs([]);
-    
+
     try {
       console.log('🧪 Début du test API...');
-      
+
       const response = await aiService.generateContent({
         prompt: "je veux un article sur les enfants et l'IA",
-        platform: "linkedin",
-        contentType: "article",
-        tone: "Educatif & expert",
-        maxTokens: 2000
+        platform: 'linkedin',
+        contentType: 'article',
+        tone: 'Educatif & expert',
+        maxTokens: 2000,
       });
 
       console.log('✅ Réponse reçue:', response);
       setResult(JSON.stringify(response, null, 2));
-      
     } catch (error) {
       console.error('❌ Erreur lors du test:', error);
       setResult(`Erreur: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
@@ -64,7 +67,7 @@ export const TestAPI: React.FC = () => {
   const testConnection = async () => {
     setIsLoading(true);
     setLogs([]);
-    
+
     try {
       console.log('🔗 Test de connexion aux APIs...');
       const connectionTest = await aiService.testConnection();
@@ -81,12 +84,12 @@ export const TestAPI: React.FC = () => {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">🧪 Test des APIs IA</h2>
-      
+
       {/* Debug Perplexity */}
       <div className="mb-8">
         <PerplexityDebug />
       </div>
-      
+
       <div className="space-y-4 mb-6">
         <button
           onClick={testConnection}
@@ -95,7 +98,7 @@ export const TestAPI: React.FC = () => {
         >
           {isLoading ? 'Test en cours...' : 'Tester la connexion'}
         </button>
-        
+
         <button
           onClick={testAPI}
           disabled={isLoading}
@@ -125,9 +128,7 @@ export const TestAPI: React.FC = () => {
       {result && (
         <div>
           <h3 className="text-lg font-semibold mb-2">📊 Résultat:</h3>
-          <pre className="bg-gray-100 p-4 rounded overflow-x-auto text-sm">
-            {result}
-          </pre>
+          <pre className="bg-gray-100 p-4 rounded overflow-x-auto text-sm">{result}</pre>
         </div>
       )}
 
@@ -135,20 +136,25 @@ export const TestAPI: React.FC = () => {
       <div className="mt-6 p-4 bg-yellow-50 rounded">
         <h3 className="text-lg font-semibold mb-2">🔧 Informations d'environnement:</h3>
         <div className="text-sm space-y-1">
-          <p><strong>Mode:</strong> {import.meta.env.MODE}</p>
-          <p><strong>Variables API disponibles:</strong> {
-            Object.keys(import.meta.env)
-              .filter(key => key.includes('API'))
-              .join(', ') || 'Aucune'
-          }</p>
-          <p><strong>OpenAI Key présente:</strong> {
-            import.meta.env.VITE_OPENAI_API_KEY ? '✅ Oui' : '❌ Non'
-          }</p>
-          <p><strong>Anthropic Key présente:</strong> {
-            import.meta.env.VITE_ANTHROPIC_API_KEY ? '✅ Oui' : '❌ Non'
-          }</p>
+          <p>
+            <strong>Mode:</strong> {import.meta.env.MODE}
+          </p>
+          <p>
+            <strong>Variables API disponibles:</strong>{' '}
+            {Object.keys(import.meta.env)
+              .filter((key) => key.includes('API'))
+              .join(', ') || 'Aucune'}
+          </p>
+          <p>
+            <strong>OpenAI Key présente:</strong>{' '}
+            {import.meta.env.VITE_OPENAI_API_KEY ? '✅ Oui' : '❌ Non'}
+          </p>
+          <p>
+            <strong>Anthropic Key présente:</strong>{' '}
+            {import.meta.env.VITE_ANTHROPIC_API_KEY ? '✅ Oui' : '❌ Non'}
+          </p>
         </div>
       </div>
     </div>
   );
-}; 
+};

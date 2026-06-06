@@ -268,132 +268,137 @@ export const CommunityManagerDashboard: React.FC = () => {
     return insights.slice(0, category === 'trending-content' ? 10 : 5);
   };
 
+  // Palettes de couleurs et impacts extraites pour réduire la complexité
+  // cognitive du composant AxisCard ci-dessous.
+  const AXIS_COLOR_CLASSES: Record<string, { gradient: string; badge: string }> = {
+    blue: {
+      gradient: 'from-blue-50 to-blue-100',
+      badge: 'border-blue-200 text-blue-700 bg-blue-50',
+    },
+    purple: {
+      gradient: 'from-purple-50 to-purple-100',
+      badge: 'border-purple-200 text-purple-700 bg-purple-50',
+    },
+    green: {
+      gradient: 'from-green-50 to-green-100',
+      badge: 'border-green-200 text-green-700 bg-green-50',
+    },
+    orange: {
+      gradient: 'from-orange-50 to-orange-100',
+      badge: 'border-orange-200 text-orange-700 bg-orange-50',
+    },
+  };
+
+  const IMPACT_STYLES: Record<
+    TrendInsight['impact'],
+    { variant: 'destructive' | 'default' | 'secondary'; className: string; label: string }
+  > = {
+    high: {
+      variant: 'destructive',
+      className: 'bg-red-50 text-red-700 border-red-200',
+      label: 'Élevé',
+    },
+    medium: {
+      variant: 'default',
+      className: 'bg-blue-50 text-blue-700 border-blue-200',
+      label: 'Moyen',
+    },
+    low: {
+      variant: 'secondary',
+      className: 'bg-slate-50 text-slate-700 border-slate-200',
+      label: 'Faible',
+    },
+  };
+
   // Composant pour afficher une carte d'axe
   const AxisCard: React.FC<{
     title: string;
     icon: React.ReactNode;
     insights: TrendInsight[];
     color: string;
-  }> = ({ title, icon, insights, color }) => (
-    <Card className="premium-card h-full hover-glow">
-      <CardHeader className="pb-4 border-b border-slate-100">
-        <CardTitle className="flex items-center gap-3 text-xl text-slate-900">
-          <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${
-              color === 'blue'
-                ? 'from-blue-50 to-blue-100'
-                : color === 'purple'
-                  ? 'from-purple-50 to-purple-100'
-                  : color === 'green'
-                    ? 'from-green-50 to-green-100'
-                    : 'from-orange-50 to-orange-100'
-            }`}
-          >
-            {icon}
-          </div>
-          <span className="font-semibold">{title}</span>
-          <Badge
-            variant="outline"
-            className={`ml-auto font-medium ${
-              color === 'blue'
-                ? 'border-blue-200 text-blue-700 bg-blue-50'
-                : color === 'purple'
-                  ? 'border-purple-200 text-purple-700 bg-purple-50'
-                  : color === 'green'
-                    ? 'border-green-200 text-green-700 bg-green-50'
-                    : 'border-orange-200 text-orange-700 bg-orange-50'
-            }`}
-          >
-            {insights.length}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-6">
-        <ScrollArea className="h-80">
-          <div className="space-y-4">
-            {insights.length === 0 ? (
-              <div className="text-center text-slate-500 py-12">
-                <div
-                  className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-gradient-to-br ${
-                    color === 'blue'
-                      ? 'from-blue-50 to-blue-100'
-                      : color === 'purple'
-                        ? 'from-purple-50 to-purple-100'
-                        : color === 'green'
-                          ? 'from-green-50 to-green-100'
-                          : 'from-orange-50 to-orange-100'
-                  }`}
-                >
-                  <Brain className="h-8 w-8 text-slate-400" />
+  }> = ({ title, icon, insights, color }) => {
+    const palette = AXIS_COLOR_CLASSES[color] ?? AXIS_COLOR_CLASSES.orange;
+    return (
+      <Card className="premium-card h-full hover-glow">
+        <CardHeader className="pb-4 border-b border-slate-100">
+          <CardTitle className="flex items-center gap-3 text-xl text-slate-900">
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${palette.gradient}`}
+            >
+              {icon}
+            </div>
+            <span className="font-semibold">{title}</span>
+            <Badge variant="outline" className={`ml-auto font-medium ${palette.badge}`}>
+              {insights.length}
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <ScrollArea className="h-80">
+            <div className="space-y-4">
+              {insights.length === 0 ? (
+                <div className="text-center text-slate-500 py-12">
+                  <div
+                    className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-gradient-to-br ${palette.gradient}`}
+                  >
+                    <Brain className="h-8 w-8 text-slate-400" />
+                  </div>
+                  <p className="font-medium text-slate-900 mb-2">Aucun insight disponible</p>
+                  <p className="text-sm text-slate-500">Lancez un scan pour obtenir des données</p>
                 </div>
-                <p className="font-medium text-slate-900 mb-2">Aucun insight disponible</p>
-                <p className="text-sm text-slate-500">Lancez un scan pour obtenir des données</p>
-              </div>
-            ) : (
-              insights.map((insight) => (
-                <div
-                  key={insight.id}
-                  data-testid="insight-card"
-                  className="border border-slate-200 rounded-xl p-4 bg-gradient-to-br from-white to-slate-50/50 hover:border-slate-300 hover:shadow-md transition-all duration-300"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <h4 className="font-semibold text-slate-900 text-sm leading-snug pr-3">
-                      {insight.title}
-                    </h4>
-                    <Badge
-                      variant={
-                        insight.impact === 'high'
-                          ? 'destructive'
-                          : insight.impact === 'medium'
-                            ? 'default'
-                            : 'secondary'
-                      }
-                      className={`text-xs font-medium shrink-0 ${
-                        insight.impact === 'high'
-                          ? 'bg-red-50 text-red-700 border-red-200'
-                          : insight.impact === 'medium'
-                            ? 'bg-blue-50 text-blue-700 border-blue-200'
-                            : 'bg-slate-50 text-slate-700 border-slate-200'
-                      }`}
+              ) : (
+                insights.map((insight) => {
+                  const impactStyle = IMPACT_STYLES[insight.impact] ?? IMPACT_STYLES.low;
+                  return (
+                    <div
+                      key={insight.id}
+                      data-testid="insight-card"
+                      className="border border-slate-200 rounded-xl p-4 bg-gradient-to-br from-white to-slate-50/50 hover:border-slate-300 hover:shadow-md transition-all duration-300"
                     >
-                      {insight.impact === 'high'
-                        ? 'Élevé'
-                        : insight.impact === 'medium'
-                          ? 'Moyen'
-                          : 'Faible'}
-                    </Badge>
-                  </div>
-                  {insight.description && (
-                    <p className="text-sm text-slate-600 mb-4 leading-relaxed">
-                      {insight.description}
-                    </p>
-                  )}
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                    <span className="text-xs text-slate-500 font-medium">
-                      {insight.timestamp.toLocaleTimeString('fr-FR', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                    {insight.url && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 px-3 text-xs hover:bg-slate-100 text-slate-600 hover:text-slate-900"
-                      >
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        Source
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </ScrollArea>
-      </CardContent>
-    </Card>
-  );
+                      <div className="flex items-start justify-between mb-3">
+                        <h4 className="font-semibold text-slate-900 text-sm leading-snug pr-3">
+                          {insight.title}
+                        </h4>
+                        <Badge
+                          variant={impactStyle.variant}
+                          className={`text-xs font-medium shrink-0 ${impactStyle.className}`}
+                        >
+                          {impactStyle.label}
+                        </Badge>
+                      </div>
+                      {insight.description && (
+                        <p className="text-sm text-slate-600 mb-4 leading-relaxed">
+                          {insight.description}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                        <span className="text-xs text-slate-500 font-medium">
+                          {insight.timestamp.toLocaleTimeString('fr-FR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                        {insight.url && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-3 text-xs hover:bg-slate-100 text-slate-600 hover:text-slate-900"
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            Source
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="space-y-6">

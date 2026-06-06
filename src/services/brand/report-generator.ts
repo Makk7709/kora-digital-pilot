@@ -95,103 +95,109 @@ ${sentiment.overallScore < 50 ? '🚨 Actions correctives urgentes nécessaires'
     `.trim();
   }
 
-  private extractKeyInsights(brandReport: BrandReport): string[] {
-    const insights: string[] = [];
-    const { sentiment, mentions, competitors, keywords, swot, alerts } = brandReport;
-
-    // Insights basés sur le sentiment
+  private sentimentInsights(sentiment: BrandReport['sentiment']): string[] {
     if (sentiment.positive > 60) {
-      insights.push(`💚 Sentiment très positif (${sentiment.positive}%) - Capital confiance élevé`);
-    } else if (sentiment.negative > 40) {
-      insights.push(
-        `⚠️ Sentiment négatif préoccupant (${sentiment.negative}%) - Attention requise`,
+      return [`💚 Sentiment très positif (${sentiment.positive}%) - Capital confiance élevé`];
+    }
+    if (sentiment.negative > 40) {
+      return [`⚠️ Sentiment négatif préoccupant (${sentiment.negative}%) - Attention requise`];
+    }
+    return [];
+  }
+
+  private mentionsInsights(mentions: BrandReport['mentions']): string[] {
+    if (mentions.length === 0) return [];
+    const items: string[] = [];
+    const totalReach = mentions.reduce((sum, m) => sum + m.reach, 0);
+    const avgReach = Math.round(totalReach / mentions.length);
+    if (avgReach > 1000) {
+      items.push(
+        `📈 Forte visibilité avec une portée moyenne de ${avgReach.toLocaleString()} par mention`,
       );
     }
-
-    // Insights sur les mentions
-    if (mentions.length > 0) {
-      const totalReach = mentions.reduce((sum, m) => sum + m.reach, 0);
-      const avgReach = Math.round(totalReach / mentions.length);
-
-      if (avgReach > 1000) {
-        insights.push(
-          `📈 Forte visibilité avec une portée moyenne de ${avgReach.toLocaleString()} par mention`,
-        );
-      }
-
-      const sources = [...new Set(mentions.map((m) => m.source))];
-      if (sources.length > 3) {
-        insights.push(`🌐 Présence diversifiée sur ${sources.length} canaux différents`);
-      }
+    const sources = [...new Set(mentions.map((m) => m.source))];
+    if (sources.length > 3) {
+      items.push(`🌐 Présence diversifiée sur ${sources.length} canaux différents`);
     }
+    return items;
+  }
 
-    // Insights concurrentiels
-    if (competitors.length > 0) {
-      const topCompetitor = competitors.sort((a, b) => b.sentiment - a.sentiment)[0];
-      const brandPosition = competitors.findIndex((c) => c.sentiment < sentiment.overallScore) + 1;
-
-      if (brandPosition === 1) {
-        insights.push(`🏆 Leader en sentiment face à ${competitors.length} concurrents`);
-      } else {
-        insights.push(
-          `⚔️ Position ${brandPosition}/${competitors.length + 1} derrière ${topCompetitor.name}`,
-        );
-      }
+  private competitiveInsights(
+    competitors: BrandReport['competitors'],
+    overallScore: number,
+  ): string[] {
+    if (competitors.length === 0) return [];
+    const topCompetitor = competitors.sort((a, b) => b.sentiment - a.sentiment)[0];
+    const brandPosition = competitors.findIndex((c) => c.sentiment < overallScore) + 1;
+    if (brandPosition === 1) {
+      return [`🏆 Leader en sentiment face à ${competitors.length} concurrents`];
     }
+    return [
+      `⚔️ Position ${brandPosition}/${competitors.length + 1} derrière ${topCompetitor.name}`,
+    ];
+  }
 
-    // Insights sur les mots-clés
-    if (keywords.length > 0) {
-      const upTrendKeywords = keywords.filter((k) => k.trend === 'up');
-      if (upTrendKeywords.length > 0) {
-        insights.push(
-          `🔥 ${upTrendKeywords.length} mots-clés en tendance: ${upTrendKeywords
-            .slice(0, 3)
-            .map((k) => k.word)
-            .join(', ')}`,
-        );
-      }
-    }
+  private keywordInsights(keywords: BrandReport['keywords']): string[] {
+    const upTrend = keywords.filter((k) => k.trend === 'up');
+    if (upTrend.length === 0) return [];
+    return [
+      `🔥 ${upTrend.length} mots-clés en tendance: ${upTrend
+        .slice(0, 3)
+        .map((k) => k.word)
+        .join(', ')}`,
+    ];
+  }
 
-    // Insights SWOT
+  private swotInsights(swot: BrandReport['swot']): string[] {
+    const items: string[] = [];
     if (swot.strengths.length > swot.weaknesses.length) {
-      insights.push(
+      items.push(
         `💪 Position forte avec ${swot.strengths.length} forces vs ${swot.weaknesses.length} faiblesses`,
       );
     }
-
     if (swot.opportunities.length > swot.threats.length) {
-      insights.push(
+      items.push(
         `🌟 Contexte favorable: ${swot.opportunities.length} opportunités vs ${swot.threats.length} menaces`,
       );
     }
+    return items;
+  }
 
-    // Insights sur les alertes
-    const criticalAlerts = alerts.filter((a) => a.type === 'critical');
-    if (criticalAlerts.length > 0) {
-      insights.push(
-        `🚨 ${criticalAlerts.length} alerte(s) critique(s) nécessitant une action immédiate`,
-      );
-    } else if (alerts.length === 0) {
-      insights.push(`✅ Aucune alerte détectée - Situation sous contrôle`);
+  private alertInsights(alerts: BrandReport['alerts']): string[] {
+    const critical = alerts.filter((a) => a.type === 'critical');
+    if (critical.length > 0) {
+      return [`🚨 ${critical.length} alerte(s) critique(s) nécessitant une action immédiate`];
     }
+    if (alerts.length === 0) {
+      return [`✅ Aucune alerte détectée - Situation sous contrôle`];
+    }
+    return [];
+  }
 
-    // Insights additionnels pour enrichir l'analyse
+  private extractKeyInsights(brandReport: BrandReport): string[] {
+    const { sentiment, mentions, competitors, keywords, swot, alerts } = brandReport;
+    const insights: string[] = [
+      ...this.sentimentInsights(sentiment),
+      ...this.mentionsInsights(mentions),
+      ...this.competitiveInsights(competitors, sentiment.overallScore),
+      ...this.keywordInsights(keywords),
+      ...this.swotInsights(swot),
+      ...this.alertInsights(alerts),
+    ];
+
     if (insights.length < 5) {
-      const additionalInsights = [
+      const additional = [
         `📊 Analyse basée sur ${mentions.length} sources de données réelles`,
         `🎯 Score de réputation de ${sentiment.overallScore}/100 dans la moyenne du secteur`,
         `🔍 Surveillance continue recommandée pour maintenir cette analyse à jour`,
         `📈 Potentiel d'amélioration identifié dans plusieurs domaines clés`,
       ];
-
-      additionalInsights.forEach((insight) => {
-        if (insights.length < 8) {
-          insights.push(insight);
-        }
-      });
+      for (const insight of additional) {
+        if (insights.length >= 8) break;
+        insights.push(insight);
+      }
     }
-
-    return insights.slice(0, 8); // Maximum 8 insights
+    return insights.slice(0, 8);
   }
 
   private generateCompetitivePosition(brandReport: BrandReport): string {
@@ -218,44 +224,72 @@ ${sentiment.overallScore < 50 ? '🚨 Actions correctives urgentes nécessaires'
     return `📊 **Position intermédiaire** - ${brandName} se positionne au milieu du peloton concurrentiel avec ${brandScore}/100, devançant ${worseCompetitors.length} concurrent(s) mais derrière ${betterCompetitors.length} acteur(s). Opportunités d'amélioration identifiées pour progresser vers le leadership.`;
   }
 
-  private generateRecommendedActions(brandReport: BrandReport): string[] {
-    const actions: string[] = [];
-    const { sentiment, mentions, competitors, keywords, swot } = brandReport;
-
-    // Actions basées sur le sentiment
+  private sentimentActions(sentiment: BrandReport['sentiment']): string[] {
     if (sentiment.overallScore < 50) {
-      actions.push('🚨 Lancer une campagne de gestion de crise pour améliorer la perception');
-      actions.push(
+      return [
+        '🚨 Lancer une campagne de gestion de crise pour améliorer la perception',
         '📞 Engager directement avec les détracteurs pour résoudre leurs préoccupations',
-      );
-    } else if (sentiment.positive > 70) {
-      actions.push('🎯 Amplifier les messages positifs via les ambassadeurs satisfaits');
+      ];
     }
-
-    // Actions basées sur les mentions
-    if (mentions.length > 0) {
-      const lowReachMentions = mentions.filter((m) => m.reach < 500);
-      if (lowReachMentions.length > mentions.length / 2) {
-        actions.push('📢 Développer une stratégie de contenu viral pour augmenter la portée');
-      }
-
-      const negativeMentions = mentions.filter((m) => m.sentiment === 'negative');
-      if (negativeMentions.length > 0) {
-        actions.push('🔧 Analyser et traiter les causes des mentions négatives identifiées');
-      }
+    if (sentiment.positive > 70) {
+      return ['🎯 Amplifier les messages positifs via les ambassadeurs satisfaits'];
     }
+    return [];
+  }
 
-    // Actions concurrentielles
+  private mentionsActions(mentions: BrandReport['mentions']): string[] {
+    if (mentions.length === 0) return [];
+    const items: string[] = [];
+    const lowReach = mentions.filter((m) => m.reach < 500);
+    if (lowReach.length > mentions.length / 2) {
+      items.push('📢 Développer une stratégie de contenu viral pour augmenter la portée');
+    }
+    if (mentions.some((m) => m.sentiment === 'negative')) {
+      items.push('🔧 Analyser et traiter les causes des mentions négatives identifiées');
+    }
+    return items;
+  }
+
+  private competitorsActions(
+    competitors: BrandReport['competitors'],
+    overallScore: number,
+  ): string[] {
+    const items: string[] = [];
     if (competitors.length > 0) {
-      const topCompetitor = competitors.sort((a, b) => b.sentiment - a.sentiment)[0];
-      if (topCompetitor.sentiment > sentiment.overallScore + 10) {
-        actions.push(
-          `🎯 Étudier la stratégie de ${topCompetitor.name} pour identifier les meilleures pratiques`,
+      const top = competitors.sort((a, b) => b.sentiment - a.sentiment)[0];
+      if (top.sentiment > overallScore + 10) {
+        items.push(
+          `🎯 Étudier la stratégie de ${top.name} pour identifier les meilleures pratiques`,
         );
       }
     }
+    if (competitors.length > 2) {
+      items.push(
+        '🔍 Développer une veille concurrentielle systématique pour anticiper les mouvements du marché',
+      );
+    } else {
+      items.push('🕵️ Identifier et analyser de nouveaux concurrents émergents sur le marché');
+    }
+    return items;
+  }
 
-    // SEO et mots-clés
+  private socialPresenceActions(mentions: BrandReport['mentions']): string[] {
+    const socials = mentions.filter((m) =>
+      ['Twitter', 'LinkedIn', 'Facebook', 'Instagram'].includes(m.source),
+    );
+    return socials.length > 0
+      ? ["🤝 Renforcer l'engagement communautaire sur les réseaux sociaux détectés"]
+      : ['🌐 Développer une présence sur les réseaux sociaux prioritaires du secteur'];
+  }
+
+  private generateRecommendedActions(brandReport: BrandReport): string[] {
+    const { sentiment, mentions, competitors, keywords, swot } = brandReport;
+    const actions: string[] = [
+      ...this.sentimentActions(sentiment),
+      ...this.mentionsActions(mentions),
+      ...this.competitorsActions(competitors, sentiment.overallScore),
+    ];
+
     const topKeywords = keywords.sort((a, b) => b.count - a.count).slice(0, 3);
     if (topKeywords.length > 0) {
       actions.push(
@@ -263,39 +297,18 @@ ${sentiment.overallScore < 50 ? '🚨 Actions correctives urgentes nécessaires'
       );
     }
 
-    // Veille concurrentielle
-    if (competitors.length > 2) {
-      actions.push(
-        '🔍 Développer une veille concurrentielle systématique pour anticiper les mouvements du marché',
-      );
-    } else {
-      actions.push('🕵️ Identifier et analyser de nouveaux concurrents émergents sur le marché');
-    }
-
-    // Actions basées sur les faiblesses SWOT
     if (swot.weaknesses.length > 0) {
       actions.push(`⚡ Adresser la faiblesse prioritaire: ${swot.weaknesses[0]}`);
     }
-
-    // Actions basées sur les menaces
     if (swot.threats.length > 0) {
       actions.push(`🛡️ Développer une stratégie défensive contre: ${swot.threats[0]}`);
     }
 
-    // Actions systémiques obligatoires
     actions.push(
       "📈 Mettre en place un dashboard de suivi KPI pour monitorer l'évolution du sentiment",
     );
 
-    // Engagement communauté
-    const socialSources = mentions.filter((m) =>
-      ['Twitter', 'LinkedIn', 'Facebook', 'Instagram'].includes(m.source),
-    );
-    if (socialSources.length > 0) {
-      actions.push("🤝 Renforcer l'engagement communautaire sur les réseaux sociaux détectés");
-    } else {
-      actions.push('🌐 Développer une présence sur les réseaux sociaux prioritaires du secteur');
-    }
+    actions.push(...this.socialPresenceActions(mentions));
 
     // Actions stratégiques supplémentaires pour atteindre 12+ actions
     const strategicActions = [

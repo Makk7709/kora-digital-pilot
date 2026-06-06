@@ -141,10 +141,97 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
     }
   };
 
+  const buildExportPayload = (dataToExport: any) => {
+    if (rawPerplexityData && !report) {
+      return {
+        brandName,
+        executionTimestamp: new Date(),
+        rawData: rawPerplexityData,
+        type: 'Kora P.R.I.S.M Analysis',
+        objectiveAnalysis: rawPerplexityData.objectiveAnalysis,
+        strategicAnalysis: rawPerplexityData.strategicAnalysis,
+        competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
+        trendAnalysis: rawPerplexityData.trendAnalysis,
+        sources: rawPerplexityData.sources,
+      };
+    }
+    return dataToExport;
+  };
+
+  const runPdfExport = async (exportData: any) => {
+    try {
+      const productionExportService = createReportExportService();
+      const enrichedData = {
+        ...exportData,
+        brandName: brandName || 'Marque analysée',
+        fullContent: rawPerplexityData
+          ? {
+              objectiveAnalysis: rawPerplexityData.objectiveAnalysis,
+              strategicAnalysis: rawPerplexityData.strategicAnalysis,
+              competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
+              trendAnalysis: rawPerplexityData.trendAnalysis,
+            }
+          : null,
+        metadata: {
+          generatedBy: 'Kora P.R.I.S.M Production',
+          analysisDepth: 'Professional',
+          dataSource: 'Perplexity AI + Kora Processing',
+          timestamp: new Date().toISOString(),
+          qualityAssurance: 'Production Grade',
+        },
+      };
+      const productionOptions: ExportOptions = {
+        format: 'pdf',
+        template: 'executive',
+        includeCharts: true,
+        includeRawData: true,
+        branding: { companyName: 'Kora P.R.I.S.M Analysis' },
+      };
+      const result = await productionExportService.exportReport(enrichedData, productionOptions);
+      if (!result.success) {
+        throw new Error('Export Production échoué');
+      }
+      return result;
+    } catch (productionError) {
+      console.warn(
+        '⚠️ Export Production indisponible, utilisation export basique:',
+        productionError instanceof Error ? productionError.message : productionError,
+      );
+      return exportSimplePDF(exportData, brandName);
+    }
+  };
+
+  const runStandardExport = (format: 'json' | 'csv' | 'excel', exportData: any) => {
+    const exportOptions: ExportOptions = {
+      format,
+      includeMetadata: true,
+      compressionLevel: 'medium',
+      customization: {
+        includeCharts: false,
+        includeRawData: true,
+        includeExecutiveSummary: true,
+        includeRecommendations: true,
+        includeAlerts: true,
+      },
+    };
+    return exportService.exportReport(exportData, exportOptions);
+  };
+
+  const triggerDownload = (result: { downloadUrl?: string; fileName?: string }) => {
+    if (!result.downloadUrl || !result.fileName) {
+      throw new Error("Résultat d'export incomplet (URL ou nom de fichier manquant)");
+    }
+    const link = document.createElement('a');
+    link.href = result.downloadUrl;
+    link.download = result.fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // === EXPORT DU RAPPORT PREMIUM ===
   const exportReport = async (format: 'json' | 'csv' | 'excel' | 'pdf') => {
     const dataToExport = report || rawPerplexityData;
-
     if (!dataToExport) {
       setError("Aucun rapport à exporter. Générez d'abord un rapport.");
       return;
@@ -154,115 +241,16 @@ export const BrandIntelligenceDashboard: React.FC<Props> = ({ brandName, perplex
     setError(null);
 
     try {
-      console.log(`🚀 Export du rapport en format ${format.toUpperCase()}...`);
+      const exportData = buildExportPayload(dataToExport);
+      const result =
+        format === 'pdf'
+          ? await runPdfExport(exportData)
+          : await runStandardExport(format, exportData);
 
-      // Préparation des données d'export enrichies
-      let exportData: any = dataToExport;
-      if (rawPerplexityData && !report) {
-        exportData = {
-          brandName: brandName,
-          executionTimestamp: new Date(),
-          rawData: rawPerplexityData,
-          type: 'Kora P.R.I.S.M Analysis',
-          objectiveAnalysis: rawPerplexityData.objectiveAnalysis,
-          strategicAnalysis: rawPerplexityData.strategicAnalysis,
-          competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
-          trendAnalysis: rawPerplexityData.trendAnalysis,
-          sources: rawPerplexityData.sources,
-        };
-      }
-
-      let result;
-
-      // === GESTION PRODUCTION POUR PDF ===
-      if (format === 'pdf') {
-        console.log('📄 Export PDF P.R.I.S.M - Version Production...');
-
-        try {
-          // 🎯 PRODUCTION EXPORT SERVICE - Service réel uniquement
-          console.log('🎯 Initialisation Production Export Service...');
-          const productionExportService = createReportExportService();
-
-          // 🔥 ENRICHISSEMENT DONNÉES PRODUCTION
-          const enrichedData = {
-            ...exportData,
-            brandName: brandName || 'Marque analysée',
-            fullContent: rawPerplexityData
-              ? {
-                  objectiveAnalysis: rawPerplexityData.objectiveAnalysis,
-                  strategicAnalysis: rawPerplexityData.strategicAnalysis,
-                  competitiveAnalysis: rawPerplexityData.competitiveAnalysis,
-                  trendAnalysis: rawPerplexityData.trendAnalysis,
-                }
-              : null,
-            metadata: {
-              generatedBy: 'Kora P.R.I.S.M Production',
-              analysisDepth: 'Professional',
-              dataSource: 'Perplexity AI + Kora Processing',
-              timestamp: new Date().toISOString(),
-              qualityAssurance: 'Production Grade',
-            },
-          };
-
-          // 🚀 CONFIGURATION PRODUCTION OPTIMISÉE
-          const productionOptions: ExportOptions = {
-            format: 'pdf',
-            template: 'executive',
-            includeCharts: true,
-            includeRawData: true,
-            branding: {
-              companyName: 'Kora P.R.I.S.M Analysis',
-            },
-          };
-
-          console.log('🔥 Lancement export Production avec configuration optimale...');
-          result = await productionExportService.exportReport(enrichedData, productionOptions);
-
-          if (result.success) {
-            console.log('✅ Export Production réussi !');
-          } else {
-            throw new Error('Export Production échoué');
-          }
-        } catch (productionError) {
-          console.warn(
-            '⚠️ Export Production indisponible, utilisation export basique:',
-            productionError.message,
-          );
-
-          // === FALLBACK PDF SIMPLE GARANTI ===
-          result = await exportSimplePDF(exportData, brandName);
-        }
-      } else {
-        // === UTILISER SERVICE PRODUCTION POUR AUTRES FORMATS ===
-        const exportOptions: ExportOptions = {
-          format,
-          includeMetadata: true,
-          compressionLevel: 'medium',
-          customization: {
-            includeCharts: false,
-            includeRawData: true,
-            includeExecutiveSummary: true,
-            includeRecommendations: true,
-            includeAlerts: true,
-          },
-        };
-
-        result = await exportService.exportReport(exportData, exportOptions);
-      }
-
-      // Déclencher téléchargement
-      if (result && result.success) {
-        const link = document.createElement('a');
-        link.href = result.downloadUrl;
-        link.download = result.fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        console.log(`✅ Export ${format.toUpperCase()} réussi:`, result.fileName);
-      } else {
+      if (!result?.success) {
         throw new Error("Erreur lors de l'export");
       }
+      triggerDownload(result);
     } catch (err: any) {
       setError(`Erreur export ${format.toUpperCase()}: ${err.message}`);
       console.error(`❌ Erreur export ${format.toUpperCase()}:`, err);

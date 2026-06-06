@@ -1,14 +1,8 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { DEMO_ORG, type KoraOrg } from '@/lib/auth-client';
+import { logger } from '@/lib/logger';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase-client';
 
 /**
@@ -59,9 +53,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const supabaseEnabled = isSupabaseConfigured();
 
   const [orgs, setOrgs] = useState<KoraOrg[]>(supabaseEnabled ? [] : [DEMO_ORG]);
-  const [currentOrg, setCurrentOrg] = useState<KoraOrg | null>(
-    supabaseEnabled ? null : DEMO_ORG,
-  );
+  const [currentOrg, setCurrentOrg] = useState<KoraOrg | null>(supabaseEnabled ? null : DEMO_ORG);
   const [loading, setLoading] = useState<boolean>(supabaseEnabled);
 
   const refresh = useCallback(async () => {
@@ -104,7 +96,9 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [isAuthenticated, supabaseEnabled, user]);
 
   useEffect(() => {
-    void refresh();
+    refresh().catch((error) => {
+      logger.error('[TenantContext] refresh failed', error);
+    });
   }, [refresh]);
 
   const switchOrg = useCallback(

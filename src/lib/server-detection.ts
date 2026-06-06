@@ -14,13 +14,18 @@ interface ServerStatus {
   lastOnlineTime: Date | null;
 }
 
-// Type pour la propriété window
+// Type partagé pour la propriété exposée sur l'objet global du runtime
+type ApiCallManagerGlobal = {
+  markServerAsUp: (endpoint: string) => void;
+  reset?: () => void;
+};
+
 declare global {
   interface Window {
-    apiCallManager?: {
-      markServerAsUp: (endpoint: string) => void;
-    };
+    apiCallManager?: ApiCallManagerGlobal;
   }
+  // eslint-disable-next-line no-var
+  var apiCallManager: ApiCallManagerGlobal | undefined;
 }
 
 class ServerDetector {
@@ -83,13 +88,40 @@ class ServerDetector {
     }
   }
 
+  private async probeHealth(): Promise<boolean> {
+    try {
+      const response = await fetch('/api/health', {
+        method: 'GET',
+        signal: AbortSignal.timeout(3000),
+        cache: 'no-cache',
+      });
+      return response.ok && response.status !== 503;
+    } catch {
+      return false;
+    }
+  }
+
+  private handleTransitionToOnline(): void {
+    logger.debug('✅ [Server Detector] Backend server is now ONLINE!');
+    if (typeof globalThis !== 'undefined' && globalThis.apiCallManager) {
+      globalThis.apiCallManager.markServerAsUp('/api/health');
+    }
+  }
+
+  private handleTransitionToOffline(): void {
+    logger.debug('🚨 [Server Detector] Backend server is now OFFLINE');
+    if (this.status.consecutiveFailures >= 3) {
+      logger.debug(
+        '🛑 [Server Detector] Server marked as permanently down - stopping automatic checks',
+      );
+    }
+  }
+
   /**
    * Vérifier le statut du serveur
    */
   private async checkServerStatus(): Promise<void> {
     if (this.isChecking) return;
-
-    // Si le serveur est hors ligne depuis plus de 3 échecs, arrêter les vérifications
     if (!this.status.isOnline && this.status.consecutiveFailures >= 3) {
       logger.debug('🔇 [Server Detector] Server marked as permanently down, skipping check');
       return;
@@ -99,14 +131,7 @@ class ServerDetector {
     const wasOnline = this.status.isOnline;
 
     try {
-      const response = await fetch('/api/health', {
-        method: 'GET',
-        signal: AbortSignal.timeout(3000),
-        cache: 'no-cache',
-      });
-
-      const isOnline = response.ok && response.status !== 503;
-
+      const isOnline = await this.probeHealth();
       this.status = {
         isOnline,
         lastCheck: new Date(),
@@ -114,45 +139,13 @@ class ServerDetector {
         lastOnlineTime: isOnline ? new Date() : this.status.lastOnlineTime,
       };
 
-      // Notifier les changements d'état
       if (wasOnline !== isOnline) {
         if (isOnline) {
-          logger.debug('✅ [Server Detector] Backend server is now ONLINE!');
-          // Notifier le gestionnaire d'API que le serveur est revenu
-          if (typeof window !== 'undefined' && window.apiCallManager) {
-            window.apiCallManager.markServerAsUp('/api/health');
-          }
+          this.handleTransitionToOnline();
         } else {
-          logger.debug('🚨 [Server Detector] Backend server is now OFFLINE');
-
-          // Après 3 échecs, arrêter les vérifications automatiques
-          if (this.status.consecutiveFailures >= 3) {
-            logger.debug(
-              '🛑 [Server Detector] Server marked as permanently down - stopping automatic checks',
-            );
-          }
+          this.handleTransitionToOffline();
         }
-
         this.notifyListeners();
-      }
-    } catch (error) {
-      this.status = {
-        isOnline: false,
-        lastCheck: new Date(),
-        consecutiveFailures: this.status.consecutiveFailures + 1,
-        lastOnlineTime: this.status.lastOnlineTime,
-      };
-
-      if (wasOnline) {
-        logger.debug('🚨 [Server Detector] Backend server is now OFFLINE');
-        this.notifyListeners();
-      }
-
-      // Après 3 échecs, arrêter les vérifications automatiques
-      if (this.status.consecutiveFailures >= 3) {
-        logger.debug(
-          '🛑 [Server Detector] Server marked as permanently down - stopping automatic checks',
-        );
       }
     } finally {
       this.isChecking = false;

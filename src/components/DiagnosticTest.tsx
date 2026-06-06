@@ -15,120 +15,128 @@ const DiagnosticTest = () => {
   const [results, setResults] = useState<DiagnosticResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
 
-  const runDiagnostics = async () => {
-    setIsRunning(true);
-    setResults([]);
+  const errorDetail = (error: unknown): string =>
+    error instanceof Error ? error.message : 'Erreur inconnue';
 
-    const diagnostics: DiagnosticResult[] = [];
-
-    // Test 1: Variables d'environnement
+  const checkEnvVariables = (): DiagnosticResult => {
     try {
       const hasOpenAI = !!import.meta.env.VITE_OPENAI_API_KEY;
       const hasPerplexity = !!import.meta.env.VITE_PERPLEXITY_API_KEY;
       const hasLinkedIn = !!import.meta.env.VITE_LINKEDIN_CLIENT_ID;
-
-      diagnostics.push({
-        name: 'Variables d\'environnement',
+      return {
+        name: "Variables d'environnement",
         status: hasOpenAI && hasPerplexity ? 'success' : 'warning',
         message: `OpenAI: ${hasOpenAI ? '✓' : '✗'}, Perplexity: ${hasPerplexity ? '✓' : '✗'}, LinkedIn: ${hasLinkedIn ? '✓' : '✗'}`,
-        details: `Mode: ${import.meta.env.MODE}, DEV: ${import.meta.env.DEV}`
-      });
+        details: `Mode: ${import.meta.env.MODE}, DEV: ${import.meta.env.DEV}`,
+      };
     } catch (error) {
-      diagnostics.push({
-        name: 'Variables d\'environnement',
+      return {
+        name: "Variables d'environnement",
         status: 'error',
         message: 'Erreur lors de la lecture des variables',
-        details: error instanceof Error ? error.message : 'Erreur inconnue'
-      });
+        details: errorDetail(error),
+      };
     }
+  };
 
-    // Test 2: API Proxy
+  const checkApiProxy = async (): Promise<DiagnosticResult> => {
     try {
       const response = await fetch('http://localhost:3001/api/health');
       if (response.ok) {
         const data = await response.json();
-        diagnostics.push({
+        return {
           name: 'API Proxy',
           status: 'success',
           message: 'Proxy LinkedIn opérationnel',
-          details: `Service: ${data.service || 'OK'}`
-        });
-      } else {
-        diagnostics.push({
-          name: 'API Proxy',
-          status: 'warning',
-          message: `Erreur HTTP ${response.status}`,
-          details: 'Le proxy LinkedIn n\'est pas accessible'
-        });
+          details: `Service: ${data.service || 'OK'}`,
+        };
       }
-    } catch (error) {
-      diagnostics.push({
+      return {
+        name: 'API Proxy',
+        status: 'warning',
+        message: `Erreur HTTP ${response.status}`,
+        details: "Le proxy LinkedIn n'est pas accessible",
+      };
+    } catch {
+      return {
         name: 'API Proxy',
         status: 'warning',
         message: 'Proxy non disponible',
-        details: 'Le serveur proxy LinkedIn n\'est pas démarré'
-      });
+        details: "Le serveur proxy LinkedIn n'est pas démarré",
+      };
     }
+  };
 
-    // Test 3: React Router
+  const checkReactRouter = (): DiagnosticResult => {
     try {
-      const currentPath = window.location.pathname;
-      diagnostics.push({
+      return {
         name: 'React Router',
         status: 'success',
         message: 'Routage fonctionnel',
-        details: `Route actuelle: ${currentPath}`
-      });
+        details: `Route actuelle: ${window.location.pathname}`,
+      };
     } catch (error) {
-      diagnostics.push({
+      return {
         name: 'React Router',
         status: 'error',
         message: 'Erreur de routage',
-        details: error instanceof Error ? error.message : 'Erreur inconnue'
-      });
+        details: errorDetail(error),
+      };
     }
+  };
 
-    // Test 4: Local Storage
+  const checkLocalStorage = (): DiagnosticResult => {
     try {
       const testKey = 'diagnostic-test';
       localStorage.setItem(testKey, 'test');
       const retrieved = localStorage.getItem(testKey);
       localStorage.removeItem(testKey);
-
-      diagnostics.push({
+      const ok = retrieved === 'test';
+      return {
         name: 'Local Storage',
-        status: retrieved === 'test' ? 'success' : 'error',
-        message: retrieved === 'test' ? 'Local Storage fonctionnel' : 'Erreur Local Storage',
-        details: 'Stockage local pour les paramètres utilisateur'
-      });
+        status: ok ? 'success' : 'error',
+        message: ok ? 'Local Storage fonctionnel' : 'Erreur Local Storage',
+        details: 'Stockage local pour les paramètres utilisateur',
+      };
     } catch (error) {
-      diagnostics.push({
+      return {
         name: 'Local Storage',
         status: 'error',
         message: 'Local Storage non disponible',
-        details: error instanceof Error ? error.message : 'Erreur inconnue'
-      });
+        details: errorDetail(error),
+      };
     }
+  };
 
-    // Test 5: Services IA
+  const checkAiServices = (): DiagnosticResult => {
     try {
-      // Test simple de la fenêtre globale LinkedIn
-      const hasLinkedInAPI = !!(window as any).linkedinAPI;
-      diagnostics.push({
+      const hasLinkedInAPI = !!(window as unknown as { linkedinAPI?: unknown }).linkedinAPI;
+      return {
         name: 'Services IA',
         status: hasLinkedInAPI ? 'success' : 'warning',
         message: hasLinkedInAPI ? 'LinkedIn API exposée' : 'LinkedIn API non exposée',
-        details: 'Services d\'intelligence artificielle'
-      });
+        details: "Services d'intelligence artificielle",
+      };
     } catch (error) {
-      diagnostics.push({
+      return {
         name: 'Services IA',
         status: 'warning',
         message: 'Erreur test services IA',
-        details: error instanceof Error ? error.message : 'Erreur inconnue'
-      });
+        details: errorDetail(error),
+      };
     }
+  };
 
+  const runDiagnostics = async () => {
+    setIsRunning(true);
+    setResults([]);
+    const diagnostics: DiagnosticResult[] = [
+      checkEnvVariables(),
+      await checkApiProxy(),
+      checkReactRouter(),
+      checkLocalStorage(),
+      checkAiServices(),
+    ];
     setResults(diagnostics);
     setIsRunning(false);
   };
@@ -151,7 +159,8 @@ const DiagnosticTest = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const variant = status === 'success' ? 'default' : status === 'error' ? 'destructive' : 'secondary';
+    const variant =
+      status === 'success' ? 'default' : status === 'error' ? 'destructive' : 'secondary';
     return (
       <Badge variant={variant} className="ml-2">
         {status === 'success' ? 'OK' : status === 'error' ? 'Erreur' : 'Attention'}
@@ -166,8 +175,8 @@ const DiagnosticTest = () => {
           <h1 className="text-2xl font-bold text-slate-900">Diagnostic Système</h1>
           <p className="text-slate-600">Vérification de l'état de l'application Korev AI</p>
         </div>
-        <Button 
-          onClick={runDiagnostics} 
+        <Button
+          onClick={runDiagnostics}
           disabled={isRunning}
           className="flex items-center space-x-2"
         >
@@ -191,9 +200,7 @@ const DiagnosticTest = () => {
             <CardContent>
               <p className="text-slate-700 mb-2">{result.message}</p>
               {result.details && (
-                <p className="text-sm text-slate-500 bg-slate-50 p-2 rounded">
-                  {result.details}
-                </p>
+                <p className="text-sm text-slate-500 bg-slate-50 p-2 rounded">{result.details}</p>
               )}
             </CardContent>
           </Card>
@@ -216,8 +223,8 @@ const DiagnosticTest = () => {
             <div>
               <h3 className="font-semibold text-blue-900 mb-1">Application Status</h3>
               <p className="text-blue-700 text-sm">
-                L'application Korev AI fonctionne. Si vous voyez cette page, 
-                les corrections de l'écran blanc ont été appliquées avec succès.
+                L'application Korev AI fonctionne. Si vous voyez cette page, les corrections de
+                l'écran blanc ont été appliquées avec succès.
               </p>
             </div>
           </div>
@@ -227,4 +234,4 @@ const DiagnosticTest = () => {
   );
 };
 
-export default DiagnosticTest; 
+export default DiagnosticTest;

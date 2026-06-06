@@ -124,13 +124,10 @@ class LinkedInAPI {
         'http://localhost:8088/auth/linkedin/callback',
     };
 
-    // Reprise opportuniste de la session côté serveur via le cookie httpOnly.
-    // Fire-and-forget: l'UI peut quand même observer l'état via isAuthenticated()
-    // après que la promesse a résolu (les hooks attendent restoreSession() au mount).
-    if (typeof window !== 'undefined') {
-      void this.restoreSession();
-    }
-
+    // La reprise de session via le cookie httpOnly est laissée à la charge
+    // explicite des consommateurs (hooks/components) via `restoreSession()`.
+    // Aucune opération asynchrone n'est lancée dans le constructeur afin de
+    // garantir un cycle de vie déterministe (cf. règle Sonar S7059).
     console.log('🚀 LinkedIn API initialisé:', {
       clientId: this.config.clientId,
       redirectUri: this.config.redirectUri,
@@ -565,142 +562,102 @@ class LinkedInAPI {
     }
   }
 
+  private getPeriodTimestamps(period: string): { startTimestamp: number; endTimestamp: number } {
+    const endDate = new Date();
+    const startDate = new Date();
+    const days: Record<string, number> = { '7d': 7, '30d': 30, '90d': 90 };
+    const offset = days[period];
+    if (offset !== undefined) {
+      startDate.setDate(endDate.getDate() - offset);
+    }
+    return { startTimestamp: startDate.getTime(), endTimestamp: endDate.getTime() };
+  }
+
+  private async fetchUgcPosts(
+    userId: string,
+    startTimestamp: number,
+    endTimestamp: number,
+  ): Promise<LinkedInPost[]> {
+    const ugcParams = new URLSearchParams({
+      q: 'authors',
+      authors: `List(urn:li:person:${userId})`,
+      sortBy: 'LAST_MODIFIED',
+      count: '50',
+      start: '0',
+    });
+    const response = await fetch(`${this.baseURL}/ugcPosts?${ugcParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json',
+        'X-Restli-Protocol-Version': '2.0.0',
+        'LinkedIn-Version': '202405',
+      },
+    });
+    if (!response.ok) {
+      console.warn('⚠️ Erreur API UGC:', response.status, await response.text());
+      return [];
+    }
+    const data = await response.json();
+    if (!data.elements?.length) return [];
+    return this.transformLinkedInUGCPosts(data.elements, startTimestamp, endTimestamp);
+  }
+
+  private async fetchSharesPosts(
+    userId: string,
+    startTimestamp: number,
+    endTimestamp: number,
+  ): Promise<LinkedInPost[]> {
+    const sharesParams = new URLSearchParams({
+      q: 'owners',
+      owners: `urn:li:person:${userId}`,
+      sortBy: 'LAST_MODIFIED',
+      count: '50',
+      start: '0',
+    });
+    const response = await fetch(`${this.baseURL}/shares?${sharesParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json',
+        'X-Restli-Protocol-Version': '2.0.0',
+      },
+    });
+    if (!response.ok) {
+      console.warn('⚠️ Erreur API Shares:', response.status, await response.text());
+      return [];
+    }
+    const data = await response.json();
+    if (!data.elements?.length) return [];
+    return this.transformLinkedInSharesPosts(data.elements, startTimestamp, endTimestamp);
+  }
+
   /**
    * Récupérer les posts de l'organisation avec VRAIES données LinkedIn
    */
   private async getOrganizationPosts(period: string): Promise<LinkedInPost[]> {
-    console.log('🎉 Récupération des VRAIES données LinkedIn (Application Vérifiée)...');
-
     if (!this.accessToken) {
       console.warn("⚠️ Pas de token d'accès - utilisation des données de fallback");
       return this.getMockPosts();
     }
 
+    const { startTimestamp, endTimestamp } = this.getPeriodTimestamps(period);
+
     try {
-      // Calculer la date de début selon la période
-      const endDate = new Date();
-      const startDate = new Date();
+      const profile = await this.getUserProfile();
+      const userId = profile.id;
 
-      switch (period) {
-        case '7d':
-          startDate.setDate(endDate.getDate() - 7);
-          break;
-        case '30d':
-          startDate.setDate(endDate.getDate() - 30);
-          break;
-        case '90d':
-          startDate.setDate(endDate.getDate() - 90);
-          break;
-      }
-
-      const startTimestamp = startDate.getTime();
-      const endTimestamp = endDate.getTime();
-
-      console.log(
-        `🔍 Recherche des posts entre ${startDate.toISOString()} et ${endDate.toISOString()}`,
-      );
-
-      // 🎉 NOUVEAU: Accès direct aux APIs LinkedIn vérifiées
-      let posts: LinkedInPost[] = [];
-
-      try {
-        // Étape 1: Récupérer l'ID de l'utilisateur/organisation
-        console.log('🔄 Récupération du profil utilisateur...');
-        const profile = await this.getUserProfile();
-        const userId = profile.id;
-
-        // Étape 2: Récupérer les posts de l'utilisateur via l'API LinkedIn V2
-        console.log('🔄 Récupération des posts LinkedIn via API officielle...');
-
-        // Construction de la requête UGC (User Generated Content)
-        const ugcUrl = `${this.baseURL}/ugcPosts`;
-        const ugcParams = new URLSearchParams({
-          q: 'authors',
-          authors: `List(urn:li:person:${userId})`,
-          sortBy: 'LAST_MODIFIED',
-          count: '50',
-          start: '0',
-        });
-
-        const ugcResponse = await fetch(`${ugcUrl}?${ugcParams.toString()}`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${this.accessToken}`,
-            'Content-Type': 'application/json',
-            'X-Restli-Protocol-Version': '2.0.0',
-            'LinkedIn-Version': '202405',
-          },
-        });
-
-        if (ugcResponse.ok) {
-          const ugcData = await ugcResponse.json();
-          console.log('✅ Posts UGC récupérés:', ugcData);
-
-          if (ugcData.elements && ugcData.elements.length > 0) {
-            posts = this.transformLinkedInUGCPosts(ugcData.elements, startTimestamp, endTimestamp);
-            console.log(`✅ ${posts.length} posts transformés à partir des données UGC`);
-          }
-        } else {
-          console.warn('⚠️ Erreur API UGC:', ugcResponse.status, await ugcResponse.text());
-        }
-
-        // Étape 3: Fallback - Essayer l'API des shares si UGC échoue
-        if (posts.length === 0) {
-          console.log("🔄 Tentative avec l'API Shares...");
-
-          const sharesUrl = `${this.baseURL}/shares`;
-          const sharesParams = new URLSearchParams({
-            q: 'owners',
-            owners: `urn:li:person:${userId}`,
-            sortBy: 'LAST_MODIFIED',
-            count: '50',
-            start: '0',
-          });
-
-          const sharesResponse = await fetch(`${sharesUrl}?${sharesParams.toString()}`, {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${this.accessToken}`,
-              'Content-Type': 'application/json',
-              'X-Restli-Protocol-Version': '2.0.0',
-            },
-          });
-
-          if (sharesResponse.ok) {
-            const sharesData = await sharesResponse.json();
-            console.log('✅ Shares LinkedIn récupérés:', sharesData);
-
-            if (sharesData.elements && sharesData.elements.length > 0) {
-              posts = this.transformLinkedInSharesPosts(
-                sharesData.elements,
-                startTimestamp,
-                endTimestamp,
-              );
-              console.log(`✅ ${posts.length} posts transformés à partir des données Shares`);
-            }
-          } else {
-            console.warn(
-              '⚠️ Erreur API Shares:',
-              sharesResponse.status,
-              await sharesResponse.text(),
-            );
-          }
-        }
-      } catch (apiError) {
-        console.error('❌ Erreur APIs LinkedIn:', apiError);
-      }
-
-      // Si aucune donnée récupérée, utiliser des données personnalisées
+      let posts = await this.fetchUgcPosts(userId, startTimestamp, endTimestamp);
       if (posts.length === 0) {
-        console.log('📝 Aucun post réel trouvé, génération de données personnalisées...');
+        posts = await this.fetchSharesPosts(userId, startTimestamp, endTimestamp);
+      }
+
+      if (posts.length === 0) {
         posts = await this.generatePersonalizedMockPosts(null, period);
       }
-
-      console.log(`✅ ${posts.length} posts finaux récupérés pour la période ${period}`);
       return posts;
     } catch (error) {
       console.error('❌ Erreur récupération posts LinkedIn:', error);
-      console.log('🔄 Fallback vers données personnalisées...');
       return await this.generatePersonalizedMockPosts(null, period);
     }
   }

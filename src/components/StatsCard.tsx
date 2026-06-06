@@ -27,6 +27,134 @@ interface StatsCardProps {
   className?: string;
 }
 
+type ConnectionStatus = 'connected' | 'disconnected' | 'error' | string;
+
+const formatLastUpdate = (date: Date | null): string => {
+  if (!date) return 'Jamais';
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return "À l'instant";
+  if (diffMins < 60) return `Il y a ${diffMins} min`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `Il y a ${diffHours}h`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+};
+
+const LoadingSkeleton: React.FC = () => (
+  <div className="space-y-4 animate-pulse">
+    <div className="grid grid-cols-3 gap-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="space-y-2">
+          <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+          <div className="h-8 bg-slate-200 rounded"></div>
+          <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+        </div>
+      ))}
+    </div>
+    <div className="h-32 bg-slate-200 rounded"></div>
+  </div>
+);
+
+const STATUS_CONFIGS = {
+  connected: {
+    icon: CheckCircle2,
+    color: 'text-green-600',
+    bgColor: 'bg-green-50',
+    borderColor: 'border-green-200',
+    text: 'Connecté',
+  },
+  disconnected: {
+    icon: WifiOff,
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-50',
+    borderColor: 'border-orange-200',
+    text: 'Déconnecté',
+    description: 'Données simulées',
+  },
+  error: {
+    icon: AlertTriangle,
+    color: 'text-red-600',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
+    text: 'Erreur',
+    description: 'Problème de connexion',
+  },
+  unknown: {
+    icon: Wifi,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
+    text: 'Vérification...',
+    description: 'Test de connexion',
+  },
+} as const;
+
+const StatusIndicator: React.FC<{
+  connectionStatus: ConnectionStatus;
+  cacheInfo: { isFromCache: boolean; cacheAge?: number };
+}> = ({ connectionStatus, cacheInfo }) => {
+  const baseKey = (['connected', 'disconnected', 'error'] as const).includes(
+    connectionStatus as 'connected',
+  )
+    ? (connectionStatus as 'connected' | 'disconnected' | 'error')
+    : 'unknown';
+  const base = STATUS_CONFIGS[baseKey];
+  const description =
+    baseKey === 'connected'
+      ? cacheInfo.isFromCache
+        ? `Cache (${cacheInfo.cacheAge}min)`
+        : 'Données en temps réel'
+      : ((base as { description?: string }).description ?? '');
+  const Icon = base.icon;
+  return (
+    <div
+      className={`flex items-center space-x-2 px-3 py-2 rounded-lg border ${base.bgColor} ${base.borderColor}`}
+    >
+      <Icon className={`w-4 h-4 ${base.color}`} />
+      <div>
+        <span className={`text-sm font-medium ${base.color}`}>{base.text}</span>
+        <p className="text-xs text-slate-500">{description}</p>
+      </div>
+      {cacheInfo.isFromCache && (
+        <Badge variant="secondary" className="text-xs">
+          Cache
+        </Badge>
+      )}
+    </div>
+  );
+};
+
+const MetricCard: React.FC<{
+  title: string;
+  value: string;
+  trend: string;
+  isPositive: boolean;
+  icon: React.ElementType;
+  color: string;
+}> = ({ title, value, trend, isPositive, icon: Icon, color }) => (
+  <div className="space-y-2">
+    <div className="flex items-center space-x-2">
+      <Icon className={`w-4 h-4 ${color}`} />
+      <span className="text-sm font-medium text-slate-600">{title}</span>
+    </div>
+    <div className="space-y-1">
+      <div className="text-2xl font-bold text-slate-900">{value}</div>
+      <div className="flex items-center space-x-1">
+        {isPositive ? (
+          <TrendingUp className="w-3 h-3 text-green-500" />
+        ) : (
+          <TrendingDown className="w-3 h-3 text-red-500" />
+        )}
+        <span className={`text-xs font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+          {trend}
+        </span>
+      </div>
+    </div>
+  </div>
+);
+
 const StatsCard: React.FC<StatsCardProps> = ({
   period = '7d',
   autoRefresh = true,
@@ -111,143 +239,6 @@ const StatsCard: React.FC<StatsCardProps> = ({
     }
   }, [metrics, formattedMetrics, toast]);
 
-  // Formater la date de dernière mise à jour
-  const formatLastUpdate = (date: Date | null) => {
-    if (!date) return 'Jamais';
-
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-
-    if (diffMins < 1) return "À l'instant";
-    if (diffMins < 60) return `Il y a ${diffMins} min`;
-
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `Il y a ${diffHours}h`;
-
-    const diffDays = Math.floor(diffHours / 24);
-    return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
-  };
-
-  // Composant de squelette de chargement
-  const LoadingSkeleton = () => (
-    <div className="space-y-4 animate-pulse">
-      <div className="grid grid-cols-3 gap-4">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="space-y-2">
-            <div className="h-4 bg-slate-200 rounded w-3/4"></div>
-            <div className="h-8 bg-slate-200 rounded"></div>
-            <div className="h-3 bg-slate-200 rounded w-1/2"></div>
-          </div>
-        ))}
-      </div>
-      <div className="h-32 bg-slate-200 rounded"></div>
-    </div>
-  );
-
-  // Composant d'indicateur de statut
-  const StatusIndicator = () => {
-    const getStatusConfig = () => {
-      switch (connectionStatus) {
-        case 'connected':
-          return {
-            icon: CheckCircle2,
-            color: 'text-green-600',
-            bgColor: 'bg-green-50',
-            borderColor: 'border-green-200',
-            text: 'Connecté',
-            description: cacheInfo.isFromCache
-              ? `Cache (${cacheInfo.cacheAge}min)`
-              : 'Données en temps réel',
-          };
-        case 'disconnected':
-          return {
-            icon: WifiOff,
-            color: 'text-orange-600',
-            bgColor: 'bg-orange-50',
-            borderColor: 'border-orange-200',
-            text: 'Déconnecté',
-            description: 'Données simulées',
-          };
-        case 'error':
-          return {
-            icon: AlertTriangle,
-            color: 'text-red-600',
-            bgColor: 'bg-red-50',
-            borderColor: 'border-red-200',
-            text: 'Erreur',
-            description: 'Problème de connexion',
-          };
-        default:
-          return {
-            icon: Wifi,
-            color: 'text-blue-600',
-            bgColor: 'bg-blue-50',
-            borderColor: 'border-blue-200',
-            text: 'Vérification...',
-            description: 'Test de connexion',
-          };
-      }
-    };
-
-    const config = getStatusConfig();
-    const Icon = config.icon;
-
-    return (
-      <div
-        className={`flex items-center space-x-2 px-3 py-2 rounded-lg border ${config.bgColor} ${config.borderColor}`}
-      >
-        <Icon className={`w-4 h-4 ${config.color}`} />
-        <div>
-          <span className={`text-sm font-medium ${config.color}`}>{config.text}</span>
-          <p className="text-xs text-slate-500">{config.description}</p>
-        </div>
-        {cacheInfo.isFromCache && (
-          <Badge variant="secondary" className="text-xs">
-            Cache
-          </Badge>
-        )}
-      </div>
-    );
-  };
-
-  // Composant de métrique individuelle
-  const MetricCard = ({
-    title,
-    value,
-    trend,
-    isPositive,
-    icon: Icon,
-    color,
-  }: {
-    title: string;
-    value: string;
-    trend: string;
-    isPositive: boolean;
-    icon: React.ElementType;
-    color: string;
-  }) => (
-    <div className="space-y-2">
-      <div className="flex items-center space-x-2">
-        <Icon className={`w-4 h-4 ${color}`} />
-        <span className="text-sm font-medium text-slate-600">{title}</span>
-      </div>
-      <div className="space-y-1">
-        <div className="text-2xl font-bold text-slate-900">{value}</div>
-        <div className="flex items-center space-x-1">
-          {isPositive ? (
-            <TrendingUp className="w-3 h-3 text-green-500" />
-          ) : (
-            <TrendingDown className="w-3 h-3 text-red-500" />
-          )}
-          <span className={`text-xs font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-            {trend}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <Card className={`premium-card ${className}`}>
       <CardHeader className="border-b border-slate-100">
@@ -285,7 +276,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
         </div>
 
         <div className="flex items-center justify-between mt-4">
-          <StatusIndicator />
+          <StatusIndicator connectionStatus={connectionStatus} cacheInfo={cacheInfo} />
 
           <div className="flex items-center space-x-1 text-xs text-slate-500">
             <Clock className="w-3 h-3" />
