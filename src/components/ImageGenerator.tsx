@@ -160,7 +160,8 @@ const ImageGenerator = () => {
         title: 'Image téléchargée',
         description: "L'image premium a été sauvegardée sur votre appareil",
       });
-    } catch (_error) {
+    } catch (error) {
+      console.error('[components/ImageGenerator] catch:', error);
       toast({
         title: 'Erreur de téléchargement',
         description: "Impossible de télécharger l'image",

@@ -181,7 +181,8 @@ const PostModal: React.FC<PostModalProps> = ({ post, selectedDate, onSave, onClo
         title: 'Contenu généré !',
         description: 'Le contenu a été créé par Kora',
       });
-    } catch (_error) {
+    } catch (error) {
+      console.error('[components/PostModal] catch:', error);
       toast({
         title: 'Erreur de génération',
         description: 'Impossible de générer le contenu',

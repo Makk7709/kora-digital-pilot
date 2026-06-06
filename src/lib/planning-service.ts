@@ -405,7 +405,8 @@ class PlanningService {
       }
 
       return { success: true, message: 'Données importées avec succès' };
-    } catch (_error) {
+    } catch (error) {
+      console.error('[lib/planning-service] catch:', error);
       return { success: false, message: "Erreur lors de l'import des données" };
     }
   }

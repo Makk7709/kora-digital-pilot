@@ -71,7 +71,8 @@ const LinkedInWidget: React.FC = () => {
         title: '✅ Données actualisées',
         description: 'Les métriques LinkedIn ont été mises à jour',
       });
-    } catch (_error) {
+    } catch (error) {
+      console.error('[components/LinkedInWidget] catch:', error);
       toast({
         title: '❌ Erreur de synchronisation',
         description: 'Impossible de récupérer les données LinkedIn',

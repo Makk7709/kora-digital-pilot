@@ -204,7 +204,8 @@ const StatsCard: React.FC<StatsCardProps> = ({
         title: 'Données mises à jour',
         description: 'Les statistiques LinkedIn ont été actualisées',
       });
-    } catch (_error) {
+    } catch (error) {
+      console.error('[components/StatsCard] catch:', error);
       toast({
         title: 'Erreur de mise à jour',
         description: 'Impossible de récupérer les dernières données',

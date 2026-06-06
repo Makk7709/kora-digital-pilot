@@ -501,7 +501,8 @@ export const usePlanning = (): UsePlanningReturn => {
       // Mettre à jour les suggestions avec les recommandations IA
       const suggestions = planningService.getOptimizationSuggestions(state.currentWeekStart);
       setState((prev) => ({ ...prev, suggestions, isGenerating: false }));
-    } catch (_error) {
+    } catch (error) {
+      console.error('[hooks/usePlanning] catch:', error);
       setState((prev) => ({ ...prev, isGenerating: false }));
 
       toast({

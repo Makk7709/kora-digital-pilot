@@ -55,7 +55,8 @@ export class JSONExporter {
     // Vérifier que l'objet est sérialisable en JSON
     try {
       JSON.stringify(report);
-    } catch (_error) {
+    } catch (error) {
+      console.error('[services/export/formats/json-exporter] catch:', error);
       errors.push('Contenu non sérialisable en JSON');
     }
 

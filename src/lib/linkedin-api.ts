@@ -826,7 +826,7 @@ class LinkedInAPI {
     }
 
     console.log(`✅ ${numPosts} posts personnalisés générés pour ${userName}`);
-    return personalizedPosts.sort(
+    return [...personalizedPosts].sort(
       (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
     );
   }

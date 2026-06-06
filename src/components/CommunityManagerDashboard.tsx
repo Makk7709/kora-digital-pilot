@@ -258,7 +258,8 @@ export const CommunityManagerDashboard: React.FC = () => {
         title: 'Veille mise à jour',
         description: 'Tous les axes ont été analysés avec succès',
       });
-    } catch (_error) {
+    } catch (error) {
+      console.error('[CommunityManagerDashboard] scan failed:', error);
       setScanStatus((prev) => ({ ...prev, isScanning: false }));
       toast({
         title: 'Erreur de scan',

@@ -155,7 +155,8 @@ const LinkedInStatsTest: React.FC = () => {
 
         // Afficher automatiquement le StatsCard après des tests réussis
         setShowStatsCard(true);
-      } catch (_error) {
+      } catch (error) {
+        console.error('[LinkedInStatsTest] catch:', error);
         setTestResults((prev) => ({
           ...prev,
           dataFetch: 'error',
@@ -188,7 +189,8 @@ const LinkedInStatsTest: React.FC = () => {
         title: 'Test de rafraîchissement réussi',
         description: 'Les statistiques ont été mises à jour',
       });
-    } catch (_error) {
+    } catch (error) {
+      console.error('[LinkedInStatsTest] catch:', error);
       toast({
         title: 'Test de rafraîchissement échoué',
         description: 'Erreur lors de la mise à jour des statistiques',

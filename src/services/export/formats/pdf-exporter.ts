@@ -1039,25 +1039,8 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
     const pageHeight = pdf.internal.pageSize.height;
     let currentY = this.dimensions.margin;
 
-    // Utiliser les méthodes utilitaires existantes
-    const addTextPremium = (text: string, x: number, y: number, options: any = {}) => {
-      try {
-        const cleanText = String(text || '')
-          .replace(/[^\x20-\x7E\u00C0-\u00FF\u0100-\u017F\u0180-\u024F]/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim();
-
-        if (options.shadow) {
-          pdf.setTextColor(0, 0, 0, 0.1);
-          pdf.text(cleanText, x + 0.2, y + 0.2, options);
-        }
-
-        pdf.text(cleanText, x, y, options);
-      } catch (error) {
-        console.warn('Erreur encodage texte premium:', error);
-        pdf.text('Contenu indisponible', x, y, options);
-      }
-    };
+    // S4144 : on réutilise la fabrique partagée plutôt que de dupliquer l'implémentation.
+    const addTextPremium = this.getTextPremiumFunction(pdf);
 
     const addPremiumGradient = (
       x: number,

@@ -159,7 +159,7 @@ ${sentiment.overallScore < 50 ? '🚨 Actions correctives urgentes nécessaires'
     overallScore: number,
   ): string[] {
     if (competitors.length === 0) return [];
-    const topCompetitor = competitors.sort((a, b) => b.sentiment - a.sentiment)[0];
+    const topCompetitor = [...competitors].sort((a, b) => b.sentiment - a.sentiment)[0];
     const brandPosition = competitors.findIndex((c) => c.sentiment < overallScore) + 1;
     if (brandPosition === 1) {
       return [`🏆 Leader en sentiment face à ${competitors.length} concurrents`];
@@ -239,7 +239,7 @@ ${sentiment.overallScore < 50 ? '🚨 Actions correctives urgentes nécessaires'
       return `${brandName} opère dans un secteur où les concurrents directs ne sont pas clairement identifiés, suggérant soit une position de niche, soit un besoin d'analyse concurrentielle approfondie.`;
     }
 
-    const sortedCompetitors = competitors.sort((a, b) => b.sentiment - a.sentiment);
+    const sortedCompetitors = [...competitors].sort((a, b) => b.sentiment - a.sentiment);
     const brandScore = sentiment.overallScore;
 
     const betterCompetitors = sortedCompetitors.filter((c) => c.sentiment > brandScore);
@@ -288,7 +288,7 @@ ${sentiment.overallScore < 50 ? '🚨 Actions correctives urgentes nécessaires'
   ): string[] {
     const items: string[] = [];
     if (competitors.length > 0) {
-      const top = competitors.sort((a, b) => b.sentiment - a.sentiment)[0];
+      const top = [...competitors].sort((a, b) => b.sentiment - a.sentiment)[0];
       if (top.sentiment > overallScore + 10) {
         items.push(
           `🎯 Étudier la stratégie de ${top.name} pour identifier les meilleures pratiques`,
@@ -322,7 +322,7 @@ ${sentiment.overallScore < 50 ? '🚨 Actions correctives urgentes nécessaires'
       ...this.competitorsActions(competitors, sentiment.overallScore),
     ];
 
-    const topKeywords = keywords.sort((a, b) => b.count - a.count).slice(0, 3);
+    const topKeywords = [...keywords].sort((a, b) => b.count - a.count).slice(0, 3);
     if (topKeywords.length > 0) {
       actions.push(
         `🎯 Renforcer le SEO et le contenu autour des mots-clés performants: ${topKeywords.map((k) => k.word).join(', ')}`,
@@ -433,7 +433,7 @@ ${mentions
       return "Aucun concurrent direct identifié dans l'analyse actuelle.";
     }
 
-    const sortedCompetitors = competitors.sort((a, b) => b.sentiment - a.sentiment);
+    const sortedCompetitors = [...competitors].sort((a, b) => b.sentiment - a.sentiment);
 
     return `⚔️ **${competitors.length} concurrents principaux analysés**
 
@@ -456,7 +456,7 @@ ${sortedCompetitors
       return 'Aucun mot-clé significatif identifié.';
     }
 
-    const sortedKeywords = keywords.sort((a, b) => b.count - a.count);
+    const sortedKeywords = [...keywords].sort((a, b) => b.count - a.count);
     const upTrend = keywords.filter((k) => k.trend === 'up');
     const downTrend = keywords.filter((k) => k.trend === 'down');
     const stable = keywords.filter((k) => k.trend === 'stable');

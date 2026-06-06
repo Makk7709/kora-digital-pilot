@@ -196,7 +196,8 @@ export class BrandAnalysisOrchestrator implements BrandAnalysisService {
         lastAnalysis: new Date(),
         uptime: Date.now(),
       };
-    } catch (_error) {
+    } catch (error) {
+      console.error('[brand-analysis-orchestrator] healthCheck failed:', error);
       return {
         status: 'unhealthy',
         apiHealth: null,

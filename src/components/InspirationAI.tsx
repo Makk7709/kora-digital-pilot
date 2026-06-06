@@ -162,7 +162,8 @@ const InspirationAI = () => {
         title: 'Copié !',
         description: 'Le contenu a été copié dans le presse-papiers',
       });
-    } catch (_error) {
+    } catch (error) {
+      console.error('[components/InspirationAI] catch:', error);
       toast({
         title: 'Erreur de copie',
         description: 'Impossible de copier le contenu',

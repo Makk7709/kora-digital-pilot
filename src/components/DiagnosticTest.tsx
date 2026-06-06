@@ -57,7 +57,8 @@ const DiagnosticTest = () => {
         message: `Erreur HTTP ${response.status}`,
         details: "Le proxy LinkedIn n'est pas accessible",
       };
-    } catch {
+    } catch (error) {
+      console.warn('[DiagnosticTest] API proxy unreachable:', error);
       return {
         name: 'API Proxy',
         status: 'warning',
