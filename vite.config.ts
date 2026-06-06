@@ -176,7 +176,9 @@ export default defineConfig(({ mode }) => ({
               if (errorCount === maxErrors) {
                 isServerDefinitelyDown = true;
                 serverDownTime = new Date();
-                console.log(`🛑 [Vite Proxy] ===== SERVER MARKED AS PERMANENTLY DOWN =====`);
+                console.log(
+                  `🛑 [Vite Proxy] ===== SERVER MARKED AS PERMANENTLY DOWN at ${serverDownTime.toISOString()} =====`,
+                );
                 console.log(
                   `🔧 [Vite Proxy] ALL API calls will now be BLOCKED until server restart`,
                 );
@@ -210,6 +212,12 @@ export default defineConfig(({ mode }) => ({
           // Fonction de reset manuelle uniquement (plus de reset auto)
           (global as any).resetProxyState = () => {
             console.log(`🔄 [Vite Proxy] Manual reset requested...`);
+            if (serverDownTime) {
+              const downForMs = Date.now() - serverDownTime.getTime();
+              console.log(
+                `⏱️ [Vite Proxy] Server was marked down for ${Math.round(downForMs / 1000)}s`,
+              );
+            }
             errorCount = 0;
             isServerDefinitelyDown = false;
             serverDownTime = null;
