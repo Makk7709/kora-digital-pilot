@@ -95,7 +95,7 @@ const generateRecentPosts = (platforms: readonly DemoDashboardPlatform[]): Recen
     Math.floor(Math.random() * 3) + 1,
     Math.floor(Math.random() * 4) + 3,
     Math.floor(Math.random() * 5) + 6,
-  ].sort();
+  ].sort((a, b) => a - b);
 
   return postsData
     .map((postInfo, index): RecentDemoPost | null => {
@@ -138,8 +138,9 @@ const generateSmartSuggestions = (
     });
   }
 
-  const bestPlatform = platforms.reduce((best, current) =>
-    current.engagement > best.engagement ? current : best,
+  const bestPlatform = platforms.reduce(
+    (best, current) => (current.engagement > best.engagement ? current : best),
+    platforms[0],
   );
   const improvement = Math.round(
     (bestPlatform.engagement - Math.min(...platforms.map((p) => p.engagement))) * 100 * 3,

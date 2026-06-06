@@ -332,7 +332,7 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
         // Corriger les espaces multiples
         .replace(/\s+/g, ' ')
         // Nettoyer les caractères spéciaux en début/fin
-        .replace(/^[^\w]+|[^\w.!?]+$/g, '')
+        .replace(/(?:^[^\w]+)|(?:[^\w.!?]+$)/g, '')
         // S'assurer qu'il y a une ponctuation finale
         .replace(/([^.!?])$/, '$1.')
         .trim()
