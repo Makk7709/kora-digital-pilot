@@ -505,14 +505,18 @@
   }
 }
 
-/* Cartes avec effet hover premium */
+/* Cartes avec effet hover premium — Noir & Or */
 .premium-card {
-  @apply bg-white/80 backdrop-blur-sm border border-slate-200/60 shadow-sm;
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--card-foreground));
+  backdrop-filter: blur(6px);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .premium-card:hover {
-  @apply shadow-xl shadow-slate-200/50 border-slate-300/60;
+  border-color: hsl(var(--primary) / 0.55);
+  box-shadow: 0 20px 40px -20px hsl(var(--primary) / 0.25);
   transform: translateY(-2px);
 }
 
@@ -551,7 +555,7 @@
 .loading-overlay {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.8);
+  background: hsl(var(--background) / 0.85);
   transition: all 0.3s ease;
 }
 
@@ -700,19 +704,16 @@
 /* Dark mode support pour le dashboard */
 @media (prefers-color-scheme: dark) {
   .page-gradient {
-    background: linear-gradient(135deg, 
-      hsl(220, 15%, 8%) 0%, 
-      hsl(220, 20%, 12%) 50%, 
-      hsl(220, 15%, 10%) 100%
-    );
+    background: hsl(var(--background));
   }
   
   .premium-card {
-    @apply bg-slate-800/80 border-slate-700/60;
+    background-color: hsl(var(--card));
+    border-color: hsl(var(--border));
   }
   
   .premium-card:hover {
-    @apply border-slate-600/60 shadow-xl shadow-slate-900/20;
+    border-color: hsl(var(--primary) / 0.55);
   }
 }
 
@@ -767,7 +768,10 @@
 /* Print styles pour l'export */
 @media print {
   .premium-card {
-    @apply bg-white border border-slate-400 shadow-none;
+    background: white;
+    color: #0a0a0a;
+    border: 1px solid #c9a84c;
+    box-shadow: none;
     break-inside: avoid;
   }
   
@@ -779,4 +783,187 @@
   .loading-overlay {
     display: none !important;
   }
+}
+
+/* =========================================================
+   OVERRIDE GLOBAL — Adaptation Noir & Or KOREV
+   Neutralise les utilitaires Tailwind clairs codés en dur
+   dans les composants historiques, sans les refactorer.
+   ========================================================= */
+
+.bg-white,
+.bg-slate-50, .bg-slate-100, .bg-slate-200,
+.bg-gray-50, .bg-gray-100, .bg-gray-200,
+.bg-zinc-50, .bg-zinc-100,
+.bg-neutral-50, .bg-neutral-100,
+.bg-stone-50, .bg-stone-100 {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground));
+}
+
+.bg-white\/80, .bg-white\/70, .bg-white\/60, .bg-white\/50,
+.bg-white\/90, .bg-white\/95 {
+  background-color: hsl(var(--card) / 0.85) !important;
+  backdrop-filter: blur(8px);
+}
+
+.bg-blue-50, .bg-blue-100,
+.bg-indigo-50, .bg-indigo-100,
+.bg-sky-50, .bg-sky-100,
+.bg-violet-50, .bg-purple-50 {
+  background-color: hsl(var(--primary) / 0.08) !important;
+  color: hsl(var(--foreground));
+}
+
+.bg-blue-500, .bg-blue-600, .bg-blue-700,
+.bg-indigo-500, .bg-indigo-600, .bg-indigo-700,
+.bg-sky-500, .bg-sky-600 {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.border-white,
+.border-slate-100, .border-slate-200, .border-slate-300,
+.border-gray-100, .border-gray-200, .border-gray-300,
+.border-zinc-200, .border-neutral-200,
+.border-blue-100, .border-blue-200,
+.border-indigo-100, .border-indigo-200 {
+  border-color: hsl(var(--border)) !important;
+}
+
+.text-black,
+.text-slate-900, .text-slate-800, .text-slate-700,
+.text-gray-900, .text-gray-800, .text-gray-700,
+.text-zinc-900, .text-neutral-900, .text-stone-900 {
+  color: hsl(var(--foreground)) !important;
+}
+
+.text-slate-600, .text-slate-500, .text-slate-400,
+.text-gray-600, .text-gray-500, .text-gray-400,
+.text-zinc-600, .text-zinc-500, .text-neutral-600 {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.text-blue-500, .text-blue-600, .text-blue-700, .text-blue-800, .text-blue-900,
+.text-indigo-500, .text-indigo-600, .text-indigo-700,
+.text-sky-500, .text-sky-600, .text-sky-700,
+.text-violet-600, .text-purple-600 {
+  color: hsl(var(--primary)) !important;
+}
+
+.bg-primary .text-white,
+.bg-blue-500 .text-white, .bg-blue-600 .text-white,
+.bg-indigo-500 .text-white, .bg-indigo-600 .text-white {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+[class*="from-white"], [class*="from-slate-50"], [class*="from-slate-100"],
+[class*="from-gray-50"], [class*="from-gray-100"],
+[class*="from-blue-50"], [class*="from-indigo-50"], [class*="from-sky-50"],
+[class*="via-white"], [class*="via-blue-50"], [class*="via-indigo-50"],
+[class*="to-white"], [class*="to-slate-50"], [class*="to-slate-100"],
+[class*="to-blue-50"], [class*="to-indigo-50"], [class*="to-sky-50"] {
+  background-image: linear-gradient(135deg, hsl(var(--card)), hsl(var(--card) / 0.6)) !important;
+}
+
+[class*="from-blue-500"], [class*="from-blue-600"], [class*="from-indigo-500"], [class*="from-indigo-600"] {
+  --tw-gradient-from: hsl(var(--primary)) !important;
+}
+[class*="to-blue-500"], [class*="to-blue-600"], [class*="to-indigo-500"], [class*="to-indigo-600"], [class*="to-blue-700"] {
+  --tw-gradient-to: hsl(43 55% 44%) !important;
+}
+
+.ring-blue-500, .ring-blue-600, .ring-indigo-500, .ring-indigo-600 {
+  --tw-ring-color: hsl(var(--primary)) !important;
+}
+
+.badge-impact-high,
+.bg-red-50 { background-color: hsl(0 60% 20% / 0.5) !important; color: hsl(0 80% 80%) !important; border-color: hsl(0 60% 40% / 0.4) !important; }
+.badge-impact-medium { background-color: hsl(var(--primary) / 0.15) !important; color: hsl(var(--primary)) !important; border-color: hsl(var(--primary) / 0.4) !important; }
+.badge-impact-low { background-color: hsl(0 0% 100% / 0.05) !important; color: hsl(var(--muted-foreground)) !important; border-color: hsl(var(--border)) !important; }
+
+.bg-green-50, .bg-emerald-50 { background-color: hsl(150 40% 15% / 0.5) !important; color: hsl(150 60% 75%) !important; }
+.bg-amber-50, .bg-yellow-50, .bg-orange-50 { background-color: hsl(var(--primary) / 0.1) !important; color: hsl(var(--primary)) !important; }
+
+.text-red-600, .text-red-700, .text-red-800, .text-red-900 { color: hsl(0 75% 70%) !important; }
+.text-green-600, .text-green-700, .text-emerald-600 { color: hsl(150 55% 65%) !important; }
+.text-amber-600, .text-amber-700, .text-yellow-600, .text-orange-600 { color: hsl(var(--primary)) !important; }
+
+.skeleton, .skeleton-text, .skeleton-avatar { background-color: hsl(var(--muted)) !important; }
+.custom-scrollbar::-webkit-scrollbar-track { background-color: hsl(var(--muted)) !important; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background-color: hsl(var(--border)) !important; }
+
+.page-gradient { background: hsl(var(--background)) !important; }
+
+.glass-button {
+  background-color: hsl(var(--card) / 0.4) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+.glass-button:hover {
+  background-color: hsl(var(--primary) / 0.15) !important;
+  border-color: hsl(var(--primary) / 0.5) !important;
+}
+
+.enhanced-input, .mobile-optimized {
+  background-color: hsl(var(--input)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.enhanced-button {
+  background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(43 55% 44%)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.ai-analysis-card {
+  background-image: none !important;
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--card-foreground)) !important;
+}
+
+.metric-card {
+  background-image: none !important;
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--card-foreground)) !important;
+}
+.metric-value {
+  background-image: linear-gradient(90deg, hsl(var(--primary)), hsl(43 70% 70%)) !important;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+.metric-label { color: hsl(var(--muted-foreground)) !important; }
+
+.status-message.success { background: hsl(150 40% 15% / 0.4) !important; border-color: hsl(150 40% 30%) !important; color: hsl(150 55% 80%) !important; }
+.status-message.error   { background: hsl(0 45% 18% / 0.4) !important; border-color: hsl(0 45% 35%) !important; color: hsl(0 70% 82%) !important; }
+.status-message.warning { background: hsl(var(--primary) / 0.1) !important; border-color: hsl(var(--primary) / 0.4) !important; color: hsl(var(--primary)) !important; }
+.status-message.info    { background: hsl(var(--primary) / 0.08) !important; border-color: hsl(var(--primary) / 0.3) !important; color: hsl(var(--foreground)) !important; }
+
+.glass-effect {
+  background-color: hsl(var(--card) / 0.8) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--card-foreground)) !important;
+  backdrop-filter: blur(16px);
+}
+
+.section-title { color: hsl(var(--foreground)) !important; }
+.section-subtitle { color: hsl(var(--muted-foreground)) !important; }
+
+.progress-bar { background-color: hsl(var(--muted)) !important; }
+.progress-fill-blue { background-image: linear-gradient(90deg, hsl(var(--primary)), hsl(43 55% 44%)) !important; }
+.progress-fill-green { background-image: linear-gradient(90deg, hsl(150 50% 45%), hsl(150 55% 55%)) !important; }
+
+.tooltip {
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  border: 1px solid hsl(var(--border));
+}
+
+.hover-glow:hover {
+  box-shadow:
+    0 10px 25px -5px hsl(0 0% 0% / 0.5),
+    0 0 0 1px hsl(var(--primary) / 0.25) !important;
 }
