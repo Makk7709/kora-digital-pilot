@@ -137,9 +137,9 @@ const Analytics = () => {
         isRealData: false,
         stats: {
           ...platform.stats,
-          reachNum: undefined,
-          engagementNum: undefined,
-          clicksNum: undefined,
+          reachNum: undefined as number | undefined,
+          engagementNum: undefined as number | undefined,
+          clicksNum: undefined as number | undefined,
         },
       })),
     };

@@ -143,7 +143,7 @@ export class ReportExportOrchestrator implements ReportExportServiceInterface {
       if (typeof content === 'string') {
         blob = new Blob([content], { type: mimeType });
       } else {
-        blob = new Blob([content], { type: mimeType });
+        blob = new Blob([new Uint8Array(content)], { type: mimeType });
       }
 
       downloadUrl = URL.createObjectURL(blob);
