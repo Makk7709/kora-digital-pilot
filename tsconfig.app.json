@@ -2,43 +2,38 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
-
-    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
-
-    /* Linting */
     "strict": false,
-    // noUnusedLocals/Parameters: 176 erreurs au TS (déjà couvertes par
-    // l'eslint-rule @typescript-eslint/no-unused-vars). Garder false pour ne
-    // pas dupliquer le bruit; la règle eslint reste active. Voir
-    // docs/audit/TS_STRICTNESS_NOTES.md.
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitAny": true,
-    // strictNullChecks: voir docs/audit/TS_STRICTNESS_NOTES.md
-    // 55 erreurs résiduelles concentrées dans BrandIntelligenceDashboard.tsx (33),
-    // ReportGenerationService.ts (10), useBusinessIntelligence.ts (5).
-    // Au-dessus du seuil interne (50). À activer dans une itération dédiée.
     "strictNullChecks": false,
     "noFallthroughCasesInSwitch": false,
-
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
-
-    /* Test Types */
-    "types": ["vitest/globals", "@testing-library/jest-dom"]
+    "types": [
+      "vitest/globals",
+      "@testing-library/jest-dom"
+    ]
   },
-  "include": ["src"],
+  "include": [
+    "src"
+  ],
   "exclude": [
     "src/test/**/*",
     "src/tests/**/*",
