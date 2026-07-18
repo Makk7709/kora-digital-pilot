@@ -1025,7 +1025,7 @@ Cette analyse s'appuie sur 300+ variables quantitatives et qualitatives, intégr
       }
 
       logger.debug(`Premium PDF generated: ${totalPages} pages`);
-      return pdf.output('arraybuffer') as Uint8Array;
+      return new Uint8Array(pdf.output('arraybuffer') as ArrayBuffer);
     } catch (error) {
       logger.error('PDF generation failed', { error });
       const message = error instanceof Error ? error.message : String(error);
