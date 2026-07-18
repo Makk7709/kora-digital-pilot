@@ -13,101 +13,61 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
   const navigate = useNavigate();
 
   const menuItems = [
-    {
-      id: 'dashboard',
-      icon: '📊',
-      label: 'Dashboard',
-      description: 'Vue d\'ensemble'
-    },
-    {
-      id: 'cm-dashboard',
-      icon: '🧠',
-      label: 'CM Dashboard',
-      description: 'Veille IA automatisée'
-    },
-    {
-      id: 'cm-domain-search',
-      icon: '🔍',
-      label: 'Recherche Sectorielle',
-      description: 'Analyser par domaine'
-    },
-    {
-      id: 'brand-monitoring',
-      icon: '👁️',
-      label: 'Veille de Marque',
-      description: 'Surveillance e-réputation'
-    },
-    {
-      id: 'brand-intelligence-tdd',
-      icon: '⟨⟩',
-      label: 'P.R.I.S.M Report',
-      description: 'Deep Research & Métriques'
-    },
-    {
-      id: 'inspiration',
-      icon: '✨',
-      label: 'Inspiration IA',
-      description: 'Générer du contenu'
-    },
-    {
-      id: 'images',
-      icon: '🎨',
-      label: 'Générateur d\'Images',
-      description: 'Créer avec DALL-E 3'
-    },
-    {
-      id: 'planning',
-      icon: '📅',
-      label: 'Planning éditorial',
-      description: 'Organiser les publications'
-    },
-    {
-      id: 'analytics',
-      icon: '📈',
-      label: 'Analyse',
-      description: 'Performance des posts'
-    },
-    {
-      id: 'library',
-      icon: '📚',
-      label: 'Bibliothèque',
-      description: 'Contenu sauvegardé'
-    }
+    { id: 'dashboard', num: 'I', label: 'Dashboard', description: "Vue d'ensemble" },
+    { id: 'cm-dashboard', num: 'II', label: 'CM Dashboard', description: 'Veille IA automatisée' },
+    { id: 'cm-domain-search', num: 'III', label: 'Recherche', description: 'Analyse par domaine' },
+    { id: 'brand-monitoring', num: 'IV', label: 'Veille de marque', description: 'E-réputation' },
+    { id: 'brand-intelligence-tdd', num: 'V', label: 'P.R.I.S.M', description: 'Deep Research' },
+    { id: 'inspiration', num: 'VI', label: 'Inspiration', description: 'Génération éditoriale' },
+    { id: 'images', num: 'VII', label: 'Visuels', description: 'DALL·E 3' },
+    { id: 'planning', num: 'VIII', label: 'Planning', description: 'Calendrier éditorial' },
+    { id: 'analytics', num: 'IX', label: 'Analyse', description: 'Performances' },
+    { id: 'library', num: 'X', label: 'Bibliothèque', description: 'Archives' },
   ];
 
   return (
     <aside className={cn(
-      "h-full bg-white/95 backdrop-blur-xl border-r border-slate-200/50 shadow-lg transition-all duration-300",
-      isCollapsed ? "w-16" : "w-64"
+      "h-full bg-background border-r border-border transition-all duration-300",
+      isCollapsed ? "w-16" : "w-72"
     )}>
       <div className="p-4">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-slate-100 transition-colors"
+          className="w-full flex items-center justify-center p-2 text-muted-foreground hover:text-primary transition-colors"
         >
-          <span className="text-slate-600">
-            {isCollapsed ? '→' : '←'}
-          </span>
+          <span className="text-xs tracking-widest">{isCollapsed ? '›' : '‹'}</span>
         </button>
       </div>
 
-      <nav className="px-3 space-y-2">
+      {!isCollapsed && (
+        <p className="px-6 mb-4 text-[10px] uppercase tracking-[0.35em] text-primary/70">
+          Sommaire
+        </p>
+      )}
+      <nav className="px-3 space-y-px">
         {menuItems.map((item) => (
           <button
             key={item.id}
             onClick={() => onSectionChange(item.id)}
             className={cn(
-              "w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 group",
+              "w-full flex items-baseline gap-4 px-4 py-3 border-l-2 transition-all duration-200 group text-left",
               activeSection === item.id
-                ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? "border-primary bg-primary/5 text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-primary/40"
             )}
           >
-            <span className="text-lg">{item.icon}</span>
+            <span className={cn(
+              "font-display text-sm w-6 shrink-0",
+              activeSection === item.id ? "text-primary" : "text-muted-foreground/60"
+            )}>
+              {item.num}
+            </span>
             {!isCollapsed && (
-              <div className="flex-1 text-left">
-                <p className="font-medium text-sm">{item.label}</p>
-                <p className="text-xs opacity-60">{item.description}</p>
+              <div className="flex-1">
+                <p className="font-display text-base leading-tight">{item.label}</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] opacity-60 mt-0.5">
+                  {item.description}
+                </p>
               </div>
             )}
           </button>
@@ -115,7 +75,7 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
       </nav>
 
       {!isCollapsed && (
-        <div className="px-3 mt-4">
+        <div className="px-3 mt-6 pt-6 border-t border-border/40">
           <div className="scale-75 origin-top">
             <LinkedInWidget />
           </div>

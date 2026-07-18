@@ -8,43 +8,40 @@ const Header = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="flex items-center justify-between p-6 bg-white/95 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
-      <div className="flex items-center space-x-6">
-        <button 
-          onClick={() => navigate('/')}
-          className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-        >
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">K</span>
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold text-slate-900">Korev AI</h1>
-            <p className="text-xs text-slate-500">Social Intelligence</p>
-          </div>
-        </button>
-      </div>
-      
-      <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200">
-          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-          <span className="text-blue-600 text-sm font-medium">Kora en ligne</span>
+    <header className="flex items-center justify-between px-8 py-5 bg-background border-b border-border">
+      <button
+        onClick={() => navigate('/')}
+        className="flex items-baseline gap-3 hover:opacity-80 transition-opacity"
+      >
+        <span className="font-display text-2xl tracking-tight text-primary">Korev</span>
+        <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+          Atelier éditorial
+        </span>
+      </button>
+
+      <div className="flex items-center gap-5">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          <span className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+            En ligne
+          </span>
         </div>
-        
+
         <LinkedInStatus />
-        
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="text-slate-600 hover:text-slate-900"
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-muted-foreground hover:text-primary text-xs uppercase tracking-[0.2em] rounded-none"
           onClick={() => navigate('/settings')}
         >
           Paramètres
         </Button>
-        
-        <Avatar className="w-8 h-8">
+
+        <Avatar className="w-8 h-8 rounded-none border border-primary/40">
           <AvatarImage src="" alt="Utilisateur" />
-          <AvatarFallback className="bg-blue-500 text-white text-sm font-semibold">
-            F
+          <AvatarFallback className="bg-transparent text-primary font-display text-sm rounded-none">
+            K
           </AvatarFallback>
         </Avatar>
       </div>
