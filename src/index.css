@@ -505,14 +505,18 @@
   }
 }
 
-/* Cartes avec effet hover premium */
+/* Cartes avec effet hover premium — Noir & Or */
 .premium-card {
-  @apply bg-white/80 backdrop-blur-sm border border-slate-200/60 shadow-sm;
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--card-foreground));
+  backdrop-filter: blur(6px);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .premium-card:hover {
-  @apply shadow-xl shadow-slate-200/50 border-slate-300/60;
+  border-color: hsl(var(--primary) / 0.55);
+  box-shadow: 0 20px 40px -20px hsl(var(--primary) / 0.25);
   transform: translateY(-2px);
 }
 
@@ -551,7 +555,7 @@
 .loading-overlay {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.8);
+  background: hsl(var(--background) / 0.85);
   transition: all 0.3s ease;
 }
 
@@ -700,19 +704,16 @@
 /* Dark mode support pour le dashboard */
 @media (prefers-color-scheme: dark) {
   .page-gradient {
-    background: linear-gradient(135deg, 
-      hsl(220, 15%, 8%) 0%, 
-      hsl(220, 20%, 12%) 50%, 
-      hsl(220, 15%, 10%) 100%
-    );
+    background: hsl(var(--background));
   }
   
   .premium-card {
-    @apply bg-slate-800/80 border-slate-700/60;
+    background-color: hsl(var(--card));
+    border-color: hsl(var(--border));
   }
   
   .premium-card:hover {
-    @apply border-slate-600/60 shadow-xl shadow-slate-900/20;
+    border-color: hsl(var(--primary) / 0.55);
   }
 }
 
@@ -767,7 +768,10 @@
 /* Print styles pour l'export */
 @media print {
   .premium-card {
-    @apply bg-white border border-slate-400 shadow-none;
+    background: white;
+    color: #0a0a0a;
+    border: 1px solid #c9a84c;
+    box-shadow: none;
     break-inside: avoid;
   }
   
