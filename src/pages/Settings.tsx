@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, Bell, Shield, Palette } from 'lucide-react';
 import Header from '../components/Header';
 import AIConnectionTest from '../components/AIConnectionTest';
-import LinkedInAuth from '../components/LinkedInAuth';
+import LinkedInConnect from '../components/LinkedInConnect';
 
 const Settings = () => {
   const [notifications, setNotifications] = useState(true);
@@ -29,7 +29,7 @@ const Settings = () => {
           <AIConnectionTest />
 
           {/* Connexion LinkedIn */}
-          <LinkedInAuth />
+          <LinkedInConnect />
 
           {/* Profil utilisateur */}
           <Card className="bg-white border border-slate-200/60 shadow-lg">
