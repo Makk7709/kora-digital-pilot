@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
           is_active: true,
           last_synced_at: new Date().toISOString(),
         },
-        { onConflict: "user_id,provider" },
+        { onConflict: "user_id,provider,provider_account_id" },
       );
 
     if (upsertError) {
