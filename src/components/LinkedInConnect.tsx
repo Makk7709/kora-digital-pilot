@@ -7,9 +7,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { CheckCircle, Link2, LogOut, Loader2, Linkedin } from 'lucide-react';
 
-// Public LinkedIn Client ID (safe to expose; secret stays in the edge function)
-const LINKEDIN_CLIENT_ID = import.meta.env.VITE_LINKEDIN_CLIENT_ID as string | undefined;
-
 type Account = {
   id: string;
   account_name: string | null;
@@ -23,6 +20,7 @@ const LinkedInConnect: React.FC = () => {
   const { toast } = useToast();
   const [account, setAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState(true);
+  const [connecting, setConnecting] = useState(false);
 
   const loadAccount = async () => {
     if (!user) {
@@ -46,26 +44,24 @@ const LinkedInConnect: React.FC = () => {
      
   }, [user?.id]);
 
-  const handleConnect = () => {
-    if (!LINKEDIN_CLIENT_ID) {
-      toast({
-        title: 'Configuration manquante',
-        description: 'VITE_LINKEDIN_CLIENT_ID non défini côté client.',
-        variant: 'destructive',
+  const handleConnect = async () => {
+    setConnecting(true);
+    try {
+      const state = crypto.randomUUID();
+      localStorage.setItem('linkedin_oauth_state', state);
+      const redirectUri = `${window.location.origin}/auth/linkedin/callback`;
+      const { data, error } = await supabase.functions.invoke('linkedin-oauth-url', {
+        body: { redirect_uri: redirectUri, state },
       });
-      return;
+      if (error || !data?.url) {
+        throw new Error(error?.message ?? data?.error ?? 'URL manquante');
+      }
+      window.location.href = data.url as string;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Erreur inconnue';
+      toast({ title: 'Erreur', description: msg, variant: 'destructive' });
+      setConnecting(false);
     }
-    const state = crypto.randomUUID();
-    localStorage.setItem('linkedin_oauth_state', state);
-    const redirectUri = `${window.location.origin}/auth/linkedin/callback`;
-    const params = new URLSearchParams({
-      response_type: 'code',
-      client_id: LINKEDIN_CLIENT_ID,
-      redirect_uri: redirectUri,
-      state,
-      scope: 'openid profile email',
-    });
-    window.location.href = `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`;
   };
 
   const handleDisconnect = async () => {
@@ -127,8 +123,13 @@ const LinkedInConnect: React.FC = () => {
               Liez votre compte LinkedIn pour synchroniser votre profil et vos futures
               publications.
             </p>
-            <Button onClick={handleConnect}>
-              <Link2 className="w-4 h-4 mr-2" /> Se connecter avec LinkedIn
+            <Button onClick={handleConnect} disabled={connecting}>
+              {connecting ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Link2 className="w-4 h-4 mr-2" />
+              )}
+              Se connecter avec LinkedIn
             </Button>
           </div>
         )}
