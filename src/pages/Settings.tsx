@@ -9,6 +9,7 @@ import { User, Bell, Shield, Palette } from 'lucide-react';
 import Header from '../components/Header';
 import AIConnectionTest from '../components/AIConnectionTest';
 import LinkedInConnect from '../components/LinkedInConnect';
+import MetaConnect from '../components/MetaConnect';
 
 const Settings = () => {
   const [notifications, setNotifications] = useState(true);
@@ -30,6 +31,9 @@ const Settings = () => {
 
           {/* Connexion LinkedIn */}
           <LinkedInConnect />
+
+          {/* Connexion Facebook & Instagram */}
+          <MetaConnect />
 
           {/* Profil utilisateur */}
           <Card className="bg-white border border-slate-200/60 shadow-lg">
