@@ -10,6 +10,7 @@ import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
 import Auth from './pages/Auth';
 import LinkedInCallback from './components/LinkedInCallback';
+import MetaCallback from './components/MetaCallback';
 import RequireAuth from './components/auth/RequireAuth';
 import { DataModeProvider } from './contexts/DataModeContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -55,6 +56,7 @@ const App = () => (
                 {DEV && TestAPI && <Route path="/test-api" element={<TestAPI />} />}
                 {DEV && DiagnosticTest && <Route path="/diagnostic" element={<DiagnosticTest />} />}
                 <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />
+                <Route path="/auth/meta/callback" element={<MetaCallback />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
