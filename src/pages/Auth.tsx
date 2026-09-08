@@ -101,6 +101,28 @@ const Auth: React.FC = () => {
             </TabsContent>
           </Tabs>
 
+          <div className="mt-6 space-y-2">
+            <div className="relative text-center">
+              <span className="relative z-10 bg-card px-3 text-xs uppercase tracking-widest text-muted-foreground">
+                ou
+              </span>
+              <div className="absolute inset-x-0 top-1/2 h-px bg-border" />
+            </div>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={enterDemo}
+              disabled={demoLoading}
+            >
+              {demoLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="mr-2 h-4 w-4" />
+              )}
+              Entrer en démo (accès direct)
+            </Button>
+          </div>
+
           {isDemoMode && (
             <p className="mt-6 text-center text-xs text-amber-700">
               Mode démo actif. Aucun backend Supabase configuré : la connexion ouvre une
