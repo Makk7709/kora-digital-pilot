@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import {
@@ -9,9 +9,16 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Loader2, Sparkles } from 'lucide-react';
 import SignIn from '@/components/auth/SignIn';
 import SignUp from '@/components/auth/SignUp';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+const DEMO_EMAIL = 'demo@korev.app';
+const DEMO_PASSWORD = 'KorevDemo2026!';
 
 interface LocationState {
   from?: string;
